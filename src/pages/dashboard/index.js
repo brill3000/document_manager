@@ -25,7 +25,7 @@ import MonthlyBarChart from './MonthlyBarChart';
 import ReportAreaChart from './ReportAreaChart';
 import SalesColumnChart from './SalesColumnChart';
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import CustomCard from 'components/cards/statistics/CustomCard';
 
 // assets
 import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
@@ -80,22 +80,37 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+                <CustomCard title="Checked out documents" count="4" percentage={1} extra="0" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+                <CustomCard title="Total Documents" count="10" percentage={1} extra="0" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+                <CustomCard title="Documents types" count="2" percentage={27.4} isLoss color="warning" extra="0" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+                <CustomCard title="Total Documents in trash" count="1" percentage={1} isLoss color="warning" extra="0" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard title="New Documents this month" count="2" percentage={27.4} isLoss color="warning" extra="0" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard title="New Pages this month" count="0" percentage={27.4} isLoss color="warning" extra="0" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard title="Total Groups" count="3" percentage={27.4} isLoss color="warning" extra="0" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard title="Total roles" count="3" percentage={27.4} isLoss color="warning" extra="0" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard title="Total users" count="6" percentage={27.4} isLoss color="warning" extra="0" />
             </Grid>
 
-            <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+            {/* <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} /> */}
 
             {/* row 2 */}
-            <Grid item xs={12} md={7} lg={8}>
+            {/* <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Unique Visitor</Typography>
@@ -145,10 +160,10 @@ const DashboardDefault = () => {
                     </Box>
                     <MonthlyBarChart />
                 </MainCard>
-            </Grid>
+            </Grid> */}
 
             {/* row 3 */}
-            <Grid item xs={12} md={7} lg={8}>
+            {/* <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Recent Orders</Typography>
@@ -183,10 +198,10 @@ const DashboardDefault = () => {
                     </List>
                     <ReportAreaChart />
                 </MainCard>
-            </Grid>
+            </Grid> */}
 
             {/* row 4 */}
-            <Grid item xs={12} md={7} lg={8}>
+            {/* <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Sales Report</Typography>
@@ -339,7 +354,7 @@ const DashboardDefault = () => {
                         </Button>
                     </Stack>
                 </MainCard>
-            </Grid>
+            </Grid> */}
         </Grid>
     );
 };
