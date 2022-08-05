@@ -1,14 +1,16 @@
 {
-    "name": "mantis-free-react-admin-template",
+    "name": "document_management_system",
     "version": "1.0.0",
     "private": true,
-    "homepage": "https://mantisdashboard.io/free",
+    "homepage": "https://document_management_system",
     "dependencies": {
         "@ant-design/colors": "^4.0.0-alpha.0",
         "@ant-design/icons": "^4.0.0-rc.0",
         "@emotion/cache": "^11.7.1",
         "@emotion/react": "^11.7.1",
         "@emotion/styled": "^11.6.0",
+        "@heroicons/react": "^1.0.6",
+        "@mui/icons-material": "^5.8.4",
         "@mui/lab": "^5.0.0-alpha.65",
         "@mui/material": "^5.3.0",
         "@mui/styles": "^5.3.0",
