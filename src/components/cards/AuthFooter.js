@@ -21,7 +21,7 @@ const AuthFooter = () => {
                     </Typography>
                 </Typography>
 
-                <Stack
+                {/* <Stack
                     direction={matchDownSM ? 'column' : 'row'}
                     spacing={matchDownSM ? 1 : 3}
                     textAlign={matchDownSM ? 'center' : 'inherit'}
@@ -56,7 +56,7 @@ const AuthFooter = () => {
                     >
                         Support
                     </Typography>
-                </Stack>
+                </Stack> */}
             </Stack>
         </Container>
     );
