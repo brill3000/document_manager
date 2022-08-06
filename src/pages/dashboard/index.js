@@ -100,7 +100,7 @@ const DashboardDefault = () => {
                     icon={
                         <Avatar
                             sx={{
-                                color: 'secondary.main',
+                                color: 'secondary.600',
                                 bgcolor: 'transparent'
                             }}
                         >
@@ -131,7 +131,7 @@ const DashboardDefault = () => {
                     icon={
                         <Avatar
                             sx={{
-                                color: 'secondary.main',
+                                color: 'secondary.600',
                                 bgcolor: 'transparent'
                             }}
                         >
@@ -150,7 +150,7 @@ const DashboardDefault = () => {
                     icon={
                         <Avatar
                             sx={{
-                                color: 'secondary.main',
+                                color: 'secondary.600',
                                 bgcolor: 'transparent'
                             }}
                         >
@@ -169,7 +169,7 @@ const DashboardDefault = () => {
                     icon={
                         <Avatar
                             sx={{
-                                color: 'secondary.main',
+                                color: 'secondary.600',
                                 bgcolor: 'transparent'
                             }}
                         >
