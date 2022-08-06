@@ -8,54 +8,52 @@ import MainCard from 'components/MainCard';
 
 // assets
 import { RiseOutlined, FallOutlined } from '@ant-design/icons';
-
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const CustomCard = ({ color, title, count, percentage, isLoss, extra }) => (
+const CustomCard = ({ color, title, count, percentage, isLoss, icon }) => (
     <MainCard contentSX={{ p: 2.25 }}>
-        <Stack spacing={0.5}>
-            <Typography variant="h6" color="textSecondary">
-                {title}
-            </Typography>
-            <Grid container alignItems="center">
-                <Grid item>
-                    <Typography variant="h4" color="inherit">
-                        {count}
-                    </Typography>
-                </Grid>
-                {percentage && (
-                    <Grid item>
-                        <Chip
-                            variant="combined"
-                            color={color}
-                            icon={
-                                <>
-                                    {!isLoss && <RiseOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
-                                    {isLoss && <FallOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
-                                </>
-                            }
-                            label={`${percentage}%`}
-                            sx={{ ml: 1.25, pl: 1 }}
-                            size="small"
-                        />
-                    </Grid>
+        <Stack direction="row" spacing={1} justifyContent="space-between">
+            {icon}
+            <Stack spacing={0.5} alignItems="flex-end">
+                <Typography variant="h6" color="textSecondary">
+                    {title}
+                </Typography>
+                {count && (
+                    <Chip
+                        variant="combined"
+                        color={color}
+                        icon={
+                            <>
+                                {count > 2 && <RiseOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
+                                {count <= 2 && <FallOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
+                            </>
+                        }
+                        label={`${count}`}
+                        sx={{ pl: 1 }}
+                        size="small"
+                    />
                 )}
-            </Grid>
+            </Stack>
         </Stack>
         <Box sx={{ pt: 2.25 }}>
-            <Typography variant="caption" color="textSecondary">
-                You made an extra{' '}
-                <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
-                    {extra}
-                </Typography>{' '}
-                this year
-            </Typography>
+            <Grid container justifyContent="space-between">
+                <Grid item>
+                    <Typography variant="caption" color="textSecondary">
+                        View Details
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <OpenInNewIcon color="primary" sx={{ fontSize: '1.1rem', mt: .5 }}/>
+                </Grid>
+            </Grid>
         </Box>
     </MainCard>
 );
 
 CustomCard.propTypes = {
     color: PropTypes.string,
+    icon: PropTypes.node.isRequired,
     title: PropTypes.string,
     count: PropTypes.string,
     percentage: PropTypes.number,
