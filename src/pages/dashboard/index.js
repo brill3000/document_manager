@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 // project import
-import OrdersTable from './OrdersTable';
+import AccesedDocTables from './AccesedDocTables';
 import IncomeAreaChart from './IncomeAreaChart';
 import MonthlyBarChart from './MonthlyBarChart';
 import ReportAreaChart from './ReportAreaChart';
@@ -28,7 +28,8 @@ import MainCard from 'components/MainCard';
 import CustomCard from 'components/cards/statistics/CustomCard';
 
 // assets
-import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
+import { FileAddOutlined, MessageOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+
 import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
@@ -87,41 +88,104 @@ const DashboardDefault = () => {
             <Grid item xs={12} sx={{ mb: -2.25 }}>
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard title="Checked out documents" count="4" percentage={1} extra="0" icon={<ShoppingCartOutlined style={{ fontSize: '2rem' }}/>} />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Documents" count="10" percentage={1} extra="0" icon={<SourceOutlinedIcon style={{ fontSize: '2rem' }}/>} />
+                <CustomCard
+                    title="Total Documents"
+                    count="10"
+                    percentage={1}
+                    extra="0"
+                    icon={
+                        <Avatar
+                            sx={{
+                                color: 'secondary.main',
+                                bgcolor: 'transparent'
+                            }}
+                        >
+                            <SourceOutlinedIcon style={{ fontSize: '1.8rem' }} />
+                        </Avatar>
+                    }
+                />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard title="Documents types" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<DescriptionOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard title="Total Documents in trash" count="1" percentage={1} isLoss color="warning" extra="0" icon={<DeleteSweepOutlinedIcon style={{ fontSize: '2rem' }}/>} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
+            </Grid> */}
+            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard title="New Documents this month" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<NewspaperOutlinedIcon style={{ fontSize: '2rem' }}/>}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard title="New Pages this month" count="0" percentage={27.4} isLoss color="warning" extra="0" icon={<AutoStoriesOutlinedIcon style={{ fontSize: '2rem' }}/>} />
+            </Grid> */}
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <CustomCard
+                    title="Total Groups"
+                    count="3"
+                    percentage={27.4}
+                    isLoss
+                    extra="0"
+                    icon={
+                        <Avatar
+                            sx={{
+                                color: 'secondary.main',
+                                bgcolor: 'transparent'
+                            }}
+                        >
+                            <GroupsOutlinedIcon style={{ fontSize: '1.8rem' }} />
+                        </Avatar>
+                    }
+                />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Groups" count="3" percentage={27.4} isLoss extra="0" icon={<GroupsOutlinedIcon style={{ fontSize: '2rem' }}/>} />
+                <CustomCard
+                    title="Total roles"
+                    count="3"
+                    percentage={27.4}
+                    isLoss
+                    extra="0"
+                    icon={
+                        <Avatar
+                            sx={{
+                                color: 'secondary.main',
+                                bgcolor: 'transparent'
+                            }}
+                        >
+                            <ReduceCapacityOutlinedIcon style={{ fontSize: '1.8rem' }} />
+                        </Avatar>
+                    }
+                />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total roles" count="3" percentage={27.4} isLoss extra="0" icon={<ReduceCapacityOutlinedIcon style={{ fontSize: '2rem' }}/>}/>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total users" count="6" percentage={27.4} isLoss extra="0" icon={<SwitchAccountOutlinedIcon style={{ fontSize: '2rem' }}/>} />
+                <CustomCard
+                    title="Total users"
+                    count="6"
+                    percentage={27.4}
+                    isLoss
+                    extra="0"
+                    icon={
+                        <Avatar
+                            sx={{
+                                color: 'secondary.main',
+                                bgcolor: 'transparent'
+                            }}
+                        >
+                            <SwitchAccountOutlinedIcon style={{ fontSize: '1.8rem' }} />
+                        </Avatar>
+                    }
+                />
             </Grid>
 
-            {/* <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} /> */}
+            <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
             {/* row 2 */}
             {/* <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Unique Visitor</Typography>
+                        <Typography variant="h5">Checked Out Documents</Typography>
                     </Grid>
                     <Grid item>
                         <Stack direction="row" alignItems="center" spacing={0}>
@@ -153,7 +217,7 @@ const DashboardDefault = () => {
             <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Income Overview</Typography>
+                        <Typography variant="h5">User Access Review</Typography>
                     </Grid>
                     <Grid item />
                 </Grid>
@@ -163,7 +227,7 @@ const DashboardDefault = () => {
                             <Typography variant="h6" color="textSecondary">
                                 This Week Statistics
                             </Typography>
-                            <Typography variant="h3">$7,650</Typography>
+                            <Typography variant="h3">300 Users</Typography>
                         </Stack>
                     </Box>
                     <MonthlyBarChart />
@@ -171,18 +235,134 @@ const DashboardDefault = () => {
             </Grid> */}
 
             {/* row 3 */}
-            {/* <Grid item xs={12} md={7} lg={8}>
+            <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Recent Orders</Typography>
+                        <Typography variant="h5">Recently Accessed Documents</Typography>
                     </Grid>
                     <Grid item />
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <OrdersTable />
+                    <AccesedDocTables />
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
+                <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item>
+                        <Typography variant="h5">Recent Activity</Typography>
+                    </Grid>
+                    <Grid item />
+                </Grid>
+                <MainCard sx={{ mt: 2 }} content={false}>
+                    <List
+                        component="nav"
+                        sx={{
+                            px: 0,
+                            py: 0,
+                            '& .MuiListItemButton-root': {
+                                py: 1.5,
+                                '& .MuiAvatar-root': avatarSX,
+                                '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
+                            }
+                        }}
+                    >
+                        <ListItemButton divider>
+                            <ListItemAvatar>
+                                <Avatar
+                                    sx={{
+                                        color: 'success.main',
+                                        bgcolor: 'success.lighter'
+                                    }}
+                                >
+                                    <FileAddOutlined />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={<Typography variant="subtitle1">Added Budget Approval File</Typography>}
+                                secondary="Today, 2:00 AM"
+                            />
+                            <ListItemSecondaryAction>
+                                <Stack alignItems="flex-end">
+                                    <Typography variant="h6" color="secondary" noWrap>
+                                        Desktop
+                                    </Typography>
+                                </Stack>
+                            </ListItemSecondaryAction>
+                        </ListItemButton>
+                        <ListItemButton divider>
+                            <ListItemAvatar>
+                                <Avatar
+                                    sx={{
+                                        color: 'primary.main',
+                                        bgcolor: 'primary.lighter'
+                                    }}
+                                >
+                                    <DeleteOutlined />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={<Typography variant="subtitle1">Deleted Sample2 File</Typography>}
+                                secondary="5 August, 1:45 PM"
+                            />
+                            <ListItemSecondaryAction>
+                                <Stack alignItems="flex-end">
+                                    <Typography variant="h6" color="secondary" noWrap>
+                                        Mobile
+                                    </Typography>
+                                </Stack>
+                            </ListItemSecondaryAction>
+                        </ListItemButton>
+                        <ListItemButton>
+                            <ListItemAvatar>
+                                <Avatar
+                                    sx={{
+                                        color: 'error.main',
+                                        bgcolor: 'error.lighter'
+                                    }}
+                                >
+                                    <SettingOutlined />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={<Typography variant="subtitle1">Changed Password</Typography>} secondary="7 hours ago" />
+                            <ListItemSecondaryAction>
+                                <Stack alignItems="flex-end">
+                                    <Typography variant="h6" color="secondary" noWrap>
+                                        Mobile
+                                    </Typography>
+                                </Stack>
+                            </ListItemSecondaryAction>
+                        </ListItemButton>
+                    </List>
+                </MainCard>
+                <MainCard sx={{ mt: 2 }}>
+                    <Stack spacing={3}>
+                        <Grid container justifyContent="space-between" alignItems="center">
+                            <Grid item>
+                                <Stack>
+                                    <Typography variant="h5" noWrap>
+                                        Help & Support Chat
+                                    </Typography>
+                                    <Typography variant="caption" color="secondary" noWrap>
+                                        Typical replay within 5 min
+                                    </Typography>
+                                </Stack>
+                            </Grid>
+                            <Grid item>
+                                <AvatarGroup sx={{ '& .MuiAvatar-root': { width: 32, height: 32 } }}>
+                                    <Avatar alt="Remy Sharp" src={avatar1} />
+                                    <Avatar alt="Travis Howard" src={avatar2} />
+                                    <Avatar alt="Cindy Baker" src={avatar3} />
+                                    <Avatar alt="Agnes Walker" src={avatar4} />
+                                </AvatarGroup>
+                            </Grid>
+                        </Grid>
+                        <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
+                            Need Help?
+                        </Button>
+                    </Stack>
+                </MainCard>
+            </Grid>
+            {/* <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Analytics Report</Typography>

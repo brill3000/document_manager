@@ -11,21 +11,21 @@ import NumberFormat from 'react-number-format';
 // project import
 import Dot from 'components/@extended/Dot';
 
-function createData(trackingNo, name, fat, carbs, protein) {
-    return { trackingNo, name, fat, carbs, protein };
+function createData(name, fat, carbs, protein) {
+    return { name, fat, carbs, protein };
 }
 
 const rows = [
-    createData(84564564, 'Camera Lens', 40, 2, 40570),
-    createData(98764564, 'Laptop', 300, 0, 180139),
-    createData(98756325, 'Mobile', 355, 1, 90989),
-    createData(98652366, 'Handset', 50, 1, 10239),
-    createData(13286564, 'Computer Accessories', 100, 1, 83348),
-    createData(86739658, 'TV', 99, 0, 410780),
-    createData(13256498, 'Keyboard', 125, 2, 70999),
-    createData(98753263, 'Mouse', 89, 2, 10570),
-    createData(98753275, 'Desktop', 185, 1, 98063),
-    createData(98753291, 'Chair', 100, 0, 14001)
+    createData('Budget Approval', "pdf", 2, 4.5),
+    createData('New Approval', "pdf", 0, 1.8),
+    createData('Sample Approval', "pdf", 1, 9.0),
+    createData('Test Approval', "pdf", 1, 10.2),
+    createData('Computer Accessories', "pdf", 1, 8.3),
+    createData('EBRS', "pdf", 0, 4.1),
+    createData('Cases', "pdf", 2, 7.0),
+    createData('Training', "pdf", 2, 10.5),
+    createData('DBMS', "pdf", 1, 9.8),
+    createData('OpenInNewIcon', "pdf", 0, 1.4)
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -57,42 +57,42 @@ function stableSort(array, comparator) {
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 
 const headCells = [
-    {
-        id: 'trackingNo',
-        align: 'left',
-        disablePadding: false,
-        label: 'Tracking No.'
-    },
+    // {
+    //     id: 'trackingNo',
+    //     align: 'left',
+    //     disablePadding: false,
+    //     label: 'Tracking No.'
+    // },
     {
         id: 'name',
         align: 'left',
         disablePadding: true,
-        label: 'Product Name'
+        label: 'Document Name'
     },
     {
         id: 'fat',
         align: 'right',
         disablePadding: false,
-        label: 'Total Order'
+        label: 'Document Type'
     },
     {
         id: 'carbs',
         align: 'left',
         disablePadding: false,
 
-        label: 'Status'
+        label: 'Document Privacy'
     },
     {
         id: 'protein',
         align: 'right',
         disablePadding: false,
-        label: 'Total Amount'
+        label: 'Document Size'
     }
 ];
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
-function OrderTableHead({ order, orderBy }) {
+function AccesedDocTableHead({ order, orderBy }) {
     return (
         <TableHead>
             <TableRow>
@@ -111,29 +111,29 @@ function OrderTableHead({ order, orderBy }) {
     );
 }
 
-OrderTableHead.propTypes = {
+AccesedDocTableHead.propTypes = {
     order: PropTypes.string,
     orderBy: PropTypes.string
 };
 
 // ==============================|| ORDER TABLE - STATUS ||============================== //
 
-const OrderStatus = ({ status }) => {
+const AccessStatus = ({ status }) => {
     let color;
     let title;
 
     switch (status) {
         case 0:
             color = 'warning';
-            title = 'Pending';
+            title = 'Public';
             break;
         case 1:
             color = 'success';
-            title = 'Approved';
+            title = 'New';
             break;
         case 2:
             color = 'error';
-            title = 'Rejected';
+            title = 'Private';
             break;
         default:
             color = 'primary';
@@ -148,13 +148,13 @@ const OrderStatus = ({ status }) => {
     );
 };
 
-OrderStatus.propTypes = {
+AccessStatus.propTypes = {
     status: PropTypes.number
 };
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function OrderTable() {
+export default function AccesedDocTables() {
     const [order] = useState('asc');
     const [orderBy] = useState('trackingNo');
     const [selected] = useState([]);
@@ -184,12 +184,11 @@ export default function OrderTable() {
                         }
                     }}
                 >
-                    <OrderTableHead order={order} orderBy={orderBy} />
+                    <AccesedDocTableHead order={order} orderBy={orderBy} />
                     <TableBody>
                         {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-                            const isItemSelected = isSelected(row.trackingNo);
+                            const isItemSelected = isSelected(row.name);
                             const labelId = `enhanced-table-checkbox-${index}`;
-
                             return (
                                 <TableRow
                                     hover
@@ -200,18 +199,23 @@ export default function OrderTable() {
                                     key={row.trackingNo}
                                     selected={isItemSelected}
                                 >
-                                    <TableCell component="th" id={labelId} scope="row" align="left">
+                                    {/* <TableCell component="th" id={labelId} scope="row" align="left">
                                         <Link color="secondary" component={RouterLink} to="">
                                             {row.trackingNo}
                                         </Link>
+                                    </TableCell> */}
+                                    <TableCell component="th" id={labelId} scope="row" align="left">
+                                        <Link color="secondary" component={RouterLink} to="">
+                                            {row.name}
+                                        </Link>
                                     </TableCell>
-                                    <TableCell align="left">{row.name}</TableCell>
                                     <TableCell align="right">{row.fat}</TableCell>
                                     <TableCell align="left">
-                                        <OrderStatus status={row.carbs} />
+                                        <AccessStatus status={row.carbs} />
                                     </TableCell>
                                     <TableCell align="right">
-                                        <NumberFormat value={row.protein} displayType="text" thousandSeparator prefix="$" />
+                                        {row.protein} MB
+                                        {/* <NumberFormat value={row.protein} displayType="text" thousandSeparator prefix="$" /> */}
                                     </TableCell>
                                 </TableRow>
                             );
