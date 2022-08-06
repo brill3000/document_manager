@@ -45,6 +45,14 @@ const dashboard = {
             url: '/',
             icon: icons.DashboardOutlined,
             breadcrumbs: false,
+        },
+        {
+            id: 'documents',
+            title: 'Documents',
+            type: 'item',
+            url: '/',
+            icon: icons.FolderOutlined,
+            breadcrumbs: false,
             children: [
                 {
                     id: 'recently-accessed',
@@ -103,14 +111,6 @@ const dashboard = {
                     breadcrumbs: false
                 }
             ]
-        },
-        {
-            id: 'documents',
-            title: 'Documents',
-            type: 'item',
-            url: '/',
-            icon: icons.FolderOutlined,
-            breadcrumbs: false
         },
         {
             id: 'workflows',
