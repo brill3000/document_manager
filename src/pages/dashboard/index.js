@@ -33,7 +33,15 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
-
+import { ShoppingCartOutlined } from '@ant-design/icons';
+import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
+import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
+import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
 // avatar style
 const avatarSX = {
     width: 36,
@@ -80,31 +88,31 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Checked out documents" count="4" percentage={1} extra="0" />
+                <CustomCard title="Checked out documents" count="4" percentage={1} extra="0" icon={<ShoppingCartOutlined style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Documents" count="10" percentage={1} extra="0" />
+                <CustomCard title="Total Documents" count="10" percentage={1} extra="0" icon={<SourceOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Documents types" count="2" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="Documents types" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<DescriptionOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Documents in trash" count="1" percentage={1} isLoss color="warning" extra="0" />
+                <CustomCard title="Total Documents in trash" count="1" percentage={1} isLoss color="warning" extra="0" icon={<DeleteSweepOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="New Documents this month" count="2" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="New Documents this month" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<NewspaperOutlinedIcon style={{ fontSize: '2rem' }}/>}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="New Pages this month" count="0" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="New Pages this month" count="0" percentage={27.4} isLoss color="warning" extra="0" icon={<AutoStoriesOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Groups" count="3" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="Total Groups" count="3" percentage={27.4} isLoss extra="0" icon={<GroupsOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total roles" count="3" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="Total roles" count="3" percentage={27.4} isLoss extra="0" icon={<ReduceCapacityOutlinedIcon style={{ fontSize: '2rem' }}/>}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total users" count="6" percentage={27.4} isLoss color="warning" extra="0" />
+                <CustomCard title="Total users" count="6" percentage={27.4} isLoss extra="0" icon={<SwitchAccountOutlinedIcon style={{ fontSize: '2rem' }}/>} />
             </Grid>
 
             {/* <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} /> */}
