@@ -18,7 +18,6 @@ const Logo = () => {
         /**
          * if you want to use image instead of svg uncomment following, and comment out <svg> element.
          *
-         * <img src={logo} alt="Mantis" width="100" />
          *
          */
         <>
