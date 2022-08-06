@@ -19,6 +19,7 @@
         "@testing-library/react": "^11.1.0",
         "@testing-library/user-event": "^12.1.10",
         "apexcharts": "^3.27.3",
+        "firebase": "^9.9.2",
         "formik": "^2.2.9",
         "framer-motion": "^4.1.17",
         "history": "^5.0.0",
