@@ -190,7 +190,7 @@ const ComponentTypography = () => (
                     </MainCard>
                     <MainCard title="Link" codeHighlight>
                         <Stack spacing={1.5}>
-                            <Link href="#">www.mantis.com</Link>
+                            <Link href="#">www.document_management_system.com</Link>
                             <Breadcrumbs aria-label="breadcrumb">
                                 <Typography variant="h6">Size: 12px</Typography>
                                 <Typography variant="h6">Weight: Regular</Typography>

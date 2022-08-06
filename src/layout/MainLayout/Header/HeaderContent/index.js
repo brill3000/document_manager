@@ -1,6 +1,6 @@
 // material-ui
-import { Box, IconButton, Link, useMediaQuery } from '@mui/material';
-import { GithubOutlined } from '@ant-design/icons';
+import { Box, IconButton, Link, useMediaQuery, Typography } from '@mui/material';
+import { InfoOutlined } from '@ant-design/icons';
 
 // project import
 import Search from './Search';
@@ -27,7 +27,7 @@ const HeaderContent = () => {
                 title="Download Free Version"
                 sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
             >
-                <GithubOutlined />
+                <InfoOutlined />
             </IconButton>
 
             <Notification />
