@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Box, Chip, Grid, Stack, Typography } from '@mui/material';
+import { Box, Chip, Grid, Stack, Typography, IconButton } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -44,7 +44,9 @@ const CustomCard = ({ color, title, count, percentage, isLoss, icon }) => (
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <OpenInNewIcon color="primary" sx={{ fontSize: '1.1rem', mt: .5 }}/>
+                    <IconButton color="primary" aria-label={`open-${title}`} component="label">
+                        <OpenInNewIcon sx={{ fontSize: '1.1rem'}} />
+                    </IconButton>
                 </Grid>
             </Grid>
         </Box>
