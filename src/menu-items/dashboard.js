@@ -42,7 +42,7 @@ const dashboard = {
             id: 'dashboard',
             title: 'Dashboard',
             type: 'item',
-            url: '/',
+            url: '/dashboard',
             icon: icons.DashboardOutlined,
             breadcrumbs: false,
         },
@@ -50,89 +50,89 @@ const dashboard = {
             id: 'documents',
             title: 'Documents',
             type: 'item',
-            url: '/',
-            icon: icons.FolderOutlined,
+            url: '/documents',
+            icon: icons.HddOutlined,
             breadcrumbs: false,
-            children: [
-                {
-                    id: 'recently-accessed',
-                    title: 'Recently Accessed',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.FileOpenOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'recently-added',
-                    title: 'Recently Added',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.PostAddOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'favorites',
-                    title: 'Favorites',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.StarBorderIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'all-documents',
-                    title: 'All Documents',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.TopicOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'trash',
-                    title: 'Trash',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.FolderDeleteOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'duplicate-documents',
-                    title: 'Duplicate Documents',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.DifferenceOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'new-documents',
-                    title: 'New Documents',
-                    type: 'item',
-                    url: '/',
-                    icon: icons.FiberNewOutlinedIcon,
-                    breadcrumbs: false
-                }
-            ]
+            // children: [
+            //     {
+            //         id: 'recently-accessed',
+            //         title: 'Recently Accessed',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.FileOpenOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'recently-added',
+            //         title: 'Recently Added',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.PostAddOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'favorites',
+            //         title: 'Favorites',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.StarBorderIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'all-documents',
+            //         title: 'All Documents',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.TopicOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'trash',
+            //         title: 'Trash',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.FolderDeleteOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'duplicate-documents',
+            //         title: 'Duplicate Documents',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.DifferenceOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'new-documents',
+            //         title: 'New Documents',
+            //         type: 'item',
+            //         url: '/',
+            //         icon: icons.FiberNewOutlinedIcon,
+            //         breadcrumbs: false
+            //     }
+            // ]
         },
         {
-            id: 'workflows',
-            title: 'Workflows',
+            id: 'departments',
+            title: 'Departments',
             type: 'item',
-            url: '/',
+            url: '/departments',
             icon: icons.ApartmentOutlined,
             breadcrumbs: false
         },
+        // {
+        //     id: 'cabinets',
+        //     title: 'Cabinets',
+        //     type: 'item',
+        //     url: '/',
+        //     icon: icons.HddOutlined,
+        //     breadcrumbs: false
+        // },
         {
-            id: 'cabinets',
-            title: 'Cabinets',
+            id: 'approvals',
+            title: 'Approvals',
             type: 'item',
-            url: '/',
-            icon: icons.HddOutlined,
-            breadcrumbs: false
-        },
-        {
-            id: 'indexes',
-            title: 'Indexes',
-            type: 'item',
-            url: '/',
+            url: '/approvals',
             icon: icons.BarsOutlined,
             breadcrumbs: false
         },
