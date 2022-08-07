@@ -1,5 +1,5 @@
 // material-ui
-import { Box, IconButton, Link, useMediaQuery, Typography } from '@mui/material';
+import { Box, IconButton, Link, useMediaQuery } from '@mui/material';
 import { InfoOutlined } from '@ant-design/icons';
 
 // project import

@@ -19,6 +19,7 @@ const NavItem = ({ item, level, children }) => {
     const { drawerOpen, openItem } = menu;
     const [open, setOpen] = useState(false);
 
+
     const handleClick = () => {
         setOpen(!open);
     };
@@ -146,7 +147,7 @@ const NavItem = ({ item, level, children }) => {
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <List component="div" sx={{ bgcolor: 'primary.100' }} disablePadding>
                         {children.map(child => (
-                            <ListItemButton sx={{ pl: 4, borderRadius: '10px  0 10px `10px' }}>
+                            <ListItemButton sx={{ pl: 4, borderRadius: '10px  0 10px `10px' }} key={child.id}>
                                 {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1.2rem' }} />}</ListItemIcon>}
                                 <ListItemText primary={child.title} sx={{ pl: 1}}/>
                             </ListItemButton>
