@@ -1,10 +1,10 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 
 // material-ui
 import {
     Avatar,
     AvatarGroup,
-    Box,
+    // Box,
     Button,
     Grid,
     List,
@@ -12,34 +12,34 @@ import {
     ListItemButton,
     ListItemSecondaryAction,
     ListItemText,
-    MenuItem,
+    // MenuItem,
     Stack,
-    TextField,
+    // TextField,
     Typography
 } from '@mui/material';
 
 // project import
 import AccesedDocTables from './AccesedDocTables';
-import IncomeAreaChart from './IncomeAreaChart';
-import MonthlyBarChart from './MonthlyBarChart';
-import ReportAreaChart from './ReportAreaChart';
-import SalesColumnChart from './SalesColumnChart';
+// import IncomeAreaChart from './IncomeAreaChart';
+// import MonthlyBarChart from './MonthlyBarChart';
+// import ReportAreaChart from './ReportAreaChart';
+// import SalesColumnChart from './SalesColumnChart';
 import MainCard from 'components/MainCard';
 import CustomCard from 'components/cards/statistics/CustomCard';
 
 // assets
-import { FileAddOutlined, MessageOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+import { FileAddOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
-import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+// import { ShoppingCartOutlined } from '@ant-design/icons';
+// import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
+// import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
+// import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
-import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+// import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
 import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
@@ -61,26 +61,26 @@ const actionSX = {
 };
 
 // sales report status
-const status = [
-    {
-        value: 'today',
-        label: 'Today'
-    },
-    {
-        value: 'month',
-        label: 'This Month'
-    },
-    {
-        value: 'year',
-        label: 'This Year'
-    }
-];
+// const status = [
+//     {
+//         value: 'today',
+//         label: 'Today'
+//     },
+//     {
+//         value: 'month',
+//         label: 'This Month'
+//     },
+//     {
+//         value: 'year',
+//         label: 'This Year'
+//     }
+// ];
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const DashboardDefault = () => {
-    const [value, setValue] = useState('today');
-    const [slot, setSlot] = useState('week');
+    // const [value, setValue] = useState('today');
+    // const [slot, setSlot] = useState('week');
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -88,9 +88,6 @@ const DashboardDefault = () => {
             <Grid item xs={12} sx={{ mb: -2.25 }}>
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
-            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Checked out documents" count="4" percentage={1} extra="0" icon={<ShoppingCartOutlined style={{ fontSize: '2rem' }}/>} />
-            </Grid> */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard
                     title="Total Documents"
@@ -109,18 +106,6 @@ const DashboardDefault = () => {
                     }
                 />
             </Grid>
-            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Documents types" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<DescriptionOutlinedIcon style={{ fontSize: '2rem' }}/>} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="Total Documents in trash" count="1" percentage={1} isLoss color="warning" extra="0" icon={<DeleteSweepOutlinedIcon style={{ fontSize: '2rem' }}/>} />
-            </Grid> */}
-            {/* <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="New Documents this month" count="2" percentage={27.4} isLoss color="warning" extra="0" icon={<NewspaperOutlinedIcon style={{ fontSize: '2rem' }}/>}/>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard title="New Pages this month" count="0" percentage={27.4} isLoss color="warning" extra="0" icon={<AutoStoriesOutlinedIcon style={{ fontSize: '2rem' }}/>} />
-            </Grid> */}
             <Grid item xs={12} sm={6} md={4} lg={3}>
                 <CustomCard
                     title="Total Groups"
