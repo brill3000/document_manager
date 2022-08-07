@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import CustomizedTreeView from 'components/FolderStructure/Treeview';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -31,13 +32,25 @@ const MainRoutes = {
             element: <Color />
         },
         {
+            path: 'documents',
+            element: <CustomizedTreeView />
+        },
+        {
+            path: 'approvals',
+            element: <></>
+        },{
+            path: 'departments',
+            element: <></>
+        },
+        {
             path: 'dashboard',
-            children: [
-                {
-                    path: 'default',
-                    element: <DashboardDefault />
-                }
-            ]
+            element: <DashboardDefault />,
+            // children: [
+            //     {
+            //         path: 'default',
+            //         element: <DashboardDefault />
+            //     }
+            // ]
         },
         {
             path: 'sample-page',
