@@ -21,10 +21,12 @@ import { HiOutlineFolder } from "react-icons/hi";
 import { FcFolder } from "react-icons/fc";
 // import { FcOpenedFolder } from "react-icons/fc";
 import { useDrag } from 'react-dnd'
+import Skeleton from '@mui/material/Skeleton';
 
 
 
-const DragFolder = React.forwardRef(({ children }, ref) => {
+
+const DragFolder = React.forwardRef(({ index, children }, ref) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     // "type" is required. It is used by the "accept" specification of drop targets.
     type: 'Folder',
@@ -36,10 +38,20 @@ const DragFolder = React.forwardRef(({ children }, ref) => {
   }))
   return (
     <Grid ref={drag} sx={{ backgroundColor: 'transparent' }} item xs={6} md={4} lg={2}>
-      <Stack spacing={0} sx={{ backgroundColor: 'transparent' }} direction="column">
-        <FcFolder style={{
-          fontSize: '60px',
-        }} />
+      <Stack spacing={0} sx={{ backgroundColor: 'transparent', maxWidth: 'max-content', maxHeight: 'max-content' }} direction="column">
+        {
+          index > 10 ?
+            <Skeleton>
+              <FcFolder style={{
+                fontSize: '60px',
+              }} />
+            </Skeleton>
+            :
+            <FcFolder style={{
+              fontSize: '60px',
+            }} />
+        }
+
         {children}
       </Stack>
     </Grid>
@@ -220,9 +232,9 @@ export default function CustomTreeView() {
               {
                 [...Array(100)].map((_, i) =>
                 (
-                  <DragFolder key={i}>
-                    <Typography color="textSecondary" sx={{ pl: 1 }} gutterBottom variant="subtitle2">
-                      Folder {i}
+                  <DragFolder index={i} key={i}>
+                    <Typography color="textSecondary" gutterBottom variant="subtitle2">
+                      {i > 10 ? <Skeleton /> : `Folder ${i}`}
                     </Typography>
                   </DragFolder>
                 ))
