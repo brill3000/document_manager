@@ -3,64 +3,34 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
-import MailIcon from '@mui/icons-material/Mail';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import Label from '@mui/icons-material/Label';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+
+import ComponentSkeleton from 'pages/components-overview/ComponentSkeleton';
+import MainCard from '../MainCard';
+
+// hero icons
+import { HiOutlineFolderOpen } from "react-icons/hi";
+import { HiOutlineFolder } from "react-icons/hi";
+
+// mui icons
 import InfoIcon from '@mui/icons-material/Info';
 import ForumIcon from '@mui/icons-material/Forum';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import ComponentSkeleton from 'pages/components-overview/ComponentSkeleton';
-import MainCard from '../MainCard';
-import { HiOutlineFolderOpen } from "react-icons/hi";
-import { HiOutlineFolder } from "react-icons/hi";
-import { FcFolder } from "react-icons/fc";
+import MailIcon from '@mui/icons-material/Mail';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 // import { FcOpenedFolder } from "react-icons/fc";
-import { useDrag } from 'react-dnd'
-import Skeleton from '@mui/material/Skeleton';
 
-
-
-
-const DragFolder = React.forwardRef(({ index, children }, ref) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    // "type" is required. It is used by the "accept" specification of drop targets.
-    type: 'Folder',
-    // The collect function utilizes a "monitor" instance (see the Overview for what this is)
-    // to pull important pieces of state from the DnD system.
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
-  }))
-  return (
-    <Grid ref={drag} sx={{ backgroundColor: 'transparent' }} item xs={6} md={4} lg={2}>
-      <Stack spacing={0} sx={{ backgroundColor: 'transparent', maxWidth: 'max-content', maxHeight: 'max-content' }} direction="column">
-        {
-          index > 10 ?
-            <Skeleton>
-              <FcFolder style={{
-                fontSize: '60px',
-              }} />
-            </Skeleton>
-            :
-            <FcFolder style={{
-              fontSize: '60px',
-            }} />
-        }
-
-        {children}
-      </Stack>
-    </Grid>
-  )
-});
-DragFolder.propTypes = {
-  children: PropTypes.node.isRequired,
-}
-
+// import { FolderViewer } from './FolderViewer';
+import { DragFolder } from './DragFolder';
+import Loadable from 'components/Loadable';
+import { FolderViewerHeader } from './FolderViewerHeader';
+const FolderViewer = Loadable(React.lazy(() => import('./FolderViewer')));
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
@@ -132,22 +102,83 @@ StyledTreeItem.propTypes = {
 };
 
 export default function CustomTreeView() {
+  const [selected, setSelected] = React.useState([{
+    id: '1',
+    name: 'Clerks Office'
+  }])
+  // const [position, setPosition] = React.useState(1)
+  const [newSelected, setNewSelected] = React.useState([])
+  // const seletedItemId = React.useCallback(() => {
+  //   return selected[selected.length - position].id
+  // }, [position, selected])
+  // const seletedItemName = React.useCallback(() => {
+  //   return selected[selected.length - position].name
+  // }, [position, selected])
+  const backwardNavigation = () => {
+    if(selected.length > 1){
+      let selectedCopy = selected
+      setNewSelected([selectedCopy.splice(selected.length - 1, 1)[0], ...newSelected])
+      setSelected(selectedCopy)
+    }
+  }
+  const forwardNavigation = () => {
+    if(newSelected.length > 0){
+      let selectedCopy = newSelected
+      setSelected([...selected, selectedCopy.splice(0, 1)[0],])
+      setNewSelected(selectedCopy)
+    }
+  }
+  
+
   return (
     <ComponentSkeleton>
-      <MainCard title="Folder View">
+      {/* <Typography variant="h5" sx={{pb: 2.5}}>Documents</Typography> */}
+      <MainCard title={<FolderViewerHeader name={selected[selected.length - 1].name} backwardNavigation={backwardNavigation} forwardNavigation={forwardNavigation} selected={selected.length} newSelected={newSelected.length}/>}>
         <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
-          <Grid item xs={3}>
+          <Grid item xs={6} sm={5} md={4} lg={3}
+          >
             <TreeView
               aria-label="Speakers Office"
-              defaultExpanded={['3']}
+              defaultExpanded={['1']}
+              selected={selected[selected.length - 1].id}
               defaultCollapseIcon={<HiOutlineFolderOpen />}
               defaultExpandIcon={< HiOutlineFolder />}
               defaultEndIcon={< HiOutlineFolder />}
-              sx={{ minHeight: 500, flexGrow: 1, maxWidth: 250, overflowY: 'auto' }}
+              sx={{ minHeight: 500, flexGrow: 1, maxWidth: 250, overflowY: 'auto', pt: 1.2 }}
             >
-              <StyledTreeItem nodeId="1" labelText="Clerks Office" color="#e3742f" bgColor="#fcefe3" labelInfo="33 MB" labelIcon={MailIcon} />
-              <StyledTreeItem nodeId="2" labelText="Finance" color="#e3742f" bgColor="#fcefe3" labelInfo="30 MB" labelIcon={DeleteIcon} />
-              <StyledTreeItem nodeId="3" labelText="Procurement" color="#e3742f" bgColor="#fcefe3" labelInfo="3 MB" labelIcon={Label}>
+              <DragFolder>
+                <StyledTreeItem
+                  nodeId="1"
+                  labelText="Clerks Office"
+                  color="#e3742f" bgColor="#fcefe3"
+                  labelInfo="33 MB"
+                  labelIcon={MailIcon}
+                  onClick={() => {
+                    setSelected([...selected, { id: '1', name: 'Clerks Office' }])
+                  }}
+                />
+              </DragFolder>
+              <StyledTreeItem
+                nodeId="2"
+                labelText="Finance"
+                color="#e3742f"
+                bgColor="#fcefe3"
+                labelInfo="30 MB"
+                labelIcon={DeleteIcon}
+                onClick={() => {
+                  setSelected([...selected, { id: '2', name: 'Finance' }])
+                }}
+              />
+              <StyledTreeItem
+                nodeId="3"
+                labelText="Procurement"
+                color="#e3742f"
+                bgColor="#fcefe3"
+                labelInfo="3 MB"
+                labelIcon={Label}
+                onClick={() => {
+                  setSelected([...selected, { id: '3', name: 'Procurement' }])
+                }}>
                 <StyledTreeItem
                   nodeId="4"
                   labelText="Research and Records"
@@ -155,6 +186,9 @@ export default function CustomTreeView() {
                   labelInfo="90 MB"
                   color="#e3742f"
                   bgColor="#fcefe3"
+                  onClick={() => {
+                    setSelected([...selected, { id: '4', name: 'Research and Records' }])
+                  }}
                 />
                 <StyledTreeItem
                   nodeId="5"
@@ -163,6 +197,7 @@ export default function CustomTreeView() {
                   labelInfo="25 MB"
                   color="#e3742f"
                   bgColor="#fcefe3"
+                  onClick={() => setSelected([...selected, { id: '5', name: 'Hansard' }])}
                 />
                 <StyledTreeItem
                   nodeId="6"
@@ -171,6 +206,7 @@ export default function CustomTreeView() {
                   labelInfo="36 MB"
                   color="#e3742f"
                   bgColor="#fcefe3"
+                  onClick={() => setSelected([...selected, { id: '6', name: 'ICT' }])}
                 />
                 <StyledTreeItem
                   nodeId="7"
@@ -179,6 +215,7 @@ export default function CustomTreeView() {
                   labelInfo="73 MB"
                   color="#e3742f"
                   bgColor="#fcefe3"
+                  onClick={() => setSelected([...selected, { id: '7', name: 'Clerks at the table' }])}
                 />
               </StyledTreeItem>
               <StyledTreeItem nodeId="8"
@@ -187,6 +224,7 @@ export default function CustomTreeView() {
                 labelInfo="9 MB"
                 color="#e3742f"
                 bgColor="#fcefe3"
+                onClick={() => setSelected([...selected, { id: '8', name: 'Research and Records' }])}
               />
               <StyledTreeItem
                 nodeId="9"
@@ -195,6 +233,7 @@ export default function CustomTreeView() {
                 labelInfo="2.2 MB"
                 color="#e3742f"
                 bgColor="#fcefe3"
+                onClick={() => setSelected([...selected, { id: '9', name: 'Hansard' }])}
               />
               <StyledTreeItem
                 nodeId="10"
@@ -203,6 +242,7 @@ export default function CustomTreeView() {
                 labelInfo="3.5 MB"
                 color="#e3742f"
                 bgColor="#fcefe3"
+                onClick={() => setSelected([...selected, { id: '10', name: 'ICT' }])}
               />
               <StyledTreeItem
                 nodeId="11"
@@ -211,38 +251,32 @@ export default function CustomTreeView() {
                 labelInfo="33 MB"
                 color="#e3742f"
                 bgColor="#fcefe3"
+                onClick={() => setSelected([...selected, { id: '11', name: 'Clerks at the table' }])}
               />
-              <StyledTreeItem nodeId="12" labelText="Sergent at Arms" color="#e3742f" bgColor="#fcefe3" labelInfo="0 MB" labelIcon={Label} />
-              <StyledTreeItem nodeId="13" labelText="Reception" color="#e3742f" bgColor="#fcefe3" labelInfo="0.4 MB" labelIcon={Label} />
+              <StyledTreeItem
+                nodeId="12"
+                labelText="Sergent at Arms"
+                color="#e3742f" bgColor="#fcefe3"
+                labelInfo="0 MB"
+                labelIcon={Label}
+                onClick={() => {
+                  setSelected([...selected, { id: '12', name: 'Sergent at Arms' }])
+                }} />
+              <StyledTreeItem
+                nodeId="13"
+                labelText="Reception"
+                color="#e3742f"
+                bgColor="#fcefe3"
+                labelInfo="0.4 MB"
+                labelIcon={Label} onClick={() => {
+                  setSelected([...selected, { id: '13', name: 'Reception' }])
+                }} />
             </TreeView>
           </Grid>
-          <Grid item xs={9}
-          >
-            <Grid
-              container
-              spacing={1}
-              sx={{
-                padding: 1,
-                maxHeight: 500,
-                overflowY: 'auto',
-                background: '#fafafb',
-                borderRadius: 2,
-              }}
-            >
-              {
-                [...Array(100)].map((_, i) =>
-                (
-                  <DragFolder index={i} key={i}>
-                    <Typography color="textSecondary" gutterBottom variant="subtitle2">
-                      {i > 10 ? <Skeleton /> : `Folder ${i}`}
-                    </Typography>
-                  </DragFolder>
-                ))
-              }
-            </Grid>
-          </Grid>
+          <FolderViewer />
         </Grid>
       </MainCard>
-    </ComponentSkeleton>
+    </ComponentSkeleton >
   );
 }
+
