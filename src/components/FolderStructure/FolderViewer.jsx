@@ -8,7 +8,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { DragFolder } from "./DragFolder";
 import { Menu, MenuItem, Stack } from '../../../node_modules/@mui/material/index';
 import { styled, alpha } from '@mui/material/styles';
-import { HiOutlineDocumentAdd, HiOutlineDocumentDownload, HiOutlineTrash, HiOutlineDocumentDuplicate, HiOutlinePencilAlt, HiOutlinePencil, HiOutlineBookOpen } from "react-icons/hi";
+import { HiOutlineTrash, HiOutlineDocumentDuplicate, HiOutlinePencilAlt, HiOutlinePencil, HiOutlineBookOpen } from "react-icons/hi";
 import Divider from '@mui/material/Divider';
 
 const StyledMenu = styled((props) => (

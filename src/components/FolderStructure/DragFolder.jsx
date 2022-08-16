@@ -7,7 +7,7 @@ import { useDrag } from 'react-dnd';
 
 
 export const DragFolder = React.forwardRef(({ children, ...props }, ref) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [, drag] = useDrag(() => ({
     // "type" is required. It is used by the "accept" specification of drop targets.
     type: 'Folder',
     // The collect function utilizes a "monitor" instance (see the Overview for what this is)
