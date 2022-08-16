@@ -5,10 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, Collapse, List } from '@mui/material';
+import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, Collapse, List, IconButton } from '@mui/material';
 
 // project import
 import { activeItem } from 'store/reducers/menu';
+import { ArrowDropDown, ArrowDropUp } from '../../../../../../node_modules/@mui/icons-material/index';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
@@ -18,10 +19,10 @@ const NavItem = ({ item, level, children }) => {
     const menu = useSelector((state) => state.menu);
     const { drawerOpen, openItem } = menu;
     const [open, setOpen] = useState(false);
-
+    const [isDisabled, setIsDisabled] = useState(false);
 
     const handleClick = () => {
-        setOpen(!open);
+        if (!isDisabled) setOpen(true);
     };
 
     let itemTarget = '_self';
@@ -33,16 +34,20 @@ const NavItem = ({ item, level, children }) => {
     if (item?.external) {
         listItemProps = { component: 'a', href: item.url, target: itemTarget };
     }
+    let listChildreItemProps = (child) => ({ component: forwardRef((props, ref) => <Link ref={ref} {...props} to={child.url} target={itemTarget} />) });
+
 
     const itemHandler = (id) => {
         handleClick();
-        dispatch(activeItem({ openItem: [id] }));
+        const menuChildren = item.children ? item.children.map((child) => child.id) : [];
+        const isSelected = openItem.some((id) => menuChildren?.includes(id));
+        if (!isSelected) dispatch(activeItem({ openItem: [id] }));
     };
 
     const Icon = item.icon;
     const itemIcon = item.icon ? <Icon style={{ fontSize: drawerOpen ? '1rem' : '1.25rem' }} /> : false;
-
-    const isSelected = openItem.findIndex((id) => id === item.id) > -1;
+    const menuChildren = item.children ? item.children.map((child) => child.id) : [];
+    const isSelected = openItem.findIndex((id) => id === item.id || menuChildren?.includes(id)) > -1;
 
     // active menu item on page load
     useEffect(() => {
@@ -142,19 +147,61 @@ const NavItem = ({ item, level, children }) => {
                         avatar={item.chip.avatar && <Avatar>{item.chip.avatar}</Avatar>}
                     />
                 )}
+                {children &&
+                    (open ? (
+                        <IconButton
+                            size="small"
+                            sx={{ color: 'warning' }}
+                            variant="outlined"
+                            onMouseOver={() => setIsDisabled(true)}
+                            onMouseOut={() => setIsDisabled(false)}
+                            onClick={() => setOpen(false)}
+                        >
+                            <ArrowDropUp color="primary" />
+                        </IconButton>
+                    ) : (
+                        <IconButton size="small" 
+                        sx={{ color: 'warning' }}
+                        variant="outlined" 
+                        onClick={() => setOpen(true)}
+                        onMouseOver={() => setIsDisabled(false)}
+                        >
+                            <ArrowDropDown color="primary" />
+                        </IconButton>
+                    ))}
             </ListItemButton>
-            { children &&
+            {children && (
                 <Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" sx={{ bgcolor: 'primary.100' }} disablePadding>
-                        {children.map(child => (
-                            <ListItemButton sx={{ pl: 4, borderRadius: '10px  0 10px `10px' }} key={child.id}>
-                                {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1.2rem' }} />}</ListItemIcon>}
-                                <ListItemText primary={child.title} sx={{ pl: 1}}/>
+                    <List component="div" sx={{ bgcolor: '#eeeeef' }} disablePadding>
+                        {children.map((child) => (
+                            <ListItemButton
+                                key={child.id}
+                                {...listChildreItemProps(child)}
+                                onClick={() => dispatch(activeItem({ openItem: [child.id] }))}
+                                selected={child.id === openItem[0]}
+                                sx={{
+                                    pl: 4,
+                                    ...(drawerOpen && {
+                                        '&:hover': {
+                                            bgcolor: '#8c8c8c6b'
+                                        },
+                                        '&.Mui-selected': {
+                                            bgcolor: '#8c8c8c6b',
+                                            '&:hover': {
+                                                // color: iconSelectedColor,
+                                                bgcolor: '#8c8c8c6b'
+                                            }
+                                        }
+                                    })
+                                }}
+                            >
+                                {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1.1rem' }} />}</ListItemIcon>}
+                                <ListItemText primary={child.title} sx={{ pl: 1 }} primaryTypographyProps={{ fontSize: '.8rem' }} />
                             </ListItemButton>
                         ))}
                     </List>
                 </Collapse>
-            }
+            )}
         </>
     );
 };
