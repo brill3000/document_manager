@@ -3,7 +3,6 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
-import CustomizedTreeView from 'components/FolderStructure/Treeview';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -16,6 +15,7 @@ const Typography = Loadable(lazy(() => import('pages/components-overview/Typogra
 const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
+const CustomizedTreeView = Loadable(lazy(() => import('components/FolderStructure/Treeview')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -38,13 +38,56 @@ const MainRoutes = {
         {
             path: 'approvals',
             element: <></>
-        },{
+        },
+        {
             path: 'departments',
+            element: <></>,
+            children: [
+                {
+                    path: 'clerksoffice',
+                    element: <></>
+                },
+                {
+                    path: 'finance',
+                    element: <></>
+                },
+                {
+                    path: 'supplychain',
+                    element: <></>
+                },
+                {
+                    path: 'research_and_records',
+                    element: <></>
+                },
+                {
+                    path: 'hansard',
+                    element: <></>
+                },
+                {
+                    path: 'ict',
+                    element: <></>
+                },
+                {
+                    path: 'clerks_at_the_table',
+                    element: <></>
+                },
+                {
+                    path: 'sergent_at_arms',
+                    element: <></>
+                },
+                {
+                    path: 'reception',
+                    element: <></>
+                }
+            ]
+        },
+        {
+            path: 'indexes',
             element: <></>
         },
         {
             path: 'dashboard',
-            element: <DashboardDefault />,
+            element: <DashboardDefault />
             // children: [
             //     {
             //         path: 'default',
