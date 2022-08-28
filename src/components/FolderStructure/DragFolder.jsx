@@ -12,6 +12,7 @@ export const DragFolder = React.forwardRef(({ children, ...props }, ref) => {
     type: 'Folder',
     // The collect function utilizes a "monitor" instance (see the Overview for what this is)
     // to pull important pieces of state from the DnD system.
+    canDrag: props.canDrag,
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     })

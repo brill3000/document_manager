@@ -100,7 +100,7 @@ MainCard.propTypes = {
     secondary: PropTypes.node,
     shadow: PropTypes.string,
     sx: PropTypes.object,
-    title: PropTypes.string,
+    title: PropTypes.node,
     codeHighlight: PropTypes.bool,
     content: PropTypes.bool,
     children: PropTypes.node

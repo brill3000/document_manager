@@ -23,7 +23,9 @@ import SettingsPhoneOutlinedIcon from '@mui/icons-material/SettingsPhoneOutlined
 import BiotechOutlinedIcon from '@mui/icons-material/BiotechOutlined';
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import MiscellaneousServicesOutlinedIcon from '@mui/icons-material/MiscellaneousServicesOutlined';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';// icons
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+// icons
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 const icons = {
     DashboardOutlined,
     ApartmentOutlined,
@@ -49,7 +51,8 @@ const icons = {
     BiotechOutlinedIcon,
     ConnectWithoutContactOutlinedIcon,
     MiscellaneousServicesOutlinedIcon,
-    LocalShippingOutlinedIcon
+    LocalShippingOutlinedIcon,
+    CampaignOutlinedIcon
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -74,64 +77,48 @@ const dashboard = {
             url: '/documents',
             icon: icons.HddOutlined,
             breadcrumbs: false,
-            // children: [
-            //     {
-            //         id: 'recently-accessed',
-            //         title: 'Recently Accessed',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.FileOpenOutlinedIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'recently-added',
-            //         title: 'Recently Added',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.PostAddOutlinedIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'favorites',
-            //         title: 'Favorites',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.StarBorderIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'all-documents',
-            //         title: 'All Documents',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.TopicOutlinedIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'trash',
-            //         title: 'Trash',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.FolderDeleteOutlinedIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'duplicate-documents',
-            //         title: 'Duplicate Documents',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.DifferenceOutlinedIcon,
-            //         breadcrumbs: false
-            //     },
-            //     {
-            //         id: 'new-documents',
-            //         title: 'New Documents',
-            //         type: 'item',
-            //         url: '/',
-            //         icon: icons.FiberNewOutlinedIcon,
-            //         breadcrumbs: false
-            //     }
-            // ]
+            children: [
+                {
+                    id: 'my-documents',
+                    title: 'My Documents',
+                    type: 'item',
+                    url: 'documents/my-documents',
+                    icon: icons.FileOpenOutlinedIcon,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'incoming-documents',
+                    title: 'Incoming Documents',
+                    type: 'item',
+                    url: '/documents/incoming-documents',
+                    icon: icons.PostAddOutlinedIcon,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'outbound-documents',
+                    title: 'Outbound Documents',
+                    type: 'item',
+                    url: '/documents/outbound-documents',
+                    icon: icons.StarBorderIcon,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'documents-for-my-approval',
+                    title: 'Documents for my approval',
+                    type: 'item',
+                    url: '/documents/document-for-my-approval',
+                    icon: icons.TopicOutlinedIcon,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'trash',
+                    title: 'Trash',
+                    type: 'item',
+                    url: '/documents/trash',
+                    icon: icons.FolderDeleteOutlinedIcon,
+                    breadcrumbs: false
+                },
+            ]
         },
         {
             id: 'departments',
@@ -141,6 +128,14 @@ const dashboard = {
             icon: icons.ApartmentOutlined,
             breadcrumbs: false,
             children: [
+                {
+                    id: 'speakersOffice',
+                    title: 'Speakers Office',
+                    type: 'item',
+                    url: '/departments/speakersOffice',
+                    icon: icons.CampaignOutlinedIcon,
+                    breadcrumbs: false
+                },
                 {
                     id: 'clerksoffice',
                     title: 'Clerks Office',
@@ -215,20 +210,28 @@ const dashboard = {
                 }
             ]
         },
-        // {
-        //     id: 'cabinets',
-        //     title: 'Cabinets',
-        //     type: 'item',
-        //     url: '/',
-        //     icon: icons.HddOutlined,
-        //     breadcrumbs: false
-        // },
+        {
+            id: 'cabinets',
+            title: 'Cabinets',
+            type: 'item',
+            url: '/cabinets',
+            icon: icons.HddOutlined,
+            breadcrumbs: false
+        },
         {
             id: 'approvals',
-            title: 'Approvals',
+            title: 'Roles and Approvals',
             type: 'item',
             url: '/approvals',
             icon: icons.RiseOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'workflows',
+            title: 'Workflows',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.FiberNewOutlinedIcon,
             breadcrumbs: false
         },
         {

@@ -16,6 +16,8 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const CustomizedTreeView = Loadable(lazy(() => import('components/FolderStructure/Treeview')));
+const Customers = Loadable(lazy(() => import('components/departments/customers')));
+
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -33,7 +35,29 @@ const MainRoutes = {
         },
         {
             path: 'documents',
-            element: <CustomizedTreeView />
+            element: <CustomizedTreeView />,
+            children: [
+                {
+                    path: 'my-documents',
+                    element: <CustomizedTreeView />,
+                },
+                {
+                    path: 'outbound-documents',
+                    element: <CustomizedTreeView />,
+                },
+                {
+                    path: 'incoming-documents',
+                    element: <CustomizedTreeView />,
+                },
+                {
+                    path: 'document-for-my-approval',
+                    element: <CustomizedTreeView />,
+                },
+                {
+                    path: 'trash',
+                    element: <CustomizedTreeView />,
+                }
+            ]
         },
         {
             path: 'approvals',
@@ -41,48 +65,64 @@ const MainRoutes = {
         },
         {
             path: 'departments',
-            element: <></>,
+            element: <Customers currentDepartment="All Members"/>,
             children: [
                 {
+                    path: 'speakersOffice',
+                    element: <Customers currentDepartment="Speakers Office"/>,
+                },
+                {
                     path: 'clerksoffice',
-                    element: <></>
+                    element: <Customers currentDepartment="Clerks Office"/>,
                 },
                 {
                     path: 'finance',
-                    element: <></>
+                    element: <Customers currentDepartment="Finance"/>,
                 },
                 {
                     path: 'supplychain',
-                    element: <></>
+                    element: <Customers currentDepartment="Supply Chain"/>,
                 },
                 {
                     path: 'research_and_records',
-                    element: <></>
+                    element: <Customers currentDepartment="Research and Records"/>,
                 },
                 {
                     path: 'hansard',
-                    element: <></>
+                    element: <Customers currentDepartment="Hansard"/>,
                 },
                 {
                     path: 'ict',
-                    element: <></>
+                    element: <Customers currentDepartment="ICT"/>,
                 },
                 {
                     path: 'clerks_at_the_table',
-                    element: <></>
+                    element: <Customers currentDepartment="Clerks at the table"/>,
                 },
                 {
                     path: 'sergent_at_arms',
-                    element: <></>
+                    element: <Customers currentDepartment="Sergent at arms"/>,
                 },
                 {
                     path: 'reception',
-                    element: <></>
+                    element: <Customers currentDepartment="Reception"/>,
                 }
             ]
         },
         {
             path: 'indexes',
+            element: <></>
+        },
+        {
+            path: 'approvals',
+            element: <></>
+        }
+        ,{
+            path: 'workflows',
+            element: <></>
+        },
+        {
+            path: 'cabinets',
             element: <></>
         },
         {

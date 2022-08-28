@@ -1,10 +1,10 @@
-// import { useState } from 'react';
+import * as React from 'react';
 
 // material-ui
 import {
     Avatar,
     AvatarGroup,
-    // Box,
+    Box,
     Button,
     Grid,
     List,
@@ -20,8 +20,8 @@ import {
 
 // project import
 import AccesedDocTables from './AccesedDocTables';
-// import IncomeAreaChart from './IncomeAreaChart';
-// import MonthlyBarChart from './MonthlyBarChart';
+import IncomeAreaChart from './IncomeAreaChart';
+import MonthlyBarChart from './MonthlyBarChart';
 // import ReportAreaChart from './ReportAreaChart';
 // import SalesColumnChart from './SalesColumnChart';
 import MainCard from 'components/MainCard';
@@ -43,6 +43,7 @@ import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
 import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
+import EarningCard from './EarningCard';
 // avatar style
 const avatarSX = {
     width: 36,
@@ -80,7 +81,12 @@ const actionSX = {
 
 const DashboardDefault = () => {
     // const [value, setValue] = useState('today');
-    // const [slot, setSlot] = useState('week');
+    const [slot, setSlot] = React.useState('week');
+    const [isLoading, setIsLoading] = React.useState(true)
+
+    React.useEffect(() => {
+        setIsLoading(false)
+    }, [])
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -89,7 +95,7 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard
+                {/* <CustomCard
                     title="Total Documents"
                     count="10"
                     percentage={1}
@@ -104,10 +110,16 @@ const DashboardDefault = () => {
                             <SourceOutlinedIcon style={{ fontSize: '1.8rem' }} />
                         </Avatar>
                     }
+                /> */}
+                <EarningCard
+                    isLoading={isLoading}
+                    title="Total Documents"
+                    count="10"
+                    color={'primary'}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard
+                {/* <CustomCard
                     title="Total Groups"
                     count="3"
                     percentage={27.4}
@@ -123,10 +135,17 @@ const DashboardDefault = () => {
                             <GroupsOutlinedIcon style={{ fontSize: '1.8rem' }} />
                         </Avatar>
                     }
+                /> */}
+                <EarningCard
+                    isLoading={isLoading}
+                    title="Total Groups"
+                    count="3"
+                    color={'success'}
                 />
+
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard
+                {/* <CustomCard
                     title="Total roles"
                     count="3"
                     percentage={27.4}
@@ -142,10 +161,16 @@ const DashboardDefault = () => {
                             <ReduceCapacityOutlinedIcon style={{ fontSize: '1.8rem' }} />
                         </Avatar>
                     }
+                /> */}
+                <EarningCard
+                    isLoading={isLoading}
+                    title="Total roles"
+                    count="3"
+                    color={'info'}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <CustomCard
+                {/* <CustomCard
                     title="Total users"
                     count="6"
                     percentage={27.4}
@@ -161,13 +186,21 @@ const DashboardDefault = () => {
                             <SwitchAccountOutlinedIcon style={{ fontSize: '1.8rem' }} />
                         </Avatar>
                     }
+                /> */}
+                <EarningCard
+                    isLoading={isLoading}
+                    title="Total users"
+                    count="6"
+                    color={'warning'}
                 />
+
             </Grid>
+
 
             <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
             {/* row 2 */}
-            {/* <Grid item xs={12} md={7} lg={8}>
+            <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Checked Out Documents</Typography>
@@ -217,7 +250,7 @@ const DashboardDefault = () => {
                     </Box>
                     <MonthlyBarChart />
                 </MainCard>
-            </Grid> */}
+            </Grid>
 
             {/* row 3 */}
             <Grid item xs={12} md={7} lg={8}>

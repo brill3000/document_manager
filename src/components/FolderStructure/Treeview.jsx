@@ -6,23 +6,19 @@ import Grid from '@mui/material/Grid';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
-
-import Label from '@mui/icons-material/Label';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import IconButton from '@mui/material/IconButton';
 
 import ComponentSkeleton from 'pages/components-overview/ComponentSkeleton';
 import MainCard from '../MainCard';
 
 // hero icons
-import { HiOutlineFolderOpen } from "react-icons/hi";
+import { HiOutlineFolderOpen, HiOutlinePencil, HiOutlineTrash, HiEyeOff } from "react-icons/hi";
 import { HiOutlineFolder } from "react-icons/hi";
+import { HiOutlineDocumentAdd } from "react-icons/hi";
 
 // mui icons
-import InfoIcon from '@mui/icons-material/Info';
-import ForumIcon from '@mui/icons-material/Forum';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import MailIcon from '@mui/icons-material/Mail';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 
 // import { FcOpenedFolder } from "react-icons/fc";
 
@@ -30,7 +26,23 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DragFolder } from './DragFolder';
 import Loadable from 'components/Loadable';
 import { FolderViewerHeader } from './FolderViewerHeader';
+// import { useMediaQuery } from '../../../node_modules/@mui/material/index';
+
+// folder fetch hook
+import { useAddFolderMutation, useDeleteFolderMutation, useGetFoldersByParentIdQuery } from 'store/async/query';
+import { ButtonBase, CircularProgress, ClickAwayListener, MenuItem, Stack, TextField, useMediaQuery } from '../../../node_modules/@mui/material/index';
+import { useDispatch } from 'react-redux';
+import { setCurrentFolder } from 'store/reducers/documents';
+import { Error } from 'ui-component/FolderLoader';
+import { useSnackbar } from 'notistack';
+import { isErrorWithMessage, isFetchBaseQueryError } from 'store/async/helpers';
+import { useSelector } from 'react-redux';
+import { StyledMenu } from './FolderViewer';
+
+
 const FolderViewer = Loadable(React.lazy(() => import('./FolderViewer')));
+
+
 
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   color: theme.palette.text.secondary,
@@ -65,7 +77,6 @@ function StyledTreeItem(props) {
   const {
     bgColor,
     color,
-    labelIcon: LabelIcon,
     labelInfo,
     labelText,
     ...other
@@ -75,7 +86,6 @@ function StyledTreeItem(props) {
     <StyledTreeItemRoot
       label={
         <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0 }}>
-          {/* <Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} /> */}
           <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
             {labelText}
           </Typography>
@@ -96,184 +106,308 @@ function StyledTreeItem(props) {
 StyledTreeItem.propTypes = {
   bgColor: PropTypes.string,
   color: PropTypes.string,
-  labelIcon: PropTypes.elementType.isRequired,
   labelInfo: PropTypes.string,
   labelText: PropTypes.string.isRequired,
 };
 
 export default function CustomTreeView() {
-  const [selected, setSelected] = React.useState([{
-    id: '1',
-    name: 'Clerks Office'
-  }])
-  // const [position, setPosition] = React.useState(1)
-  const [newSelected, setNewSelected] = React.useState([])
-  // const seletedItemId = React.useCallback(() => {
-  //   return selected[selected.length - position].id
-  // }, [position, selected])
-  // const seletedItemName = React.useCallback(() => {
-  //   return selected[selected.length - position].name
-  // }, [position, selected])
-  const backwardNavigation = () => {
-    if(selected.length > 1){
-      let selectedCopy = selected
-      setNewSelected([selectedCopy.splice(selected.length - 1, 1)[0], ...newSelected])
-      setSelected(selectedCopy)
+  const [selected, setSelected] = React.useState(null)
+  const [history, setHistory] = React.useState(null)
+  const [folders, setFolders] = React.useState([])
+  const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const { enqueueSnackbar } = useSnackbar();
+  const [addFolder, response] = useAddFolderMutation()
+  const [value, setValue] = React.useState('');
+  const [contextMenu, setContextMenu] = React.useState(null);
+
+
+
+  const [showForm, setShowForm] = React.useState(false);
+
+  const dispatch = useDispatch()
+
+  const addHistory = current => {
+    setHistory([...history, current])
+  }
+  const { data, isLoading, isSuccess, isError } = useGetFoldersByParentIdQuery(null)
+  const [deleteFolder, deleteResponse] = useDeleteFolderMutation()
+
+
+  const handleClick = (e, selectedDoc) => {
+    e.stopPropagation();
+    // In that case, event.ctrlKey does the trick.
+    if(e.nativeEvent.button === 0) return
+    if (e.nativeEvent.button === 2 || e.ctrKey) {
+      e.preventDefault()
+      setSelected([...selected, selectedDoc])
+      // if (!clicked.includes(i)) setClicked([...clicked, i])
+      setContextMenu(
+        contextMenu === null
+          ? {
+            mouseX: e.clientX + 2,
+            mouseY: e.clientY - 6,
+          }
+          : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null,
+      );
+    }
+
+
+  }
+
+  const createNewFolder = async () => {
+    // setTimeout(() => {
+
+    try {
+      await addFolder({
+        created_by: 'Brilliant',
+        folder_name: value,
+        no_of_files: 0,
+        isFolder: true,
+        parent: null,
+        size: 0,
+      }).unwrap();
+      if (response) {
+        setValue('')
+        setShowForm(false)
+
+        setTimeout(() => {
+          const message = `New Folder Created Successfully`
+          enqueueSnackbar(message, { variant: 'success' })
+        }, 400)
+      }
+    } catch (err) {
+      if (isFetchBaseQueryError(err)) {
+        if ("message" in err.data) {
+          const message = `New Folder Creation Failed`
+          enqueueSnackbar(message, { variant: 'error' })
+        }
+      } else if (isErrorWithMessage(err)) {
+        const message = `New Folder Creation Failed`
+        enqueueSnackbar(message, { variant: 'error' })
+      }
     }
   }
-  const forwardNavigation = () => {
-    if(newSelected.length > 0){
-      let selectedCopy = newSelected
-      setSelected([...selected, selectedCopy.splice(0, 1)[0],])
-      setNewSelected(selectedCopy)
-    }
+
+  const handleMenuClick = async (e, type) => {
+    e.stopPropagation();
+
+    let selectedDoc = data.find(folder => folder.id === selected[selected.length - 1].id)
+    console.log(selectedDoc, "TEST")
+       if (type === 'delete') {
+        try {
+          await deleteFolder(selectedDoc.id).unwrap();
+          if (deleteResponse) {
+            const message = `Folder Deleted`
+            enqueueSnackbar(message, { variant: 'warning' })
+          }
+        } catch (err) {
+          if (isFetchBaseQueryError(err)) {
+            if ("message" in err.data) {
+              const message = `Folder Delete Failed`
+              enqueueSnackbar(message, { variant: 'error' })
+            }
+          } else if (isErrorWithMessage(err)) {
+            const message = `Folder Delted Failed`
+            enqueueSnackbar(message, { variant: 'error' })
+          }
+        }
+      }
+      // else if (type === 'rename') {
+      //   setIsRenaming({ status: true, target: selectedDoc.id })
+      // }
+
+      setContextMenu(null);
   }
-  
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+  React.useEffect(() => {
+    if (isSuccess && data && Array.isArray(data) && data.length > 0) {
+      setSelected([{ id: data[0].id, name: data[0]['folder_name'] }])
+    }
+  }, [isSuccess, data])
+
+  React.useEffect(() => {
+    if (Array.isArray(selected) && selected.length > 0) {
+      dispatch(setCurrentFolder({ currentFolder: selected[selected.length - 1].id }))
+      setHistory([{ id: selected[selected.length - 1].id, label: selected[selected.length - 1].name }])
+    }
+  }, [selected])
 
   return (
     <ComponentSkeleton>
-      {/* <Typography variant="h5" sx={{pb: 2.5}}>Documents</Typography> */}
-      <MainCard title={<FolderViewerHeader name={selected[selected.length - 1].name} backwardNavigation={backwardNavigation} forwardNavigation={forwardNavigation} selected={selected.length} newSelected={newSelected.length}/>}>
+
+      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} folders={folders} history={history} setHistory={setHistory} setFolders={setFolders} />}>
         <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
-          <Grid item xs={6} sm={5} md={4} lg={3}
+          <Grid
+            item xs={7}
+            sm={5} md={4}
+            lg={3}
+            alignItems="center"
+            justifyContent="center"
           >
-            <TreeView
-              aria-label="Speakers Office"
-              defaultExpanded={['1']}
-              selected={selected[selected.length - 1].id}
-              defaultCollapseIcon={<HiOutlineFolderOpen />}
-              defaultExpandIcon={< HiOutlineFolder />}
-              defaultEndIcon={< HiOutlineFolder />}
-              sx={{ minHeight: 500, flexGrow: 1, maxWidth: 250, overflowY: 'auto', pt: 1.2 }}
-            >
-              <DragFolder>
-                <StyledTreeItem
-                  nodeId="1"
-                  labelText="Clerks Office"
-                  color="#e3742f" bgColor="#fcefe3"
-                  labelInfo="33 MB"
-                  labelIcon={MailIcon}
-                  onClick={() => {
-                    setSelected([...selected, { id: '1', name: 'Clerks Office' }])
-                  }}
-                />
-              </DragFolder>
-              <StyledTreeItem
-                nodeId="2"
-                labelText="Finance"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                labelInfo="30 MB"
-                labelIcon={DeleteIcon}
-                onClick={() => {
-                  setSelected([...selected, { id: '2', name: 'Finance' }])
-                }}
-              />
-              <StyledTreeItem
-                nodeId="3"
-                labelText="Procurement"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                labelInfo="3 MB"
-                labelIcon={Label}
-                onClick={() => {
-                  setSelected([...selected, { id: '3', name: 'Procurement' }])
-                }}>
-                <StyledTreeItem
-                  nodeId="4"
-                  labelText="Research and Records"
-                  labelIcon={SupervisorAccountIcon}
-                  labelInfo="90 MB"
-                  color="#e3742f"
-                  bgColor="#fcefe3"
-                  onClick={() => {
-                    setSelected([...selected, { id: '4', name: 'Research and Records' }])
-                  }}
-                />
-                <StyledTreeItem
-                  nodeId="5"
-                  labelText="Hansard"
-                  labelIcon={InfoIcon}
-                  labelInfo="25 MB"
-                  color="#e3742f"
-                  bgColor="#fcefe3"
-                  onClick={() => setSelected([...selected, { id: '5', name: 'Hansard' }])}
-                />
-                <StyledTreeItem
-                  nodeId="6"
-                  labelText="ICT"
-                  labelIcon={ForumIcon}
-                  labelInfo="36 MB"
-                  color="#e3742f"
-                  bgColor="#fcefe3"
-                  onClick={() => setSelected([...selected, { id: '6', name: 'ICT' }])}
-                />
-                <StyledTreeItem
-                  nodeId="7"
-                  labelText="Clerks at the table"
-                  labelIcon={LocalOfferIcon}
-                  labelInfo="73 MB"
-                  color="#e3742f"
-                  bgColor="#fcefe3"
-                  onClick={() => setSelected([...selected, { id: '7', name: 'Clerks at the table' }])}
-                />
-              </StyledTreeItem>
-              <StyledTreeItem nodeId="8"
-                labelText="Research and Records"
-                labelIcon={SupervisorAccountIcon}
-                labelInfo="9 MB"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                onClick={() => setSelected([...selected, { id: '8', name: 'Research and Records' }])}
-              />
-              <StyledTreeItem
-                nodeId="9"
-                labelText="Hansard"
-                labelIcon={InfoIcon}
-                labelInfo="2.2 MB"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                onClick={() => setSelected([...selected, { id: '9', name: 'Hansard' }])}
-              />
-              <StyledTreeItem
-                nodeId="10"
-                labelText="ICT"
-                labelIcon={ForumIcon}
-                labelInfo="3.5 MB"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                onClick={() => setSelected([...selected, { id: '10', name: 'ICT' }])}
-              />
-              <StyledTreeItem
-                nodeId="11"
-                labelText="Clerks at the table"
-                labelIcon={LocalOfferIcon}
-                labelInfo="33 MB"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                onClick={() => setSelected([...selected, { id: '11', name: 'Clerks at the table' }])}
-              />
-              <StyledTreeItem
-                nodeId="12"
-                labelText="Sergent at Arms"
-                color="#e3742f" bgColor="#fcefe3"
-                labelInfo="0 MB"
-                labelIcon={Label}
-                onClick={() => {
-                  setSelected([...selected, { id: '12', name: 'Sergent at Arms' }])
-                }} />
-              <StyledTreeItem
-                nodeId="13"
-                labelText="Reception"
-                color="#e3742f"
-                bgColor="#fcefe3"
-                labelInfo="0.4 MB"
-                labelIcon={Label} onClick={() => {
-                  setSelected([...selected, { id: '13', name: 'Reception' }])
-                }} />
-            </TreeView>
+            {isError ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="100%"
+                minWidth="100%"
+              >
+                <Stack direction="column">
+                  <Error height={50} width={50} />
+                  <Typography variant='subtitle2'>Opps... A Error has occured</Typography>
+                </Stack>
+
+              </Box>
+            ) : isLoading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="100%"
+                minWidth="100%"
+              >
+                <CircularProgress color='primary' />
+
+              </Box>
+            ) :
+              data && (
+                <>
+                  {
+                    showForm ?
+                      <Stack direction="row">
+                        <ClickAwayListener onClickAway={() => setShowForm(false)}>
+                          <TextField
+                            id="new_folder"
+                            size="small"
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                value.length > 0 && createNewFolder()
+                              }
+                            }}
+                            sx={{ '& .MuiInputBase-input': { fontSize: '0.85rem' } }}
+                            placeholder="Type in folder name..."
+                            variant="standard"
+                            autoFocus
+                          />
+                        </ClickAwayListener>
+                        <IconButton
+                          aria-label="add_folder"
+                          color="primary"
+                          disabled={value.length < 1}
+                          onClick={() => createNewFolder()}
+                        >
+                          <AddCircleOutlineIcon />
+                        </IconButton>
+                      </Stack>
+                      :
+                      <ButtonBase variant="outlined" sx={{
+                        p: .5,
+                        borderRadius: 1,
+                        "&:hover": {
+                          backgroundColor: 'primary.100'
+                        },
+                      }} onClick={() => setShowForm(true)}>
+                        <Stack direction="row">
+                          <Box sx={{ p: .3 }}>
+                            <HiOutlineDocumentAdd style={{ fontSize: '16px' }} />
+                          </Box>
+                          {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">New Base Folder</Typography>}
+                        </Stack>
+                      </ButtonBase>
+                  }
+                  <TreeView
+                    aria-label="Folder Sidebar"
+                    selected={selected ? selected[selected.length - 1].id : '1'}
+                    defaultCollapseIcon={<HiOutlineFolderOpen />}
+                    defaultExpandIcon={< HiOutlineFolder />}
+                    defaultEndIcon={< HiOutlineFolder />}
+                    sx={{ minHeight: 500, flexGrow: 1, maxWidth: '90%', overflowY: 'auto', pt: 1.2 }}
+                  >
+                    {data.map(folder => (
+                      <Box
+                        onContextMenu={(e) => handleClick(e,  { id: folder.id, name: folder.folder_name })}
+                      >
+                        <DragFolder>
+                          <StyledTreeItem
+                            nodeId={folder.id}
+                            key={folder.id}
+                            labelText={folder.folder_name}
+                            color="#e3742f"
+                            bgColor="#fcefe3"
+                            labelInfo={`${folder.no_of_files} MB`}
+                            onClick={() => {
+                              setSelected([...selected, { id: folder.id, name: folder.folder_name }])
+                            }}
+                          />
+                        </DragFolder>
+                      </Box>
+                    )
+                    )}
+                  </TreeView>
+                  <StyledMenu
+                              id="demo-customized-menu"
+                              MenuListProps={{
+                                'aria-labelledby': 'demo-customized-button',
+                              }}
+                              open={contextMenu !== null}
+                              onClose={handleClose}
+                              anchorReference="anchorPosition"
+                              anchorPosition={
+                                contextMenu !== null
+                                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                                  : undefined
+                              }
+                            >
+                              
+                              <MenuItem
+                                onClick={(e) => {
+                                  handleMenuClick(e, 'rename')
+                                }}
+                              >
+                                <Stack direction="row">
+                                  <Box sx={{ p: .3 }}>
+                                    <HiOutlinePencil style={{ fontSize: '17px' }} />
+                                  </Box>
+                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Rename</Typography>
+                                </Stack>
+                              </MenuItem>
+                              <MenuItem
+                                onClick={(e) => {
+                                  handleMenuClick(e, 'edit')
+                                }}
+                              >
+                                <Stack direction="row">
+                                  <Box sx={{ p: .3 }}>
+                                    <HiEyeOff style={{ fontSize: '17px' }} />
+                                  </Box>
+                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Edit Access</Typography>
+                                </Stack>
+                              </MenuItem>
+                              <MenuItem
+                                onClick={(e) => {
+                                  handleMenuClick(e, 'delete')
+                                }}
+                              >
+                                <Stack direction="row">
+                                  <Box sx={{ p: .3 }}>
+                                    <HiOutlineTrash style={{ fontSize: '17px', color: 'red' }} />
+                                  </Box>
+                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1, color: 'red' }} color="secondary.600">Delete</Typography>
+                                </Stack>
+                              </MenuItem>
+                            </StyledMenu>
+                </>
+              )
+            }
           </Grid>
-          <FolderViewer />
+          <FolderViewer folders={folders} setFolders={setFolders} addHistory={addHistory} />
         </Grid>
       </MainCard>
     </ComponentSkeleton >

@@ -196,7 +196,7 @@ export default function AccesedDocTables() {
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
-                                    key={row.trackingNo}
+                                    key={index}
                                     selected={isItemSelected}
                                 >
                                     {/* <TableCell component="th" id={labelId} scope="row" align="left">

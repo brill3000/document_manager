@@ -1,17 +1,35 @@
-// third-party
-import { configureStore } from '@reduxjs/toolkit';
+// // third-party
+// import { configureStore } from '@reduxjs/toolkit';
 
-// project import
+// // project import
+// import reducers from './reducers';
+// import logger from 'redux-logger';
+
+// // ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
+
+// const store = configureStore({
+//     reducer: reducers,
+//     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
+// });
+
+// const { dispatch } = store;
+
+// export { store, dispatch };
+
+import { configureStore } from "@reduxjs/toolkit"
+import { setupListeners } from '@reduxjs/toolkit/query'
+import { documentsApi } from './async/query';
+import logger from "redux-logger"
 import reducers from './reducers';
-import logger from 'redux-logger';
 
-// ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
 
-const store = configureStore({
+export const store = configureStore({
     reducer: reducers,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
-});
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware()
+        .concat(logger)
+        .concat(documentsApi.middleware)
+})
 
-const { dispatch } = store;
 
-export { store, dispatch };
+
+setupListeners(store.dispatch)

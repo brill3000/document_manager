@@ -9,6 +9,10 @@ import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, C
 
 // project import
 import { activeItem } from 'store/reducers/menu';
+import { setCurrentDepartment } from 'store/reducers/departments';
+import { setUsers } from 'store/reducers/departments';
+import { customers } from 'components/departments/__mocks__/customers copy';
+
 import { ArrowDropDown, ArrowDropUp } from '../../../../../../node_modules/@mui/icons-material/index';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
@@ -37,11 +41,15 @@ const NavItem = ({ item, level, children }) => {
     let listChildreItemProps = (child) => ({ component: forwardRef((props, ref) => <Link ref={ref} {...props} to={child.url} target={itemTarget} />) });
 
 
-    const itemHandler = (id) => {
+    const itemHandler = (id, parent) => {
         handleClick();
         const menuChildren = item.children ? item.children.map((child) => child.id) : [];
         const isSelected = openItem.some((id) => menuChildren?.includes(id));
         if (!isSelected) dispatch(activeItem({ openItem: [id] }));
+        if(parent.toLowerCase() === 'departments') {
+            dispatch(setCurrentDepartment({ currentDepartment: 'All Departments' }));
+            dispatch(setUsers({ users: customers }));
+        }
     };
 
     const Icon = item.icon;
@@ -69,7 +77,7 @@ const NavItem = ({ item, level, children }) => {
             <ListItemButton
                 {...listItemProps}
                 disabled={item.disabled}
-                onClick={() => itemHandler(item.id)}
+                onClick={() => itemHandler(item.id, item.title)}
                 selected={isSelected}
                 sx={{
                     zIndex: 1201,
@@ -177,7 +185,11 @@ const NavItem = ({ item, level, children }) => {
                             <ListItemButton
                                 key={child.id}
                                 {...listChildreItemProps(child)}
-                                onClick={() => dispatch(activeItem({ openItem: [child.id] }))}
+                                onClick={() => {
+                                    dispatch(activeItem({ openItem: [child.id] }));
+                                    dispatch(setCurrentDepartment({ currentDepartment: child.title }));
+                                    dispatch(setUsers({ users: customers }));
+                                }}
                                 selected={child.id === openItem[0]}
                                 sx={{
                                     pl: 4,
