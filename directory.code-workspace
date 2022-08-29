@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../clone/react_redux_toolkit/06_lesson"
 		}
 	]
 }

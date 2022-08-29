@@ -16,7 +16,7 @@ class Folder {
     constructor(created_by, date_created, date_modified, folder_name, isFolder, no_of_files, parent, size) {
         this.created_by = created_by;
         this.date_created = new Date(date_created.seconds).toDateString()
-        this.date_modified = new Date(date_created.seconds).toDateString()
+        this.date_modified = new Date(date_modified.seconds).toDateString()
         this.folder_name = folder_name;
         this.isFolder = isFolder;
         this.no_of_files = no_of_files;
@@ -24,7 +24,7 @@ class Folder {
         this.size = size;
     }
     toString() {
-        return this.created_by + ', ' + this.date_created + ', ' + this.date_modified, + ', ' + this.folder_name + ', ' + this.isFolder + ', ' + this.no_of_files + ', ' + this.parent + ', ' + this.size;
+        return this.created_by + ', ' + this.date_created + ', ' + this.date_modified + ', ' + this.folder_name + ', ' + this.isFolder + ', ' + this.no_of_files + ', ' + this.parent + ', ' + this.size;
     }
 }
 
@@ -37,7 +37,7 @@ const folderConverter = {
             date_created: Timestamp.fromDate(new Date()),
             date_modified: Timestamp.fromDate(new Date()),
             folder_name: folder.folder_name,
-            isFolder: folder.isFolder,
+            isFolder: true,
             no_of_files: folder.no_of_files,
             parent: folder.parent,
             size: folder.size,
@@ -50,39 +50,11 @@ const folderConverter = {
 };
 
 
-export const documentsApi = createApi({
-    reducerPath: 'documents_fetch',
+export const foldersQuery = createApi({
+    reducerPath: 'folders_query',
     baseQuery: fakeBaseQuery(),
-    tagTypes: ['documents'],
+    tagTypes: ['folders'],
     endpoints: (builder) => ({
-        getFiles: builder.query({
-            async queryFn(parentId) {
-                try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-                    let folders = [];
-                    // const q = query(collection(db, "folders"), where("parent", "==", parentId), orderBy("folder_name"), endAt(50));
-                    const q = query(collection(db, "files"), where("parent", "==", parentId));
-
-                    const querySnapshot = await getDocs(q);
-                    querySnapshot?.forEach((data) => {
-                        let folderData = { ...data.data() };
-                        let folderDataOmited = omit(folderData, ['date_created', 'date_modified'])
-                        const folder = {
-                            id: data.id,
-                            date_created: new Date(data.data().date_created.seconds).toDateString(),
-                            date_modified: new Date(data.data().date_modified.seconds).toDateString(),
-                            ...folderDataOmited
-                        }
-
-                        folders.push(folder)
-                    })
-                    return { data: folders }
-
-                } catch (e) {
-                    return { error: e.message }
-                }
-            },
-        }),
         getFoldersByParentId: builder.query({
             async queryFn(parentId) {
                 try {
@@ -110,84 +82,115 @@ export const documentsApi = createApi({
                     return { error: e.message }
                 }
             },
-            providesTags: ['documents']
+            providesTags: ['folders']
         }),
         addFolder: builder.mutation({
             async queryFn(folder) {
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
 
-                    let isCreatedfolder = null
                     const q = collection(db, "folders");
-                    addDoc(q, folderConverter.toFirestore(folder))
-                        .then(docRef => {
-                            isCreatedfolder = docRef.id
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        })
-                    return { data: isCreatedfolder }
+                    const { id } = await addDoc(q, folderConverter.toFirestore(folder))
+
+                    return { data: { id } }
 
                 } catch (e) {
-                    return { error: e }
+                    return { error: e.message }
                 }
 
             },
-            invalidatesTags: ['documents']
+            invalidatesTags: ['folders']
         }),
         deleteFolder: builder.mutation({
             async queryFn(folderId) {
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
 
-                    let isCreatedfolder = null
                     const docRef = doc(db, "folders", folderId);
-                    deleteDoc(docRef)
-                        .then(deletedRef => {
-                            isCreatedfolder = deletedRef.id
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        })
-                    return { data: isCreatedfolder }
+                    const reference = await deleteDoc(docRef)
+
+                    return { data: reference }
 
                 } catch (e) {
                     return { error: e }
                 }
 
             },
-            invalidatesTags: ['documents']
+            invalidatesTags: ['folders']
+        }),
+        trashFolder: builder.mutation({
+            async queryFn(folder) {
+                try {
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+
+                    const data = {
+                        trashed: true
+                    };
+
+                    const docRef = doc(db, "folders", folder.id);
+                    const response = await updateDoc(docRef, data)
+
+                    return { data: response }
+
+                } catch (e) {
+                    return { error: e.message }
+                }
+
+            },
+            invalidatesTags: ['folders']
+        }),
+        restoreFolder: builder.mutation({
+            async queryFn(folder) {
+                try {
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+
+                    const data = {
+                        trashed: false
+                    };
+
+                    const docRef = doc(db, "folders", folder.id);
+                    const response = await updateDoc(docRef, data)
+
+                    return { data: response }
+
+                } catch (e) {
+                    return { error: e.message }
+                }
+
+            },
+            invalidatesTags: ['folders']
         }),
         renameFolder: builder.mutation({
             async queryFn(folder) {
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
 
-                    let isCreatedfolder = null
                     const data = {
                         folder_name: folder.folder_name
                     };
-                    console.log(data, "FOLDER NAME")
 
                     const docRef = doc(db, "folders", folder.id);
-                    updateDoc(docRef, data)
-                        .then(deletedRef => {
-                            isCreatedfolder = deletedRef.id
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        })
-                    return { data: isCreatedfolder }
+                    const response = await updateDoc(docRef, data)
+
+                    return { data: response }
 
                 } catch (e) {
-                    return { error: e }
+                    return { error: e.message }
                 }
 
             },
-            invalidatesTags: ['documents']
+            invalidatesTags: ['folders']
         })
 
     })
 })
-export const document_fetch = documentsApi.reducer
-export const { useGetFoldersByParentIdQuery, useGetFilesQuery, useAddFolderMutation, useDeleteFolderMutation, useRenameFolderMutation } = documentsApi
+export const folders_query = foldersQuery.reducer
+export const {
+    useGetFoldersByParentIdQuery,
+    useGetFilesQuery,
+    useAddFolderMutation,
+    useDeleteFolderMutation,
+    useRenameFolderMutation,
+    useTrashFolderMutation,
+    useRestoreFolderMutation,
+} = foldersQuery

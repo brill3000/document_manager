@@ -2,14 +2,9 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { FcFolder } from "react-icons/fc";
-import { FcDocument } from "react-icons/fc";
 // import Skeleton from '@mui/material/Skeleton';
-import { DragFolder } from "./DragFolder";
-import { ButtonBase, Menu, MenuItem, Stack, useMediaQuery, Badge } from '@mui/material';
+import { ButtonBase, Menu, Stack, useMediaQuery, Badge } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import { HiOutlineTrash, HiOutlineDocumentDuplicate, HiEyeOff, HiOutlinePencil, HiOutlineBookOpen } from "react-icons/hi";
-import Divider from '@mui/material/Divider';
 import { setOpenFileView } from 'store/reducers/documents';
 import { setCurrentFolder } from 'store/reducers/documents';
 import { setModalType } from 'store/reducers/documents';
@@ -19,10 +14,12 @@ import { useSelector } from 'react-redux';
 import EditDocuments from './EditDocument';
 import { useSnackbar } from 'notistack';
 import { FolderLoader, FolderEmpty, Error } from 'ui-component/FolderLoader';
-import { useDeleteFolderMutation, useGetFoldersByParentIdQuery, useRenameFolderMutation } from 'store/async/query';
-import { useEffect } from 'react';
+import { useDeleteFolderMutation, useGetFoldersByParentIdQuery, useRenameFolderMutation } from 'store/async/folderQuery';
 import { isErrorWithMessage, isFetchBaseQueryError } from 'store/async/helpers';
-import { CircularProgress, TextField } from '../../../node_modules/@mui/material/index';
+import { useGetFilesByParentIdQuery, useRenameFilesMutation } from 'store/async/filesQuery';
+import { DisplayDocument } from './DisplayDocument';
+import { ActionMenu } from './ActionMenus/ActionMenuMain';
+import { Button } from '../../../node_modules/@mui/material/index';
 
 
 
@@ -87,7 +84,7 @@ export const StyledMenu = styled((props) => (
 }));
 
 
-export default function FolderViewer({ folders, setFolders, addHistory }) {
+export default function FolderViewer({ documents, setDocuments, addHistory, uploadedFiles }) {
   const [selected, setSelected] = React.useState([]);
   const [contextMenu, setContextMenu] = React.useState(null);
   const [isFolder, setIsFolder] = React.useState(false);
@@ -98,10 +95,24 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
   const openFolder = useSelector(state => state.documents.currentFolder)
   const modalType = useSelector(state => state.documents.modalType)
 
-  // Firebase Queries
-  const { data, isLoading, isSuccess, isError } = useGetFoldersByParentIdQuery(openFolder)
+  // Firebase Folder Queries
+  const fetched_folders = useGetFoldersByParentIdQuery(openFolder).data
+  const foldersIsLoading = useGetFoldersByParentIdQuery(openFolder).isLoading
+  const foldersIsFetching = useGetFoldersByParentIdQuery(openFolder).isFetching
+  const foldersIsSuccess = useGetFoldersByParentIdQuery(openFolder).isSuccess
+  const foldersIsError = useGetFoldersByParentIdQuery(openFolder).isError
+
+  // Firebase File Queries
+  const fetched_files = useGetFilesByParentIdQuery(openFolder).data
+  const filesIsLoading = useGetFilesByParentIdQuery(openFolder).isLoading
+  const filesIsFetching = useGetFilesByParentIdQuery(openFolder).isFetching
+  const filesIsSuccess = useGetFilesByParentIdQuery(openFolder).isSuccess
+  const filesIsError = useGetFilesByParentIdQuery(openFolder).isError
+
+
   const [deleteFolder, deleteResponse] = useDeleteFolderMutation()
   const [renameFolder, renameResponse] = useRenameFolderMutation()
+  const [renameFile, renameFileResponse] = useRenameFilesMutation()
 
 
 
@@ -117,13 +128,27 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
   const matchUpLG = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
 
-  useEffect(() => {
-    if (isSuccess && data && Array.isArray(data) && data.length > 0) {
-      setFolders([...data])
-    } else {
-      setFolders([])
+  React.useEffect(() => {
+    let documents = []
+    if (foldersIsSuccess && fetched_folders && Array.isArray(fetched_folders) && fetched_folders.length > 0) {
+      documents = [...documents, ...fetched_folders]
     }
-  }, [isSuccess, data])
+    if (filesIsSuccess && fetched_files && Array.isArray(fetched_files) && fetched_files.length > 0) {
+      documents = [...documents, ...fetched_files]
+    }
+    if (documents.length > 0) {
+      documents = documents.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.id === value.id
+        ))
+      )
+      setDocuments(documents)
+    } else {
+      setDocuments([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foldersIsSuccess, fetched_folders, fetched_files, filesIsSuccess])
+
 
   const renameFolderHandler = async (folderId) => {
     try {
@@ -150,7 +175,31 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
     }
 
   }
+  const renameFileHandler = async (fileId) => {
+    try {
+      await renameFile({ id: fileId, file_name: renameValue }).unwrap();
+      if (renameFileResponse) {
+        setTimeout(() => {
+          setIsRenameLoading(false)
+          renameValue.length > 0 && setIsRenaming({ status: false, target: null })
+          const message = `File Renamed`
+          enqueueSnackbar(message, { variant: 'success' })
+        }, 400)
 
+      }
+    } catch (err) {
+      if (isFetchBaseQueryError(err)) {
+        if ("message" in err.data) {
+          const message = `File Rename Failed`
+          enqueueSnackbar(message, { variant: 'error' })
+        }
+      } else if (isErrorWithMessage(err)) {
+        const message = `File Rename Failed`
+        enqueueSnackbar(message, { variant: 'error' })
+      }
+    }
+
+  }
 
 
   const handleClick = (e, folder) => {
@@ -195,7 +244,7 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
     e.stopPropagation();
     dispatch(setModalType({ modalType: type }))
 
-    let selectedDoc = folders.find(folder => folder.id === selected[selected.length - 1])
+    let selectedDoc = documents.find(folder => folder.id === selected[selected.length - 1])
     if (selectedDoc.isFolder) {
       if (type === 'view') {
         setTimeout(() => {
@@ -231,23 +280,51 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
     } else {
       if (type === 'delete') {
         setTimeout(() => {
-          setFolders([...folders.filter(x => x.id !== selected[selected.length - 1])])
+          setDocuments([...documents.filter(x => x.id !== selected[selected.length - 1])])
         }, 200)
         setTimeout(() => {
           const message = `File Send to Trash`
           enqueueSnackbar(message, { variant: 'warning' })
         }, 400)
-      } else {
-        setContent(
-          <object type="application/pdf"
-            data="http://www.africau.edu/images/default/sample.pdf"
-            width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
-            height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
-          >
-            <a href="http://www.africau.edu/images/default/sample.pdf">download pdf</a>
-          </object>
-        )
-        dispatch(setOpenFileView({ openFileView: true }))
+      }
+      else if (type === 'rename') {
+        setIsRenaming({ status: true, target: selectedDoc.id })
+      }
+      else {
+        if (selectedDoc.file_ref && selectedDoc.file_type) {
+          if (
+            !(selectedDoc.file_type.includes('doc')
+              || selectedDoc.file_type.includes('docx')
+              || selectedDoc.file_type.includes('application/msword')
+              || selectedDoc.file_type.includes('application/msword')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+              || selectedDoc.file_type.includes('application/vnd.ms-powerpoint')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+            )
+          ) {
+
+            setContent(
+              <object type={selectedDoc.file_type}
+                data={selectedDoc.file_ref}
+                width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
+                height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
+              >
+                {matchDownSM ? <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>View Link</a></Button> : <a href={selectedDoc.file_ref}>Download File</a>}
+              </object>
+            )
+            dispatch(setOpenFileView({ openFileView: true }))
+          } else {
+            setContent(
+              <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>download pdf</a></Button>
+            )
+            const message = `You cannot currently view this file type, Download the file to view`
+            enqueueSnackbar(message, { variant: 'warning' })
+          }
+        } else {
+          const message = `You cannot currently view this file`
+          enqueueSnackbar(message, { variant: 'error' })
+        }
       }
       setContextMenu(null);
     }
@@ -256,7 +333,7 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
     e.stopPropagation();
     if (isRenaming.status && isRenaming.target !== folder.id) setIsRenaming({ status: false, target: null })
     if (isRenaming.status) return;
-    let selectedDoc = folders.find(folder => folder.id === selected[selected.length - 1])
+    let selectedDoc = documents.find(folder => folder.id === selected[selected.length - 1])
     if (selectedDoc.isFolder) {
       if (folder.parent === openFolder) {
         addHistory({
@@ -293,26 +370,30 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
 
   return (
     <>
-      <Grid item xs={5} sm={7} md={8} lg={9} xl={10}>
+      <Grid
+        item xs={5} sm={7} md={8} lg={9} xl={10}
+        sx={{
+          padding: 1,
+          height: 500,
+          overflowY: 'auto',
+          background: '#fafafb',
+          borderRadius: 2,
+        }}
+      >
         <Grid
           container
-          spacing={1}
           sx={{
-            padding: 1,
-            height: 500,
+            height: 'min-content',
             overflowY: 'auto',
-            background: '#fafafb',
-            borderRadius: 2,
           }}
         >
-
           {
-            isError ?
+            foldersIsError || filesIsError ?
               <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                minHeight="100%"
+                minHeight={450}
                 minWidth="100%"
               >
                 <Stack direction="column">
@@ -321,7 +402,7 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
                 </Stack>
               </Box>
               :
-              isLoading ?
+              foldersIsLoading || filesIsLoading || foldersIsFetching || filesIsFetching ?
                 <Box
                   display="flex"
                   justifyContent="center"
@@ -331,16 +412,16 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
                 >
                   <FolderLoader height={300} width={300} />
                 </Box> :
-                folders && Array.isArray(folders) ?
-                  folders.length > 0 ?
-                    folders.map((folder) => (
-                      folder.parent === openFolder &&
-                      <Grid item xs={12} sm={6} md={3} lg={2} xl={1} key={folder.id} sx={{ backgroundColor: 'transparent' }} >
-                        <Badge color="primary" overlap="circular" badgeContent={folder.noOfChildren}>
+                documents && Array.isArray(documents) ?
+                  documents.length > 0 ?
+                    [...documents, ...uploadedFiles].map((document) => (
+                      document.parent === openFolder &&
+                      <Grid item xs={12} sm={6} md={3} lg={2} xl={1} key={document.id} sx={{ backgroundColor: 'transparent' }} >
+                        <Badge color="primary" overlap="circular" badgeContent={document.noOfChildren}>
                           <ButtonBase
                             spacing={0}
                             sx={{
-                              backgroundColor: isRenaming.status && isRenaming.target === folder.id ? 'transparent' : selected.length < 2 && selected[0] === folder.id ? 'primary.100' : selected.includes(folder.id) ? 'primary.100' : 'transparent',
+                              backgroundColor: isRenaming.status && isRenaming.target === document.id ? 'transparent' : selected.length < 2 && selected[0] === document.id ? 'primary.100' : selected.includes(document.id) ? 'primary.100' : 'transparent',
                               maxWidth: 'max-content',
                               maxHeight: 'max-content',
                               borderRadius: 2,
@@ -348,158 +429,25 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
                               pr: .7,
                               cursor: 'pointer'
                             }}
-                            onClick={(e) => handleClick(e, folder)}
-                            onContextMenu={(e) => handleClick(e, folder)}
-                            onDoubleClick={(e) => handleDoubleClick(e, folder)}
+                            onClick={(e) => handleClick(e, document)}
+                            onContextMenu={(e) => handleClick(e, document)}
+                            onDoubleClick={(e) => handleDoubleClick(e, document)}
                             // onTouchStart = {e => start(e)}
                             // onTouchEnd = {e => clear(e, true, folder)}
-                            disableRipple={isRenaming.status && isRenaming.target === folder.id}
+                            disableRipple={isRenaming.status && isRenaming.target === document.id}
                           >
-                            <DragFolder style={{ maxWidth: 80 }} draggable={!isRenaming.status}>
-                              {
-                                folder.isFolder
-                                  ?
-                                  <FcFolder
-                                    style={{
-                                      fontSize: '60px',
-                                    }}
-                                  />
-                                  :
-                                  <FcDocument
-                                    style={{
-                                      fontSize: '50px',
-                                      color: 'blue',
-                                      marginTop: '5px',
-                                      marginBottom: '5px',
-                                    }}
-                                  />
-
-                              }
-                              {
-                                isRenaming.status && selected.length > 0 && selected[selected.length - 1] === folder.id ?
-                                  isRenameLoading ? 
-                                  <CircularProgress color="primary"/>
-                                  :
-                                  <TextField
-                                    id="new_folder"
-                                    size="small"
-                                    onChange={(e) => setRenameValue(e.target.value)}
-                                    onKeyPress={(e) => {
-                                      if (e.key === 'Escape') {
-                                        setIsRenaming({ status: false, target: null })
-                                      }
-                                      if (e.key === "Enter") {
-                                        setIsRenameLoading(true)
-                                        renameFolderHandler(folder.id)
-                                      }
-                                    }}
-                                    defaultValue={folder.folder_name}
-                                    multiline
-                                    sx={{ '& .MuiInputBase-input': { fontSize: '0.75rem' } }}
-                                    variant="outlined"
-                                    inputProps={{ autoFocus: true }}
-                                    onFocus={event => {
-                                      event.target.select();
-                                    }}
-                                  />
-                                  :
-                                  <Typography
-                                    color="textSecondary"
-                                    gutterBottom
-                                    variant="subtitle2"
-                                  >
-                                    <span style={{
-                                      paddingLeft: '6px',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      display: '-webkit-box',
-                                      WebkitLineClamp: '3',
-                                      WebkitBoxOrient: 'vertical',
-                                      lineHeight: 1.2
-                                    }}>
-                                      {folder.folder_name}
-                                    </span>
-                                  </Typography>
-
-                              }
-                            </DragFolder>
-                            <StyledMenu
-                              id="demo-customized-menu"
-                              MenuListProps={{
-                                'aria-labelledby': 'demo-customized-button',
-                              }}
-                              open={contextMenu !== null}
-                              onClose={handleClose}
-                              anchorReference="anchorPosition"
-                              anchorPosition={
-                                contextMenu !== null
-                                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                                  : undefined
-                              }
-                            >
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'view')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlineBookOpen style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">{isFolder ? 'Open' : 'View'}</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <MenuItem onClick={
-                                (e) => {
-                                  handleMenuClick(e, 'copy')
-                                }
-                              }
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlineDocumentDuplicate style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Copy</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <Divider sx={{ my: 0.5 }} />
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'rename')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlinePencil style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Rename</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'edit')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiEyeOff style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Edit Access</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'delete')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlineTrash style={{ fontSize: '17px', color: 'red' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1, color: 'red' }} color="secondary.600">Delete</Typography>
-                                </Stack>
-                              </MenuItem>
-                            </StyledMenu>
+                            <DisplayDocument
+                              isRenaming={isRenaming}
+                              document={document}
+                              selected={selected}
+                              isRenameLoading={isRenameLoading}
+                              setRenameValue={setRenameValue}
+                              setIsRenaming={setIsRenaming}
+                              setIsRenameLoading={setIsRenameLoading}
+                              renameFolderHandler={renameFolderHandler}
+                              renameFileHandler={renameFileHandler}
+                            />
+                            <ActionMenu contextMenu={contextMenu} handleClose={handleClose} handleMenuClick={handleMenuClick} isFolder={isFolder} />
                           </ButtonBase>
                         </Badge>
                       </Grid>
@@ -513,7 +461,7 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
                       minHeight="100%"
                       minWidth="100%"
                     >
-                      <Stack direction="column" spacing={1} justifyContent="center" alignItems="center">
+                      <Stack direction="column" spacing={1} justifyContent="center" alignItems="center" minHeight={450} minWidth="100%">
                         <FolderEmpty height={150} width={150} />
                         <Typography variant="h5">Folder Is Empty</Typography>
                       </Stack>
@@ -528,3 +476,5 @@ export default function FolderViewer({ folders, setFolders, addHistory }) {
     </>
   )
 }
+
+

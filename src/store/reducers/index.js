@@ -5,13 +5,15 @@ import { combineReducers } from 'redux';
 import menu from './menu';
 import departments from './departments';
 import documents from './documents';
-import { document_fetch } from '../async/query';
+import { folders_query } from '../async/folderQuery';
+import { files_query} from '../async/filesQuery';
+
 
 
 
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
-const reducers = combineReducers({ menu, departments, documents, documents_fetch: document_fetch });
+const reducers = combineReducers({ menu, departments, documents, folders_query: folders_query, files_query: files_query });
 
 export default reducers;

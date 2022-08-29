@@ -25,18 +25,18 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 // import { FolderViewer } from './FolderViewer';
 import { DragFolder } from './DragFolder';
 import Loadable from 'components/Loadable';
-import { FolderViewerHeader } from './FolderViewerHeader';
+import { FolderViewerHeader } from './TopNavigation/FolderViewerHeader';
 // import { useMediaQuery } from '../../../node_modules/@mui/material/index';
 
 // folder fetch hook
-import { useAddFolderMutation, useDeleteFolderMutation, useGetFoldersByParentIdQuery } from 'store/async/query';
+import { useAddFolderMutation, useDeleteFolderMutation, useGetFoldersByParentIdQuery } from 'store/async/folderQuery';
 import { ButtonBase, CircularProgress, ClickAwayListener, MenuItem, Stack, TextField, useMediaQuery } from '../../../node_modules/@mui/material/index';
 import { useDispatch } from 'react-redux';
-import { setCurrentFolder } from 'store/reducers/documents';
+import documents, { setCurrentFolder } from 'store/reducers/documents';
 import { Error } from 'ui-component/FolderLoader';
 import { useSnackbar } from 'notistack';
 import { isErrorWithMessage, isFetchBaseQueryError } from 'store/async/helpers';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { StyledMenu } from './FolderViewer';
 
 
@@ -113,13 +113,14 @@ StyledTreeItem.propTypes = {
 export default function CustomTreeView() {
   const [selected, setSelected] = React.useState(null)
   const [history, setHistory] = React.useState(null)
-  const [folders, setFolders] = React.useState([])
+  const [documents, setDocuments] = React.useState([])
   const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const { enqueueSnackbar } = useSnackbar();
   const [addFolder, response] = useAddFolderMutation()
   const [value, setValue] = React.useState('');
   const [contextMenu, setContextMenu] = React.useState(null);
-
+  const [uploadedFiles, setUploadedFiles] = React.useState([])
+  
 
 
   const [showForm, setShowForm] = React.useState(false);
@@ -136,7 +137,7 @@ export default function CustomTreeView() {
   const handleClick = (e, selectedDoc) => {
     e.stopPropagation();
     // In that case, event.ctrlKey does the trick.
-    if(e.nativeEvent.button === 0) return
+    if (e.nativeEvent.button === 0) return
     if (e.nativeEvent.button === 2 || e.ctrKey) {
       e.preventDefault()
       setSelected([...selected, selectedDoc])
@@ -196,30 +197,30 @@ export default function CustomTreeView() {
 
     let selectedDoc = data.find(folder => folder.id === selected[selected.length - 1].id)
     console.log(selectedDoc, "TEST")
-       if (type === 'delete') {
-        try {
-          await deleteFolder(selectedDoc.id).unwrap();
-          if (deleteResponse) {
-            const message = `Folder Deleted`
-            enqueueSnackbar(message, { variant: 'warning' })
-          }
-        } catch (err) {
-          if (isFetchBaseQueryError(err)) {
-            if ("message" in err.data) {
-              const message = `Folder Delete Failed`
-              enqueueSnackbar(message, { variant: 'error' })
-            }
-          } else if (isErrorWithMessage(err)) {
-            const message = `Folder Delted Failed`
+    if (type === 'delete') {
+      try {
+        await deleteFolder(selectedDoc.id).unwrap();
+        if (deleteResponse) {
+          const message = `Folder Deleted`
+          enqueueSnackbar(message, { variant: 'warning' })
+        }
+      } catch (err) {
+        if (isFetchBaseQueryError(err)) {
+          if ("message" in err.data) {
+            const message = `Folder Delete Failed`
             enqueueSnackbar(message, { variant: 'error' })
           }
+        } else if (isErrorWithMessage(err)) {
+          const message = `Folder Delted Failed`
+          enqueueSnackbar(message, { variant: 'error' })
         }
       }
-      // else if (type === 'rename') {
-      //   setIsRenaming({ status: true, target: selectedDoc.id })
-      // }
+    }
+    // else if (type === 'rename') {
+    //   setIsRenaming({ status: true, target: selectedDoc.id })
+    // }
 
-      setContextMenu(null);
+    setContextMenu(null);
   }
   const handleClose = () => {
     setContextMenu(null);
@@ -235,12 +236,13 @@ export default function CustomTreeView() {
       dispatch(setCurrentFolder({ currentFolder: selected[selected.length - 1].id }))
       setHistory([{ id: selected[selected.length - 1].id, label: selected[selected.length - 1].name }])
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected])
 
   return (
     <ComponentSkeleton>
 
-      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} folders={folders} history={history} setHistory={setHistory} setFolders={setFolders} />}>
+      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} uploadedFiles={uploadedFiles} history={history} setHistory={setHistory} setUploadedFiles={setUploadedFiles} />}>
         <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
           <Grid
             item xs={7}
@@ -332,7 +334,7 @@ export default function CustomTreeView() {
                   >
                     {data.map(folder => (
                       <Box
-                        onContextMenu={(e) => handleClick(e,  { id: folder.id, name: folder.folder_name })}
+                        onContextMenu={(e) => handleClick(e, { id: folder.id, name: folder.folder_name })}
                       >
                         <DragFolder>
                           <StyledTreeItem
@@ -352,62 +354,62 @@ export default function CustomTreeView() {
                     )}
                   </TreeView>
                   <StyledMenu
-                              id="demo-customized-menu"
-                              MenuListProps={{
-                                'aria-labelledby': 'demo-customized-button',
-                              }}
-                              open={contextMenu !== null}
-                              onClose={handleClose}
-                              anchorReference="anchorPosition"
-                              anchorPosition={
-                                contextMenu !== null
-                                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                                  : undefined
-                              }
-                            >
-                              
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'rename')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlinePencil style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Rename</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'edit')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiEyeOff style={{ fontSize: '17px' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Edit Access</Typography>
-                                </Stack>
-                              </MenuItem>
-                              <MenuItem
-                                onClick={(e) => {
-                                  handleMenuClick(e, 'delete')
-                                }}
-                              >
-                                <Stack direction="row">
-                                  <Box sx={{ p: .3 }}>
-                                    <HiOutlineTrash style={{ fontSize: '17px', color: 'red' }} />
-                                  </Box>
-                                  <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1, color: 'red' }} color="secondary.600">Delete</Typography>
-                                </Stack>
-                              </MenuItem>
-                            </StyledMenu>
+                    id="demo-customized-menu"
+                    MenuListProps={{
+                      'aria-labelledby': 'demo-customized-button',
+                    }}
+                    open={contextMenu !== null}
+                    onClose={handleClose}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                      contextMenu !== null
+                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        : undefined
+                    }
+                  >
+
+                    <MenuItem
+                      onClick={(e) => {
+                        handleMenuClick(e, 'rename')
+                      }}
+                    >
+                      <Stack direction="row">
+                        <Box sx={{ p: .3 }}>
+                          <HiOutlinePencil style={{ fontSize: '17px' }} />
+                        </Box>
+                        <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Rename</Typography>
+                      </Stack>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        handleMenuClick(e, 'edit')
+                      }}
+                    >
+                      <Stack direction="row">
+                        <Box sx={{ p: .3 }}>
+                          <HiEyeOff style={{ fontSize: '17px' }} />
+                        </Box>
+                        <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Edit Access</Typography>
+                      </Stack>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        handleMenuClick(e, 'delete')
+                      }}
+                    >
+                      <Stack direction="row">
+                        <Box sx={{ p: .3 }}>
+                          <HiOutlineTrash style={{ fontSize: '17px', color: 'red' }} />
+                        </Box>
+                        <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1, color: 'red' }} color="secondary.600">Delete</Typography>
+                      </Stack>
+                    </MenuItem>
+                  </StyledMenu>
                 </>
               )
             }
           </Grid>
-          <FolderViewer folders={folders} setFolders={setFolders} addHistory={addHistory} />
+          <FolderViewer documents={documents} setDocuments={setDocuments} addHistory={addHistory} setUploadedFiles={setUploadedFiles} uploadedFiles={uploadedFiles}/>
         </Grid>
       </MainCard>
     </ComponentSkeleton >

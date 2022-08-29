@@ -18,7 +18,9 @@
 
 import { configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from '@reduxjs/toolkit/query'
-import { documentsApi } from './async/query';
+import { foldersQuery } from './async/folderQuery';
+import { filesQuery } from './async/filesQuery';
+
 import logger from "redux-logger"
 import reducers from './reducers';
 
@@ -26,8 +28,9 @@ import reducers from './reducers';
 export const store = configureStore({
     reducer: reducers,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-        .concat(logger)
-        .concat(documentsApi.middleware)
+        // .concat(logger)
+        .concat(foldersQuery.middleware)
+        .concat(filesQuery.middleware)
 })
 
 
