@@ -1,0 +1,10 @@
+=== Typesense Cloud: 4g5fqz0w1d2utlcap ===
+
+Admin API Key:
+lzQZGnyfhemlhmsWeZPIToQcYZe0UPF1
+
+Search Only API Key:
+ourAmaavFISgnvXNVUrTUzDkheWryAIy
+
+Nodes:
+- 4g5fqz0w1d2utlcap-1.a1.typesense.net [https:443]

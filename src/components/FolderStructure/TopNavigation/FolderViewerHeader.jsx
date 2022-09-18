@@ -23,6 +23,7 @@ import { useUploadFileMutation } from 'store/async/filesQuery';
 import { ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage'
 import { v4 } from 'uuid'
 import { storage } from "../../../firebase-config"
+import { useUserAuth } from 'context/authContext';
 
 
 // import { useAddFolderMutation } from 'store/async/query';
@@ -30,7 +31,7 @@ import { storage } from "../../../firebase-config"
 
 
 
-export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, setHistory }) {
+export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, setHistory, setDocuments, documents }) {
   const dispatch = useDispatch();
   const openModal = (type) => {
     dispatch(setModalType({ modalType: type }))
@@ -41,21 +42,13 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
   const { enqueueSnackbar } = useSnackbar();
   const [addFolder] = useAddFolderMutation()
   const [uploadFile] = useUploadFileMutation()
+  const { user } = useUserAuth()
+
+
 
 
   const [showForm, setShowForm] = React.useState(false);
   const [value, setValue] = React.useState('');
-  // React.useEffect(() => {
-  //   setDocuments([...documents, ...uploadedFiles])
-  //   return () => {
-  //     setDocuments([])
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [uploadedFiles])
-
-  React.useEffect(() => {
-    console.log(uploadedFiles, "UPLOADED FILES")
-  }, [uploadedFiles])
 
   const changeHandler = (files) => {
     let filesArray = []
@@ -63,9 +56,12 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
       const reference = {
         id: Math.ceil((Math.random() * 10000)),
         archived: false,
-        uploaded_by: 'Admin',
+        created_by: {
+          name: user.displayName,
+          id: user.uid
+        },
         date_created: new Date().toDateString(),
-        date_modified: file.lastModifiedDate.toDateString(),
+        date_modified: new Date().toDateString(),
         file_name: file.name,
         file_type: file.type,
         trashed: false,
@@ -88,12 +84,6 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
         "state_changed",
         (snapshot) => {
           const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-          console.log(filesArray.map(document => {
-            if (document.id === reference.id && progress < 100) {
-              document.progress = progress
-            }
-            return document
-          }), "TEST")
           setUploadedFiles([...filesArray.map(document => {
             if (document.id === reference.id) {
               document.progress = progress
@@ -134,29 +124,68 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
     })
 
   };
+
+  //           created_by: folder.created_by,
+  //           date_created: Timestamp.fromDate(new Date()),
+  //           date_modified: Timestamp.fromDate(new Date()),
+  //           folder_name: folder.folder_name,
+  //           isFolder: folder.isFolder,
+  //           no_of_files: folder.no_of_files,
+  //           parent: folder.parent,
+  //           trashed: folder.trashed ?? false,
+  //           user_access: folder.user_access ?? null,
+  //           archived: folder.archived ?? false,
+  //           zipped: folder.zipped ?? false,
+  //           size: folder.size,
+
   const createNewFolder = async () => {
+    let folder_name = value
+    setShowForm(false)
+
+
     addFolder({
-      created_by: 'Brilliant',
-      folder_name: value,
+      created_by: {
+        name: user.displayName,
+        id: user.uid
+      },
+      folder_name: folder_name,
       no_of_files: 0,
       isFolder: true,
       parent: currentFolder,
+      trashed: false,
+      archived: false,
+      zipped: false,
       size: 0,
     })
       .unwrap()
-      .then((res) => {
-        if (res) {
+      .then(({id}) => {
           setValue('')
-          setShowForm(false)
+          // if (!documents.some(x => x.id === id)) {
+          //   const newFolder = {
+          //     archived: false,
+          //     created_by: user.uid,
+          //     created_by_name: user.displayName,
+          //     date_created: new Date().toString(),
+          //     date_modified: new Date().toString(),
+          //     folder_name: folder_name,
+          //     id: id,
+          //     isFolder: true,
+          //     no_of_files: 0,
+          //     parent: currentFolder,
+          //     size: 0,
+          //     trashed: false,
+          //     user_access: null,
+          //     zipped: false
+          //   }
+          // }
 
           setTimeout(() => {
             const shortenedName = value.replace(/^(.{8}[^\s]*).*/, "$1");
             const message = `${shortenedName}${value.length > 8 && '...'} Created Successfully`
             enqueueSnackbar(message, { variant: 'success' })
           }, 400)
-        }
       })
-      .catch(() => {
+      .catch((err) => {
         const shortenedName = value.replace(/^(.{8}[^\s]*).*/, "$1");
         const message = `${shortenedName}${value.length > 8 && '...'} Creation Failed`
         enqueueSnackbar(message, { variant: 'error' })
@@ -182,12 +211,14 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
             "&:hover": {
               backgroundColor: 'primary.100'
             },
-          }}>
+          }}
+            disabled={!currentFolder}
+          >
             <Stack direction="row">
               <Box sx={{ p: .3 }}>
-                <HiOutlineDocumentSearch style={{ fontSize: '16px' }} />
+                <HiOutlineDocumentSearch style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
               </Box>
-              {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">Search</Typography>}
+              {matchDownSM ? <></> : <Typography color={!currentFolder ? "secondary.400" : "secondary.600"}>Search</Typography>}
             </Stack>
           </ButtonBase>
           <ButtonBase variant="outlined" sx={{
@@ -197,12 +228,14 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
             "&:hover": {
               backgroundColor: 'primary.100'
             },
-          }} onClick={() => openModal()}>
+          }} onClick={() => openModal()}
+            disabled={!currentFolder}
+          >
             <Stack direction="row">
               <Box sx={{ p: .3 }}>
-                <HiOutlineDocumentDownload style={{ fontSize: '16px' }} />
+                <HiOutlineDocumentDownload style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
               </Box>
-              {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">Download</Typography>}
+              {matchDownSM ? <></> : <Typography color={!currentFolder ? "secondary.400" : "secondary.600"}>Download</Typography>}
             </Stack>
           </ButtonBase>
 
@@ -217,13 +250,14 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
                 },
               }}
                 {...getRootProps({ className: "dropzone" })}
+                disabled={!currentFolder}
               >
                 <input {...getInputProps()} />
                 <Stack direction="row">
                   <Box sx={{ p: .3 }}>
-                    <HiOutlineDocumentDownload style={{ fontSize: '16px' }} />
+                    <HiOutlineDocumentDownload style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
                   </Box>
-                  {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">Upload</Typography>}
+                  {matchDownSM ? <></> : <Typography  color={!currentFolder ? "secondary.400" : "secondary.600"}>Upload</Typography>}
                 </Stack>
               </ButtonBase>
             )}
@@ -265,12 +299,14 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
                 "&:hover": {
                   backgroundColor: 'primary.100'
                 },
-              }} onClick={() => setShowForm(true)}>
+              }} onClick={() => setShowForm(true)}
+                disabled={!currentFolder}
+              >
                 <Stack direction="row">
                   <Box sx={{ p: .3 }}>
-                    <HiOutlineDocumentAdd style={{ fontSize: '16px' }} />
+                    <HiOutlineDocumentAdd style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
                   </Box>
-                  {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">Create Folder</Typography>}
+                  {matchDownSM ? <></> : <Typography  color={!currentFolder ? "secondary.400" : "secondary.600"}>Create Folder</Typography>}
                 </Stack>
               </ButtonBase>
           }

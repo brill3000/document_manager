@@ -13,13 +13,15 @@ import ViewFile from './ViewFile';
 import { useSelector } from 'react-redux';
 import EditDocuments from './EditDocument';
 import { useSnackbar } from 'notistack';
-import { FolderLoader, FolderEmpty, Error } from 'ui-component/FolderLoader';
-import { useDeleteFolderMutation, useGetFoldersByParentIdQuery, useRenameFolderMutation } from 'store/async/folderQuery';
+import { FolderLoader, FolderEmpty, Error } from 'ui-component/LoadHandlers';
+import { useGetFoldersByParentIdQuery, useRenameFolderMutation, useTrashFolderMutation } from 'store/async/folderQuery';
 import { isErrorWithMessage, isFetchBaseQueryError } from 'store/async/helpers';
 import { useGetFilesByParentIdQuery, useRenameFilesMutation } from 'store/async/filesQuery';
 import { DisplayDocument } from './DisplayDocument';
 import { ActionMenu } from './ActionMenus/ActionMenuMain';
 import { Button } from '../../../node_modules/@mui/material/index';
+import { useEffect } from 'react';
+import { useUserAuth } from 'context/authContext';
 
 
 
@@ -76,7 +78,6 @@ export const StyledMenu = styled((props) => (
       '&:active': {
         backgroundColor: alpha(
           theme.palette.primary.main,
-          theme.palette.action.selectedOpacity,
         ),
       },
     },
@@ -95,26 +96,21 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
   const openFolder = useSelector(state => state.documents.currentFolder)
   const modalType = useSelector(state => state.documents.modalType)
 
+  const { user } = useUserAuth()
+
   // Firebase Folder Queries
-  const fetched_folders = useGetFoldersByParentIdQuery(openFolder).data
-  const foldersIsLoading = useGetFoldersByParentIdQuery(openFolder).isLoading
-  const foldersIsFetching = useGetFoldersByParentIdQuery(openFolder).isFetching
-  const foldersIsSuccess = useGetFoldersByParentIdQuery(openFolder).isSuccess
-  const foldersIsError = useGetFoldersByParentIdQuery(openFolder).isError
+  const folders = useGetFoldersByParentIdQuery({ parent: openFolder, user: user.uid })
 
   // Firebase File Queries
-  const fetched_files = useGetFilesByParentIdQuery(openFolder).data
-  const filesIsLoading = useGetFilesByParentIdQuery(openFolder).isLoading
-  const filesIsFetching = useGetFilesByParentIdQuery(openFolder).isFetching
-  const filesIsSuccess = useGetFilesByParentIdQuery(openFolder).isSuccess
-  const filesIsError = useGetFilesByParentIdQuery(openFolder).isError
+  const files = useGetFilesByParentIdQuery({ parent: openFolder, user: user.uid })
 
 
-  const [deleteFolder, deleteResponse] = useDeleteFolderMutation()
-  const [renameFolder, renameResponse] = useRenameFolderMutation()
-  const [renameFile, renameFileResponse] = useRenameFilesMutation()
 
 
+  const [trashFolder] = useTrashFolderMutation()
+  const [renameFolder] = useRenameFolderMutation()
+  const [renameFile] = useRenameFilesMutation()
+  const [viewUrl, setViewUrl] = React.useState(null)
 
   const [content, setContent] = React.useState(null)
 
@@ -128,13 +124,14 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
   const matchUpLG = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
 
+
   React.useEffect(() => {
     let documents = []
-    if (foldersIsSuccess && fetched_folders && Array.isArray(fetched_folders) && fetched_folders.length > 0) {
-      documents = [...documents, ...fetched_folders]
+    if (folders.isSuccess && folders.data && Array.isArray(folders.data) && folders.data.length > 0) {
+      documents = [...documents, ...folders.data]
     }
-    if (filesIsSuccess && fetched_files && Array.isArray(fetched_files) && fetched_files.length > 0) {
-      documents = [...documents, ...fetched_files]
+    if (files.isSuccess && files.data && Array.isArray(files.data) && files.data.length > 0) {
+      documents = [...documents, ...files.data]
     }
     if (documents.length > 0) {
       documents = documents.filter((value, index, self) =>
@@ -147,21 +144,22 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
       setDocuments([])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [foldersIsSuccess, fetched_folders, fetched_files, filesIsSuccess])
+  }, [folders.isSuccess, folders.data, files.data, files.isSuccess])
 
 
   const renameFolderHandler = async (folderId) => {
     try {
-      await renameFolder({ id: folderId, folder_name: renameValue }).unwrap();
-      if (renameResponse) {
-        setTimeout(() => {
-          setIsRenameLoading(false)
-          renameValue.length > 0 && setIsRenaming({ status: false, target: null })
-          const message = `Folder Renamed`
-          enqueueSnackbar(message, { variant: 'success' })
-        }, 400)
-
-      }
+      await renameFolder({ id: folderId, folder_name: renameValue }).unwrap()
+        .then((res) => {
+          if (res) {
+            setTimeout(() => {
+              setIsRenameLoading(false)
+              renameValue.length > 0 && setIsRenaming({ status: false, target: null })
+              const message = `Folder Renamed`
+              enqueueSnackbar(message, { variant: 'success' })
+            }, 400)
+          }
+        })
     } catch (err) {
       if (isFetchBaseQueryError(err)) {
         if ("message" in err.data) {
@@ -177,16 +175,18 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
   }
   const renameFileHandler = async (fileId) => {
     try {
-      await renameFile({ id: fileId, file_name: renameValue }).unwrap();
-      if (renameFileResponse) {
-        setTimeout(() => {
-          setIsRenameLoading(false)
-          renameValue.length > 0 && setIsRenaming({ status: false, target: null })
-          const message = `File Renamed`
-          enqueueSnackbar(message, { variant: 'success' })
-        }, 400)
+      await renameFile({ id: fileId, file_name: renameValue }).unwrap()
+        .then((res) => {
+          if (res) {
+            setTimeout(() => {
+              setIsRenameLoading(false)
+              renameValue.length > 0 && setIsRenaming({ status: false, target: null })
+              const message = `File Renamed`
+              enqueueSnackbar(message, { variant: 'success' })
+            }, 400)
+          }
+        })
 
-      }
     } catch (err) {
       if (isFetchBaseQueryError(err)) {
         if ("message" in err.data) {
@@ -204,7 +204,8 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
 
   const handleClick = (e, folder) => {
     e.stopPropagation();
-    setSelected([folder.id]);
+    e.preventDefault()
+
     if (isRenaming.status && isRenaming.target !== folder.id) setIsRenaming({ status: false, target: null })
     if (isRenaming.status) return;
     // In that case, event.ctrlKey does the trick.
@@ -213,9 +214,12 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
       else if (selected.includes(folder.id)) setSelected(selected.filter(select => select !== folder.id));
     } else {
       if (e.nativeEvent.button === 0) {
+        setSelected([folder.id]);
+
       } else if (e.nativeEvent.button === 2) {
-        e.preventDefault()
+        setSelected([folder.id]);
         // if (!clicked.includes(i)) setClicked([...clicked, i])
+
         setIsFolder(folder.isFolder)
         setContextMenu(
           contextMenu === null
@@ -233,7 +237,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
 
   }
 
-  // CUSTOM ALERT
+  // // CUSTOM ALERT
   // enqueueSnackbar('Your report is ready', {
   //   variant: 'reportComplete',
   //   persist: true,
@@ -242,22 +246,26 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
 
   const handleMenuClick = async (e, type) => {
     e.stopPropagation();
+
     dispatch(setModalType({ modalType: type }))
 
     let selectedDoc = documents.find(folder => folder.id === selected[selected.length - 1])
     if (selectedDoc.isFolder) {
       if (type === 'view') {
+        addHistory({
+          id: selected[selected.length - 1],
+          label: selectedDoc.folder_name
+        })
         setTimeout(() => {
           dispatch(setCurrentFolder({ currentFolder: selected[selected.length - 1] }))
         }, 100);
       }
       else if (type === 'delete') {
         try {
-          await deleteFolder(selectedDoc.id).unwrap();
-          if (deleteResponse) {
-            const message = `Folder Deleted`
-            enqueueSnackbar(message, { variant: 'warning' })
-          }
+          await trashFolder(selectedDoc.id).unwrap();
+          setDocuments([...documents.filter(doc => doc.id !== selectedDoc.id)])
+          const message = `Folder Deleted`
+          enqueueSnackbar(message, { variant: 'warning' })
         } catch (err) {
           if (isFetchBaseQueryError(err)) {
             if ("message" in err.data) {
@@ -292,6 +300,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
       }
       else {
         if (selectedDoc.file_ref && selectedDoc.file_type) {
+          setViewUrl(selectedDoc.file_ref)
           if (
             !(selectedDoc.file_type.includes('doc')
               || selectedDoc.file_type.includes('docx')
@@ -310,6 +319,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
                 width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
                 height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
               >
+                <embed id="thissite" src={selectedDoc.file_ref}></embed>
                 {matchDownSM ? <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>View Link</a></Button> : <a href={selectedDoc.file_ref}>Download File</a>}
               </object>
             )
@@ -320,6 +330,8 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
             )
             const message = `You cannot currently view this file type, Download the file to view`
             enqueueSnackbar(message, { variant: 'warning' })
+            dispatch(setOpenFileView({ openFileView: true }))
+
           }
         } else {
           const message = `You cannot currently view this file`
@@ -348,34 +360,71 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
 
       setContextMenu(null);
     } else {
-      setContent(
-        <object type="application/pdf"
-          data="http://www.africau.edu/images/default/sample.pdf"
-          width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
-          height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
-        >
-          <a href="http://www.africau.edu/images/default/sample.pdf">download pdf</a>
-        </object>
-      )
-      dispatch(setOpenFileView({ openFileView: true }))
+      if (
+        !(selectedDoc.file_type.includes('doc')
+          || selectedDoc.file_type.includes('docx')
+          || selectedDoc.file_type.includes('application/msword')
+          || selectedDoc.file_type.includes('application/msword')
+          || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+          || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+          || selectedDoc.file_type.includes('application/vnd.ms-powerpoint')
+          || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+        )
+      ) {
+
+        setContent(
+          <object type={selectedDoc.file_type}
+            data={selectedDoc.file_ref}
+            width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
+            height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
+          >
+            <embed id="thissite" src={selectedDoc.file_ref}></embed>
+            {matchDownSM ? <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>View Link</a></Button> : <a href={selectedDoc.file_ref}>Download File</a>}
+          </object>
+        )
+        dispatch(setOpenFileView({ openFileView: true }))
+      } else {
+        setContent(
+          <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>download pdf</a></Button>
+        )
+        const message = `You cannot currently view this file type, Download the file to view`
+        enqueueSnackbar(message, { variant: 'warning' })
+        dispatch(setOpenFileView({ openFileView: true }))
+      }
       setContextMenu(null);
     }
   }
-  const handleClose = () => {
+  const handleClose = (e) => {
+    e.preventDefault()
+    setSelected([])
     setContextMenu(null);
   };
 
 
+  useEffect(() => {
+    if (!contextMenu) setSelected([])
+  },
+    [contextMenu])
 
+  useEffect(() => {
+    return () => {
+      setSelected([])
+    }
+  }, [])
 
   return (
     <>
       <Grid
-        item xs={5} sm={7} md={8} lg={9} xl={10}
+        item
+        xs={5}
+        sm={7}
+        md={8}
+        lg={9}
         sx={{
           padding: 1,
           height: 500,
           overflowY: 'auto',
+          overflowX: 'hidden',
           background: '#fafafb',
           borderRadius: 2,
         }}
@@ -388,7 +437,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
           }}
         >
           {
-            foldersIsError || filesIsError ?
+            folders.isError || files.isError ?
               <Box
                 display="flex"
                 justifyContent="center"
@@ -398,25 +447,25 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
               >
                 <Stack direction="column">
                   <Error height={100} width={100} />
-                  <Typography variant='h5'>Opps... An Error  has occured</Typography>
+                  <Typography variant='h5'>{folders.error ?? "Opps... An Error  has occured"}</Typography>
                 </Stack>
               </Box>
               :
-              foldersIsLoading || filesIsLoading || foldersIsFetching || filesIsFetching ?
+              folders.isLoading || files.isLoading || folders.isFetching || files.isFetching ?
                 <Box
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
-                  minHeight="100%"
+                  minHeight={450}
                   minWidth="100%"
                 >
-                  <FolderLoader height={300} width={300} />
+                  <FolderLoader height={200} width={200} />
                 </Box> :
                 documents && Array.isArray(documents) ?
                   documents.length > 0 ?
                     [...documents, ...uploadedFiles].map((document) => (
                       document.parent === openFolder &&
-                      <Grid item xs={12} sm={6} md={3} lg={2} xl={1} key={document.id} sx={{ backgroundColor: 'transparent' }} >
+                      <Grid item xs={12} sm={6} md={3} lg={2} key={document.id} sx={{ backgroundColor: 'transparent' }} >
                         <Badge color="primary" overlap="circular" badgeContent={document.noOfChildren}>
                           <ButtonBase
                             spacing={0}
@@ -432,8 +481,6 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
                             onClick={(e) => handleClick(e, document)}
                             onContextMenu={(e) => handleClick(e, document)}
                             onDoubleClick={(e) => handleDoubleClick(e, document)}
-                            // onTouchStart = {e => start(e)}
-                            // onTouchEnd = {e => clear(e, true, folder)}
                             disableRipple={isRenaming.status && isRenaming.target === document.id}
                           >
                             <DisplayDocument
@@ -470,7 +517,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
           }
         </Grid>
       </Grid>
-      <ViewFile modalType={modalType}>
+      <ViewFile modalType={modalType} viewUrl={viewUrl}>
         {modalContent(modalType, content)}
       </ViewFile>
     </>

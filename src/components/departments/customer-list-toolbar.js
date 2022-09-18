@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   TextField,
   InputAdornment,
   SvgIcon, Typography
@@ -12,6 +10,7 @@ import { Upload as UploadIcon } from './icons/upload';
 import { Download as DownloadIcon } from './icons/download';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenFileView } from 'store/reducers/documents';
+import MainCard from 'components/MainCard';
 
 
 
@@ -52,37 +51,35 @@ export const CustomerListToolbar = (props) => {
             color="primary"
             variant="contained"
             onClick={() => dispatch(setOpenFileView({ openFileView: true }))
-          }
+            }
           >
             Add Members
           </Button>
         </Box>
       </Box>
       <Box sx={{ mt: 3 }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ maxWidth: 500 }}>
-              <TextField
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SvgIcon
-                        color="action"
-                        fontSize="small"
-                      >
-                        <SearchIcon />
-                      </SvgIcon>
-                    </InputAdornment>
-                  )
-                }}
-                onChange={(e) => props.setSearch(e.target.value)}
-                placeholder="Search customer"
-                variant="outlined"
-              />
-            </Box>
-          </CardContent>
-        </Card>
+        <MainCard>
+          <Box sx={{ maxWidth: 500 }}>
+            <TextField
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SvgIcon
+                      color="action"
+                      fontSize="small"
+                    >
+                      <SearchIcon />
+                    </SvgIcon>
+                  </InputAdornment>
+                )
+              }}
+              onChange={(e) => props.setSearch(e.target.value)}
+              placeholder="Search customer"
+              variant="outlined"
+            />
+          </Box>
+        </MainCard>
       </Box>
     </Box>
   )

@@ -25,7 +25,7 @@ import MonthlyBarChart from './MonthlyBarChart';
 // import ReportAreaChart from './ReportAreaChart';
 // import SalesColumnChart from './SalesColumnChart';
 import MainCard from 'components/MainCard';
-import CustomCard from 'components/cards/statistics/CustomCard';
+// import CustomCard from 'components/cards/statistics/CustomCard';
 
 // assets
 import { FileAddOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -38,11 +38,11 @@ import avatar4 from 'assets/images/users/avatar-4.png';
 // import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
 // import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
 // import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
+// import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
 // import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
-import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
-import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
-import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
+// import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+// import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
+// import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
 import EarningCard from './EarningCard';
 // avatar style
 const avatarSX = {

@@ -28,6 +28,11 @@ import SettingTab from './SettingTab';
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { useUserAuth } from 'context/authContext';
+import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
+import { getInitials } from 'components/departments/utils/get-initials';
+
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -55,9 +60,20 @@ function a11yProps(index) {
 
 const Profile = () => {
     const theme = useTheme();
+    const navigator = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+
+    const { logout, user } = useUserAuth()
 
     const handleLogout = async () => {
-        // logout
+        try {
+            await logout()
+            navigator('/login')
+        } catch (err) {
+            const message = `User Logout Failed`
+            enqueueSnackbar(message, { variant: 'error' })
+        }
+
     };
 
     const anchorRef = useRef(null);
@@ -97,8 +113,14 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-                    <Typography variant="subtitle1">John Doe</Typography>
+                    <Avatar
+                        alt="profile user"
+                        src={user.providerData.photorURL}
+                        sx={{ width: 32, height: 32 }}
+                    >
+                        {getInitials(user.displayName)}
+                    </Avatar>
+                    <Typography variant="subtitle1">{user.displayName}</Typography>
                 </Stack>
             </ButtonBase>
             <Popper
@@ -139,9 +161,14 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
+                                                        <Avatar
+                                                            src={user.providerData.photorURL}
+                                                            sx={{ width: 32, height: 32 }}
+                                                        >
+                                                            {getInitials(user.displayName)}
+                                                        </Avatar>
                                                         <Stack>
-                                                            <Typography variant="h6">John Doe</Typography>
+                                                            <Typography variant="h6">{user.displayName}</Typography>
                                                             <Typography variant="body2" color="textSecondary">
                                                                 UI/UX Designer
                                                             </Typography>

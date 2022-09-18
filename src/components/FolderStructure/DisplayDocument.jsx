@@ -2,7 +2,7 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { FcFolder } from "react-icons/fc";
 import { DragFolder } from "./DragFolder";
-import { CircularProgress, Stack, TextField } from '../../../node_modules/@mui/material/index';
+import { CircularProgress, TextField } from '../../../node_modules/@mui/material/index';
 import { StyledLinearProgress } from 'ui-component/CustomProgressBars';
 import { fileIcon } from '../../ui-component/fileIcon';
 
@@ -10,6 +10,7 @@ import { fileIcon } from '../../ui-component/fileIcon';
 
 
 export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoading, setRenameValue, setIsRenaming, setIsRenameLoading, renameFolderHandler, renameFileHandler }) => {
+
   return <DragFolder style={{ maxWidth: 80 }} draggable={!isRenaming.status}>
     {document.isFolder
       ?
@@ -18,7 +19,7 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
           style={{
             fontSize: '60px',
           }} />
-        {isRenaming.status && selected.length > 0 && selected[selected.length - 1] === document.id ?
+        {isRenaming.status && isRenaming.target === document.id ?
           isRenameLoading ?
             <CircularProgress color="primary" />
             :
@@ -37,7 +38,7 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
               }}
               defaultValue={document.folder_name}
               multiline
-              sx={{ '& .MuiInputBase-input': { fontSize: '0.75rem' } }}
+              sx={{ '& .MuiInputBase-input': { fontSize: '.75rem' } }}
               variant="outlined"
               inputProps={{ autoFocus: true }}
               onFocus={event => {
@@ -47,12 +48,11 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
           <Typography
             color="textSecondary"
             gutterBottom
-            variant="subtitle2"
           >
             <span style={{
-              paddingLeft: '6px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              fontSize: '.84rem',
               display: '-webkit-box',
               WebkitLineClamp: '3',
               WebkitBoxOrient: 'vertical',
@@ -64,16 +64,16 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
       </>
 
       :
-      <Stack direction="column" justifyContent="center" alignItems="center">
+      <>
         {fileIcon(document.file_type)}
         {
-          (document.status && (document.status === 'failed'  || document.status === 'uploading'))
-          ?
-          <StyledLinearProgress variant="determinate" value={document.progress}/>
-          :
-          <>
-            {
-              isRenaming.status && selected.length > 0 && selected[selected.length - 1] === document.id ?
+          (document.status && (document.status === 'failed' || document.status === 'uploading'))
+            ?
+            <StyledLinearProgress variant="determinate" value={document.progress} />
+            :
+            <>
+
+              {isRenaming.status && isRenaming.target === document.id ?
                 isRenameLoading ?
                   <CircularProgress color="primary" />
                   :
@@ -92,7 +92,7 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
                     }}
                     defaultValue={document.file_name}
                     multiline
-                    sx={{ '& .MuiInputBase-input': { fontSize: '0.75rem' } }}
+                    sx={{ '& .MuiInputBase-input': { fontSize: '.75rem' } }}
                     variant="outlined"
                     inputProps={{ autoFocus: true }}
                     onFocus={event => {
@@ -102,12 +102,11 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
                 <Typography
                   color="textSecondary"
                   gutterBottom
-                  variant="subtitle2"
                 >
                   <span style={{
-                    paddingLeft: '6px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    fontSize: '.84rem',
                     display: '-webkit-box',
                     WebkitLineClamp: '3',
                     WebkitBoxOrient: 'vertical',
@@ -116,11 +115,12 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
                     {document.file_name}
                   </span>
                 </Typography>
-            }
-          </>
+              }
+            </>
         }
-      </Stack>
+      </>
     }
 
   </DragFolder>;
 }
+

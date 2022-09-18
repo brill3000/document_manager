@@ -12,9 +12,7 @@ import ComponentSkeleton from 'pages/components-overview/ComponentSkeleton';
 import MainCard from '../MainCard';
 
 // hero icons
-import { HiOutlineFolderOpen, HiOutlinePencil, HiOutlineTrash, HiEyeOff } from "react-icons/hi";
-import { HiOutlineFolder } from "react-icons/hi";
-import { HiOutlineDocumentAdd } from "react-icons/hi";
+import { HiOutlineFolderOpen, HiOutlinePencil, HiOutlineTrash, HiEyeOff, HiOutlineFolder, HiOutlineDocumentAdd } from "react-icons/hi";
 
 // mui icons
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -29,15 +27,17 @@ import { FolderViewerHeader } from './TopNavigation/FolderViewerHeader';
 // import { useMediaQuery } from '../../../node_modules/@mui/material/index';
 
 // folder fetch hook
-import { useAddFolderMutation, useDeleteFolderMutation, useGetFoldersByParentIdQuery } from 'store/async/folderQuery';
-import { ButtonBase, CircularProgress, ClickAwayListener, MenuItem, Stack, TextField, useMediaQuery } from '../../../node_modules/@mui/material/index';
+import { useAddFolderMutation, useTrashFolderMutation, useGetFoldersByParentIdQuery } from 'store/async/folderQuery';
+import { ButtonBase, CircularProgress, ClickAwayListener, MenuItem, Stack, TextField, useMediaQuery } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import documents, { setCurrentFolder } from 'store/reducers/documents';
-import { Error } from 'ui-component/FolderLoader';
+import { setCurrentFolder } from 'store/reducers/documents';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import { useSnackbar } from 'notistack';
 import { isErrorWithMessage, isFetchBaseQueryError } from 'store/async/helpers';
 // import { useSelector } from 'react-redux';
 import { StyledMenu } from './FolderViewer';
+import { useUserAuth } from 'context/authContext';
+import { useLocation } from 'react-router';
 
 
 const FolderViewer = Loadable(React.lazy(() => import('./FolderViewer')));
@@ -49,9 +49,9 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   [`& .${treeItemClasses.content}`]: {
     borderRadius: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: theme.typography.fontWeightRegular,
     '&.Mui-expanded': {
-      fontWeight: theme.typography.fontWeightRegular,
+      fontWeight: theme.typography.fontWeightLight,
     },
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
@@ -86,7 +86,7 @@ function StyledTreeItem(props) {
     <StyledTreeItemRoot
       label={
         <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0 }}>
-          <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
+          <Typography variant="body1" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
             {labelText}
           </Typography>
           <Typography variant="caption" color="inherit">
@@ -116,13 +116,14 @@ export default function CustomTreeView() {
   const [documents, setDocuments] = React.useState([])
   const matchDownSM = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const { enqueueSnackbar } = useSnackbar();
-  const [addFolder, response] = useAddFolderMutation()
   const [value, setValue] = React.useState('');
   const [contextMenu, setContextMenu] = React.useState(null);
   const [uploadedFiles, setUploadedFiles] = React.useState([])
-  
+  const { user } = useUserAuth()
 
-
+  // Check current route
+  const location = useLocation();
+  const { pathname } = location;
   const [showForm, setShowForm] = React.useState(false);
 
   const dispatch = useDispatch()
@@ -130,9 +131,19 @@ export default function CustomTreeView() {
   const addHistory = current => {
     setHistory([...history, current])
   }
-  const { data, isLoading, isSuccess, isError } = useGetFoldersByParentIdQuery(null)
-  const [deleteFolder, deleteResponse] = useDeleteFolderMutation()
 
+  const [addFolder] = useAddFolderMutation()
+  const fetchedFolders = useGetFoldersByParentIdQuery({ parent: null, user: user.uid, route: pathname })
+  const [newFolders, setNewFolders] = React.useState([]);
+  const [parentFolders, setParentFolders] = React.useState([]);
+  const [trashFolder] = useTrashFolderMutation()
+
+
+  React.useEffect(() => {
+    if (fetchedFolders.isSuccess && fetchedFolders.data && Array.isArray(fetchedFolders.data) && fetchedFolders.data.length > 0) {
+      setParentFolders(fetchedFolders.data)
+    }
+  }, [fetchedFolders.isSuccess, fetchedFolders.data])
 
   const handleClick = (e, selectedDoc) => {
     e.stopPropagation();
@@ -140,7 +151,7 @@ export default function CustomTreeView() {
     if (e.nativeEvent.button === 0) return
     if (e.nativeEvent.button === 2 || e.ctrKey) {
       e.preventDefault()
-      setSelected([...selected, selectedDoc])
+      setSelected([selectedDoc])
       // if (!clicked.includes(i)) setClicked([...clicked, i])
       setContextMenu(
         contextMenu === null
@@ -159,26 +170,51 @@ export default function CustomTreeView() {
   }
 
   const createNewFolder = async () => {
-    // setTimeout(() => {
-
     try {
+      let folder_name = value
+      setShowForm(false)
+
       await addFolder({
-        created_by: 'Brilliant',
-        folder_name: value,
+        created_by: {
+          name: user.displayName,
+          id: user.uid
+        },
+        folder_name: folder_name,
         no_of_files: 0,
         isFolder: true,
         parent: null,
+        trashed: false,
+        archived: false,
+        zipped: false,
         size: 0,
-      }).unwrap();
-      if (response) {
-        setValue('')
-        setShowForm(false)
-
-        setTimeout(() => {
-          const message = `New Folder Created Successfully`
-          enqueueSnackbar(message, { variant: 'success' })
-        }, 400)
-      }
+      }).unwrap()
+        .then(({ id }) => {
+          if (!parentFolders.some(x => x.id === id) && !newFolders.some(x => x.id === id)) {
+            const newFolder = {
+              archived: false,
+              created_by: user.uid,
+              created_by_name: user.displayName,
+              date_created: new Date().toString(),
+              date_modified: new Date().toString(),
+              folder_name: folder_name,
+              id: id,
+              isFolder: true,
+              no_of_files: 0,
+              parent: null,
+              size: 0,
+              trashed: false,
+              user_access: null,
+              zipped: false
+            }
+            setNewFolders([...newFolders, newFolder]);
+          }
+          setValue('')
+          setTimeout(() => {
+            const message = `New Folder Created Successfully`
+            enqueueSnackbar(message, { variant: 'success' })
+          }, 400)
+        }
+        )
     } catch (err) {
       if (isFetchBaseQueryError(err)) {
         if ("message" in err.data) {
@@ -195,15 +231,14 @@ export default function CustomTreeView() {
   const handleMenuClick = async (e, type) => {
     e.stopPropagation();
 
-    let selectedDoc = data.find(folder => folder.id === selected[selected.length - 1].id)
-    console.log(selectedDoc, "TEST")
+    let selectedDoc = [...parentFolders, ...newFolders].find(folder => folder.id === selected[selected.length - 1].id)
     if (type === 'delete') {
       try {
-        await deleteFolder(selectedDoc.id).unwrap();
-        if (deleteResponse) {
-          const message = `Folder Deleted`
-          enqueueSnackbar(message, { variant: 'warning' })
-        }
+        await trashFolder(selectedDoc.id).unwrap();
+        setParentFolders([...parentFolders.filter(doc => doc.id !== selectedDoc.id)])
+        setNewFolders([...newFolders.filter(doc => doc.id !== selectedDoc.id)])
+        const message = `Folder Deleted`
+        enqueueSnackbar(message, { variant: 'warning' })
       } catch (err) {
         if (isFetchBaseQueryError(err)) {
           if ("message" in err.data) {
@@ -226,32 +261,34 @@ export default function CustomTreeView() {
     setContextMenu(null);
   };
   React.useEffect(() => {
-    if (isSuccess && data && Array.isArray(data) && data.length > 0) {
-      setSelected([{ id: data[0].id, name: data[0]['folder_name'] }])
+    if (parentFolders && Array.isArray(parentFolders) && parentFolders.length > 0) {
+      setSelected([{ id: parentFolders[0].id, name: parentFolders[0]['folder_name'] }])
     }
-  }, [isSuccess, data])
+  }, [parentFolders])
 
   React.useEffect(() => {
     if (Array.isArray(selected) && selected.length > 0) {
       dispatch(setCurrentFolder({ currentFolder: selected[selected.length - 1].id }))
       setHistory([{ id: selected[selected.length - 1].id, label: selected[selected.length - 1].name }])
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected])
 
   return (
     <ComponentSkeleton>
 
-      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} uploadedFiles={uploadedFiles} history={history} setHistory={setHistory} setUploadedFiles={setUploadedFiles} />}>
+      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} documents={documents} setDocuments={setDocuments} uploadedFiles={uploadedFiles} history={history} setHistory={setHistory} setUploadedFiles={setUploadedFiles} />}>
         <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
           <Grid
-            item xs={7}
-            sm={5} md={4}
+            item
+            xs={7}
+            sm={5}
+            md={4}
             lg={3}
             alignItems="center"
             justifyContent="center"
           >
-            {isError ? (
+            {fetchedFolders.isError ? (
               <Box
                 display="flex"
                 justifyContent="center"
@@ -261,23 +298,22 @@ export default function CustomTreeView() {
               >
                 <Stack direction="column">
                   <Error height={50} width={50} />
-                  <Typography variant='subtitle2'>Opps... A Error has occured</Typography>
+                  <Typography variant='subtitle2'>{fetchedFolders.error ?? 'Opps... A Error has occured'}</Typography>
                 </Stack>
 
               </Box>
-            ) : isLoading ? (
+            ) : fetchedFolders.isLoading || fetchedFolders.isFetching? (
               <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                minHeight="100%"
+                minHeight={450}
                 minWidth="100%"
               >
-                <CircularProgress color='primary' />
-
+                <GoogleLoader height={150} width={150} loop={true}/>
               </Box>
             ) :
-              data && (
+              parentFolders && (
                 <>
                   {
                     showForm ?
@@ -320,7 +356,7 @@ export default function CustomTreeView() {
                           <Box sx={{ p: .3 }}>
                             <HiOutlineDocumentAdd style={{ fontSize: '16px' }} />
                           </Box>
-                          {matchDownSM ? <></> : <Typography variant="subtitle2" sx={{ fontSize: 13 }} color="secondary.600">New Base Folder</Typography>}
+                          {matchDownSM ? <></> : <Typography color="secondary.600" sx={{pl: 1}}>New Base Folder</Typography>}
                         </Stack>
                       </ButtonBase>
                   }
@@ -330,28 +366,31 @@ export default function CustomTreeView() {
                     defaultCollapseIcon={<HiOutlineFolderOpen />}
                     defaultExpandIcon={< HiOutlineFolder />}
                     defaultEndIcon={< HiOutlineFolder />}
-                    sx={{ minHeight: 500, flexGrow: 1, maxWidth: '90%', overflowY: 'auto', pt: 1.2 }}
+                    sx={{ minHeight: 500, flexGrow: 1, maxWidth: 500, overflowY: 'auto', pt: 1.2, pr: 1 }}
                   >
-                    {data.map(folder => (
-                      <Box
-                        onContextMenu={(e) => handleClick(e, { id: folder.id, name: folder.folder_name })}
-                      >
-                        <DragFolder>
-                          <StyledTreeItem
-                            nodeId={folder.id}
-                            key={folder.id}
-                            labelText={folder.folder_name}
-                            color="#e3742f"
-                            bgColor="#fcefe3"
-                            labelInfo={`${folder.no_of_files} MB`}
-                            onClick={() => {
-                              setSelected([...selected, { id: folder.id, name: folder.folder_name }])
-                            }}
-                          />
-                        </DragFolder>
-                      </Box>
-                    )
-                    )}
+                    {
+                      [...parentFolders, ...newFolders]?.sort((a, b) => a.folder_name.localeCompare(b.folder_name)).filter(x => !x.trashed).map(folder => (
+                        <Box
+                          onContextMenu={(e) => handleClick(e, { id: folder.id, name: folder.folder_name })}
+                          key={folder.id}
+                        >
+                          <DragFolder>
+                            <StyledTreeItem
+                              nodeId={folder.id}
+                              key={folder.id}
+                              labelText={folder.folder_name}
+                              color="#1890ff"
+                              bgColor="#e6f7ff"
+                              labelInfo={`${folder.no_of_files} MB`}
+                              onClick={() => {
+                                setSelected([{ id: folder.id, name: folder.folder_name }])
+                              }}
+                            />
+                          </DragFolder>
+                        </Box>
+                      )
+                      )
+                    }
                   </TreeView>
                   <StyledMenu
                     id="demo-customized-menu"
@@ -409,7 +448,7 @@ export default function CustomTreeView() {
               )
             }
           </Grid>
-          <FolderViewer documents={documents} setDocuments={setDocuments} addHistory={addHistory} setUploadedFiles={setUploadedFiles} uploadedFiles={uploadedFiles}/>
+          <FolderViewer documents={documents} setDocuments={setDocuments} addHistory={addHistory} setUploadedFiles={setUploadedFiles} uploadedFiles={uploadedFiles} />
         </Grid>
       </MainCard>
     </ComponentSkeleton >

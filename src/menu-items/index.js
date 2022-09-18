@@ -7,7 +7,7 @@ import dashboard from './dashboard';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-    items: [dashboard, pages]
+    items: [dashboard]
 };
 
 export default menuItems;

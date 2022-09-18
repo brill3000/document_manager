@@ -24,6 +24,8 @@ import BiotechOutlinedIcon from '@mui/icons-material/BiotechOutlined';
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import MiscellaneousServicesOutlinedIcon from '@mui/icons-material/MiscellaneousServicesOutlined';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 // icons
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 const icons = {
@@ -52,7 +54,9 @@ const icons = {
     ConnectWithoutContactOutlinedIcon,
     MiscellaneousServicesOutlinedIcon,
     LocalShippingOutlinedIcon,
-    CampaignOutlinedIcon
+    CampaignOutlinedIcon,
+    MessageOutlinedIcon,
+    PeopleOutlineIcon
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -120,12 +124,37 @@ const dashboard = {
                 },
             ]
         },
+
+        {
+            id: 'approvals',
+            title: 'Approvals',
+            type: 'item',
+            url: '/approvals',
+            icon: icons.RiseOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'workflows',
+            title: 'Workflows',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.FiberNewOutlinedIcon,
+            breadcrumbs: false
+        },
+        {
+            id: 'messages',
+            title: 'Messages',
+            type: 'item',
+            url: '/messages',
+            icon: icons.MessageOutlinedIcon,
+            breadcrumbs: false
+        },
         {
             id: 'departments',
             title: 'Departments',
             type: 'item',
             url: '/departments',
-            icon: icons.ApartmentOutlined,
+            icon: icons.PeopleOutlineIcon,
             breadcrumbs: false,
             children: [
                 {
@@ -219,29 +248,13 @@ const dashboard = {
             breadcrumbs: false
         },
         {
-            id: 'approvals',
-            title: 'Roles and Approvals',
-            type: 'item',
-            url: '/approvals',
-            icon: icons.RiseOutlined,
-            breadcrumbs: false
-        },
-        {
-            id: 'workflows',
-            title: 'Workflows',
-            type: 'item',
-            url: '/workflows',
-            icon: icons.FiberNewOutlinedIcon,
-            breadcrumbs: false
-        },
-        {
             id: 'indexes',
             title: 'Indexes',
             type: 'item',
             url: '/indexes',
             icon: icons.DatabaseOutlined,
             breadcrumbs: false
-        }
+        },
     ]
 };
 

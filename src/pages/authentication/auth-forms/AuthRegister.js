@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import {
@@ -26,15 +26,34 @@ import { Formik } from 'formik';
 import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
+import { useSnackbar } from 'notistack';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
+// Querys
+import { useUserAuth } from 'context/authContext';
+import { useCreateUserMutation } from 'store/async/usersQuery';
+
+
 // ============================|| FIREBASE - REGISTER ||============================ //
+
+
 
 const AuthRegister = () => {
     const [level, setLevel] = useState();
     const [showPassword, setShowPassword] = useState(false);
+
+    const { enqueueSnackbar } = useSnackbar();
+    const navigator = useNavigate();
+
+
+    const { user, signUp, updateUserName, sendVerification } = useUserAuth()
+    const [createUser] = useCreateUserMutation()
+
+
+
+
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -71,10 +90,41 @@ const AuthRegister = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                        setStatus({ success: false });
-                        setSubmitting(false);
+                        if (navigator.onLine) throw new Error('No Internet connection')
+
+                        const response = await signUp(values.email, values.password)
+                        // await updateUserName(values.firstname + " " + values.lastname, user.email)
+                        if (response) {
+                            const userDetails = {
+                                user_id: response.user.uid,
+                                name: {
+                                    first_name: values.firstname,
+                                    last_name: values.lastname,
+                                    display_name: values.firstname + " " + values.lastname
+                                },
+                                email: response.user.email,
+                                job_title: 'intern',
+                                registration_date: response.user.metadata.createdAt,
+                                deregistration_date: null,
+                                is_logged_in: true,
+                                company: values.company,
+                                blocked: false,
+                            }
+                            await sendVerification()
+                            await updateUserName(values.firstname + " " + values.lastname)
+                            await createUser(userDetails);
+
+                            const message = `Successfully  Signed Up`
+                            enqueueSnackbar(message, { variant: 'success' })
+                            setStatus({ success: false });
+                            setSubmitting(false);
+                            navigator('/dashboard')
+                        }
+
+
                     } catch (err) {
-                        console.error(err);
+                        const message = `Registration Failed`
+                        enqueueSnackbar(message, { variant: 'error' })
                         setStatus({ success: false });
                         setErrors({ submit: err.message });
                         setSubmitting(false);

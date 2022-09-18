@@ -20,6 +20,9 @@ import { configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from '@reduxjs/toolkit/query'
 import { foldersQuery } from './async/folderQuery';
 import { filesQuery } from './async/filesQuery';
+import { usersQuery } from './async/usersQuery';
+import { messageQuery } from "./async/messagesQuery";
+
 
 import logger from "redux-logger"
 import reducers from './reducers';
@@ -28,9 +31,12 @@ import reducers from './reducers';
 export const store = configureStore({
     reducer: reducers,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-        // .concat(logger)
+        .concat(logger)
         .concat(foldersQuery.middleware)
         .concat(filesQuery.middleware)
+        .concat(usersQuery.middleware)
+        .concat(messageQuery.middleware)
+
 })
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import {
@@ -28,13 +28,21 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { useUserAuth } from 'context/authContext';
+import { useSnackbar } from 'notistack';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const AuthLogin = () => {
     const [checked, setChecked] = React.useState(false);
-
     const [showPassword, setShowPassword] = React.useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+    const navigator = useNavigate();
+
+
+    const { user, login } = useUserAuth()
+
+
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -47,8 +55,8 @@ const AuthLogin = () => {
         <>
             <Formik
                 initialValues={{
-                    email: 'info@codedthemes.com',
-                    password: '123456',
+                    email: '',
+                    password: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
@@ -57,8 +65,17 @@ const AuthLogin = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                        setStatus({ success: false });
-                        setSubmitting(false);
+                        if (navigator.onLine) throw new Error('No Internet connection')
+
+                        const loggedIn = await login(values.email, values.password)
+                        if (loggedIn) {
+                            const message = `Successfully Logged in`
+                            enqueueSnackbar(message, { variant: 'success' })
+                            setStatus({ success: false });
+                            setSubmitting(false);
+                            !checked && localStorage.removeItem("user");
+                            navigator('/dashboard')
+                        }
                     } catch (err) {
                         setStatus({ success: false });
                         setErrors({ submit: err.message });

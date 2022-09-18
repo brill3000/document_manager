@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // initial state
 const initialState = {
     openFileView: false,
-    currentFolder: '1',
+    currentFolder: null,
     documents: [],
     modalType: 'view'
 

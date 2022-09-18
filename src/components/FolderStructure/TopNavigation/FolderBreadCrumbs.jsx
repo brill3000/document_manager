@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { emphasize, styled } from '@mui/material/styles';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+
 import Chip from '@mui/material/Chip';
 // icons
-import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import { HiFolder, HiFolderOpen, HiHome } from "react-icons/hi";
+
+
+// import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useDispatch } from 'react-redux';
 import { setCurrentFolder } from 'store/reducers/documents';
 import PropTypes from 'prop-types';
+import { MenuItem, Menu } from '@mui/material';
 
 
 
@@ -38,6 +42,16 @@ const nullable = propType => (props, propName, ...rest) =>
 
 
 export default function FolderBreadCrumbs({ history, setHistory }) {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClickMenu = (event) => {
+        if (event) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     const dispatch = useDispatch();
 
     const handleClick = (event, id) => {
@@ -51,26 +65,70 @@ export default function FolderBreadCrumbs({ history, setHistory }) {
     }
     return (
         <div role="presentation" onClick={handleClick}>
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="with-menu-demo-breadcrumbs"
+            >   
+                {
+                    history?.filter((_,i) => i !== history.length - 1 && i !== history.length - 2 ).map((history,index) => <MenuItem onClick={(e) => {handleClose(); handleClick(e, history.id)}} key={index}>{history.label}</MenuItem>).reverse()
+                }
+            </Menu>
             <Breadcrumbs aria-label="breadcrumb">
+                {
+                    history?.length > 3 && (
+                        <StyledBreadcrumb
+                            component="a"
+                            href="#"
+                            label={
+                                <span >
+                                    •••
+                                </span>
+                            }
+                            style={{ maxWidth: '150px' }}
+                            onClick={handleClickMenu}
+                        ></StyledBreadcrumb>
+                    )
+                }
                 {
                     history?.map((element, i) => {
                         return (
-                            <StyledBreadcrumb
-                                key={element.id}
-                                component="a"
-                                href="#"
-                                label={
-                                    <span style={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                    }}>
-                                        {element.label}
-                                    </span>
-                                }
-                                style={{ maxWidth: '150px' }}
-                                onClick={(e) => handleClick(e, element.id)}
-                                icon={i === 0 ? <HomeRoundedIcon fontSize="small" /> : <FolderRoundedIcon />}
-                            />
+                            history.length < 4 ?
+                                <StyledBreadcrumb
+                                    key={element.id}
+                                    component="a"
+                                    href="#"
+                                    label={
+                                        <span style={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}>
+                                            {element.label}
+                                        </span>
+                                    }
+                                    style={{ maxWidth: '150px' }}
+                                    onClick={(e) => handleClick(e, element.id)}
+                                    icon={i === 0 ? <HiHome size={19} /> : i === history.length - 1 ? <HiFolderOpen size={19}/> : <HiFolder size={19}/> }
+                                />
+                                : (i === history.length - 1 || i === history.length - 2) && (
+                                    <StyledBreadcrumb
+                                        key={element.id}
+                                        component="a"
+                                        href="#"
+                                        label={
+                                            <span style={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                            }}>
+                                                {element.label}
+                                            </span>
+                                        }
+                                        style={{ maxWidth: '150px' }}
+                                        onClick={(e) => handleClick(e, element.id)}
+                                        icon={i === 0 ? <HiHome size={19} /> : i === history.length - 1 ?  <HiFolderOpen size={19}/> : <HiFolder size={19} />}
+                                    />
+                                )
                         )
                     })
                 }
