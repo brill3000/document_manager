@@ -1,0 +1,13 @@
+body {
+    font-family: "quicksand", "Open Sans", sans-serif;
+    background-color:rgb(243, 243, 243)
+}
+.dragging {
+    cursor: grabbing !important;
+    user-select: none
+}
+.upload-photo {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+ }

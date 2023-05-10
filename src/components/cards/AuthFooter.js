@@ -17,7 +17,7 @@ const AuthFooter = () => {
                 <Typography variant="subtitle2" color="secondary" component="span">
                     &copy; Document Manager By&nbsp;
                     <Typography component={Link} variant="subtitle2" href="#" target="_blank" underline="hover">
-                        Flocy
+                        E-horizon
                     </Typography>
                 </Typography>
 

@@ -20,7 +20,7 @@ const Email = Loadable(lazy(() => import( 'components/email')));
 // const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 // const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 // const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
-const CustomizedTreeView = Loadable(lazy(() => import('components/FolderStructure/Treeview')));
+const CustomizedTreeView = Loadable(lazy(() => import('components/documents/App')));
 const Users = Loadable(lazy(() => import('components/users')));
 
 

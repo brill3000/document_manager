@@ -3,11 +3,11 @@ import Routes from 'routes';
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
 import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SnackbarProvider } from 'notistack';
 import { FileUploaded } from 'ui-component/alerts/documents';
 import { UserAuthContextProvider } from 'context/authContext';
-
+import { TouchBackend } from 'react-dnd-touch-backend';
+import "@fontsource/quicksand";
 
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 
@@ -23,7 +23,7 @@ const App = () => (
     >
         
         <UserAuthContextProvider>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
                 <ThemeCustomization>
                     <ScrollTop>
                         <Routes />
