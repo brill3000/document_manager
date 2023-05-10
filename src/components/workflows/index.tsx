@@ -39,7 +39,6 @@ const Create: React.FC<any> = ({setOpenView} : {setOpenView: Function}) => {
 
 export default function Workflow() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [collapseUnread, setCollapseUnread] = React.useState<boolean>(false);
   const [collapseOthers, setCollapseOthers] = React.useState<boolean>(false);
   const [openView, setOpenView] = React.useState<boolean>(false)
 

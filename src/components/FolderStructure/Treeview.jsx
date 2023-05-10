@@ -275,10 +275,13 @@ export default function CustomTreeView() {
   }, [selected])
 
   return (
-    <ComponentSkeleton>
 
-      <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} documents={documents} setDocuments={setDocuments} uploadedFiles={uploadedFiles} history={history} setHistory={setHistory} setUploadedFiles={setUploadedFiles} />}>
-        <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
+    <MainCard title={<FolderViewerHeader name={selected ? selected[selected.length - 1].name : ''} documents={documents} setDocuments={setDocuments} uploadedFiles={uploadedFiles} history={history} setHistory={setHistory} setUploadedFiles={setUploadedFiles} />}>
+
+      <Grid container spacing={1} sx={{ width: '100%', minHeight: '100%', maxHeight: 500, }}>
+        {
+          pathname !== '/documents/trash'
+          &&
           <Grid
             item
             xs={7}
@@ -302,7 +305,7 @@ export default function CustomTreeView() {
                 </Stack>
 
               </Box>
-            ) : fetchedFolders.isLoading || fetchedFolders.isFetching? (
+            ) : fetchedFolders.isLoading || fetchedFolders.isFetching ? (
               <Box
                 display="flex"
                 justifyContent="center"
@@ -310,7 +313,7 @@ export default function CustomTreeView() {
                 minHeight={450}
                 minWidth="100%"
               >
-                <GoogleLoader height={150} width={150} loop={true}/>
+                <GoogleLoader height={150} width={150} loop={true} />
               </Box>
             ) :
               parentFolders && (
@@ -356,7 +359,7 @@ export default function CustomTreeView() {
                           <Box sx={{ p: .3 }}>
                             <HiOutlineDocumentAdd style={{ fontSize: '16px' }} />
                           </Box>
-                          {matchDownSM ? <></> : <Typography color="secondary.600" sx={{pl: 1}}>New Base Folder</Typography>}
+                          {matchDownSM ? <></> : <Typography color="secondary.600" sx={{ pl: 1 }}>New Base Folder</Typography>}
                         </Stack>
                       </ButtonBase>
                   }
@@ -369,7 +372,7 @@ export default function CustomTreeView() {
                     sx={{ minHeight: 500, flexGrow: 1, maxWidth: 500, overflowY: 'auto', pt: 1.2, pr: 1 }}
                   >
                     {
-                      [...parentFolders, ...newFolders]?.sort((a, b) => a.folder_name.localeCompare(b.folder_name)).filter(x => !x.trashed).map(folder => (
+                      [...parentFolders]?.sort((a, b) => a.folder_name.localeCompare(b.folder_name)).filter(x => !x.trashed).map(folder => (
                         <Box
                           onContextMenu={(e) => handleClick(e, { id: folder.id, name: folder.folder_name })}
                           key={folder.id}
@@ -448,10 +451,11 @@ export default function CustomTreeView() {
               )
             }
           </Grid>
-          <FolderViewer documents={documents} setDocuments={setDocuments} addHistory={addHistory} setUploadedFiles={setUploadedFiles} uploadedFiles={uploadedFiles} />
-        </Grid>
-      </MainCard>
-    </ComponentSkeleton >
+
+        }
+        <FolderViewer documents={documents} setDocuments={setDocuments} addHistory={addHistory} setUploadedFiles={setUploadedFiles} uploadedFiles={uploadedFiles} />
+      </Grid>
+    </MainCard>
   );
 }
 

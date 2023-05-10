@@ -110,15 +110,24 @@ const AuthRegister = () => {
                                 company: values.company,
                                 blocked: false,
                             }
-                            await sendVerification()
+                            const verification = await sendVerification()
+                            console.log(verification, "VERIFICATION")
                             await updateUserName(values.firstname + " " + values.lastname)
-                            await createUser(userDetails);
+                            await createUser(userDetails).then(() => {
+                                const message = `Successfully  Signed Up`
+                                enqueueSnackbar(message, { variant: 'success' })
+                                setStatus({ success: false });
+                                setSubmitting(false);
+                                navigator('/dashboard')
+                            }).catch(() => {
+                                const message = `Registration Failed`
+                                enqueueSnackbar(message, { variant: 'error' })
+                                setStatus({ success: false });
+                                setErrors({ submit: 'Registration Failed' });
+                                setSubmitting(false);
+                            })
 
-                            const message = `Successfully  Signed Up`
-                            enqueueSnackbar(message, { variant: 'success' })
-                            setStatus({ success: false });
-                            setSubmitting(false);
-                            navigator('/dashboard')
+
                         }
 
 

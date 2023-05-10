@@ -22,6 +22,8 @@ import { ActionMenu } from './ActionMenus/ActionMenuMain';
 import { Button } from '../../../node_modules/@mui/material/index';
 import { useEffect } from 'react';
 import { useUserAuth } from 'context/authContext';
+import DocumentApprovalWorkflow from 'components/workflows/components/document/DocumentApprovalWorkflow';
+import { useLocation } from 'react-router';
 
 
 
@@ -97,9 +99,10 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
   const modalType = useSelector(state => state.documents.modalType)
 
   const { user } = useUserAuth()
-
+  const location = useLocation();
+  const { pathname } = location;
   // Firebase Folder Queries
-  const folders = useGetFoldersByParentIdQuery({ parent: openFolder, user: user.uid })
+  const folders = useGetFoldersByParentIdQuery({ parent: openFolder, user: user.uid, route: pathname })
 
   // Firebase File Queries
   const files = useGetFilesByParentIdQuery({ parent: openFolder, user: user.uid })
@@ -298,6 +301,52 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
       else if (type === 'rename') {
         setIsRenaming({ status: true, target: selectedDoc.id })
       }
+      else if (type === 'e_signature') {
+        if (selectedDoc.file_ref && selectedDoc.file_type) {
+          setViewUrl(selectedDoc.file_ref)
+          if (
+            !(selectedDoc.file_type.includes('doc')
+              || selectedDoc.file_type.includes('docx')
+              || selectedDoc.file_type.includes('application/msword')
+              || selectedDoc.file_type.includes('application/msword')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+              || selectedDoc.file_type.includes('application/vnd.ms-powerpoint')
+              || selectedDoc.file_type.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+            )
+          ) {
+
+            setContent(
+              <object type={selectedDoc.file_type}
+                data={selectedDoc.file_ref}
+                width={matchDownSM ? "450px" : matchUpMD ? "520px" : matchUpLG ? "800px" : "600px"}
+                height={matchDownSM ? "480px" : matchUpMD ? "500px" : matchUpLG ? "700px" : "500px"}
+              >
+                <embed id="thissite" src={selectedDoc.file_ref}></embed>
+                {matchDownSM ? <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>View Link</a></Button> : <a href={selectedDoc.file_ref}>Download File</a>}
+              </object>
+            )
+            dispatch(setOpenFileView({ openFileView: true }))
+          } else {
+            setContent(
+              <Button variant="contained" color="primary"><a href={selectedDoc.file_ref}>download pdf</a></Button>
+            )
+            const message = `You cannot currently view this file type, Download the file to view`
+            enqueueSnackbar(message, { variant: 'warning' })
+            dispatch(setOpenFileView({ openFileView: true }))
+
+          }
+        } else {
+          const message = `You cannot currently view this file`
+          enqueueSnackbar(message, { variant: 'error' })
+        }
+      }
+      else if(type === 'workflow'){
+        setContent(
+          <DocumentApprovalWorkflow name={selectedDoc.file_name} id={selectedDoc.id}/>
+        )
+        dispatch(setOpenFileView({ openFileView: true }))
+      }
       else {
         if (selectedDoc.file_ref && selectedDoc.file_type) {
           setViewUrl(selectedDoc.file_ref)
@@ -464,7 +513,7 @@ export default function FolderViewer({ documents, setDocuments, addHistory, uplo
                 documents && Array.isArray(documents) ?
                   documents.length > 0 ?
                     [...documents, ...uploadedFiles].map((document) => (
-                      document.parent === openFolder &&
+                      (document.parent === openFolder || pathname === '/documents/trash')&&
                       <Grid item xs={12} sm={6} md={3} lg={2} key={document.id} sx={{ backgroundColor: 'transparent' }} >
                         <Badge color="primary" overlap="circular" badgeContent={document.noOfChildren}>
                           <ButtonBase

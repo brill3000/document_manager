@@ -2,16 +2,9 @@ import * as React from 'react';
 
 // material-ui
 import {
-    Avatar,
-    AvatarGroup,
     Box,
     Button,
     Grid,
-    List,
-    ListItemAvatar,
-    ListItemButton,
-    ListItemSecondaryAction,
-    ListItemText,
     // MenuItem,
     Stack,
     // TextField,
@@ -28,12 +21,7 @@ import MainCard from 'components/MainCard';
 // import CustomCard from 'components/cards/statistics/CustomCard';
 
 // assets
-import { FileAddOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
 
-import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';
 // import { ShoppingCartOutlined } from '@ant-design/icons';
 // import DeleteSweepOutlinedIcon from '@mui/icons-material/DeleteSweepOutlined';
 // import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
@@ -44,15 +32,19 @@ import avatar4 from 'assets/images/users/avatar-4.png';
 // import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
 // import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
 import EarningCard from './EarningCard';
+import { useGetAllRecentLogsQuery, useGetAllRecentlyModifiedDocumentsQuery } from 'store/async/logsQuery';
+import { useUserAuth } from 'context/authContext';
+import { RecentActivity } from './RecentActivity';
+import { useGetUsersSummaryQuery } from 'store/async/usersQuery';
 // avatar style
-const avatarSX = {
+export const avatarSX = {
     width: 36,
     height: 36,
     fontSize: '1rem'
 };
 
 // action style
-const actionSX = {
+export const actionSX = {
     mt: 0.75,
     ml: 1,
     top: 'auto',
@@ -88,6 +80,32 @@ const DashboardDefault = () => {
         setIsLoading(false)
     }, [])
 
+
+    const { user } = useUserAuth()
+
+
+
+    const recentActivity = useGetAllRecentLogsQuery({ user: user.uid })
+    const recentlyModified = useGetAllRecentlyModifiedDocumentsQuery({ user: user.uid })
+    const userSummary = useGetUsersSummaryQuery(user.uid)
+
+    const documentCount = React.useMemo(
+      () => {
+        return userSummary.data ? userSummary.data.document_count ? userSummary.data.document_count.toString() : '0' : '0'
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [userSummary.data],)
+    
+      const usersCount = React.useMemo(
+        () => {
+          return userSummary.data ? userSummary.data.users_count ? userSummary.data.users_count.toString() : '0' : '0'
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [userSummary.data],)
+    
+
+
+
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             {/* row 1 */}
@@ -95,102 +113,34 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                {/* <CustomCard
-                    title="Total Documents"
-                    count="10"
-                    percentage={1}
-                    extra="0"
-                    icon={
-                        <Avatar
-                            sx={{
-                                color: 'secondary.600',
-                                bgcolor: 'transparent'
-                            }}
-                        >
-                            <SourceOutlinedIcon style={{ fontSize: '1.8rem' }} />
-                        </Avatar>
-                    }
-                /> */}
                 <EarningCard
                     isLoading={isLoading}
                     title="Total Documents"
-                    count="10"
+                    count={documentCount}
                     color={'primary'}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                {/* <CustomCard
-                    title="Total Groups"
-                    count="3"
-                    percentage={27.4}
-                    isLoss
-                    extra="0"
-                    icon={
-                        <Avatar
-                            sx={{
-                                color: 'secondary.600',
-                                bgcolor: 'transparent'
-                            }}
-                        >
-                            <GroupsOutlinedIcon style={{ fontSize: '1.8rem' }} />
-                        </Avatar>
-                    }
-                /> */}
                 <EarningCard
                     isLoading={isLoading}
-                    title="Total Groups"
-                    count="3"
+                    title="Total Departments"
+                    count="10"
                     color={'success'}
                 />
-
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                {/* <CustomCard
-                    title="Total roles"
-                    count="3"
-                    percentage={27.4}
-                    isLoss
-                    extra="0"
-                    icon={
-                        <Avatar
-                            sx={{
-                                color: 'secondary.600',
-                                bgcolor: 'transparent'
-                            }}
-                        >
-                            <ReduceCapacityOutlinedIcon style={{ fontSize: '1.8rem' }} />
-                        </Avatar>
-                    }
-                /> */}
                 <EarningCard
                     isLoading={isLoading}
                     title="Total roles"
-                    count="3"
+                    count="2"
                     color={'info'}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                {/* <CustomCard
-                    title="Total users"
-                    count="6"
-                    percentage={27.4}
-                    isLoss
-                    extra="0"
-                    icon={
-                        <Avatar
-                            sx={{
-                                color: 'secondary.600',
-                                bgcolor: 'transparent'
-                            }}
-                        >
-                            <SwitchAccountOutlinedIcon style={{ fontSize: '1.8rem' }} />
-                        </Avatar>
-                    }
-                /> */}
                 <EarningCard
                     isLoading={isLoading}
                     title="Total users"
-                    count="6"
+                    count={usersCount}
                     color={'warning'}
                 />
 
@@ -203,7 +153,7 @@ const DashboardDefault = () => {
             <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Checked Out Documents</Typography>
+                        <Typography variant="h5">Documents Overview</Typography>
                     </Grid>
                     <Grid item>
                         <Stack direction="row" alignItems="center" spacing={0}>
@@ -228,7 +178,7 @@ const DashboardDefault = () => {
                 </Grid>
                 <MainCard content={false} sx={{ mt: 1.5 }}>
                     <Box sx={{ pt: 1, pr: 2 }}>
-                        <IncomeAreaChart slot={slot} />
+                        <IncomeAreaChart slot={slot} userSummary={userSummary} />
                     </Box>
                 </MainCard>
             </Grid>
@@ -256,129 +206,16 @@ const DashboardDefault = () => {
             <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Recently Accessed Documents</Typography>
+                        <Typography variant="h5">Recently Modified Documents</Typography>
                     </Grid>
                     <Grid item />
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <AccesedDocTables />
+                    <AccesedDocTables recentlyModified={recentlyModified} />
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
-                        <Typography variant="h5">Recent Activity</Typography>
-                    </Grid>
-                    <Grid item />
-                </Grid>
-                <MainCard sx={{ mt: 2 }} content={false}>
-                    <List
-                        component="nav"
-                        sx={{
-                            px: 0,
-                            py: 0,
-                            '& .MuiListItemButton-root': {
-                                py: 1.5,
-                                '& .MuiAvatar-root': avatarSX,
-                                '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-                            }
-                        }}
-                    >
-                        <ListItemButton divider>
-                            <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        color: 'success.main',
-                                        bgcolor: 'success.lighter'
-                                    }}
-                                >
-                                    <FileAddOutlined />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={<Typography variant="subtitle1">Added Budget Approval File</Typography>}
-                                secondary="Today, 2:00 AM"
-                            />
-                            <ListItemSecondaryAction>
-                                <Stack alignItems="flex-end">
-                                    <Typography variant="h6" color="secondary" noWrap>
-                                        Desktop
-                                    </Typography>
-                                </Stack>
-                            </ListItemSecondaryAction>
-                        </ListItemButton>
-                        <ListItemButton divider>
-                            <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        color: 'primary.main',
-                                        bgcolor: 'primary.lighter'
-                                    }}
-                                >
-                                    <DeleteOutlined />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={<Typography variant="subtitle1">Deleted Sample2 File</Typography>}
-                                secondary="5 August, 1:45 PM"
-                            />
-                            <ListItemSecondaryAction>
-                                <Stack alignItems="flex-end">
-                                    <Typography variant="h6" color="secondary" noWrap>
-                                        Mobile
-                                    </Typography>
-                                </Stack>
-                            </ListItemSecondaryAction>
-                        </ListItemButton>
-                        <ListItemButton>
-                            <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        color: 'error.main',
-                                        bgcolor: 'error.lighter'
-                                    }}
-                                >
-                                    <SettingOutlined />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={<Typography variant="subtitle1">Changed Password</Typography>} secondary="7 hours ago" />
-                            <ListItemSecondaryAction>
-                                <Stack alignItems="flex-end">
-                                    <Typography variant="h6" color="secondary" noWrap>
-                                        Mobile
-                                    </Typography>
-                                </Stack>
-                            </ListItemSecondaryAction>
-                        </ListItemButton>
-                    </List>
-                </MainCard>
-                <MainCard sx={{ mt: 2 }}>
-                    <Stack spacing={3}>
-                        <Grid container justifyContent="space-between" alignItems="center">
-                            <Grid item>
-                                <Stack>
-                                    <Typography variant="h5" noWrap>
-                                        Help & Support Chat
-                                    </Typography>
-                                    <Typography variant="caption" color="secondary" noWrap>
-                                        Typical replay within 5 min
-                                    </Typography>
-                                </Stack>
-                            </Grid>
-                            <Grid item>
-                                <AvatarGroup sx={{ '& .MuiAvatar-root': { width: 32, height: 32 } }}>
-                                    <Avatar alt="Remy Sharp" src={avatar1} />
-                                    <Avatar alt="Travis Howard" src={avatar2} />
-                                    <Avatar alt="Cindy Baker" src={avatar3} />
-                                    <Avatar alt="Agnes Walker" src={avatar4} />
-                                </AvatarGroup>
-                            </Grid>
-                        </Grid>
-                        <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }}>
-                            Need Help?
-                        </Button>
-                    </Stack>
-                </MainCard>
+                <RecentActivity recentActivity={recentActivity} />
             </Grid>
             {/* <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
@@ -566,3 +403,4 @@ const DashboardDefault = () => {
 };
 
 export default DashboardDefault;
+

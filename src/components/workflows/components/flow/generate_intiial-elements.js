@@ -3,66 +3,66 @@ import { MarkerType } from 'react-flow-renderer';
 
 export const nodes = [
 
-  // {
-  //   id: '2',
-  //   data: {
-  //     label: (
-  //       <>
-  //         <strong>Stake holder consultation</strong>
-  //       </>
-  //     ),
-  //   },
-  //   position: { x: 100, y: 100 },
-  // },
-  // {
-  //   id: '3',
-  //   data: {
-  //     label: (
-  //       <>
-  //         <strong>Document Assembly</strong>
-  //       </>
-  //     ),
-  //   },
-  //   position: { x: 400, y: 100 },
-  //   style: {
-  //     background: '#D6D5E6',
-  //     color: '#333',
-  //     border: '1px solid #222138',
-  //     width: 180,
-  //   },
-  // },
-  // {
-  //   id: '4',
-  //   position: { x: 250, y: 200 },
-  //   data: {
-  //     label: 'Assignment of Approval Document',
-  //   },
-  // },
-  // {
-  //   id: '5',
-  //   data: {
-  //     label: 'Signing and approval of document',
-  //   },
-  //   position: { x: 250, y: 325 },
-  // },
-  // {
-  //   id: '6',
-  //   type: 'output',
-  //   data: {
-  //     label: (
-  //       <>
-  //         <strong>Complete and filing of Licencing Agreement</strong>
-  //       </>
-  //     ),
-  //   },
-  //   position: { x: 100, y: 480 },
-  // },
-  // {
-  //   id: '7',
-  //   type: 'output',
-  //   data: { label: 'Report Generation and Feedback' },
-  //   position: { x: 400, y: 450 },
-  // },
+  {
+    id: '2',
+    data: {
+      label: (
+        <>
+          <strong>Stake holder consultation</strong>
+        </>
+      ),
+    },
+    position: { x: 100, y: 100 },
+  },
+  {
+    id: '3',
+    data: {
+      label: (
+        <>
+          <strong>Document Assembly</strong>
+        </>
+      ),
+    },
+    position: { x: 400, y: 100 },
+    style: {
+      background: '#D6D5E6',
+      color: '#333',
+      border: '1px solid #222138',
+      width: 180,
+    },
+  },
+  {
+    id: '4',
+    position: { x: 250, y: 200 },
+    data: {
+      label: 'Assignment of Approval Document',
+    },
+  },
+  {
+    id: '5',
+    data: {
+      label: 'Signing and approval of document',
+    },
+    position: { x: 250, y: 325 },
+  },
+  {
+    id: '6',
+    type: 'output',
+    data: {
+      label: (
+        <>
+          <strong>Complete and filing of Licencing Agreement</strong>
+        </>
+      ),
+    },
+    position: { x: 100, y: 480 },
+  },
+  {
+    id: '7',
+    type: 'output',
+    data: { label: 'Report Generation and Feedback' },
+    position: { x: 400, y: 450 },
+  },
 ];
 
 export const edges = [

@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { GlobalStyles } from '@mui/system';
-import { CssVarsProvider } from '@mui/joy/styles';
-import type { Theme } from '@mui/joy/styles';
+
 // import Box from '@mui/joy/Box';
 // import Typography from '@mui/joy/Typography';
 // import IconButton from '@mui/joy/IconButton';
@@ -9,19 +7,13 @@ import IconButton from '@mui/joy/IconButton';
 
 
 // custom
-import emailTheme from '../../global/Themes/theme';
-import Layout from '../../global/UI/Layout';
-import Navigation from './components/Navigation';
-import { NavBar } from '../../global/UI/NavBar';
-import Sheet from '@mui/joy/Sheet';
-import { TiFlowChildren } from "react-icons/ti";
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/reducers';
 import { useGetSystemUsersQuery } from 'store/async/usersQuery';
-import { Experimental_CssVarsProvider, useTheme } from '@mui/material';
+import { Box, Button, Stack, useTheme , Card} from '@mui/material';
 import UserTable from './components/UserTable.jsx';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
-
+import { BsHandIndex } from "react-icons/bs";
 
 
 const Create: React.FC<any> = () => {
@@ -70,58 +62,47 @@ export default function Users({ title }: { title: string }) {
   }, [usersQuery.isSuccess, usersQuery.data])
 
   return (
-    <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
-      <Sheet
-        variant="outlined" color="neutral"
+    <Stack spacing={2}>
+      <Box
+        maxHeight={50}
+        maxWidth={200}
+      >
+        <Button variant="contained"
+          startIcon={<BsHandIndex size={20} />}
+        >
+          Add User
+        </Button>
+      </Box>
+
+      <Card
+        elevation={0}
         sx={{
-          borderRadius: 10,
-          maxHeight: 650,
-          overflowY: 'hidden'
+          border: '1px solid',
+          borderRadius: 2,
+          borderColor: theme.palette.divider,
+          boxShadow: 'inherit',
+          ':hover': {
+            boxShadow: 'inherit'
+          },
+          '& pre': {
+            m: 0,
+            p: '16px !important',
+            fontFamily: theme.typography.fontFamily,
+            fontSize: '0.75rem'
+          }
         }}
       >
-        <GlobalStyles<Theme>
-          styles={(theme) => ({
-            body: {
-              margin: 0,
-              fontFamily: theme.vars.fontFamily.body,
-            },
-          })}
-        />
-        {drawerOpen && (
-          <Layout.SideDrawer onClose={() => setDrawerOpen(false)}>
-            <Navigation department={department} />
-          </Layout.SideDrawer>
-        )}
-        <Layout.Department
-          sx={{
-            ...(drawerOpen && {
-              height: '100vh',
-              overflow: 'hidden',
-            }),
-          }}
-        >
-          <NavBar setDrawerOpen={setDrawerOpen} title={department} icon={<TiFlowChildren size={17} />} actions={[<Create />]}/>
-          <Layout.SideNav>
-            <Navigation department={department} />
-          </Layout.SideNav>
-          <Layout.Main sx={{ maxHeight: 600, overflowY: 'auto', width: '100%' }}>
 
-            {
-              <Experimental_CssVarsProvider>
-                <UserTable
-                  usersIsLoading={usersQuery.isLoading}
-                  usersIsError={usersQuery.isError}
-                  usersIsFetching={usersQuery.isFetching}
-                  // usersIsSuccess={usersQuery.isSuccess}
-                  usersError={usersQuery.error}
-                  users={search.length === 0 && users.length === 0 ? users : [...users].filter(customer => customer.name.toLowerCase().includes(search.toLowerCase())) || [...users].filter(customer => customer.email.toLowerCase().includes(search.toLowerCase()))} />
-              </Experimental_CssVarsProvider>
-            }
+        <UserTable
+          usersIsLoading={usersQuery.isLoading}
+          usersIsError={usersQuery.isError}
+          usersIsFetching={usersQuery.isFetching}
+          // usersIsSuccess={usersQuery.isSuccess}
+          usersError={usersQuery.error}
+          users={search.length === 0 && users.length === 0 ? users : [...users].filter(customer => customer.name.toLowerCase().includes(search.toLowerCase())) || [...users].filter(customer => customer.email.toLowerCase().includes(search.toLowerCase()))} />
 
-          </Layout.Main>
-        </Layout.Department>
-      </Sheet>
-    </CssVarsProvider>
+      </Card>
+    </Stack>
   );
 }
 

@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { db } from "../../firebase-config"
-import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc } from "firebase/firestore"
+import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, getDoc, runTransaction } from "firebase/firestore"
 
 
 const omit = (obj, omitKeys) => {
@@ -96,52 +96,21 @@ const fileConverter = {
             );
     }
 };
+const logsConverter = {
+    toFirestore: (log) => {
+        return {
+            created_by: log.created_by.id,
+            created_by_name: log.created_by.name,
+            date_created: Timestamp.fromDate(new Date()),
+            file_name: log.file_name,
+            log_type: log.log_type,
+            log_category: log.log_category,
+            log_description: log.log_description,
+            file_modified: log.file_modified ?? false
+        }
+    },
+};
 
-
-// class File {
-//     constructor(archived, created_by, date_created, date_modified, file_name, file_type, isFolder, file_ref, parent, size, trashed, locked) {
-//         this.archived = archived
-//         this.created_by = created_by;
-//         this.date_created = new Date(date_created.seconds).toDateString()
-//         this.date_modified = new Date(date_modified.seconds).toDateString()
-//         this.file_name = file_name;
-//         this.isFolder = isFolder;
-//         this.file_ref = file_ref;
-//         this.file_type = file_type;
-//         this.parent = parent;
-//         this.size = size;
-//         this.trashed = trashed;
-//         this.locked = locked;
-//     }
-//     toString() {
-//         return this.created_by + ', ' + this.date_created + ', ' + this.date_modified + ', ' + this.file_name + ', ' + this.isFolder + ', ' + this.file_ref + ', ' + this.parent + ', ' + this.size + ', ' + this.trashed + ', ' + this.locked;
-//     }
-// }
-
-
-// // Firestore data converter
-// const fileConverter = {
-//     toFirestore: (file) => {
-//         return {
-//             archived: file.archived,
-//             created_by: "Admin",
-//             date_created: Timestamp.fromDate(new Date()),
-//             date_modified: Timestamp.fromDate(new Date()),
-//             file_name: file.file_name,
-//             isFolder: false,
-//             file_ref: file.file_ref,
-//             file_type: file.file_type,
-//             parent: file.parent,
-//             size: file.size,
-//             trashed: file.trashed,
-//             locked: file.locked,
-//         };
-//     },
-//     fromFirestore: (snapshot, options) => {
-//         const data = snapshot.data(options);
-//         return new File(data.archived, data.created_by, data.date_created, data.date_modified, data.file_name, data.file_type, data.isFolder, data.file_ref, data.parent, data.size, data.trashed, data.locked);
-//     }
-// };
 
 
 export const filesQuery = createApi({
@@ -155,7 +124,7 @@ export const filesQuery = createApi({
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
                     let files = [];
                     // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
-                    const q = query(collection(db, "files"), where("parent", "==", queryParams.parent), where("created_by", '==',  queryParams.user));
+                    const q = query(collection(db, "files"), where("parent", "==", queryParams.parent), where("created_by", '==', queryParams.user));
 
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
@@ -167,7 +136,6 @@ export const filesQuery = createApi({
                             date_modified: data.data().date_created ? new Date(data.data().date_modified.seconds * 1000).toDateString() : null,
                             ...fileDataOmited
                         }
-
                         files.push(file)
                     })
                     return { data: files }
@@ -186,6 +154,40 @@ export const filesQuery = createApi({
                     const q = collection(db, "files");
                     const { id } = await addDoc(q, fileConverter.toFirestore(file))
 
+                    const q2 = collection(db, "logs");
+                    const log = {
+                        created_by: {
+                            id: file.created_by.id,
+                            name: file.created_by.name
+                        },
+                        date_created: Timestamp.fromDate(new Date()),
+                        file_name: file.file_name,
+                        log_type: "uploaded",
+                        log_category: 'files',
+                        log_description: `User ${file.created_by.name} uploaded ${file.file_name}`
+                    }
+                    await addDoc(q2, logsConverter.toFirestore(log))
+                    const summaryRef = doc(db, "user_summary", file.created_by.id);
+
+                    const day = new Date().getDay()
+                    const month = new Date().getMonth()
+
+
+                    await runTransaction(db, async (transaction) => {
+                        const summaryDoc = await transaction.get(summaryRef);
+                        if (!summaryDoc.exists()) {
+                            throw new Error("Document does not exist!");
+                        }
+
+                        const weekly = {[day]: summaryDoc.data().weekly[day] + 1 }
+                        const monthly = {[month]: summaryDoc.data().monthly[month] + 1 }
+
+                        transaction.update(summaryRef, { document_count: summaryDoc.data().document_count ? summaryDoc.data().document_count  + 1 : 1  , last_update: Timestamp.fromDate(new Date()), weekly: {...summaryDoc.data().weekly, ...weekly}, monthly: {...summaryDoc.data().monthly, ...monthly} });
+                    });
+
+
+
+
                     return { data: id }
 
                 } catch (e) {
@@ -193,7 +195,7 @@ export const filesQuery = createApi({
                 }
 
             },
-            // invalidatesTags: ['files']
+            invalidatesTags: ['logs']
         }),
         trashFolder: builder.mutation({
             async queryFn(file) {
@@ -206,6 +208,22 @@ export const filesQuery = createApi({
 
                     const docRef = doc(db, "files", file.id);
                     const response = await updateDoc(docRef, data)
+                    const q2 = collection(db, "logs");
+                    const docSnap = await getDoc(docRef);
+                    let fileData = { ...docSnap.data() };
+                    const log = {
+                        created_by: {
+                            id: fileData.created_by,
+                            name: fileData.created_by_name
+                        },
+                        date_created: Timestamp.fromDate(new Date()),
+                        file_name: fileData.file_name,
+                        log_type: "trashed",
+                        log_category: 'files',
+                        file_modified: true,
+                        log_description: `User ${fileData.created_by_name} trashed ${fileData.file_name}`
+                    }
+                    await addDoc(q2, logsConverter.toFirestore(log))
 
                     return { data: response }
 
@@ -214,19 +232,33 @@ export const filesQuery = createApi({
                 }
 
             },
-            // invalidatesTags: ['files']
+            invalidatesTags: ['logs']
         }),
         restoreFile: builder.mutation({
             async queryFn(file) {
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-
                     const data = {
                         trashed: false
                     };
-
                     const docRef = doc(db, "files", file.id);
                     const response = await updateDoc(docRef, data)
+                    const q2 = collection(db, "logs");
+                    const docSnap = await getDoc(docRef);
+                    let fileData = { ...docSnap.data() };
+                    const log = {
+                        created_by: {
+                            id: fileData.created_by,
+                            name: fileData.created_by_name
+                        },
+                        date_created: Timestamp.fromDate(new Date()),
+                        file_name: fileData.file_name,
+                        log_type: "restored",
+                        log_category: 'files',
+                        file_modified: true,
+                        log_description: `User ${fileData.created_by_name} restored ${fileData.file_name}`
+                    }
+                    await addDoc(q2, logsConverter.toFirestore(log))
 
                     return { data: response }
 
@@ -235,7 +267,7 @@ export const filesQuery = createApi({
                 }
 
             },
-            // invalidatesTags: ['files']
+            invalidatesTags: ['logs']
         }),
 
         renameFiles: builder.mutation({
@@ -247,6 +279,22 @@ export const filesQuery = createApi({
                     };
                     const docRef = doc(db, "files", file.id);
                     const response = await updateDoc(docRef, data)
+                    const q2 = collection(db, "logs");
+                    const docSnap = await getDoc(docRef);
+                    let fileData = { ...docSnap.data() };
+                    const log = {
+                        created_by: {
+                            id: fileData.created_by,
+                            name: fileData.created_by_name
+                        },
+                        date_created: Timestamp.fromDate(new Date()),
+                        file_name: fileData.file_name,
+                        log_type: "renamed",
+                        log_category: 'files',
+                        file_modified: true,
+                        log_description: `User ${fileData.created_by_name} renamed ${fileData.file_name}`
+                    }
+                    await addDoc(q2, logsConverter.toFirestore(log))
 
                     return { data: response }
 
@@ -255,7 +303,7 @@ export const filesQuery = createApi({
                 }
 
             },
-            // invalidatesTags: ['files']
+            invalidatesTags: ['logs']
         })
     })
 })

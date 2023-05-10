@@ -10,6 +10,8 @@ import { Box, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHea
 
 // project import
 import Dot from 'components/@extended/Dot';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { formatDate } from './RecentActivity';
 
 function createData(name, fat, carbs, protein) {
     return { name, fat, carbs, protein };
@@ -70,23 +72,23 @@ const headCells = [
         label: 'Document Name'
     },
     {
-        id: 'fat',
+        id: 'modification',
         align: 'right',
         disablePadding: false,
-        label: 'Document Type'
+        label: 'Modification Date'
     },
     {
-        id: 'carbs',
+        id: 'date',
         align: 'left',
         disablePadding: false,
 
-        label: 'Document Privacy'
+        label: 'Modification'
     },
     {
-        id: 'protein',
+        id: 'user',
         align: 'right',
         disablePadding: false,
-        label: 'Document Size'
+        label: 'User Modified'
     }
 ];
 
@@ -123,17 +125,21 @@ const AccessStatus = ({ status }) => {
     let title;
 
     switch (status) {
-        case 0:
+        case 'trashed':
             color = 'warning';
-            title = 'Public';
+            title = 'Trashed';
             break;
-        case 1:
+        case 'renamed':
+            color = 'primary';
+            title = 'Renamed';
+            break;
+        case 'approved':
             color = 'success';
-            title = 'New';
+            title = 'Approved';
             break;
-        case 2:
+        case 'deleted':
             color = 'error';
-            title = 'Private';
+            title = 'Deleted';
             break;
         default:
             color = 'primary';
@@ -154,9 +160,9 @@ AccessStatus.propTypes = {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function AccesedDocTables() {
+export default function AccesedDocTables({ recentlyModified }) {
     const [order] = useState('asc');
-    const [orderBy] = useState('trackingNo');
+    const [orderBy] = useState('name');
     const [selected] = useState([]);
 
     const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
@@ -173,55 +179,100 @@ export default function AccesedDocTables() {
                     '& td, & th': { whiteSpace: 'nowrap' }
                 }}
             >
-                <Table
-                    aria-labelledby="tableTitle"
-                    sx={{
-                        '& .MuiTableCell-root:first-of-type': {
-                            pl: 2
-                        },
-                        '& .MuiTableCell-root:last-child': {
-                            pr: 3
-                        }
-                    }}
-                >
-                    <AccesedDocTableHead order={order} orderBy={orderBy} />
-                    <TableBody>
-                        {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-                            const isItemSelected = isSelected(row.name);
-                            const labelId = `enhanced-table-checkbox-${index}`;
-                            return (
-                                <TableRow
-                                    hover
-                                    role="checkbox"
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    aria-checked={isItemSelected}
-                                    tabIndex={-1}
-                                    key={index}
-                                    selected={isItemSelected}
+
+                {
+                    recentlyModified.isLoading || recentlyModified.isFetching
+                        ?
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight={300}
+                            minWidth="100%"
+                        >
+                            <GoogleLoader height={100} width={150} loop={true} />
+                        </Box>
+                        :
+                        recentlyModified.isError
+                            ?
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                minHeight={300}
+                                minWidth="100%"
+                            >
+                                <Stack direction="column">
+                                    <Error height={50} width={50} />
+                                    <Typography variant='body3'>{recentlyModified.error ?? "Opps... An Error  has occured"}</Typography>
+                                </Stack>
+                            </Box>
+                            :
+                            recentlyModified.isSuccess && recentlyModified.data && Array.isArray(recentlyModified.data) &&
+                                recentlyModified.data.length > 0
+                                ?
+                                <Table
+                                    aria-labelledby="tableTitle"
+                                    sx={{
+                                        '& .MuiTableCell-root:first-of-type': {
+                                            pl: 2
+                                        },
+                                        '& .MuiTableCell-root:last-child': {
+                                            pr: 3
+                                        }
+                                    }}
                                 >
-                                    {/* <TableCell component="th" id={labelId} scope="row" align="left">
-                                        <Link color="secondary" component={RouterLink} to="">
-                                            {row.trackingNo}
-                                        </Link>
-                                    </TableCell> */}
-                                    <TableCell component="th" id={labelId} scope="row" align="left">
-                                        <Link color="secondary" component={RouterLink} to="">
-                                            {row.name}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell align="right">{row.fat}</TableCell>
-                                    <TableCell align="left">
-                                        <AccessStatus status={row.carbs} />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {row.protein} MB
-                                        {/* <NumberFormat value={row.protein} displayType="text" thousandSeparator prefix="$" /> */}
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
+                                    <AccesedDocTableHead order={order} orderBy={orderBy} />
+                                    <TableBody>
+                                        {
+                                            stableSort(recentlyModified.data, getComparator(order, orderBy)).map((row, index) => {
+                                                const isItemSelected = isSelected(row.name);
+                                                const labelId = `enhanced-table-checkbox-${index}`;
+                                                let newDate = formatDate(new Date(Date.parse(row.date_created)))
+                                                if (new Date(Date.parse(row.date_created)).toDateString() === new Date().toDateString()) {
+                                                    newDate = "Today, " + newDate.split(" ")[1]
+                                                }
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        role="checkbox"
+                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                        aria-checked={isItemSelected}
+                                                        tabIndex={-1}
+                                                        key={index}
+                                                        selected={isItemSelected}
+                                                    >
+                                                        <TableCell component="th" id={labelId} scope="row" align="left">
+                                                            <Link color="secondary" component={RouterLink} to="">
+                                                                {row.file_name}
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell align="right">{newDate}</TableCell>
+                                                        <TableCell align="left">
+                                                            <AccessStatus status={row.log_type} />
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            {row.created_by_name}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })
+                                        }
+                                    </TableBody>
+                                </Table>
+
+                                :
+                                <Box
+                                    display="flex"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    minHeight={300}
+                                    minWidth="100%"
+                                    p={3}
+                                >
+                                    <Typography variant='h5'> No Recently Modified Document </Typography>
+                                </Box>
+                }
             </TableContainer>
         </Box>
     );

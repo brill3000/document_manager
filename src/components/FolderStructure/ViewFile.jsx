@@ -8,6 +8,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenFileView } from 'store/reducers/documents';
+import { Box, Grid, Typography } from '@mui/material';
+import SignatureCanvas from 'react-signature-canvas'
+import { Stack } from '@mui/system';
+
 
 
 export default function ViewFile({ children, modalType, viewUrl, isFullScreen }) {
@@ -29,7 +33,17 @@ export default function ViewFile({ children, modalType, viewUrl, isFullScreen })
                     {modalType ?? 'Modal'}
                 </DialogTitle>
                 <DialogContent>
-                    {children}
+                    <Stack direction={"column"}>
+                        {children}
+                        {
+                            modalType === 'e_signature' &&
+                            <Stack direction={"column"} sx={{ position: 'absolute', bgcolor: 'wheat', borderRadius: 3, bottom: 10, left: '20%', zIndex: 2500, p: 1 }}>
+                                <Typography variant='body1'>Enter Signature below...</Typography>
+                                <SignatureCanvas penColor='green'
+                                    canvasProps={{ width: 200, height: 200, className: 'sigCanvas' }} />
+                            </Stack>
+                        }
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus variant='outlined' color='error' onClick={() => dispatch(setOpenFileView({ openFileView: false }))}>

@@ -7,7 +7,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { SnackbarProvider } from 'notistack';
 import { FileUploaded } from 'ui-component/alerts/documents';
 import { UserAuthContextProvider } from 'context/authContext';
-import { CssVarsProvider } from '@mui/joy/styles';
 
 
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //

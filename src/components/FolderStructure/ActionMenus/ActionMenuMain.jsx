@@ -6,6 +6,12 @@ import { HiOutlineTrash, HiOutlineDocumentDuplicate, HiEyeOff, HiOutlinePencil, 
 import Divider from '@mui/material/Divider';
 import { StyledMenu } from '../FolderViewer';
 
+import { FaFileSignature } from "react-icons/fa";
+import { TiFlowMerge } from "react-icons/ti";
+
+
+
+
 export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder }) => {
   return <StyledMenu
     id="demo-customized-menu"
@@ -26,7 +32,7 @@ export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder
     >
       <Stack direction="row">
         <Box sx={{ p: .3 }}>
-          <HiOutlineBookOpen style={{ fontSize: '17px' }} />
+          <HiOutlineBookOpen size={18} />
         </Box>
         <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">{isFolder ? 'Open' : 'View'}</Typography>
       </Stack>
@@ -37,7 +43,7 @@ export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder
     >
       <Stack direction="row">
         <Box sx={{ p: .3 }}>
-          <HiOutlineDocumentDuplicate style={{ fontSize: '17px' }} />
+          <HiOutlineDocumentDuplicate size={18}/>
         </Box>
         <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Copy</Typography>
       </Stack>
@@ -50,9 +56,21 @@ export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder
     >
       <Stack direction="row">
         <Box sx={{ p: .3 }}>
-          <HiOutlinePencil style={{ fontSize: '17px' }} />
+          <HiOutlinePencil size={18}/>
         </Box>
         <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Rename</Typography>
+      </Stack>
+    </MenuItem>
+    <MenuItem
+      onClick={(e) => {
+        handleMenuClick(e, 'e_signature');
+      }}
+    >
+      <Stack direction="row">
+        <Box sx={{ p: .3 }}>
+          <FaFileSignature size={16} />
+        </Box>
+        <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">E Signature</Typography>
       </Stack>
     </MenuItem>
     <MenuItem
@@ -62,9 +80,21 @@ export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder
     >
       <Stack direction="row">
         <Box sx={{ p: .3 }}>
-          <HiEyeOff style={{ fontSize: '17px' }} />
+          <HiEyeOff size={17}/>
         </Box>
         <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Edit Access</Typography>
+      </Stack>
+    </MenuItem>
+    <MenuItem
+      onClick={(e) => {
+        handleMenuClick(e, 'workflow');
+      }}
+    >
+      <Stack direction="row">
+        <Box sx={{ p: .3 }}>
+          <TiFlowMerge size={20}/>
+        </Box>
+        <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1 }} color="secondary.600">Start Approval Workflow</Typography>
       </Stack>
     </MenuItem>
     <MenuItem
@@ -74,7 +104,7 @@ export const ActionMenu = ({ contextMenu, handleClose, handleMenuClick, isFolder
     >
       <Stack direction="row">
         <Box sx={{ p: .3 }}>
-          <HiOutlineTrash style={{ fontSize: '17px', color: 'red' }} />
+          <HiOutlineTrash size={18} style={{ color: 'red' }} />
         </Box>
         <Typography variant="subtitle2" sx={{ fontSize: 14, pl: 1, color: 'red' }} color="secondary.600">Delete</Typography>
       </Stack>

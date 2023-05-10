@@ -22,10 +22,12 @@ import { foldersQuery } from './async/folderQuery';
 import { filesQuery } from './async/filesQuery';
 import { usersQuery } from './async/usersQuery';
 import { messageQuery } from "./async/messagesQuery";
+import { logsQuery } from "./async/logsQuery";
 
 
 import logger from "redux-logger"
 import reducers from './reducers';
+import { workflowQuery } from "./async/workflowQuery";
 
 
 export const store = configureStore({
@@ -36,6 +38,10 @@ export const store = configureStore({
         .concat(filesQuery.middleware)
         .concat(usersQuery.middleware)
         .concat(messageQuery.middleware)
+        .concat(workflowQuery.middleware)
+        .concat(logsQuery.middleware)
+
+
 
 })
 

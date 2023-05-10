@@ -1,6 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import { db } from "../../firebase-config"
-import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, endAt } from "firebase/firestore"
+import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, endAt, getDoc, setDoc, runTransaction } from "firebase/firestore"
+import { getAuth, deleteUser } from "firebase/auth";
 
 
 
@@ -83,7 +84,7 @@ export const usersQuery = createApi({
                             registration_date: data.data().registration_date ? new Date(data.data().registration_date.seconds * 1000).toLocaleString() : null,
                             deregistration_date: data.data().deregistration_date ? new Date(data.data().deregistration_date.seconds * 1000).toLocaleString() : null,
                             ...userDataOmited
-                        }                       
+                        }
                         users.push(user)
                     })
                     return { data: users }
@@ -98,15 +99,79 @@ export const usersQuery = createApi({
             async queryFn(user) {
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-                    const q = collection(db, "users");
-                    await addDoc(q, userConverter.toFirestore(user))
-                    return { data: { user: user.user_id} }
+
+                    await runTransaction(db, async (transaction) => {
+                        const q = doc(db, "users", user.user_id);
+                        const countRef = doc(db, "system_summary", 'user_count');
+                        const countDoc = await transaction.get(countRef);
+
+                        const setVal = transaction.set(q, userConverter.toFirestore(user))
+                        console.log(setVal, "VALUE")
+                        const data = {
+                            document_count: 0,
+                            last_update: Timestamp.fromDate(new Date()),
+                            weekly: {
+                                0: 0,
+                                1: 0,
+                                2: 0,
+                                3: 0,
+                                4: 0,
+                                5: 0,
+                                6: 0
+                            },
+                            monthly: {
+                                0: 0,
+                                1: 0,
+                                2: 0,
+                                3: 0,
+                                4: 0,
+                                5: 0,
+                                6: 0,
+                                7: 0,
+                                8: 0,
+                                9: 0,
+                                10: 0,
+                                11: 0,
+                            }
+                        }
+                        transaction.set(doc(db, "user_summary", user.user_id), data);
+                        transaction.update(countRef, { users: countDoc.data().users + 1 })
+
+                    });
+
+
+
+                    return { data: { user: user.user_id } }
                 } catch (e) {
+                    const auth = getAuth();
+                    const user = auth.currentUser;
+
+                    await deleteUser(user)
+                    
                     return { error: e.message }
                 }
             },
             // invalidatesTags: ['users']
         }),
+        getUsersSummary: builder.query({
+            async queryFn(user) {
+                try {
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    const summaryRef = doc(db, "user_summary", user);
+                    const countRef = doc(db, "system_summary", 'user_count');
+                    const docSnap = await getDoc(summaryRef);
+                    const countDoc = await getDoc(countRef);
+                    let summaryData = { ...docSnap.data(), users_count: countDoc.data().users };
+                    summaryData.last_update = new Date(summaryData.last_update.seconds * 1000).toString()
+                    return { data: summaryData }
+
+                } catch (e) {
+                    return { error: e.message }
+                }
+            },
+            // providesTags: ['users']
+        }),
+
         // removeUserFromoDepartment: builder.mutation({
         //     async queryFn(user) {
         //         try {
@@ -155,7 +220,7 @@ export const usersQuery = createApi({
         //     },
         //     // invalidatesTags: ['users']
         // }),
-        
+
         // restoreFile: builder.mutation({
         //     async queryFn(file) {
         //         try {
@@ -203,4 +268,5 @@ export const users_query = usersQuery.reducer
 export const {
     useGetSystemUsersQuery,
     useCreateUserMutation,
+    useGetUsersSummaryQuery
 } = usersQuery

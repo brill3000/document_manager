@@ -2,46 +2,49 @@ import * as React from 'react'
 import { CssVarsProvider } from '@mui/joy/styles';
 import theme from '../../../../global/Themes/theme';
 import Box from '@mui/joy/Box';
-import Chip from '@mui/joy/Chip';
 import Tabs from '@mui/joy/Tabs';
-import TabList from '@mui/joy/TabList';
-import Tab, { tabClasses } from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
 import Typography from '@mui/joy/Typography';
 
 import Button from '@mui/joy/Button';
-import { FormControl, FormHelperText, FormLabel, Grid, Stack } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import TextField from '@mui/joy/TextField';
-import { Add, CheckBox, Delete, Save } from '@mui/icons-material';
+import { Delete, Save } from '@mui/icons-material';
 // import DraggableList from './DraggableLists';
 import IconButton from '@mui/joy/IconButton';
-import uuid from 'react-uuid';
 import Textarea from '@mui/joy/Textarea';
-import Collapse from '@mui/material/Collapse';
 import { Formik } from 'formik';
-import UserCustomFlow from './UserCustomFlow';
-import OverviewFlow from './Flow';
-import { FormikCheckbox, FormikSwitch, FormikText } from 'global/UI/FormMUI/Components';
-import { uuidv4 } from '@firebase/util';
+import { FormikTextMultiline } from 'global/UI/FormMUI/Components';
+
 import Checkbox from '@mui/joy/Checkbox';
 
 
-import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import CardOverflow from '@mui/joy/CardOverflow';
-import GenerateFlow from './GenerateFlow';
+import { useCreateWorkflowMutation, useGetSavedWorkflowsQuery } from 'store/async/workflowQuery';
+import { ReactFlowProvider, useEdgesState, useNodesState } from 'react-flow-renderer';
+import { ActionButtons } from './ActionButtons';
+import { useUserAuth } from 'context/authContext';
+import { useSnackbar } from 'notistack';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { FlowTabList } from './FlowTabList';
+import { FormsPanel } from './FormsPanel';
+import TestFlow from '../flowTest/testFlow';
 
-export function FormsCard({ title, type, description }: { title: string, type: string, description?: string }) {
+export function FormsCard({ title, type, description, height, width }: { title: string, type: string, description?: string, height?: number | string, width?: number | string }) {
     return (
         <Card
             row
             variant="outlined"
             sx={{
-                minWidth: '260px',
+                minWidth: width ? width : '260px',
+                maxWidth: width ? width : 'max-content',
                 gap: 2,
                 bgcolor: 'background.body',
+                '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' },
             }}
+
         >
 
             <CardContent>
@@ -70,6 +73,8 @@ export function FormsCard({ title, type, description }: { title: string, type: s
 }
 
 
+const getNodeId = () => `randomnode_${+new Date()}`;
+
 
 
 export default function CreateFlow() {
@@ -84,15 +89,67 @@ export default function CreateFlow() {
         select: false,
         submit: false
     })
-    const [editDetails, setEditDetails] = React.useState<Object | null>(null)
-    const [savedForms, setSavedForms] = React.useState<Array<any>>([]);
+    const [editDetails, setEditDetails] = React.useState<Array<any>>([])
 
-    console.log(formComponents, "COMPONENTS")
+    const [savedForms, setSavedForms] = React.useState<Array<any>>([]);
+    const [createFlow] = useCreateWorkflowMutation();
+    const { user } = useUserAuth()
+    const [openForm, setOpenForm] = React.useState(false)
+    const yPos = React.useRef(0);
+    const [nodes, setNodes] = useNodesState([]);
+    const [edges, setEdges] = useEdgesState([]);
+    const { enqueueSnackbar } = useSnackbar();
+    const [isSending, setIsSending] = React.useState<boolean>(false)
+    const workflowQuery = useGetSavedWorkflowsQuery(null)
+
+
+    const onAdd = React.useCallback((title: string, actions?: { type: string, action: string }) => {
+        yPos.current += 50;
+        let newNode: any = null
+        if (actions) {
+            newNode = {
+                id: getNodeId(),
+                type: 'actionNode',
+                data: {
+                    type: actions.type,
+                    action: actions.action,
+                    title: title 
+                },
+                position: { x: 350, y: yPos.current },
+                style: {
+                    border: '.8px solid #222138',
+                    minWidth: 130,
+                    size: '10px',
+                    maxWidth: 'min-content',
+                    borderRadius: '10px'
+                }
+            };
+        } else {
+            newNode = {
+                id: getNodeId(),
+                data: {
+                    label: title
+
+                },
+                position: { x: 350, y: yPos.current },
+                style: {
+                    border: '..8px solid #222138',
+                    minWidth: 130,
+                    size: '10px',
+                    maxWidth: 'min-content',
+                    borderRadius: '10px'
+                }
+            };
+        }
+
+        setNodes((nds) => nds.concat(newNode));
+        setOpenForm(false)
+    }, [setNodes]);
 
     const handleNewFormTitleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         setNewFormTitle(e.target.value)
     }
-    const addFormComponet = (type: string, label: string, uid: string, placeholder?: string, minRows?: number, isRequired?: boolean | string, initialValue?: string, defaultChecked?: boolean) => {
+    const addFormComponent = (type: string, label: string, uid: string, placeholder?: string, minRows?: number, isRequired?: boolean | string, initialValue?: string, defaultChecked?: boolean) => {
         switch (type) {
             case 'input':
                 const input = {
@@ -114,10 +171,14 @@ export default function CreateFlow() {
                                 e.preventDefault()
                                 e.stopPropagation()
                                 let formComponentsCopy = [...formComponents]
-                                const index = formComponentsCopy.findIndex(x => x.id === uid)
+
+                                const index = formComponentsCopy.findIndex(x => {
+                                    return x.id === uid
+                                })
                                 if (index > -1) {
                                     formComponentsCopy.splice(index, 1)
                                 }
+
                                 setFormComponents([...formComponentsCopy])
                             }}>
                                 <Delete fontSize='small' />
@@ -218,7 +279,6 @@ export default function CreateFlow() {
         }
     }
 
-
     return (
         <CssVarsProvider disableTransitionOnChange theme={theme}>
             <Box
@@ -239,49 +299,7 @@ export default function CreateFlow() {
                     value={index}
                     onChange={(event, value) => setIndex(value)}
                 >
-                    <TabList
-                        variant="plain"
-                        sx={{
-                            alignSelf: 'flex-start',
-                            [`& .${tabClasses.root}`]: {
-                                bgcolor: 'transparent',
-                                boxShadow: 'none',
-                                '&:hover': {
-                                    bgcolor: 'transparent',
-                                },
-                                [`&.${tabClasses.selected}`]: {
-                                    color: 'primary.plainColor',
-                                    fontWeight: 'lg',
-                                    '&:before': {
-                                        content: '""',
-                                        display: 'block',
-                                        position: 'absolute',
-                                        zIndex: 1,
-                                        bottom: '-1px',
-                                        left: 'var(--List-item-paddingLeft)',
-                                        right: 'var(--List-item-paddingRight)',
-                                        height: '3px',
-                                        borderTopLeftRadius: '3px',
-                                        borderTopRightRadius: '3px',
-                                        bgcolor: 'primary.500',
-                                    },
-                                },
-                            },
-                        }}
-                    >
-                        <Tab>
-                            Design Forms
-                        </Tab>
-                        <Tab>
-                            Design Workflow
-                        </Tab>
-                        <Tab>
-                            Change Permission
-                        </Tab>
-                        <Tab>
-                            Publish Workflow
-                        </Tab>
-                    </TabList>
+                    <FlowTabList />
                     <Box
                         sx={(theme) => ({
                             '--bg': theme.vars.palette.background.level3,
@@ -301,318 +319,9 @@ export default function CreateFlow() {
                             py: 2,
                         })}
                     >
-                        <TabPanel value={0}>
-                            <Grid container direction="row" sx={{ height: '600px' }}>
-                                <Grid item xs={3}
-                                    sx={{
-                                        bgcolor: 'neutral.100',
-                                        borderRadius: 5,
-                                        p: 2,
-                                        maxHeight: '600px',
-                                        overflowY: 'auto'
-                                    }}>
-                                    <Box
-                                        sx={{
-                                            py: 2,
-                                            display: 'grid',
-                                            gap: 2,
-                                            alignItems: 'center',
-                                            flexWrap: 'wrap',
-                                        }}
-                                    >
-                                        <TextField
-                                            placeholder="Form title"
-                                            variant="outlined"
-                                            value={newFormTitle}
-                                            onChange={handleNewFormTitleChange}
-                                        />
-                                        <Typography level="body4">Add Form components</Typography>
-                                        {
-                                            ['input', 'large_input', 'checkbox', 'radio', 'select', 'submit'].map((type) =>
-                                            (<Box maxWidth={300} key={type}>
-                                                <Button variant="solid" color={type === 'submit' ? 'success' : 'primary'} onClick={() => {
-                                                    let openEditIndexCopy: {
-                                                        input: boolean,
-                                                        checkbox: boolean,
-                                                        radio: boolean,
-                                                        large_input: boolean,
-                                                        select: boolean,
-                                                        submit: boolean
-                                                    } = { ...openEditIndex }
-                                                    for (let key in openEditIndexCopy) {
-                                                        if (key === type) {
-                                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                            // @ts-ignore 
-                                                            openEditIndexCopy[key] = true
-                                                        } else {
-                                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                            // @ts-ignore 
-                                                            openEditIndexCopy[key] = false
-                                                        }
-                                                    }
-                                                    setOpenEditIndex({ ...openEditIndexCopy })
-                                                    setEditDetails(null)
-                                                }} startIcon={<Add />}>{type === 'large_input' ? 'Large Input' : type === 'submit' ? 'Submit Button' : type[0].toUpperCase() + type.substring(1, type.length)} Field</Button>
-                                                {
-                                                    // 👇️ ts-ignore ignores any ts errors on the next line
-                                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                    // @ts-ignore 
-                                                    <Collapse in={openEditIndex[type]} timeout="auto" unmountOnExit>
-                                                        <Formik
-                                                            initialValues={{ label: '', placeholder: '', minRows: 1, isRequired: '', initialValue: '', defaultChecked: false }}
-                                                            validate={values => {
-                                                                const errors: any = {};
-                                                                if (!values.label) {
-                                                                    errors['label'] = 'Required';
-                                                                }
-                                                                return errors;
-                                                            }}
-                                                            onSubmit={(values, { setSubmitting }) => {
-                                                                addFormComponet(type, values.label, uuidv4(), values.placeholder, values.minRows, values.isRequired, values.initialValue, values.defaultChecked)
-                                                                let openEditIndexCopy = { ...openEditIndex }
-                                                                for (let key in openEditIndexCopy) {
-                                                                    // 👇️ ts-ignore ignores any ts errors on the next line
-                                                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                                    // @ts-ignore 
-                                                                    openEditIndexCopy[key] = false
-                                                                }
-                                                                setOpenEditIndex({ ...openEditIndexCopy })
-                                                                setEditDetails(null)
-                                                            }}>
-                                                            {({
-                                                                values,
-                                                                errors,
-                                                                touched,
-                                                                handleChange,
-                                                                handleBlur,
-                                                                handleSubmit,
-                                                                isSubmitting,
-                                                                /* and other goodies */
-                                                            }) => (
-                                                                <form onSubmit={handleSubmit}>
-                                                                    <FormikText
-                                                                        // 👇️ ts-ignore ignores any ts errors on the next line
-                                                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                                        // @ts-ignore 
-                                                                        label="Label"
-                                                                        name="label"
-                                                                        onChange={handleChange}
-                                                                        onBlur={handleBlur}
-                                                                        value={values.label}
-                                                                        sx={{ py: 1 }}
-                                                                    />
-                                                                    {
-                                                                        (type === 'input' || type === 'large_input') &&
-                                                                        <FormikText
-                                                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                                            // @ts-ignore 
-                                                                            label="Placeholder"
-                                                                            name="placeholder"
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            value={values.placeholder}
-                                                                            sx={{ py: 1 }}
-                                                                        />
-                                                                    }
-                                                                    {
-                                                                        type === 'large_input' &&
-                                                                        <FormikText
-                                                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                                            // @ts-ignore 
-                                                                            label="Minimum Rows"
-                                                                            name="minRows"
-                                                                            type="number"
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            value={values.minRows}
-                                                                        />
-                                                                    }
-                                                                    <FormikCheckbox
-                                                                        label="Is input required"
-                                                                        name="isRequired"
-                                                                        onChange={handleChange}
-                                                                        onBlur={handleBlur}
-                                                                        value={values.isRequired}
-                                                                        sx={{ py: 1.5 }}
-                                                                    />
-                                                                    {
-                                                                        type === 'checkbox' &&
-                                                                        <FormikCheckbox
-                                                                            label="Checked By Default"
-                                                                            name="defaultChecked"
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            value={values.defaultChecked}
-                                                                            sx={{ py: 1.5 }}
-                                                                        />
-                                                                    }
-                                                                    {
-                                                                        (type === 'input' || type === 'large_input') &&
-                                                                        <FormikText
-                                                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                                            // @ts-ignore 
-                                                                            label="Initial Value"
-                                                                            name="initialValue"
-                                                                            onChange={handleChange}
-                                                                            onBlur={handleBlur}
-                                                                            value={values.initialValue}
-                                                                            sx={{ py: 1 }}
-                                                                        />
-                                                                    }
-                                                                    <Button
-                                                                        variant='solid'
-                                                                        type="submit"
-                                                                        color="danger"
-                                                                        sx={{ mt: 2 }}
-                                                                        disabled={isSubmitting}
-                                                                        onKeyPress={e => { e.key === 'Enter' && e.preventDefault() }}
-                                                                    >
-                                                                        Add {type === 'large_input' ? 'Large Input' : type === 'submit' ? 'Submit Button' : type[0].toUpperCase() + type.substring(1, type.length)} Field
-                                                                    </Button>
-                                                                </form>
-                                                            )}
-                                                        </Formik>
-
-                                                    </Collapse>
-                                                    // addFormComponet('input') 
-                                                }
-                                            </Box>)
-                                            )
-
-                                        }
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={6} sx={{ px: 4, py: 2 }}>
-                                    <Stack direction="column" spacing={3} sx={{ minWidth: 400 }}>
-                                        <Stack
-                                            direction="row"
-                                            justifyContent="space-between"
-                                            spacing={2}
-                                        >
-                                            <Box sx={{ maxWidth: 350 }}>
-                                                <Typography
-                                                    level="h1"
-                                                    component="div"
-                                                    fontSize="xl2"
-                                                    mb={2}
-                                                    textColor="text.secondary"
-                                                >
-                                                    {newFormTitle.length > 0 ? newFormTitle : 'New Forms'}
-                                                </Typography>
-                                            </Box>
-                                            <Box sx={{ maxHeight: 10 }}>
-                                                <Button variant='solid' color="info" startIcon={<Save />} onClick={() => {
-                                                    if (formComponents && Array.isArray(formComponents) && formComponents.length) {
-                                                        savedForms.length > 0 ? setSavedForms([...savedForms, { title: newFormTitle.length > 0 ? newFormTitle : 'Form' + savedForms.length }]) : setSavedForms([{ title: newFormTitle.length > 0 ? newFormTitle : 'Form' + savedForms.length }])
-                                                        setFormComponents([])
-                                                        setNewFormTitle('')
-                                                    }
-                                                }}>Save Form</Button>
-                                            </Box>
-                                        </Stack>
-
-                                        {
-
-                                            formComponents.length > 0 && formComponents.map((formComponent) => (
-                                                <Grid container direction='row' key={formComponent.id}>
-
-                                                    {
-                                                        !formComponent.button &&
-                                                        <Grid item xs={2.5}>
-                                                            <Typography level="body2" >{formComponent.label}</Typography>
-                                                        </Grid>
-                                                    }
-
-                                                    <Grid item xs={8.5} key={formComponent.id}>
-                                                        {formComponent.element}
-                                                    </Grid>
-                                                    <Grid item xs={1}>
-                                                        {formComponent.delete}
-                                                    </Grid>
-                                                </Grid>
-
-
-                                            )
-
-
-                                            )
-                                        }
-
-                                        {/* <DraggableList /> */}
-                                    </Stack>
-
-                                </Grid>
-                                <Grid item xs={3}
-                                    sx={{
-                                        bgcolor: 'neutral.100',
-                                        borderRadius: 5,
-                                        p: 2,
-                                        maxHeight: '600px',
-                                        overflowY: 'auto'
-                                    }}
-                                >
-                                    <Stack direction="column" spacing={3}>
-                                        <Typography
-                                            level="h1"
-                                            component="div"
-                                            fontSize="xl2"
-                                            mb={2}
-                                            textColor="text.secondary"
-                                        >
-                                            Saved Forms
-                                        </Typography>
-                                        {
-                                            savedForms.length > 0 && savedForms?.map((form: { title: string, description?: string, type?: string }) => (
-                                                <FormsCard title={form.title} description={'Form for loan application'} type='loan' />
-                                            ))
-                                        }
-                                    </Stack>
-                                </Grid>
-                            </Grid>
-                        </TabPanel>
-                        <TabPanel value={1} sx={{ height: '600px' }}>
-                            <Grid container direction="row" sx={{ height: '600px' }}>
-                                <Grid item xs={9} sx={{ borderRadius: 5, pr:5}}>
-                                    <Typography
-                                        level="h1"
-                                        component="div"
-                                        fontSize="xl2"
-                                        mb={2}
-                                        textColor="text.secondary"
-                                    >
-                                    </Typography>
-                                    <GenerateFlow />
-                                </Grid>
-                                <Grid item xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5 }}>
-
-                                </Grid>
-                            </Grid>
-
-                        </TabPanel>
+                        {FormsPanel(newFormTitle, handleNewFormTitleChange, openEditIndex, setOpenEditIndex, setEditDetails, addFormComponent, formComponents, savedForms, setSavedForms, setFormComponents, setNewFormTitle, editDetails)}
+                        {WorkflowPanel(isSending, setIsSending, createFlow, user, nodes, edges, enqueueSnackbar, openForm, setOpenForm, onAdd, setNodes, setEdges, workflowQuery)}
                         <TabPanel value={2} sx={{ height: '600px' }}>
-                            <Grid container direction="row" sx={{ height: '600px' }}>
-                                <Grid item xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5 }}>
-
-                                </Grid>
-                                <Grid item xs={9}>
-                                    <Typography
-                                        level="h1"
-                                        component="div"
-                                        fontSize="xl2"
-                                        mb={2}
-                                        textColor="text.secondary"
-                                    >
-                                        Forms
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </TabPanel>
-                        <TabPanel value={3} sx={{ height: '600px' }}>
                             <Box sx={{ height: '600px' }}>
                                 <Box
                                     display="flex"
@@ -621,7 +330,7 @@ export default function CreateFlow() {
                                     minHeight="100%"
                                     minWidth="100%"
                                 >
-                                    <Button variant='soft'>Publish Workflow</Button>
+                                    <Button variant='soft'>Initiate Workflow</Button>
                                 </Box>
                             </Box>
                         </TabPanel>
@@ -632,5 +341,153 @@ export default function CreateFlow() {
     )
 }
 
+function WorkflowPanel(isSending: boolean, setIsSending: React.Dispatch<React.SetStateAction<boolean>>, createFlow: any, user: any, nodes: Array<any>, edges: Array<any>, enqueueSnackbar: any, openForm: boolean, setOpenForm: React.Dispatch<React.SetStateAction<boolean>>, onAdd: (title: string, actions?: { type: string, action: string }) => void, setNodes: any, setEdges: any, workflowQuery: any) {
+    return <TabPanel value={1} sx={{ height: '600px' }}>
+        <Grid container direction="row" sx={{ height: '600px' }}>
+            <Grid item xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5, p: 3 }}>
+                <Stack direction="column" spacing={2}>
+                    {isSending ?
+                        <GoogleLoader height={80} width={80} loop={true} />
+                        :
+                        <Formik
+                            initialValues={{ title: '' }}
+                            validate={values => {
+                                const errors: any = {};
+                                if (!values.title) {
+                                    errors['title'] = 'Required';
+                                }
+                                return errors;
+                            }}
+                            onSubmit={(values, { setSubmitting }) => {
+                                setIsSending(true);
+                                createFlow({
+                                    title: values.title,
+                                    created_by: user.uid,
+                                    nodes: nodes,
+                                    edges: edges,
+                                    viewport: null
+                                }).unwrap()
+                                    .then(() => {
+                                        setIsSending(false);
+                                        setTimeout(() => {
+                                            const message = `Workflow Saved Succesfully`;
+                                            enqueueSnackbar(message, { variant: 'success' });
+                                        }, 300);
+                                    })
+                                    .catch(() => {
+                                        setIsSending(false);
+                                        setTimeout(() => {
+                                            const message = `Failed to send`;
+                                            enqueueSnackbar(message, { variant: 'error' });
+                                        }, 300);
+                                    });
+                            }}>
+                            {({
+                                values, handleChange, handleBlur, handleSubmit, isSubmitting,
+                            }) => (
+                                <form onSubmit={handleSubmit}>
+                                    <Grid container direction="row" spacing={1}>
+                                        <Grid item xs={10}>
+                                            <FormikTextMultiline
+                                                name="title"
+                                                placeholder="Enter Workflow title"
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                value={values.title}
+                                                disabled={nodes.length < 1}
+                                                onKeyPress={(e: any) => { e.key === 'Enter' && e.preventDefault(); }} />
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                            {isSending ?
+                                                <Box
+                                                    display="flex"
+                                                    justifyContent="center"
+                                                    alignItems="center"
+                                                    minHeight="100%"
+                                                    minWidth="100%"
+                                                >
+                                                    <GoogleLoader height={50} width={50} loop={true} />
+                                                </Box>
+                                                :
+                                                <IconButton
+                                                    variant='solid'
+                                                    type="submit"
+                                                    disabled={nodes.length < 1}
+                                                    onKeyPress={e => { e.key === 'Enter' && e.preventDefault(); }}
+                                                >
+                                                    <Save />
+                                                </IconButton>}
+                                        </Grid>
+                                    </Grid>
+                                </form>
+                            )}
+                        </Formik>}
+                    <ReactFlowProvider>
+                        <ActionButtons openForm={openForm} setOpenForm={setOpenForm} onAdd={onAdd} />
+                    </ReactFlowProvider>
+                </Stack>
+            </Grid>
+            <Grid item xs={6} sx={{ borderRadius: 5, pr: 5, maxWidth: 200 }}>
+                <TestFlow  />
+            </Grid>
+            <Grid item xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5, p: 3 }}>
 
+                {
+                    //@ts-ignore
+                    workflowQuery.isLoading || workflowQuery.isFetching
+                        ?
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100%"
+                            minWidth="100%"
+                        >
+                            <GoogleLoader height={150} width={150} loop={true} />
+                        </Box>
+                        :
+                        // @ts-ignore
+                        workflowQuery.isError
+                            ?
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                minHeight="100%"
+                                minWidth="100%"
+                            >
+                                <Error height={100} width={100} />
+                                <Typography level='body3'>Error Occured..</Typography>
+                            </Box>
+                            :
+                            <Stack direction="column" spacing={1}>
+                                <Typography
+                                    level="h1"
+                                    component="div"
+                                    fontSize="xl2"
+                                    mb={2}
+                                    textColor="text.secondary"
+                                >
+                                    Templates Workflows
+                                </Typography>
+
+                                {workflowQuery.data && Array.isArray(workflowQuery.data) &&
+                                    workflowQuery.data.map((workflow: any, index: number) => {
+                                        return (
+                                            <div onClick={() => {
+                                                setNodes(workflow.nodes);
+                                                setEdges(workflow.edge);
+                                            }}
+                                            key={index}
+                                            >
+                                                <FormsCard key={workflow.id} title={workflow.title} description={workflow.title} type='workflow' />
+                                            </div>
+                                        );
+                                    })}
+                            </Stack>}
+            </Grid>
+        </Grid>
+
+    </TabPanel>;
+}
 

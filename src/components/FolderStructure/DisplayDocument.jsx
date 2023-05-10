@@ -2,9 +2,10 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { FcFolder } from "react-icons/fc";
 import { DragFolder } from "./DragFolder";
-import { CircularProgress, TextField } from '../../../node_modules/@mui/material/index';
+import { Box, TextField } from '../../../node_modules/@mui/material/index';
 import { StyledLinearProgress } from 'ui-component/CustomProgressBars';
 import { fileIcon } from '../../ui-component/fileIcon';
+import { GoogleLoader } from 'ui-component/LoadHandlers';
 
 
 
@@ -21,7 +22,13 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
           }} />
         {isRenaming.status && isRenaming.target === document.id ?
           isRenameLoading ?
-            <CircularProgress color="primary" />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <GoogleLoader height={20} width={150} loop={true} />
+            </Box>
             :
             <TextField
               id="new_folder"
@@ -75,7 +82,13 @@ export const DisplayDocument = ({ isRenaming, document, selected, isRenameLoadin
 
               {isRenaming.status && isRenaming.target === document.id ?
                 isRenameLoading ?
-                  <CircularProgress color="primary" />
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <GoogleLoader height={20} width={150} loop={true} />
+                  </Box>
                   :
                   <TextField
                     id="new_folder"

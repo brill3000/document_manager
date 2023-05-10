@@ -30,13 +30,15 @@ const areaChartOptions = {
 
 // ==============================|| INCOME AREA CHART ||============================== //
 
-const IncomeAreaChart = ({ slot }) => {
+const IncomeAreaChart = ({ slot, userSummary }) => {
     const theme = useTheme();
 
     const { primary, secondary } = theme.palette.text;
     const line = theme.palette.divider;
 
     const [options, setOptions] = useState(areaChartOptions);
+    const [monthData, setMonthData] = useState(null)
+    const [weekData, setWeekData] = useState(null)
 
     useEffect(() => {
         setOptions((prevState) => ({
@@ -89,27 +91,62 @@ const IncomeAreaChart = ({ slot }) => {
 
     const [series, setSeries] = useState([
         {
-            name: 'New Documents this month',
-            data: [0, 86, 28, 115, 48, 210, 136]
+            name: 'Uploaded this week',
+            data: [0, 0, 0, 0, 0, 0, 0]
         },
         {
-            name: 'New Pages this month',
-            data: [0, 43, 14, 56, 24, 105, 68]
+            name: 'Received this week',
+            data: [0, 0, 0, 0, 0, 0, 0]
         }
     ]);
 
+    const {data, error, isError, isFetching, isSuccess} = userSummary
     useEffect(() => {
-        setSeries([
-            {
-                name: 'New Documents this month',
-                data: slot === 'month' ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35] : [31, 40, 28, 51, 42, 109, 100]
-            },
-            {
-                name: 'New Pages this month',
-                data: slot === 'month' ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41] : [11, 32, 45, 32, 34, 52, 41]
+        if(data){
+            if(data.monthly){
+                let month = []
+                for(let index in data.monthly ){
+                    month[index] = data.monthly[index]
+                }
+                month.length > 0 && setMonthData([...month])
             }
-        ]);
-    }, [slot]);
+            if(data.weekly){
+                let week = []
+                for(let index in data.weekly ){
+                    week[index] = data.weekly[index]
+                }
+                week.length > 0 && setWeekData([...week])
+            }
+        }
+
+    },[data, error, isError, isFetching, isSuccess])
+
+    useEffect(() => {
+        if(Array.isArray(monthData) && slot === 'month') {
+            setSeries([
+                {
+                    name: 'Uploaded this month',
+                    data: [...monthData]
+                },
+                {
+                    name: 'Received this month',
+                    data: [0,0,0,0,0,0,0,0,0,0,0,0]
+                }
+            ]);
+        }else if(Array.isArray(weekData) && slot === 'week'){
+            setSeries([
+                {
+                    name: 'Uploaded this week',
+                    data: [...weekData]
+                },
+                {
+                    name: 'Received this week',
+                    data: [0,0,0,0,0,0]
+                }
+            ]);
+        }
+    },[weekData, monthData, slot])
+
 
     return <ReactApexChart options={options} series={series} type="area" height={450} />;
 };

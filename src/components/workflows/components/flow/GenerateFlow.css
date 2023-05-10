@@ -1,5 +1,5 @@
 .save__controls {
-    position: absolute;
+    position: relative;
     right: 100px;
     top: 100px;
     z-index: 4;

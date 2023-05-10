@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import ProtectedRoutes from './ProtectedRoutes';
+import IndexTable from 'components/indexes/IndexTable';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -111,7 +112,7 @@ const MainRoutes = {
         },
         {
             path: 'indexes',
-            element: <ProtectedRoutes><></></ProtectedRoutes>
+            element: <ProtectedRoutes><IndexTable/></ProtectedRoutes>
         },
         {
             path: 'approvals',
@@ -123,7 +124,7 @@ const MainRoutes = {
         },
         {
             path: 'cabinets',
-            element:<ProtectedRoutes><></></ProtectedRoutes>
+            element:<ProtectedRoutes><CustomizedTreeView /></ProtectedRoutes>
         },
         {
             path: 'messages',
