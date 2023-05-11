@@ -91,27 +91,19 @@ const dashboard = {
                     breadcrumbs: false
                 },
                 {
-                    id: 'incoming-documents',
-                    title: 'Incoming Documents',
+                    id: 'templates',
+                    title: 'Templates',
                     type: 'item',
-                    url: '/documents/incoming-documents',
+                    url: '/documents/templates',
                     icon: icons.PostAddOutlinedIcon,
                     breadcrumbs: false
                 },
                 {
-                    id: 'outbound-documents',
-                    title: 'Outbound Documents',
+                    id: 'email',
+                    title: 'Email Attachments',
                     type: 'item',
-                    url: '/documents/outbound-documents',
+                    url: '/documents/email-attachments',
                     icon: icons.StarBorderIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'documents-for-my-approval',
-                    title: 'Documents for my approval',
-                    type: 'item',
-                    url: '/documents/document-for-my-approval',
-                    icon: icons.TopicOutlinedIcon,
                     breadcrumbs: false
                 },
                 {
@@ -125,14 +117,14 @@ const dashboard = {
             ]
         },
 
-        {
-            id: 'approvals',
-            title: 'Approvals',
-            type: 'item',
-            url: '/approvals',
-            icon: icons.RiseOutlined,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'approvals',
+        //     title: 'Approvals',
+        //     type: 'item',
+        //     url: '/approvals',
+        //     icon: icons.RiseOutlined,
+        //     breadcrumbs: false
+        // },
         {
             id: 'workflows',
             title: 'Workflows',
@@ -142,10 +134,10 @@ const dashboard = {
             breadcrumbs: false
         },
         {
-            id: 'messages',
-            title: 'Messages',
+            id: 'emails',
+            title: 'emails',
             type: 'item',
-            url: '/messages',
+            url: '/emails',
             icon: icons.MessageOutlinedIcon,
             breadcrumbs: false
         },
@@ -240,18 +232,18 @@ const dashboard = {
             ]
         },
         {
-            id: 'cabinets',
-            title: 'Cabinets',
+            id: 'metadata',
+            title: 'Metadata',
             type: 'item',
-            url: '/cabinets',
+            url: '/metadata',
             icon: icons.HddOutlined,
             breadcrumbs: false
         },
         {
-            id: 'indexes',
-            title: 'Indexes',
+            id: 'thesaurus',
+            title: 'Thesaurus',
             type: 'item',
-            url: '/indexes',
+            url: '/thesaurus',
             icon: icons.DatabaseOutlined,
             breadcrumbs: false
         },

@@ -31,11 +31,11 @@ import MainCard from 'components/MainCard';
 // import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 // import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
 // import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
-import EarningCard from './EarningCard';
 import { useGetAllRecentLogsQuery, useGetAllRecentlyModifiedDocumentsQuery } from 'store/async/logsQuery';
 import { useUserAuth } from 'context/authContext';
 import { RecentActivity } from './RecentActivity';
 import { useGetUsersSummaryQuery } from 'store/async/usersQuery';
+import AnalyticCard from 'components/cards/statistics/AnalyticsCard';
 // avatar style
 export const avatarSX = {
     width: 36,
@@ -90,19 +90,19 @@ const DashboardDefault = () => {
     const userSummary = useGetUsersSummaryQuery(user.uid)
 
     const documentCount = React.useMemo(
-      () => {
-        return userSummary.data ? userSummary.data.document_count ? userSummary.data.document_count.toString() : '0' : '0'
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [userSummary.data],)
-    
-      const usersCount = React.useMemo(
         () => {
-          return userSummary.data ? userSummary.data.users_count ? userSummary.data.users_count.toString() : '0' : '0'
+            return userSummary.data ? userSummary.data.document_count ? userSummary.data.document_count.toString() : '0' : '0'
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [userSummary.data],)
-    
+
+    const usersCount = React.useMemo(
+        () => {
+            return userSummary.data ? userSummary.data.users_count ? userSummary.data.users_count.toString() : '0' : '0'
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [userSummary.data],)
+
 
 
 
@@ -113,37 +113,17 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <EarningCard
-                    isLoading={isLoading}
-                    title="Total Documents"
-                    count={documentCount}
-                    color={'primary'}
-                />
+                <AnalyticCard title="Total Documents" count={documentCount} percentage={20} extra={documentCount} component={'documents'}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <EarningCard
-                    isLoading={isLoading}
-                    title="Total Departments"
-                    count="10"
-                    color={'success'}
-                />
+                <AnalyticCard title="Total Departments" count={10} percentage={20} extra={documentCount} component={'departments'}/>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <EarningCard
-                    isLoading={isLoading}
-                    title="Total roles"
-                    count="2"
-                    color={'info'}
-                />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-                <EarningCard
-                    isLoading={isLoading}
-                    title="Total users"
-                    count={usersCount}
-                    color={'warning'}
-                />
+                <AnalyticCard title="Total roles" count={2} percentage={20} extra={documentCount} component={'roles'}/>
 
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+                <AnalyticCard title="Total users" count={usersCount} percentage={20} extra={usersCount} component={'users'}/>
             </Grid>
 
 

@@ -200,7 +200,7 @@ export default function Email() {
     }
   }
 
-  const title: string = 'Messages';
+  const title: string = 'Emails';
   return (
     <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
       <Sheet

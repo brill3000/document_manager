@@ -1,7 +1,7 @@
 import React, { SetStateAction } from 'react';
 
 export interface FileBrowserProps {
-    height?: number
+    height?: key
     width?: key
     bgColor?: string
     border?: string

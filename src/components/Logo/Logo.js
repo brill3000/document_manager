@@ -1,5 +1,3 @@
-// material-ui
-import { useTheme } from '@mui/material/styles';
 
 /**
  * if you want to use image instead of <svg> uncomment following.
@@ -12,7 +10,6 @@ import { useTheme } from '@mui/material/styles';
 // ==============================|| LOGO SVG ||============================== //
 
 const Logo = () => {
-    const theme = useTheme();
 
     return (
         /**
@@ -21,7 +18,7 @@ const Logo = () => {
          *
          */
         <>
-            <svg width="118" height="35" viewBox="0 0 118 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* <svg width="118" height="35" viewBox="0 0 118 35" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M4.63564 15.8644L6.94797 13.552L6.95038 13.5496H11.3006L9.56969 15.2806L9.12278 15.7275L7.35024 17.5L7.56977 17.7201L17.5 27.6498L27.6498 17.5L25.8766 15.7275L25.7518 15.602L23.6994 13.5496H28.0496L28.052 13.552L29.8644 15.3644L32 17.5L17.5 32L3 17.5L4.63564 15.8644ZM17.5 3L25.8784 11.3784H21.5282L17.5 7.35024L13.4718 11.3784H9.12158L17.5 3Z"
                     fill={theme.palette.primary.dark}
@@ -53,6 +50,20 @@ const Logo = () => {
                         <stop offset="1" stopColor={theme.palette.primary.dark} stopOpacity="0" />
                     </linearGradient>
                 </defs>
+            </svg> */}
+            <svg version="1.1" id="Layer_1"
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                viewBox="0 0 58 15"
+                width="88" height="35"
+            >
+                <g id="Layer_2_1_">
+                    <g id="Layer_2-2">
+                        <path fill="#EC1F27" d="M27.3,10.7c-2-4-4-4.3-5.6-4.8c-2.5-0.8-5.3-0.2-7.2-2c-0.6-0.6-0.9-1.5-0.8-2.3c0.5-1.9,6.9-2.2,12-0.5c2.5,0.9,4.8,2.3,6.7,4.1L27.3,10.7z" />
+                        <path fill="#9D9FA1" d="M4.1,5.4c1,1.7,1.8,2.9,5.8,4.4c4.7,1.8,7.6,1.3,8.3,4.1c0.2,1-1.1,1.6-1.6,1.7C10.5,17.3,2.3,14,0,12.5L4.1,5.4z" />
+                    </g>
+                </g>
             </svg>
         </>
     );

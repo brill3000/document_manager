@@ -5,11 +5,9 @@ import { FileBrowserContentProps } from '../../Interface/FileBrowser'
 import { theme } from '../../Themes/theme'
 import { fileIcon } from '../../Icons/fileIcon'
 import DocumentDetails from './DocumentDetails'
-// import { useDragStore } from '../../data/persistent/Persistent'
 import FolderGrid from './FolderGrid'
 import { useViewStore } from '../../data/global_state/slices/view'
 import { MemorizedFcFolder } from './Document'
-// import { useStore } from '../../data/global_state'
 
 
 const FileBrowserContent = ({ selected, setSelected, documents, select, nav }: FileBrowserContentProps): JSX.Element => {
@@ -20,7 +18,8 @@ const FileBrowserContent = ({ selected, setSelected, documents, select, nav }: F
   return (
     <Grid container
       width='100%'
-      height='100%' ref={ref}
+      height='100%' 
+      ref={ref}
     >
       <FolderGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} />
       <Grid

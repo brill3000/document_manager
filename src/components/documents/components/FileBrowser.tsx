@@ -63,7 +63,7 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
 
   React.useEffect(() => {
     initiateFileBrowser(browserDocuments ? browserDocuments : [...sampleFolders, ...sampleFiles])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleForward = () => {
@@ -111,11 +111,11 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
         }
       }
     } catch (e) {
-      if(e instanceof Error){
-          console.log(e.message)
-        }else{
-          console.log(e)
-        }
+      if (e instanceof Error) {
+        console.log(e.message)
+      } else {
+        console.log(e)
+      }
     }
 
   }, [nav, fileMap, actions])
@@ -142,37 +142,27 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
 
 
   return (
-    <Box
-      display='flex'
-      justifyContent='center'
-      alignItems='center'
-      width={browserWidth}
-      height={browserHeight}
-      overflow='hidden'
+    <Box sx={{
+      width: width ?? browserWidth * .8,
+      height: height ?? browserHeight * .9,
+      border: border ?? '.5px solid lightgray',
+      borderRadius: borderRadius ?? 2,
+      bgcolor: bgColor ?? 'background.paper'
+    }}
+      component={Stack}
       ref={ref}
     >
-      <Box sx={{
-        width: width ?? browserWidth * .7,
-        height: height ?? browserHeight * .7,
-        border: border ?? '1px solid lightgray',
-        borderRadius: borderRadius ?? 2,
-        bgcolor: bgColor ?? 'background.paper'
-      }}
-        component={Stack}
-      >
-        <Box height='20%'>
-          <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} doc={fileMap.get(nav[nav.length - 1])} handleBack={handleBack} handleForward={handleForward} />
-        </Box>
-        <Box height='70%'>
-          <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} />
-        </Box>
-        <Divider />
-        <Box height='10%'>
-          <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
-        </Box>
+      <Box height='20%'>
+        <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} doc={fileMap.get(nav[nav.length - 1])} handleBack={handleBack} handleForward={handleForward} />
+      </Box>
+      <Box height='70%'>
+        <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} />
+      </Box>
+      <Divider />
+      <Box height='10%'>
+        <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
       </Box>
     </Box>
-
   )
 }
 

@@ -5,8 +5,10 @@
       "dom.iterable",
       "esnext"
     ],
-    "target": "esnext",
+    "sourceMap": true,
+    "noImplicitAny": true,
     "module": "esnext",
+    "target": "esnext",
     "baseUrl": "src",
     "allowJs": true,
     "skipLibCheck": true,

@@ -8,7 +8,7 @@ import IndexTable from 'components/indexes/IndexTable';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
-const Roles = Loadable(lazy(() => import( 'components/approvals')));
+// const Roles = Loadable(lazy(() => import( 'components/approvals')));
 const Workflow = Loadable(lazy(() => import( 'components/workflows')));
 const Email = Loadable(lazy(() => import( 'components/email')));
 
@@ -47,16 +47,12 @@ const MainRoutes = {
                     element: <ProtectedRoutes><CustomizedTreeView content="my_documents" /></ProtectedRoutes>,
                 },
                 {
-                    path: 'outbound-documents',
-                    element: <ProtectedRoutes><CustomizedTreeView content="outbound_documents" />,</ProtectedRoutes>
+                    path: 'templates',
+                    element: <ProtectedRoutes><CustomizedTreeView content="templates" />,</ProtectedRoutes>
                 },
                 {
-                    path: 'incoming-documents',
-                    element: <ProtectedRoutes><CustomizedTreeView content="incoming_documents" /></ProtectedRoutes>,
-                },
-                {
-                    path: 'document-for-my-approval',
-                    element: <ProtectedRoutes><CustomizedTreeView content="document-for-my-approval" /></ProtectedRoutes>,
+                    path: 'email-attachments',
+                    element: <ProtectedRoutes><CustomizedTreeView content="email-attachments" /></ProtectedRoutes>,
                 },
                 {
                     path: 'trash',
@@ -111,23 +107,19 @@ const MainRoutes = {
             ]
         },
         {
-            path: 'indexes',
+            path: 'metadata',
             element: <ProtectedRoutes><IndexTable/></ProtectedRoutes>
         },
         {
-            path: 'approvals',
-            element: <ProtectedRoutes><Roles/></ProtectedRoutes>
-        }
-        ,{
             path: 'workflows',
             element: <ProtectedRoutes><Workflow/></ProtectedRoutes>
         },
         {
-            path: 'cabinets',
-            element:<ProtectedRoutes><CustomizedTreeView /></ProtectedRoutes>
+            path: 'thesaurus',
+            element: <ProtectedRoutes><IndexTable/></ProtectedRoutes>
         },
         {
-            path: 'messages',
+            path: 'emails',
             element:<ProtectedRoutes><Email/></ProtectedRoutes>
         },
         {
@@ -140,22 +132,6 @@ const MainRoutes = {
             //     }
             // ]
         },
-        // {
-        //     path: 'sample-page',
-        //     element: <ProtectedRoutes><SamplePage /></ProtectedRoutes>
-        // },
-        // {
-        //     path: 'shadow',
-        //     element: <ProtectedRoutes><Shadow /></ProtectedRoutes>
-        // },
-        // {
-        //     path: 'typography',
-        //     element: <ProtectedRoutes><Typography /></ProtectedRoutes>
-        // },
-        // {
-        //     path: 'icons/ant',
-        //     element: <ProtectedRoutes><AntIcons /></ProtectedRoutes>
-        // }
     ]
 };
 

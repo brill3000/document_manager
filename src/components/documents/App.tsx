@@ -13,7 +13,7 @@ const App = () => {
           dense={true}
           style={{ fontSize: '.85rem', padding: '4px 8px' }}
         >
-          <FileBrowser />
+          <FileBrowser height='80vh' width='100%'/>
         </SnackbarProvider>
       </ThemeProvider>
   )
