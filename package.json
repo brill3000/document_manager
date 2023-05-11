@@ -94,7 +94,7 @@
   "scripts": {
     "start": "PORT=3006 react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
-    "test": "jest --verbose false",
+    "test": "jest",
     "test:watch": "jest --watch --verbose false",
     "eject": "react-scripts eject"
   },

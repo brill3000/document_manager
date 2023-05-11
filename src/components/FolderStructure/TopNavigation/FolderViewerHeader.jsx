@@ -125,19 +125,6 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
 
   };
 
-  //           created_by: folder.created_by,
-  //           date_created: Timestamp.fromDate(new Date()),
-  //           date_modified: Timestamp.fromDate(new Date()),
-  //           folder_name: folder.folder_name,
-  //           isFolder: folder.isFolder,
-  //           no_of_files: folder.no_of_files,
-  //           parent: folder.parent,
-  //           trashed: folder.trashed ?? false,
-  //           user_access: folder.user_access ?? null,
-  //           archived: folder.archived ?? false,
-  //           zipped: folder.zipped ?? false,
-  //           size: folder.size,
-
   const createNewFolder = async () => {
     let folder_name = value
     setShowForm(false)
@@ -158,32 +145,32 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
       size: 0,
     })
       .unwrap()
-      .then(({id}) => {
-          setValue('')
-          // if (!documents.some(x => x.id === id)) {
-          //   const newFolder = {
-          //     archived: false,
-          //     created_by: user.uid,
-          //     created_by_name: user.displayName,
-          //     date_created: new Date().toString(),
-          //     date_modified: new Date().toString(),
-          //     folder_name: folder_name,
-          //     id: id,
-          //     isFolder: true,
-          //     no_of_files: 0,
-          //     parent: currentFolder,
-          //     size: 0,
-          //     trashed: false,
-          //     user_access: null,
-          //     zipped: false
-          //   }
-          // }
+      .then(({ id }) => {
+        setValue('')
+        // if (!documents.some(x => x.id === id)) {
+        //   const newFolder = {
+        //     archived: false,
+        //     created_by: user.uid,
+        //     created_by_name: user.displayName,
+        //     date_created: new Date().toString(),
+        //     date_modified: new Date().toString(),
+        //     folder_name: folder_name,
+        //     id: id,
+        //     isFolder: true,
+        //     no_of_files: 0,
+        //     parent: currentFolder,
+        //     size: 0,
+        //     trashed: false,
+        //     user_access: null,
+        //     zipped: false
+        //   }
+        // }
 
-          setTimeout(() => {
-            const shortenedName = value.replace(/^(.{8}[^\s]*).*/, "$1");
-            const message = `${shortenedName}${value.length > 8 && '...'} Created Successfully`
-            enqueueSnackbar(message, { variant: 'success' })
-          }, 400)
+        setTimeout(() => {
+          const shortenedName = value.replace(/^(.{8}[^\s]*).*/, "$1");
+          const message = `${shortenedName}${value.length > 8 && '...'} Created Successfully`
+          enqueueSnackbar(message, { variant: 'success' })
+        }, 400)
       })
       .catch((err) => {
         const shortenedName = value.replace(/^(.{8}[^\s]*).*/, "$1");
@@ -244,9 +231,10 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
               <ButtonBase variant="outlined" sx={{
                 p: .5,
                 borderRadius: 1,
-                border: '1 solid blue',
+                border: '1 solid',
+                borderColor: theme => theme.palette.mode === 'dark' ? theme.palette.divider : theme.palette.primary.dark,
                 "&:hover": {
-                  backgroundColor: 'primary.100'
+                  backgroundColor: theme => theme.palette.primary.dark
                 },
               }}
                 {...getRootProps({ className: "dropzone" })}
@@ -257,7 +245,7 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
                   <Box sx={{ p: .3 }}>
                     <HiOutlineDocumentDownload style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
                   </Box>
-                  {matchDownSM ? <></> : <Typography  color={!currentFolder ? "secondary.400" : "secondary.600"}>Upload</Typography>}
+                  {matchDownSM ? <></> : <Typography color={!currentFolder ? "secondary.400" : "secondary.600"}>Upload</Typography>}
                 </Stack>
               </ButtonBase>
             )}
@@ -306,7 +294,7 @@ export function FolderViewerHeader({ history, setUploadedFiles, uploadedFiles, s
                   <Box sx={{ p: .3 }}>
                     <HiOutlineDocumentAdd style={{ fontSize: '16px', color: !currentFolder ? "#bfbfbf" : 'inherit' }} />
                   </Box>
-                  {matchDownSM ? <></> : <Typography  color={!currentFolder ? "secondary.400" : "secondary.600"}>Create Folder</Typography>}
+                  {matchDownSM ? <></> : <Typography color={!currentFolder ? "secondary.400" : "secondary.600"}>Create Folder</Typography>}
                 </Stack>
               </ButtonBase>
           }

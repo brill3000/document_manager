@@ -39,9 +39,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
                 if (Array.isArray(children) && children.length > 0) {
                     return children.map(child => {
                         const childDoc: DocumentType | undefined = get().fileMap.get(child)
-                        if (childDoc) {
-                            return childDoc
-                        } else null
+                        return childDoc;
                     })
                 } else return null
             } else return null

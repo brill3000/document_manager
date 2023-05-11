@@ -83,10 +83,10 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
   }
   React.useEffect(() => {
     const handleWindowResize = () => {
-
       setBrowserHeight(window.innerHeight)
       setBrowserWidth(window.innerWidth)
     }
+
     window.addEventListener('resize', handleWindowResize)
     return () => {
       window.removeEventListener('resize', handleWindowResize)
@@ -150,13 +150,12 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
       bgcolor: bgColor ?? 'background.paper'
     }}
       component={Stack}
-      ref={ref}
     >
       <Box height='20%'>
         <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} doc={fileMap.get(nav[nav.length - 1])} handleBack={handleBack} handleForward={handleForward} />
       </Box>
       <Box height='70%'>
-        <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} />
+        <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} gridRef={ref}/>
       </Box>
       <Divider />
       <Box height='10%'>

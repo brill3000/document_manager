@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Typography } from '@mui/material';
+import { Typography, lighten } from '@mui/material';
 import { DocumentProps, DocumentType } from '../../Interface/FileBrowser';
 import ListItem from '@mui/material/ListItem';
 import { theme } from '../../Themes/theme';
@@ -14,7 +14,7 @@ import { useViewStore } from '../../data/global_state/slices/view';
 import { MemorizedFcFolder } from './Document';
 
 
-export function ListDocument({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext, isColored }: DocumentProps & { isColored: boolean }): React.ReactElement {
+export function ListDocument({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext, isColored, width, height }: DocumentProps & { isColored: boolean, width?: string | number, height?: string | number }): React.ReactElement {
   const { browserHeight } = useViewStore()
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
   const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number; } | null>(null);
@@ -28,7 +28,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
   // };
   const isSelected = React.useMemo(() => {
     return Array.isArray(selected) && selected.some(x => document !== undefined && x.id === document.id)
-  }, [selected]);
+  }, [document, selected]);
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: is_dir ? ItemTypes.Folder : ItemTypes.File,
@@ -86,14 +86,14 @@ export function ListDocument({ document, selected, setSelected, select, actions,
   }));
   React.useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
-  }, []);
+  }, [preview]);
 
   React.useEffect(() => {
     setDragging(isDragging);
     if (isDragging) {
       document !== undefined && setSelected([document]);
     }
-  }, [isDragging]);
+  }, [document, isDragging, setDragging, setSelected]);
 
   React.useEffect(() => {
     closeContext && setContextMenu(null);
@@ -187,7 +187,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
     }
 
   };
-  const isRenaming = React.useMemo(() => renameTarget && document !== undefined && renameTarget.doc.id === document.id && renameTarget.rename, [renameTarget]);
+  const isRenaming = React.useMemo(() => renameTarget && document !== undefined && renameTarget.doc.id === document.id && renameTarget.rename, [document, renameTarget]);
   // const closeRename = () => {
   //   setRenameTarget(null);
   // };
@@ -197,20 +197,22 @@ export function ListDocument({ document, selected, setSelected, select, actions,
       sx={{
         cursor: isDragging ? 'grabbing !important' : isOver ? 'move' : 'pointer',
         height: 'max-content',
-        minWidth: '100vw',
-        webkitTransform: 'translate3d(0, 0, 0)'
+        minWidth: width,
+        webkitTransform: 'translate3d(0, 0, 0)',
+        px: 0
       }}
+      
     >
       {
         document !== undefined ?
           <Grid container
             direction='row'
-            minWidth='100vw'
+            minWidth={'100vw'}
             height='max-content'
             position='relative'
             ref={drag}
             display={isDragging ? 'none' : 'flex'}
-            bgcolor={theme => (isSelected || isOver) && !isRenaming ? theme.palette.primary.main : isHovered && !isRenaming ? 'rgba(225, 232, 240, 1)' : isColored ? 'rgba(239, 240, 242, 1)' : '#f9f7f6'}
+            bgcolor={theme => (isSelected || isOver) && !isRenaming ? theme.palette.primary.main : isHovered && !isRenaming ? 'rgba(225, 232, 240, 1)' : isColored ? lighten(theme.palette.secondary.light, .7) : lighten(theme.palette.secondary.light, .9)}
             color={(isSelected || isOver) ? theme.palette.primary.contrastText : theme.palette.grey[700]}
             borderRadius={1}
             onClick={handleClick}
@@ -223,6 +225,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
                 cursor: isRenaming ? 'text' : 'pointer'
               },
             }}
+            ml={1}
           >
 
             <Grid container
@@ -238,7 +241,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
                 borderTopRightRadius: 1,
                 borderBottomRightRadius: 1
               }}
-              bgcolor={theme => (isSelected || isOver) && !isRenaming ? theme.palette.primary.main : isHovered && !isRenaming ? 'rgba(225, 232, 240, 1)' : isColored ? 'rgba(236, 236, 236, 1)' : '#f9f7f6'}
+              bgcolor={theme => (isSelected || isOver) && !isRenaming ? theme.palette.primary.main : isHovered && !isRenaming ? 'rgba(225, 232, 240, 1)' : isColored ? lighten(theme.palette.secondary.light, .7) : lighten(theme.palette.secondary.light, .9)}
               color={(isSelected || isOver) ? theme.palette.primary.contrastText : theme.palette.grey[700]}
               pl={1}
               margin={0}

@@ -1,4 +1,4 @@
-import { alpha, Box, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import { alpha, Box, Divider, IconButton, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
 import { CiSearch } from 'react-icons/ci';
@@ -38,7 +38,7 @@ export default function TopNavHandles({ handleBack, handleForward, doc }: { hand
         p: .5,
         '&:hover': {
           px: 1,
-          bgcolor: theme => alpha(theme.palette.secondary.main, .05),
+          bgcolor: theme => alpha(theme.palette.secondary.main, .1),
         }
       }}>
         <HtmlTooltip enterNextDelay={tooltipDelay} placement='bottom-end' title={
@@ -48,13 +48,12 @@ export default function TopNavHandles({ handleBack, handleForward, doc }: { hand
           </React.Fragment>
         } arrow>
           <IconButton
-            color='warning'
+            color='error'
             sx={{
-              p: .3,
               borderRadius: 1,
               '&:hover': {
-                color: theme => theme.palette.warning.contrastText,
-                bgcolor: theme => theme.palette.warning.main
+                color: theme => theme.palette.error.contrastText,
+                bgcolor: theme => theme.palette.error.main
               }
             }}
             onClick={handleBack}
@@ -70,13 +69,12 @@ export default function TopNavHandles({ handleBack, handleForward, doc }: { hand
           </React.Fragment>
         } arrow>
           <IconButton
-            color='success'
+            color='primary'
             sx={{
-              p: .3,
               borderRadius: 1,
               '&:hover': {
-                color: theme => theme.palette.success.contrastText,
-                bgcolor: theme => theme.palette.success.main
+                color: theme => theme.palette.primary.contrastText,
+                bgcolor: theme => theme.palette.primary.main
               }
             }}
             onClick={handleForward}>
@@ -101,7 +99,7 @@ export default function TopNavHandles({ handleBack, handleForward, doc }: { hand
         rowGap={1}
         alignItems='center'
       >
-        <Typography variant='body2' width={250} noWrap>{doc === undefined ? 'Current folder' : doc.doc_name} </Typography>
+        <Typography variant='body1' width={250} noWrap>{doc === undefined ? 'Current folder' : doc.doc_name} </Typography>
         <IconButton
           color='secondary'
           sx={{

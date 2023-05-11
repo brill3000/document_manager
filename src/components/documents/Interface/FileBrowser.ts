@@ -1,4 +1,4 @@
-import React, { SetStateAction } from 'react';
+import React, { RefObject, SetStateAction } from 'react';
 
 export interface FileBrowserProps {
     height?: key
@@ -28,6 +28,7 @@ export interface FolderGridProps {
     setSelected: React.Dispatch<React.SetStateAction<DocumentType[]>>,
     select: (nodeId: key) => void,
     nav: any[]
+    gridRef: RefObject<HTMLDivElement>
 }
 
 export interface FileBrowserNaviagationProps {
@@ -70,6 +71,7 @@ export interface FileBrowserContentProps {
     documents: (DocumentType | undefined)[]
     select: (nodeId: key) => void
     nav: any[]
+    gridRef: RefObject<HTMLDivElement>
 }
 
 export interface FileBrowserFooterProps {
@@ -99,6 +101,8 @@ export interface DocumentListProps {
     setCloseContext: React.Dispatch<SetStateAction<boolean>>
     closeContext: boolean
     scrollPosition: number
+    width?: string | number
+    height?: string | number
 }
 
 export interface UseModelActions {

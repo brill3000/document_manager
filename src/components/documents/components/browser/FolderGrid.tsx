@@ -10,11 +10,9 @@ import { useSnackbar } from 'notistack';
 import { DocumentList } from './DocumentList';
 import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
 import { useViewStore } from '../../data/global_state/slices/view';
-// import { WithUndo } from './UI/Poppers/CustomAlerts';
-// import { faker } from '@faker-js/faker';
 
 
-const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGridProps) => {
+const FolderGrid = ({ documents, selected, setSelected, select, nav, gridRef }: FolderGridProps) => {
   const [contextMenu, setContextMenu] = React.useState<{ mouseX: number, mouseY: number } | null>(null)
   const [isOverDoc, setIsOverDoc] = React.useState<boolean>(false)
   const [open, setOpen] = React.useState(false);
@@ -23,7 +21,6 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGri
   const { view } = useViewStore()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [scrollPosition, setScrollPosition] = React.useState<number>(0)
-  const container = React.useRef<HTMLInputElement>(null)
 
   const { actions } = useBrowserStore();
 
@@ -38,7 +35,7 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGri
       }
     )
     else closeSnackbar()
-  }, [open])
+  }, [closeSnackbar, enqueueSnackbar, open])
   React.useEffect(() => {
     contextMenu !== null ? setCloseContext(true) : setCloseContext(false)
   }, [contextMenu])
@@ -109,11 +106,14 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGri
         break;
     }
   }
+  React.useEffect(() => {
+
+  })
 
   return (
     <Grid container
       sm={12}
-      md={view === 'list' ? 12 : 8}
+      md={8}
       bgcolor={theme => alpha(theme.palette.secondary.light, .1)}
       sx={{
         overflowY: 'auto',
@@ -127,8 +127,8 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGri
       rowSpacing={1}
       onClick={handleClick}
       onContextMenu={handleClick}
-      onScroll={() => container.current !== null && container.current !== undefined && setScrollPosition(container.current.scrollLeft)}
-      ref={container}
+      onScroll={() => gridRef.current !== null && gridRef.current !== undefined && setScrollPosition(gridRef.current.scrollLeft)}
+      ref={gridRef}
     >
       {
         view === 'list' ?
@@ -142,6 +142,9 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav }: FolderGri
             isOverDoc={isOverDoc}
             setIsOverDoc={setIsOverDoc}
             scrollPosition={scrollPosition}
+            height={gridRef.current? gridRef.current.clientHeight : '100vh'}
+            width={gridRef.current? gridRef.current.clientWidth: '100vw'}
+
           />
           :
           documents.map((document, i: number) =>

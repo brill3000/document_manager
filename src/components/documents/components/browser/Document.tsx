@@ -203,6 +203,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
       xs={12}
       sm={6}
       md={4}
+      lg={3}
       xl={3}
     >
       {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from "react-icons/bs";
-import { alpha, ButtonBase, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { alpha, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dropzone from 'react-dropzone';
 import { DocumentType, Units } from '../../Interface/FileBrowser';
 import { HtmlTooltip } from './UI/Poppers/CustomPoppers';
@@ -187,11 +187,11 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 py: .5,
                                 pl: .5,
                                 borderRadius: 1,
-                                color: view === 'list' ? theme => theme.palette.getContrastText(theme.palette.text.secondary) : 'inherit',
-                                bgcolor: view === 'list' ? theme => theme.palette.text.secondary : 'transparent',
+                                color: view === 'list' ? theme => theme.palette.secondary.contrastText : 'inherit',
+                                bgcolor: view === 'list' ? theme => theme.palette.secondary.main : 'transparent',
                                 '&:hover': {
-                                    color: theme => theme.palette.getContrastText(theme.palette.text.secondary),
-                                    bgcolor: theme => alpha(theme.palette.text.secondary, .5)
+                                    color: theme => theme.palette.secondary.contrastText,
+                                    bgcolor: theme => alpha(theme.palette.secondary.dark, .8)
                                 },
                                 transition: 'all .1s',
                                 transitionTimingFunction: 'ease-in-out',
@@ -222,11 +222,11 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 py: .5,
                                 pr: .7,
                                 borderRadius: 1,
-                                color: view === 'grid' ? theme => theme.palette.getContrastText(theme.palette.text.secondary) : 'inherit',
-                                bgcolor: view === 'grid' ? theme => theme.palette.text.secondary : 'inherit',
+                                color: view === 'grid' ? theme => theme.palette.secondary.contrastText : 'inherit',
+                                bgcolor: view === 'grid' ? theme => theme.palette.secondary.main : 'inherit',
                                 '&:hover': {
-                                    color: theme => theme.palette.getContrastText(theme.palette.text.secondary),
-                                    bgcolor: theme => alpha(theme.palette.text.secondary, .5)
+                                    color: theme => theme.palette.secondary.contrastText,
+                                    bgcolor: theme => alpha(theme.palette.secondary.dark, .8)
                                 },
                                 transition: 'all .1s',
                                 transitionTimingFunction: 'ease-in-out',
@@ -281,7 +281,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 borderRadius: 1,
                                 '&:hover': {
                                     color: theme => theme.palette.warning.contrastText,
-                                    bgcolor: theme => theme.palette.warning.main
+                                    bgcolor: theme => darken(theme.palette.warning.main, .1)
                                 },
                                 width: minWidth,
                                 height: '100%'
@@ -311,7 +311,8 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 borderRadius: 1,
                                 '&:hover': {
                                     color: theme => theme.palette.error.contrastText,
-                                    bgcolor: theme => theme.palette.error.main
+                                    bgcolor: theme => darken(theme.palette.error.main, .1)
+
                                 },
                                 width: minWidth,
                                 height: '100%'
