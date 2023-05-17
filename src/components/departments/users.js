@@ -19,6 +19,7 @@ const Customers = ({ currentDepartment }) => {
 
   const usersQuery = useGetSystemUsersQuery()
 
+
   React.useEffect(() => {
     if (usersQuery.isSuccess) {
       setUsers(usersQuery.data)
@@ -40,6 +41,7 @@ const Customers = ({ currentDepartment }) => {
 
 
   }, [usersQuery.isSuccess, usersQuery.data])
+
 
 
 

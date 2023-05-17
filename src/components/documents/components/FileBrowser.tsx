@@ -1,4 +1,4 @@
-import { Box, Divider, Stack } from '@mui/material'
+import { Box, Divider } from '@mui/material'
 import React from 'react'
 import FileBrowserContent from './browser/FileBrowserContent'
 import FileBrowserNavigation from './browser/FileBrowserNavigation'
@@ -9,6 +9,7 @@ import FileBrowserTopNav from './browser/FileBrowserTopNav'
 import { faker } from '@faker-js/faker'
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock'
 import { useViewStore } from '../data/global_state/slices/view'
+import MainCard from 'components/MainCard'
 
 
 const sampleFiles: DocumentType[] = Array.from(Array(10)).map((_, i) => {
@@ -60,6 +61,15 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
   const stack = React.useRef<string[] | number[]>([])
   const { setBrowserHeight, setBrowserWidth, browserHeight, browserWidth } = useViewStore()
   const ref = React.useRef<HTMLDivElement>(null)
+
+  // React.useEffect(() => {
+  //   if (okmUsers.isSuccess) {
+  //     console.log(okmUsers.data, "DATA")
+  //   } else {
+  //     console.log(okmUsers, "OKM USERS")
+  //   }
+  // })
+
 
   React.useEffect(() => {
     initiateFileBrowser(browserDocuments ? browserDocuments : [...sampleFolders, ...sampleFiles])
@@ -142,26 +152,31 @@ const FileBrowser = ({ height, width, bgColor, border, borderRadius, browserDocu
 
 
   return (
-    <Box sx={{
-      width: width ?? browserWidth * .8,
-      height: height ?? browserHeight * .9,
-      border: border ?? '.5px solid lightgray',
-      borderRadius: borderRadius ?? 2,
-      bgcolor: bgColor ?? 'background.paper'
+    // @ts-expect-error
+    <MainCard sx={{
+      width: width ?? browserWidth,
+      height: height ?? browserHeight,
+      display: 'flex',
+      flexDirection: 'column',
+      '& .MuiCardContent-root': {
+        p: 0,
+        height: '100%',
+        width: '100%'
+
+      }
     }}
-      component={Stack}
     >
       <Box height='20%'>
         <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} doc={fileMap.get(nav[nav.length - 1])} handleBack={handleBack} handleForward={handleForward} />
       </Box>
-      <Box height='70%'>
-        <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} gridRef={ref}/>
+      <Box height='72%'>
+        <FileBrowserContent select={select} selected={selected} setSelected={setSelected} documents={documents} nav={nav} gridRef={ref} />
       </Box>
       <Divider />
-      <Box height='10%'>
+      <Box height='8%'>
         <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
       </Box>
-    </Box>
+    </MainCard>
   )
 }
 

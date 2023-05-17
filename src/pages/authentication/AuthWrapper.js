@@ -25,7 +25,7 @@ const AuthWrapper = ({ children }) => (
             }}
         >
             <Grid item xs={12} sx={{ ml: 3, mt: 3 }}>
-                <Logo />
+                <Logo title='E-horizon Document Management System'/>
             </Grid>
             <Grid item xs={12}>
                 <Grid

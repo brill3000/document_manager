@@ -330,7 +330,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                   :
                   <Box sx={{
                     overflow: 'hidden',
-                    color: isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.grey[700],
+                    color: isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.text.secondary,
                     fontWeight: isSelected || isOver ? 500 : 400,
                     textOverflow: 'ellipsis',
                     fontSize: '.84rem',

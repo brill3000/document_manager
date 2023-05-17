@@ -22,15 +22,16 @@ export function DocumentList({ documents, selected, setSelected, select, actions
         pt: 0,
         pb: .5,
         px: 0,
-        webkitTransform: 'translate3d(0, 0, 0)'
-
+        webkitTransform: 'translate3d(0, 0, 0)',
+        bgcolor: theme => lighten(theme.palette.primary.light, .9),
+        borderBottom: theme => `1px solid ${darken(theme.palette.divider, .03)}`,
+        minWidth: '100vw'
       }}>
         <Grid
           container
           direction='row'
           minWidth={'100vw'}
           position='relative'
-          borderBottom='1px solid lightGray'
           ml={1}
         >
           <Grid
@@ -39,19 +40,19 @@ export function DocumentList({ documents, selected, setSelected, select, actions
             top='1%'
             left={0}
             position='sticky'
-            bgcolor={ theme => lighten(theme.palette.primary.light, .9)}
-            borderRight={theme => `1px solid ${darken(theme.palette.divider, .1)}`}
+            bgcolor={theme => lighten(theme.palette.primary.light, .9)}
+            borderRight={theme => `1px solid ${darken(theme.palette.divider, .03)}`}
             py={1}
             pl={1}
           >
-            <Typography noWrap color={theme=> theme.palette.primary.main} fontSize='.85rem'>Name</Typography>
+            <Typography noWrap color={theme => theme.palette.primary.main} fontSize='.85rem'>Name</Typography>
           </Grid>
           <Grid
             xs={2}
             pl={2}
-            bgcolor={ theme => lighten(theme.palette.secondary.light, .7)}
+            bgcolor={theme => lighten(theme.palette.secondary.light, .7)}
 
-            borderRight={theme => `1px solid ${darken(theme.palette.divider, .1)}`}
+            borderRight={theme => `1px solid ${darken(theme.palette.divider, .03)}`}
             py={1}
           >
             <Typography noWrap fontSize='.85rem'>Type</Typography>
@@ -59,8 +60,8 @@ export function DocumentList({ documents, selected, setSelected, select, actions
           <Grid
             xs={3}
             pl={2}
-            bgcolor={ theme => lighten(theme.palette.secondary.light, .7)}
-            borderRight={theme => `1px solid ${darken(theme.palette.divider, .1)}`}
+            bgcolor={theme => lighten(theme.palette.secondary.light, .7)}
+            borderRight={theme => `1px solid ${darken(theme.palette.divider, .03)}`}
             py={1}
           >
             <Typography noWrap fontSize='.85rem'>Date Added</Typography>
@@ -68,8 +69,8 @@ export function DocumentList({ documents, selected, setSelected, select, actions
           <Grid
             xs={2}
             pl={2}
-            bgcolor={ theme => lighten(theme.palette.secondary.light, .7)}
-            borderRight={theme => `1px solid ${darken(theme.palette.divider, .1)}`}
+            bgcolor={theme => lighten(theme.palette.secondary.light, .7)}
+            borderRight={theme => `1px solid ${darken(theme.palette.divider, .03)}`}
             py={1}
           >
             <Typography noWrap fontSize='.85rem'>Archived</Typography>
@@ -77,8 +78,7 @@ export function DocumentList({ documents, selected, setSelected, select, actions
           <Grid
             xs={2}
             pl={2}
-            bgcolor={ theme => lighten(theme.palette.secondary.light, .7)}
-            borderRight={theme => `1px solid ${darken(theme.palette.divider, .1)}`}
+            bgcolor={theme => lighten(theme.palette.secondary.light, .7)}
             py={1}
           >
             <Typography noWrap fontSize='.85rem'>Size</Typography>

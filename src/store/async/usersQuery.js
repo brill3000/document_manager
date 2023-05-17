@@ -73,7 +73,6 @@ export const usersQuery = createApi({
                 try {
                     if (!navigator.onLine) throw new Error(`It seems that you are offline`)
                     let users = [];
-                    // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
                     const q = query(collection(db, "users"));
 
                     const querySnapshot = await getDocs(q);
@@ -151,7 +150,6 @@ export const usersQuery = createApi({
                     return { error: e.message }
                 }
             },
-            // invalidatesTags: ['users']
         }),
         getUsersSummary: builder.query({
             async queryFn(user) {
@@ -169,99 +167,8 @@ export const usersQuery = createApi({
                     return { error: e.message }
                 }
             },
-            // providesTags: ['users']
         }),
 
-        // removeUserFromoDepartment: builder.mutation({
-        //     async queryFn(user) {
-        //         try {
-        //             if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-
-        //             const q = collection(db, "departments", "users");
-
-        //             const data = {
-        //                 deregistration_date: Timestamp.fromDate(new Date()),
-        //             };
-        //             const docRef = doc(db, "departments", "users", user.id);
-        //             const response = await updateDoc(docRef, data)
-
-
-        //             return { data: response }
-
-        //         } catch (e) {
-        //             return { error: e.message }
-        //         }
-
-        //     },
-        //     // invalidatesTags: ['users']
-        // }),
-        // deRegisterUser: builder.mutation({
-        //     async queryFn(user) {
-        //         try {
-        //             if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-
-        //             const data = {
-        //                 deregistration_date: Timestamp.fromDate(new Date()),
-        //             };
-
-        //             const docRef = doc(db, "users", user.id);
-        //             const docRef2 = doc(db, "departments", "users", user.id);
-
-        //             const response = await updateDoc(docRef, data)
-        //             const response2 = await updateDoc(docRef2, data)
-
-
-        //             return { data: response && response2 }
-
-        //         } catch (e) {
-        //             return { error: e.message }
-        //         }
-
-        //     },
-        //     // invalidatesTags: ['users']
-        // }),
-
-        // restoreFile: builder.mutation({
-        //     async queryFn(file) {
-        //         try {
-        //             if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-
-        //             const data = {
-        //                 trashed: false
-        //             };
-
-        //             const docRef = doc(db, "files", file.id);
-        //             const response = await updateDoc(docRef, data)
-
-        //             return { data: response }
-
-        //         } catch (e) {
-        //             return { error: e.message }
-        //         }
-
-        //     },
-        //     invalidatesTags: ['users']
-        // }),
-
-        // renameFiles: builder.mutation({
-        //     async queryFn(file) {
-        //         try {
-        //             if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-        //             const data = {
-        //                 file_name: file.file_name
-        //             };
-        //             const docRef = doc(db, "files", file.id);
-        //             const response = await updateDoc(docRef, data)
-
-        //             return { data: response }
-
-        //         } catch (e) {
-        //             return { error: e.message }
-        //         }
-
-        //     },
-        //     invalidatesTags: ['files']
-        // })
     })
 })
 export const users_query = usersQuery.reducer

@@ -1,16 +1,30 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { db } from "../../firebase-config"
-import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, getDoc, runTransaction } from "firebase/firestore"
-
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { db } from '../../firebase-config';
+import {
+    getDocs,
+    collection,
+    query,
+    where,
+    Timestamp,
+    doc,
+    addDoc,
+    deleteDoc,
+    updateDoc,
+    getDoc,
+    runTransaction
+} from 'firebase/firestore';
 
 const omit = (obj, omitKeys) => {
-    let newobj = { ...obj }
-    omitKeys.forEach(omitKey => {
-        newobj = { ...Object.keys(newobj).filter(key => key !== omitKey).reduce((result, key) => ({ ...result, [key]: obj[key] }), {}) }
-    })
-    return newobj
-}
-
+    let newobj = { ...obj };
+    omitKeys.forEach((omitKey) => {
+        newobj = {
+            ...Object.keys(newobj)
+                .filter((key) => key !== omitKey)
+                .reduce((result, key) => ({ ...result, [key]: obj[key] }), {})
+        };
+    });
+    return newobj;
+};
 
 class File {
     constructor(
@@ -26,11 +40,11 @@ class File {
         size,
         zipped,
         trashed,
-        locked,
+        locked
     ) {
         this.created_by = created_by;
-        this.date_created = new Date(date_created.seconds).toLocaleString()
-        this.date_modified = new Date(date_modified.seconds).toLocaleString()
+        this.date_created = new Date(date_created.seconds).toLocaleString();
+        this.date_modified = new Date(date_modified.seconds).toLocaleString();
         this.file_name = file_name;
         this.isFolder = isFolder;
         this.no_of_files = no_of_files;
@@ -40,13 +54,28 @@ class File {
         this.size = size;
         this.zipped = zipped;
         this.trashed = trashed;
-        this.locked = locked
+        this.locked = locked;
     }
     toString() {
-        return this.created_by + ', ' + this.date_created + ', ' + this.date_modified + ', ' + this.file_name + ', ' + this.isFolder + ', ' + this.no_of_files + ', ' + this.parent + ', ' + this.size;
+        return (
+            this.created_by +
+            ', ' +
+            this.date_created +
+            ', ' +
+            this.date_modified +
+            ', ' +
+            this.file_name +
+            ', ' +
+            this.isFolder +
+            ', ' +
+            this.no_of_files +
+            ', ' +
+            this.parent +
+            ', ' +
+            this.size
+        );
     }
 }
-
 
 // Firestore data converter
 const fileConverter = {
@@ -67,33 +96,32 @@ const fileConverter = {
             zipped: file.zipped ?? false,
             size: file.size,
             locked: file.locked ?? false
-        }
+        };
         if (file.department_access) {
             sent_file = {
                 ...sent_file,
-                department_access: file.department_access,
-            }
+                department_access: file.department_access
+            };
         }
         return sent_file;
     },
     fromFirestore: (snapshot, options) => {
         const data = snapshot.data(options);
-        return new File
-            (
-                data.created_by,
-                data.date_created,
-                data.date_modified,
-                data.file_name,
-                data.isFolder,
-                data.no_of_files,
-                data.file_ref,
-                data.file_type,
-                data.parent,
-                data.size,
-                data.zipped,
-                data.trashed,
-                data.locked,
-            );
+        return new File(
+            data.created_by,
+            data.date_created,
+            data.date_modified,
+            data.file_name,
+            data.isFolder,
+            data.no_of_files,
+            data.file_ref,
+            data.file_type,
+            data.parent,
+            data.size,
+            data.zipped,
+            data.trashed,
+            data.locked
+        );
     }
 };
 const logsConverter = {
@@ -107,11 +135,9 @@ const logsConverter = {
             log_category: log.log_category,
             log_description: log.log_description,
             file_modified: log.file_modified ?? false
-        }
-    },
+        };
+    }
 };
-
-
 
 export const filesQuery = createApi({
     reducerPath: 'files_query',
@@ -121,40 +147,47 @@ export const filesQuery = createApi({
         getFilesByParentId: builder.query({
             async queryFn(queryParams) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     let files = [];
                     // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
-                    const q = query(collection(db, "files"), where("parent", "==", queryParams.parent), where("created_by", '==', queryParams.user));
+                    const q = query(
+                        collection(db, 'files'),
+                        where('parent', '==', queryParams.parent),
+                        where('created_by', '==', queryParams.user)
+                    );
 
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
                         let fileData = { ...data.data() };
-                        let fileDataOmited = omit(fileData, ['date_created', 'date_modified'])
+                        let fileDataOmited = omit(fileData, ['date_created', 'date_modified']);
                         const file = {
                             id: data.id,
-                            date_created: data.data().date_created ? new Date(data.data().date_created.seconds * 1000).toDateString() : null,
-                            date_modified: data.data().date_created ? new Date(data.data().date_modified.seconds * 1000).toDateString() : null,
+                            date_created: data.data().date_created
+                                ? new Date(data.data().date_created.seconds * 1000).toDateString()
+                                : null,
+                            date_modified: data.data().date_created
+                                ? new Date(data.data().date_modified.seconds * 1000).toDateString()
+                                : null,
                             ...fileDataOmited
-                        }
-                        files.push(file)
-                    })
-                    return { data: files }
-
+                        };
+                        files.push(file);
+                    });
+                    return { data: files };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-            },
+            }
             // providesTags: ['files']
         }),
         uploadFile: builder.mutation({
             async queryFn(file) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
 
-                    const q = collection(db, "files");
-                    const { id } = await addDoc(q, fileConverter.toFirestore(file))
+                    const q = collection(db, 'files');
+                    const { id } = await addDoc(q, fileConverter.toFirestore(file));
 
-                    const q2 = collection(db, "logs");
+                    const q2 = collection(db, 'logs');
                     const log = {
                         created_by: {
                             id: file.created_by.id,
@@ -162,53 +195,52 @@ export const filesQuery = createApi({
                         },
                         date_created: Timestamp.fromDate(new Date()),
                         file_name: file.file_name,
-                        log_type: "uploaded",
+                        log_type: 'uploaded',
                         log_category: 'files',
                         log_description: `User ${file.created_by.name} uploaded ${file.file_name}`
-                    }
-                    await addDoc(q2, logsConverter.toFirestore(log))
-                    const summaryRef = doc(db, "user_summary", file.created_by.id);
+                    };
+                    await addDoc(q2, logsConverter.toFirestore(log));
+                    const summaryRef = doc(db, 'user_summary', file.created_by.id);
 
-                    const day = new Date().getDay()
-                    const month = new Date().getMonth()
-
+                    const day = new Date().getDay();
+                    const month = new Date().getMonth();
 
                     await runTransaction(db, async (transaction) => {
                         const summaryDoc = await transaction.get(summaryRef);
                         if (!summaryDoc.exists()) {
-                            throw new Error("Document does not exist!");
+                            throw new Error('Document does not exist!');
                         }
 
-                        const weekly = {[day]: summaryDoc.data().weekly[day] + 1 }
-                        const monthly = {[month]: summaryDoc.data().monthly[month] + 1 }
+                        const weekly = { [day]: summaryDoc.data().weekly[day] + 1 };
+                        const monthly = { [month]: summaryDoc.data().monthly[month] + 1 };
 
-                        transaction.update(summaryRef, { document_count: summaryDoc.data().document_count ? summaryDoc.data().document_count  + 1 : 1  , last_update: Timestamp.fromDate(new Date()), weekly: {...summaryDoc.data().weekly, ...weekly}, monthly: {...summaryDoc.data().monthly, ...monthly} });
+                        transaction.update(summaryRef, {
+                            document_count: summaryDoc.data().document_count ? summaryDoc.data().document_count + 1 : 1,
+                            last_update: Timestamp.fromDate(new Date()),
+                            weekly: { ...summaryDoc.data().weekly, ...weekly },
+                            monthly: { ...summaryDoc.data().monthly, ...monthly }
+                        });
                     });
 
-
-
-
-                    return { data: id }
-
+                    return { data: id };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-
             },
             invalidatesTags: ['logs']
         }),
         trashFolder: builder.mutation({
             async queryFn(file) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
 
                     const data = {
                         trashed: true
                     };
 
-                    const docRef = doc(db, "files", file.id);
-                    const response = await updateDoc(docRef, data)
-                    const q2 = collection(db, "logs");
+                    const docRef = doc(db, 'files', file.id);
+                    const response = await updateDoc(docRef, data);
+                    const q2 = collection(db, 'logs');
                     const docSnap = await getDoc(docRef);
                     let fileData = { ...docSnap.data() };
                     const log = {
@@ -218,32 +250,30 @@ export const filesQuery = createApi({
                         },
                         date_created: Timestamp.fromDate(new Date()),
                         file_name: fileData.file_name,
-                        log_type: "trashed",
+                        log_type: 'trashed',
                         log_category: 'files',
                         file_modified: true,
                         log_description: `User ${fileData.created_by_name} trashed ${fileData.file_name}`
-                    }
-                    await addDoc(q2, logsConverter.toFirestore(log))
+                    };
+                    await addDoc(q2, logsConverter.toFirestore(log));
 
-                    return { data: response }
-
+                    return { data: response };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-
             },
             invalidatesTags: ['logs']
         }),
         restoreFile: builder.mutation({
             async queryFn(file) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     const data = {
                         trashed: false
                     };
-                    const docRef = doc(db, "files", file.id);
-                    const response = await updateDoc(docRef, data)
-                    const q2 = collection(db, "logs");
+                    const docRef = doc(db, 'files', file.id);
+                    const response = await updateDoc(docRef, data);
+                    const q2 = collection(db, 'logs');
                     const docSnap = await getDoc(docRef);
                     let fileData = { ...docSnap.data() };
                     const log = {
@@ -253,19 +283,17 @@ export const filesQuery = createApi({
                         },
                         date_created: Timestamp.fromDate(new Date()),
                         file_name: fileData.file_name,
-                        log_type: "restored",
+                        log_type: 'restored',
                         log_category: 'files',
                         file_modified: true,
                         log_description: `User ${fileData.created_by_name} restored ${fileData.file_name}`
-                    }
-                    await addDoc(q2, logsConverter.toFirestore(log))
+                    };
+                    await addDoc(q2, logsConverter.toFirestore(log));
 
-                    return { data: response }
-
+                    return { data: response };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-
             },
             invalidatesTags: ['logs']
         }),
@@ -273,13 +301,13 @@ export const filesQuery = createApi({
         renameFiles: builder.mutation({
             async queryFn(file) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     const data = {
                         file_name: file.file_name
                     };
-                    const docRef = doc(db, "files", file.id);
-                    const response = await updateDoc(docRef, data)
-                    const q2 = collection(db, "logs");
+                    const docRef = doc(db, 'files', file.id);
+                    const response = await updateDoc(docRef, data);
+                    const q2 = collection(db, 'logs');
                     const docSnap = await getDoc(docRef);
                     let fileData = { ...docSnap.data() };
                     const log = {
@@ -289,29 +317,27 @@ export const filesQuery = createApi({
                         },
                         date_created: Timestamp.fromDate(new Date()),
                         file_name: fileData.file_name,
-                        log_type: "renamed",
+                        log_type: 'renamed',
                         log_category: 'files',
                         file_modified: true,
                         log_description: `User ${fileData.created_by_name} renamed ${fileData.file_name}`
-                    }
-                    await addDoc(q2, logsConverter.toFirestore(log))
+                    };
+                    await addDoc(q2, logsConverter.toFirestore(log));
 
-                    return { data: response }
-
+                    return { data: response };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-
             },
             invalidatesTags: ['logs']
         })
     })
-})
-export const files_query = filesQuery.reducer
+});
+export const files_query = filesQuery.reducer;
 export const {
     useGetFilesByParentIdQuery,
     useUploadFileMutation,
     useRenameFilesMutation,
     useTrashFileMutation,
     useRestorFileMutation
-} = filesQuery
+} = filesQuery;

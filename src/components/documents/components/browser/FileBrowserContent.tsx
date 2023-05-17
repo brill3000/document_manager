@@ -17,14 +17,16 @@ const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gri
       height='100%'
     >
       <FolderGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
-      <Divider orientation='vertical'/>
       <Grid
         md={4}
         height={'100%'}
+        component={Stack}
+        direction='row'
       >
+        <Divider orientation='vertical' />
         {
           Array.isArray(selected) && selected.length > 0 &&
-          <Stack spacing={2} height='100%'>
+          <Stack spacing={2} height='100%' width='100%'>
             {
               selected[0].is_dir
                 ?

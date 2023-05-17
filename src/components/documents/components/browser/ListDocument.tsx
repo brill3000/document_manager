@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Typography, lighten } from '@mui/material';
+import { Divider, Stack, Typography, lighten } from '@mui/material';
 import { DocumentProps, DocumentType } from '../../Interface/FileBrowser';
 import ListItem from '@mui/material/ListItem';
 import { theme } from '../../Themes/theme';
@@ -49,10 +49,10 @@ export function ListDocument({ document, selected, setSelected, select, actions,
   //       }
   //     } catch (e) {
   //       if(e instanceof Error){
-        //   console.log(e.message)
-        // }else{
-        //   console.log(e)
-        // };
+  //   console.log(e.message)
+  // }else{
+  //   console.log(e)
+  // };
   //     }
 
   //   } else {
@@ -70,9 +70,9 @@ export function ListDocument({ document, selected, setSelected, select, actions,
           actions.move(item.id, id);
         }
       } catch (e) {
-        if(e instanceof Error){
+        if (e instanceof Error) {
           console.log(e.message)
-        }else{
+        } else {
           console.log(e)
         };
       }
@@ -166,11 +166,11 @@ export function ListDocument({ document, selected, setSelected, select, actions,
                 }
               }
             } catch (e) {
-              if(e instanceof Error){
-          console.log(e.message)
-        }else{
-          console.log(e)
-        };
+              if (e instanceof Error) {
+                console.log(e.message)
+              } else {
+                console.log(e)
+              };
             }
             setContextMenu(null);
             break;
@@ -201,7 +201,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
         webkitTransform: 'translate3d(0, 0, 0)',
         px: 0
       }}
-      
+
     >
       {
         document !== undefined ?
@@ -245,8 +245,7 @@ export function ListDocument({ document, selected, setSelected, select, actions,
               color={(isSelected || isOver) ? theme.palette.primary.contrastText : theme.palette.grey[700]}
               pl={1}
               margin={0}
-              // boxShadow={scrollPosition !== undefined && scrollPosition > 0 ? '5px 0 3px -4px rgb(0 0 0 / 20%)' : 0}
-              borderRight='1px solid lightGray'
+              justifyContent='space-between'
             >
               <Grid
                 xs={1}
@@ -262,32 +261,38 @@ export function ListDocument({ document, selected, setSelected, select, actions,
               </Grid>
               <Grid
                 xs={11}
-                px={1}
                 maxWidth='80%'
                 alignItems='center'
               >
                 <Typography noWrap fontSize='.85rem'>{document.doc_name}</Typography>
               </Grid>
+              <Divider orientation='vertical' />
             </Grid>
             <Grid
               xs={2}
               alignItems='center'
-              pr={1}
               pl={2}
-              borderRight='1px solid lightGray'
+              py={0}
+              component={Stack}
+              justifyContent='space-between'
+              direction='row'
             >
               <Typography
                 noWrap
                 fontSize='.85rem'
                 fontWeight={isSelected || isOver ? 500 : 400}
               > {document.type}</Typography>
+              <Divider orientation='vertical' />
+
             </Grid>
             <Grid
               xs={3}
               alignItems='center'
-              pr={1}
               pl={2}
-              borderRight='1px solid lightGray'
+              py={0}
+              component={Stack}
+              direction='row'
+              justifyContent='space-between'
             >
               <Typography
                 noWrap
@@ -296,14 +301,20 @@ export function ListDocument({ document, selected, setSelected, select, actions,
               >
                 {new Date().toDateString()}
               </Typography>
+              <Divider orientation='vertical' />
+
             </Grid>
             <Grid
               xs={2}
               alignItems='center'
-              pr={1}
               pl={2}
-              borderRight='1px solid lightGray'
+              py={0}
+
+              component={Stack}
+              direction='row'
+              justifyContent='space-between'
             >
+
               <Typography
                 noWrap
                 fontSize='.85rem'
@@ -311,12 +322,15 @@ export function ListDocument({ document, selected, setSelected, select, actions,
               >
                 {document.is_archived ? 'Yes' : 'No'}
               </Typography>
+              <Divider orientation='vertical' />
+
             </Grid>
             <Grid
               xs={2}
               alignItems='center'
               pr={1}
               pl={2}
+              
             >
               <Typography
                 noWrap

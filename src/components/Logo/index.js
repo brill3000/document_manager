@@ -10,10 +10,10 @@ import config from 'config';
 
 // ==============================|| MAIN LOGO ||============================== //
 
-const LogoSection = ({ sx, to }) => (
+const LogoSection = ({ sx, to, nologo, title }) => (
     <ButtonBase disableRipple component={Link} to={!to ? config.defaultPath : to} sx={sx}>
-        <Logo />
-        <Typography variant="h4" >E-DMS</Typography>
+        {!nologo && <Logo />}
+        <Typography variant="h4" >{title ?? 'E-DMS'}</Typography>
     </ButtonBase>
 );
 
