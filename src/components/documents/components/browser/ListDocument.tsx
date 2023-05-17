@@ -233,7 +233,7 @@ export function ListDocument({
                             ? lighten(theme.palette.secondary.light, 0.7)
                             : lighten(theme.palette.secondary.light, 0.9)
                     }
-                    color={isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.grey[700]}
+                    color={isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.secondary.contrastText}
                     borderRadius={1}
                     onClick={handleClick}
                     onContextMenu={handleClick}
@@ -276,7 +276,7 @@ export function ListDocument({
                                 ? lighten(theme.palette.secondary.light, 0.7)
                                 : lighten(theme.palette.secondary.light, 0.9)
                         }
-                        color={isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.grey[700]}
+                        color={isSelected || isOver ? theme.palette.primary.contrastText : lighten(theme.palette.text.secondary, 0.2)}
                         pl={1}
                         margin={0}
                         justifyContent="space-between"

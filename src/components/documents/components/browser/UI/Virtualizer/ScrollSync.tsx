@@ -2,14 +2,22 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 
 interface ScrollSyncProps {
-    children: ({ onScroll, scrollLeft, scrollTop, clientHeight, clientWidth, scrollHeight, scrollWidth }: {
+    children: ({
+        onScroll,
+        scrollLeft,
+        scrollTop,
+        clientHeight,
+        clientWidth,
+        scrollHeight,
+        scrollWidth
+    }: {
         onScroll: ({
             clientHeight,
             clientWidth,
             scrollHeight,
             scrollLeft,
             scrollTop,
-            scrollWidth,
+            scrollWidth
         }: {
             clientHeight: number;
             clientWidth: number;
@@ -46,7 +54,7 @@ export default function ScrollSync({ children }: ScrollSyncProps) {
         scrollHeight: 0,
         scrollLeft: 0,
         scrollTop: 0,
-        scrollWidth: 0,
+        scrollWidth: 0
     });
 
     const _onScroll = React.useCallback(
@@ -56,7 +64,7 @@ export default function ScrollSync({ children }: ScrollSyncProps) {
             scrollHeight,
             scrollLeft,
             scrollTop,
-            scrollWidth,
+            scrollWidth
         }: {
             clientHeight: number;
             clientWidth: number;
@@ -71,23 +79,25 @@ export default function ScrollSync({ children }: ScrollSyncProps) {
                 scrollHeight,
                 scrollLeft,
                 scrollTop,
-                scrollWidth,
+                scrollWidth
             });
         },
         []
     );
 
-    return <>{
-        children({
-            clientHeight: state.clientHeight,
-            clientWidth: state.clientWidth,
-            onScroll: _onScroll,
-            scrollHeight: state.scrollHeight,
-            scrollLeft: state.scrollLeft,
-            scrollTop: state.scrollTop,
-            scrollWidth: state.scrollWidth,
-        })
-    }</>;
+    return (
+        <>
+            {children({
+                clientHeight: state.clientHeight,
+                clientWidth: state.clientWidth,
+                onScroll: _onScroll,
+                scrollHeight: state.scrollHeight,
+                scrollLeft: state.scrollLeft,
+                scrollTop: state.scrollTop,
+                scrollWidth: state.scrollWidth
+            })}
+        </>
+    );
 }
 
 ScrollSync.propTypes = {
@@ -96,5 +106,5 @@ ScrollSync.propTypes = {
      * This function should implement the following signature:
      * ({ onScroll, scrollLeft, scrollTop, clientHeight, clientWidth, scrollHeight, scrollWidth }) => PropTypes.element
      */
-    children: PropTypes.func.isRequired,
+    children: PropTypes.func.isRequired
 };

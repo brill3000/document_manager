@@ -1,4 +1,3 @@
-
 // import React from 'react';
 // import { AutoSizer, Column, Table } from 'react-virtualized';
 // import { useViewStore } from '../../../../data/global_state/slices/view';
@@ -20,7 +19,7 @@
 //     { name: 'Bob Johnson', age: 45, gender: 'Male', email: 'bobjohnson@example.com', phone: '555-9012', city: 'Chicago', state: 'IL', country: 'USA' },
 //     { name: 'Alice Williams', age: 35, gender: 'Female', email: 'alicewilliams@example.com', phone: '555-3456', city: 'Houston', state: 'TX', country: 'USA' },
 //     { name: 'Steve Brown', age: 50, gender: 'Male', email: 'stevebrown@example.com', phone: '555-7890', city: 'Philadelphia', state: 'PA', country: 'USA' },
-    
+
 // ];
 
 // interface Props {
@@ -89,8 +88,6 @@
 
 // export default VirtualizedTable;
 
-
-
 // import React from 'react';
 // import { FixedSizeList } from 'react-virtualized';
 // import { WindowScroller } from 'react-virtualized/dist/commonjs/WindowScroller';
@@ -127,12 +124,10 @@
 //     </WindowScroller>
 //   );
 // }
-import React from 'react'
+import React from 'react';
 
 function VirtualizedList() {
-  return (
-    <div>VirtualizedList</div>
-  )
+    return <div>VirtualizedList</div>;
 }
 
-export default VirtualizedList
+export default VirtualizedList;

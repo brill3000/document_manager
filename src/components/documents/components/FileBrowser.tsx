@@ -1,4 +1,4 @@
-import { Box, Divider } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import React from 'react';
 import FileBrowserContent from './browser/FileBrowserContent';
 import FileBrowserNavigation from './browser/FileBrowserNavigation';
@@ -64,7 +64,7 @@ const sampleFolders: DocumentType[] = Array.from(Array(10)).map((_, i) => {
  * This is a main file browser component, it takes an array of documents and creates a virtual filebrowser using react
  */
 
-const FileBrowser = ({ height, width, bgColor, borderRadius, browserDocuments }: FileBrowserProps) => {
+const FileBrowser = ({ height, width, bgColor, borderRadius, browserDocuments, title }: FileBrowserProps) => {
     const { dragging } = useStore();
     const { fileMap, actions, initiateFileBrowser } = useBrowserStore();
     const { nav, select } = useHistory();
@@ -162,45 +162,50 @@ const FileBrowser = ({ height, width, bgColor, borderRadius, browserDocuments }:
     // }, [height, windowHeight, windowWidth])
 
     return (
-        //@ts-expect-error This component accept children
-        <MainCard
-            sx={{
-                width: width ?? browserWidth,
-                height: height ?? browserHeight,
-                display: 'flex',
-                flexDirection: 'column',
-                '& .MuiCardContent-root': {
-                    p: 0,
-                    height: '100%',
-                    width: '100%'
-                }
-            }}
-        >
-            <Box height="20%">
-                <FileBrowserTopNav
-                    ref={topRef}
-                    bgColor={bgColor}
-                    borderRadius={borderRadius}
-                    doc={fileMap.get(nav[nav.length - 1])}
-                    handleBack={handleBack}
-                    handleForward={handleForward}
-                />
-            </Box>
-            <Box height="72%">
-                <FileBrowserContent
-                    select={select}
-                    selected={selected}
-                    setSelected={setSelected}
-                    documents={documents}
-                    nav={nav}
-                    gridRef={ref}
-                />
-            </Box>
-            <Divider />
-            <Box height="8%">
-                <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
-            </Box>
-        </MainCard>
+        <Stack spacing={2}>
+            <Typography variant="h5">{title ?? 'Documents'}</Typography>
+            {
+                // @ts-expect-error The component takes children
+                <MainCard
+                    sx={{
+                        width: width ?? browserWidth,
+                        height: height ?? browserHeight,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        '& .MuiCardContent-root': {
+                            p: 0,
+                            height: '100%',
+                            width: '100%'
+                        }
+                    }}
+                >
+                    <Box height="20%">
+                        <FileBrowserTopNav
+                            ref={topRef}
+                            bgColor={bgColor}
+                            borderRadius={borderRadius}
+                            doc={fileMap.get(nav[nav.length - 1])}
+                            handleBack={handleBack}
+                            handleForward={handleForward}
+                        />
+                    </Box>
+                    <Box height="72%">
+                        <FileBrowserContent
+                            select={select}
+                            selected={selected}
+                            setSelected={setSelected}
+                            documents={documents}
+                            nav={nav}
+                            gridRef={ref}
+                        />
+                    </Box>
+                    <Divider />
+                    <Box height="8%">
+                        <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
+                    </Box>
+                </MainCard>
+            }
+        </Stack>
     );
 };
 

@@ -74,37 +74,25 @@ export const actionSX = {
 const DashboardDefault = () => {
     // const [value, setValue] = useState('today');
     const [slot, setSlot] = React.useState('week');
-    const [isLoading, setIsLoading] = React.useState(true)
+    const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
-        setIsLoading(false)
-    }, [])
+        setIsLoading(false);
+    }, []);
 
+    const { user } = useUserAuth();
 
-    const { user } = useUserAuth()
+    const recentActivity = useGetAllRecentLogsQuery({ user: user.uid });
+    const recentlyModified = useGetAllRecentlyModifiedDocumentsQuery({ user: user.uid });
+    const userSummary = useGetUsersSummaryQuery(user.uid);
 
+    const documentCount = React.useMemo(() => {
+        return userSummary.data ? (userSummary.data.document_count ? userSummary.data.document_count.toString() : '0') : '0';
+    }, [userSummary.data]);
 
-
-    const recentActivity = useGetAllRecentLogsQuery({ user: user.uid })
-    const recentlyModified = useGetAllRecentlyModifiedDocumentsQuery({ user: user.uid })
-    const userSummary = useGetUsersSummaryQuery(user.uid)
-
-    const documentCount = React.useMemo(
-        () => {
-            return userSummary.data ? userSummary.data.document_count ? userSummary.data.document_count.toString() : '0' : '0'
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [userSummary.data],)
-
-    const usersCount = React.useMemo(
-        () => {
-            return userSummary.data ? userSummary.data.users_count ? userSummary.data.users_count.toString() : '0' : '0'
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [userSummary.data],)
-
-
-
+    const usersCount = React.useMemo(() => {
+        return userSummary.data ? (userSummary.data.users_count ? userSummary.data.users_count.toString() : '0') : '0';
+    }, [userSummary.data]);
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -113,19 +101,17 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total Documents" count={documentCount} percentage={20} extra={documentCount} component={'documents'}/>
+                <AnalyticCard title="Total Documents" count={documentCount} percentage={20} extra={documentCount} component={'documents'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total Departments" count={10} percentage={20} extra={documentCount} component={'departments'}/>
+                <AnalyticCard title="Total Departments" count={'10'} percentage={20} extra={documentCount} component={'departments'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total roles" count={2} percentage={20} extra={documentCount} component={'roles'}/>
-
+                <AnalyticCard title="Total roles" count={'2'} percentage={20} extra={documentCount} component={'roles'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total users" count={usersCount} percentage={20} extra={usersCount} component={'users'}/>
+                <AnalyticCard title="Total users" count={usersCount} percentage={20} extra={usersCount} component={'users'} />
             </Grid>
-
 
             <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
@@ -383,4 +369,3 @@ const DashboardDefault = () => {
 };
 
 export default DashboardDefault;
-

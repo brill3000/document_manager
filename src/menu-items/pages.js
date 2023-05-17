@@ -66,10 +66,10 @@ const pages = {
     type: 'group',
     children: [
         {
-            id: 'departments',
-            title: 'Departments',
+            id: 'users',
+            title: 'Users',
             type: 'item',
-            url: '/departments',
+            url: '/users',
             icon: icons.PeopleOutlineIcon,
             breadcrumbs: false,
             children: [
@@ -77,7 +77,7 @@ const pages = {
                     id: 'speakersOffice',
                     title: 'Speakers Office',
                     type: 'item',
-                    url: '/departments/speakersOffice',
+                    url: '/users/speakersOffice',
                     icon: icons.CampaignOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -85,7 +85,7 @@ const pages = {
                     id: 'clerksoffice',
                     title: 'Clerks Office',
                     type: 'item',
-                    url: '/departments/clerksoffice',
+                    url: '/users/clerksoffice',
                     icon: icons.MiscellaneousServicesOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -93,7 +93,7 @@ const pages = {
                     id: 'finance',
                     title: 'Finance',
                     type: 'item',
-                    url: '/departments/finance',
+                    url: '/users/finance',
                     icon: icons.MonetizationOnOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -101,7 +101,7 @@ const pages = {
                     id: 'supplychain',
                     title: 'Supply Chain',
                     type: 'item',
-                    url: '/departments/supplychain',
+                    url: '/users/supplychain',
                     icon: icons.LocalShippingOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -109,7 +109,7 @@ const pages = {
                     id: 'research_and_records',
                     title: 'Research And Records',
                     type: 'item',
-                    url: '/departments/research_and_records',
+                    url: '/users/research_and_records',
                     icon: icons.BiotechOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -117,7 +117,7 @@ const pages = {
                     id: 'hansard',
                     title: 'Hansard',
                     type: 'item',
-                    url: '/departments/hansard',
+                    url: '/users/hansard',
                     icon: icons.NoteAltOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -125,7 +125,7 @@ const pages = {
                     id: 'ict',
                     title: 'ICT',
                     type: 'item',
-                    url: '/departments/ict',
+                    url: '/users/ict',
                     icon: icons.DesktopWindowsOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -133,7 +133,7 @@ const pages = {
                     id: 'clerks_at_the_table',
                     title: 'Clerks at The Table',
                     type: 'item',
-                    url: '/departments/clerks_at_the_table',
+                    url: '/users/clerks_at_the_table',
                     icon: icons.MiscellaneousServicesOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -141,7 +141,7 @@ const pages = {
                     id: 'sergent_at_arms',
                     title: 'Sergent at arms',
                     type: 'item',
-                    url: '/departments/sergent_at_arms',
+                    url: '/users/sergent_at_arms',
                     icon: icons.GavelOutlinedIcon,
                     breadcrumbs: false
                 },
@@ -149,29 +149,28 @@ const pages = {
                     id: 'reception',
                     title: 'Reception',
                     type: 'item',
-                    url: '/departments/reception',
+                    url: '/users/reception',
                     icon: icons.SettingsPhoneOutlinedIcon,
                     breadcrumbs: false
                 }
             ]
         },
         {
-            id: 'cabinets',
-            title: 'Cabinets',
+            id: 'metadata',
+            title: 'Metadata',
             type: 'item',
-            url: '/cabinets',
+            url: '/metadata',
             icon: icons.HddOutlined,
             breadcrumbs: false
         },
         {
-            id: 'indexes',
-            title: 'Indexes',
+            id: 'thesaurus',
+            title: 'Thesaurus',
             type: 'item',
-            url: '/indexes',
+            url: '/thesaurus',
             icon: icons.DatabaseOutlined,
             breadcrumbs: false
-        },
-
+        }
     ]
 };
 

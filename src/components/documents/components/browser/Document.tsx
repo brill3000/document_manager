@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, Box, Stack } from '@mui/material';
+import { alpha, Box, ButtonBase, Stack } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
 import { fileIcon } from '../../Icons/fileIcon';
 import { FcFolder } from 'react-icons/fc';
@@ -217,7 +217,11 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                         <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
                             <Box
                                 borderRadius={2}
-                                {...(isSelected || isOver ? { bgcolor: grey[300] } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
+                                {...(isSelected || isOver
+                                    ? { bgcolor: alpha(grey[300], 0.5) }
+                                    : isHovered
+                                    ? { bgcolor: alpha(grey[300], 0.2) }
+                                    : {})}
                                 width="max-content"
                                 height="max-content"
                                 onClick={handleClick}
@@ -236,6 +240,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                                         cursor: 'pointer'
                                     }
                                 }}
+                                component={ButtonBase}
                             >
                                 <MemorizedFcFolder size={browserHeight * 0.14} />
                             </Box>
@@ -268,8 +273,10 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                                 sx={{
                                     '& :hover': {
                                         cursor: isRenaming ? 'text' : 'pointer'
-                                    }
+                                    },
+                                    fontFamily: 'inherit'
                                 }}
+                                component={ButtonBase}
                             >
                                 {isRenaming ? (
                                     <RenameDocument
@@ -303,7 +310,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                     <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
                         <Box
                             borderRadius={2}
-                            {...(isSelected ? { bgcolor: grey[300] } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
+                            {...(isSelected ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
                             width="max-content"
                             height="max-content"
                             pt={2}
@@ -325,6 +332,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                                     cursor: 'pointer'
                                 }
                             }}
+                            component={ButtonBase}
                         >
                             {fileIcon(document.type, browserHeight * 0.1, browserHeight * 0.005)}
                         </Box>
@@ -357,8 +365,10 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
                             sx={{
                                 '& :hover': {
                                     cursor: isRenaming ? 'text' : 'pointer'
-                                }
+                                },
+                                fontFamily: 'inherit'
                             }}
+                            component={ButtonBase}
                         >
                             {isRenaming ? (
                                 <RenameDocument

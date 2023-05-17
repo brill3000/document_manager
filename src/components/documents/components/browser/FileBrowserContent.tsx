@@ -11,7 +11,7 @@ import { MemorizedFcFolder } from './Document';
 const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gridRef }: FileBrowserContentProps): JSX.Element => {
     const { browserHeight } = useViewStore();
     return (
-        <Grid container width="100%" height="100%">
+        <Grid container width="100%" height="100%" overflow="hidden">
             <FolderGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
             <Grid md={4} height={'100%'} component={Stack} direction="row">
                 <Divider orientation="vertical" />

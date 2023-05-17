@@ -72,7 +72,7 @@ const dashboard = {
             type: 'item',
             url: '/dashboard',
             icon: icons.DashboardOutlined,
-            breadcrumbs: false,
+            breadcrumbs: false
         },
         {
             id: 'documents',
@@ -113,18 +113,9 @@ const dashboard = {
                     url: '/documents/trash',
                     icon: icons.FolderDeleteOutlinedIcon,
                     breadcrumbs: false
-                },
+                }
             ]
         },
-
-        // {
-        //     id: 'approvals',
-        //     title: 'Approvals',
-        //     type: 'item',
-        //     url: '/approvals',
-        //     icon: icons.RiseOutlined,
-        //     breadcrumbs: false
-        // },
         {
             id: 'workflows',
             title: 'Workflows',
@@ -140,113 +131,7 @@ const dashboard = {
             url: '/emails',
             icon: icons.MessageOutlinedIcon,
             breadcrumbs: false
-        },
-        {
-            id: 'departments',
-            title: 'Departments',
-            type: 'item',
-            url: '/departments',
-            icon: icons.PeopleOutlineIcon,
-            breadcrumbs: false,
-            children: [
-                {
-                    id: 'speakersOffice',
-                    title: 'Speakers Office',
-                    type: 'item',
-                    url: '/departments/speakersOffice',
-                    icon: icons.CampaignOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'clerksoffice',
-                    title: 'Clerks Office',
-                    type: 'item',
-                    url: '/departments/clerksoffice',
-                    icon: icons.MiscellaneousServicesOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'finance',
-                    title: 'Finance',
-                    type: 'item',
-                    url: '/departments/finance',
-                    icon: icons.MonetizationOnOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'supplychain',
-                    title: 'Supply Chain',
-                    type: 'item',
-                    url: '/departments/supplychain',
-                    icon: icons.LocalShippingOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'research_and_records',
-                    title: 'Research And Records',
-                    type: 'item',
-                    url: '/departments/research_and_records',
-                    icon: icons.BiotechOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'hansard',
-                    title: 'Hansard',
-                    type: 'item',
-                    url: '/departments/hansard',
-                    icon: icons.NoteAltOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'ict',
-                    title: 'ICT',
-                    type: 'item',
-                    url: '/departments/ict',
-                    icon: icons.DesktopWindowsOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'clerks_at_the_table',
-                    title: 'Clerks at The Table',
-                    type: 'item',
-                    url: '/departments/clerks_at_the_table',
-                    icon: icons.MiscellaneousServicesOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'sergent_at_arms',
-                    title: 'Sergent at arms',
-                    type: 'item',
-                    url: '/departments/sergent_at_arms',
-                    icon: icons.GavelOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'reception',
-                    title: 'Reception',
-                    type: 'item',
-                    url: '/departments/reception',
-                    icon: icons.SettingsPhoneOutlinedIcon,
-                    breadcrumbs: false
-                }
-            ]
-        },
-        {
-            id: 'metadata',
-            title: 'Metadata',
-            type: 'item',
-            url: '/metadata',
-            icon: icons.HddOutlined,
-            breadcrumbs: false
-        },
-        {
-            id: 'thesaurus',
-            title: 'Thesaurus',
-            type: 'item',
-            url: '/thesaurus',
-            icon: icons.DatabaseOutlined,
-            breadcrumbs: false
-        },
+        }
     ]
 };
 
