@@ -11,7 +11,7 @@ import { RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 // ==============================|| STATISTICS - CARD  ||============================== //
 
-const AnalyticCard = ({ color, title, count, percentage, isLoss, extra, component  }) => (
+const AnalyticCard = ({ color, title, count, percentage, isLoss, extra, component }) => (
     <MainCard contentSX={{ p: 2.25 }}>
         <Stack spacing={0.5}>
             <Typography variant="h6" color="textSecondary">
@@ -44,7 +44,7 @@ const AnalyticCard = ({ color, title, count, percentage, isLoss, extra, componen
         </Stack>
         <Box sx={{ pt: 2.25 }}>
             <Typography variant="caption" color="textSecondary">
-                You have {' '}
+                You have{' '}
                 <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
                     {extra}
                 </Typography>{' '}
