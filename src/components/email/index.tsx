@@ -22,16 +22,12 @@ import { NavBar } from '../../global/UI/NavBar';
 import { DropdownButton } from '../../global/UI/DropdownButton';
 import Sheet from '@mui/joy/Sheet';
 import { TbMessageDots } from 'react-icons/tb';
-import { CircularProgress, ClickAwayListener, Experimental_CssVarsProvider, Stack } from '@mui/material';
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
-import UsersSelect from './components/UserSelect';
+import { Experimental_CssVarsProvider, Stack } from '@mui/material';
 import { useGetMessageByUserQuery, useRefetchMessagesMutation, useSendMessageMutation } from 'store/async/messagesQuery';
 import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
 import randomColor from 'randomcolor';
-import { GoogleLoader, Sending } from 'ui-component/LoadHandlers';
-import { setOpenFileView } from 'store/reducers/documents';
-import { useDispatch, useSelector } from 'react-redux';
+import { Sending } from 'ui-component/LoadHandlers';
 import CustomTreeView from 'components/FolderStructure/Treeview';
 import ViewFile from './components/ViewFile';
 import ThemeCustomization from 'themes';
@@ -46,11 +42,11 @@ const Create: React.FC<any> = ({
     isError
 }: {
     selectedUser: any | null;
-    setSelectedUser: Function;
+    setSelectedUser: () => void;
     users: Array<any> | null;
-    isLoading: Boolean;
-    isFetching: Boolean;
-    isError: Boolean;
+    isLoading: boolean;
+    isFetching: boolean;
+    isError: boolean;
 }) => {
     const [openSearch, setOpenSearch] = React.useState(false);
     const handleClickAway = () => {
@@ -161,7 +157,6 @@ export default function Email() {
                 }));
             setUsers(users);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usersQuery.isSuccess, usersQuery.data]);
 
     const [sendMessage] = useSendMessageMutation();
@@ -204,7 +199,7 @@ export default function Email() {
         }
     };
 
-    const title: string = 'Emails';
+    const title = 'Emails';
     return (
         <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
             <Sheet variant="outlined" color="neutral" sx={{ borderRadius: 10, maxHeight: 650, overflowY: 'hidden' }}>

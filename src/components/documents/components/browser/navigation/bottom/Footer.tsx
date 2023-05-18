@@ -4,15 +4,15 @@ import Chip, { ChipProps } from '@mui/material/Chip';
 // icons
 import { MenuItem, Stack, Typography, IconButton, Tooltip, Badge, Grid } from '@mui/material';
 import React from 'react';
-import { DocumentType, FileBrowerClickEvent, FileBrowserNaviagationProps } from '../../Interface/FileBrowser';
+import { DocumentType, FileBrowerClickEvent, FileBrowserNaviagationProps } from '../../../../Interface/FileBrowser';
 import { FcOpenedFolder, FcRefresh } from 'react-icons/fc';
 import { useDrop } from 'react-dnd';
-import { ItemTypes } from '../../Interface/Constants';
-import { StyledMenu } from './UI/Menus/StyledMenu';
+import { ItemTypes } from 'components/documents/Interface/Constants';
+import { StyledMenu } from 'components/documents/components/browser/UI/Menus/StyledMenu';
 import { BsClipboard } from 'react-icons/bs';
-import { useStore } from '../../data/global_state';
-import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
-import { MemorizedFcFolder } from './Document';
+import { useStore } from 'components/documents/data/global_state';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/Document';
 
 interface CustomChipProps extends ChipProps {
     doc?: DocumentType | undefined;
@@ -84,10 +84,7 @@ const StyledBreadcrumb = styled(Chip, {
 
 // { navHistory, select, fileMap }: FileBrowserNaviagationProps)
 
-const FolderBrowserNavigation = React.forwardRef<HTMLInputElement, FileBrowserNaviagationProps>(function FolderBrowserNavigation(
-    props,
-    ref
-) {
+const Footer = React.forwardRef<HTMLInputElement, FileBrowserNaviagationProps>(function FolderBrowserNavigation(props, ref) {
     const { history: navHistory, select } = props;
     const [anchorEl, setAnchorEl] = React.useState(null);
     const { clipboard } = useStore();
@@ -241,7 +238,7 @@ const FolderBrowserNavigation = React.forwardRef<HTMLInputElement, FileBrowserNa
     );
 });
 
-export default FolderBrowserNavigation;
+export default Footer;
 
 interface RefactoredMenuItemInterface {
     handleClose: () => void;

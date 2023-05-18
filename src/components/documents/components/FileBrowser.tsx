@@ -1,11 +1,11 @@
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import React from 'react';
-import FileBrowserContent from './browser/FileBrowserContent';
-import FileBrowserNavigation from './browser/FileBrowserNavigation';
+import FileBrowserContent from './browser/Container';
+import FileBrowserNavigation from './browser/navigation/bottom/Footer';
 import { DocumentType, FileBrowserProps, Units } from '../Interface/FileBrowser';
 import { useHistory } from '../data/History';
 import { useStore } from '../data/global_state';
-import FileBrowserTopNav from './browser/FileBrowserTopNav';
+import FileBrowserTopNav from './browser/navigation/top/TopNav';
 import { faker } from '@faker-js/faker';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { useViewStore } from '../data/global_state/slices/view';

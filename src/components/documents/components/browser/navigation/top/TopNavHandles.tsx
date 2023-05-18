@@ -4,8 +4,8 @@ import React from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { IoReturnUpForwardOutline } from 'react-icons/io5';
-import { DocumentType } from '../../Interface/FileBrowser';
-import { HtmlTooltip } from './UI/Poppers/CustomPoppers';
+import { DocumentType } from 'components/documents/Interface/FileBrowser';
+import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 

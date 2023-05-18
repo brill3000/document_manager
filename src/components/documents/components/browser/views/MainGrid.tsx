@@ -1,18 +1,18 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha } from '@mui/material';
-import { Document } from './Document';
-import { CustomDragDocument } from './Drag&Drop/CustomDragDocument';
-import { FolderGridProps } from '../../Interface/FileBrowser';
-import FolderActionMenu from './UI/Menus/FolderActionMenu';
-import { useStore } from '../../data/global_state';
+import { Document } from 'components/documents/components/browser/item/Document';
+import { CustomDragDocument } from 'components/documents/components/browser/drag&drop/CustomDragDocument';
+import { FolderGridProps } from 'components/documents/Interface/FileBrowser';
+import FolderActionMenu from 'components/documents/components/browser/UI/Menus/FolderActionMenu';
+import { useStore } from 'components/documents/data/global_state';
 import { useSnackbar } from 'notistack';
-import { DocumentList } from './DocumentList';
-import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
-import { useViewStore } from '../../data/global_state/slices/view';
+import { ListView } from 'components/documents/components/browser/views/ListView';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { brown } from '@mui/material/colors';
 
-const FolderGrid = ({ documents, selected, setSelected, select, nav, gridRef }: FolderGridProps) => {
+const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: FolderGridProps) => {
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [isOverDoc, setIsOverDoc] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
@@ -131,7 +131,7 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav, gridRef }: 
             ref={gridRef}
         >
             {view === 'list' ? (
-                <DocumentList
+                <ListView
                     documents={documents}
                     setCloseContext={setCloseContext}
                     closeContext={closeContext}
@@ -167,4 +167,4 @@ const FolderGrid = ({ documents, selected, setSelected, select, nav, gridRef }: 
     );
 };
 
-export default FolderGrid;
+export default MainGrid;

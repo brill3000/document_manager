@@ -23,7 +23,7 @@ import ThemeCustomization from 'themes';
 import { Experimental_CssVarsProvider } from '@mui/material';
 import CreateFlow from './components/flow/CreateFlow';
 
-const Create: React.FC<any> = ({ setOpenView }: { setOpenView: Function }) => {
+const Create: React.FC<any> = ({ setOpenView }: { setOpenView: (open: boolean) => void }) => {
     return (
         <>
             <IconButton variant="outlined" onClick={() => setOpenView(true)}>
@@ -38,7 +38,7 @@ export default function Workflow() {
     const [collapseOthers, setCollapseOthers] = React.useState<boolean>(false);
     const [openView, setOpenView] = React.useState<boolean>(false);
 
-    const title: string = 'Workflow';
+    const title = 'Workflow';
     return (
         <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
             <Sheet variant="outlined" color="neutral" sx={{ borderRadius: 10, maxHeight: 650, overflowY: 'hidden' }}>

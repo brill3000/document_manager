@@ -28,13 +28,13 @@ const EmailNav: React.FC<any> = ({
     setSelectedUser
 }: {
     users: Array<any>;
-    isLoading: Boolean;
-    isFetching: Boolean;
-    isError: Boolean;
+    isLoading: boolean;
+    isFetching: boolean;
+    isError: boolean;
     selectedIndex: string;
-    setSelectedIndex: Function;
+    setSelectedIndex: (selected: string) => void;
     selectedUser: any;
-    setSelectedUser: Function;
+    setSelectedUser: (user: string) => void;
 }) => {
     const [collapseTop, setCollapseTop] = React.useState<boolean>(false);
     const [collapseBottom, setCollapseBottom] = React.useState<boolean>(false);

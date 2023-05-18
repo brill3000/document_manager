@@ -14,19 +14,18 @@ const useHistory = (): UseHistoryExports => {
         setHistory((_history) => {
             const copy = new Map(_history);
             if (copy.has(nodeId)) {
-                let index = copy.get(nodeId);
+                const index = copy.get(nodeId);
                 if (index !== undefined) {
                     setNav((_nav) => {
-                        // @ts-expect-error
-                        return _nav.slice(0, index + 1);
+                        // @-expect-error number check is not undefined
+                        return _nav.slice(0, (index ?? 0) + 1);
                     });
                 }
-                let newMap = new Map();
+                const newMap = new Map();
                 const it = copy.entries();
                 let result = it.next();
                 while (!result.done) {
-                    // @ts-expect-error
-                    if (result.value[1] <= index) newMap.set(result.value[0], result.value[1]);
+                    if (index !== undefined && result.value[1] <= index) newMap.set(result.value[0], result.value[1]);
                     result = it.next();
                     // }
                 }

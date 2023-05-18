@@ -1,18 +1,18 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Stack, Typography } from '@mui/material';
-import { FileBrowserContentProps } from '../../Interface/FileBrowser';
-import { fileIcon } from '../../Icons/fileIcon';
-import DocumentDetails from './DocumentDetails';
-import FolderGrid from './FolderGrid';
-import { useViewStore } from '../../data/global_state/slices/view';
-import { MemorizedFcFolder } from './Document';
+import { FileBrowserContentProps } from 'components/documents/Interface/FileBrowser';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
+import LeftSidebar from 'components/documents/components/browser/views/LeftSidebar';
+import MainGrid from 'components/documents/components/browser/views/MainGrid';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/Document';
 
 const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gridRef }: FileBrowserContentProps): JSX.Element => {
     const { browserHeight } = useViewStore();
     return (
         <Grid container width="100%" height="100%" overflow="hidden">
-            <FolderGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
+            <MainGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
             <Grid
                 md={4}
                 height="100%"
@@ -32,14 +32,14 @@ const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gri
                                         size={browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.2 : '30%'}
                                     />
                                 </Box>
-                                <DocumentDetails selected={selected} />
+                                <LeftSidebar selected={selected} />
                             </>
                         ) : (
                             <>
                                 <Box display="flex" justifyContent="center" pt={1}>
                                     {fileIcon(selected[0].type, browserHeight * 0.1, 0)}
                                 </Box>
-                                <DocumentDetails selected={selected} />
+                                <LeftSidebar selected={selected} />
                             </>
                         )}
                     </Stack>

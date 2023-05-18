@@ -1,19 +1,19 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Divider, Stack, Typography, lighten } from '@mui/material';
-import { DocumentProps, DocumentType } from '../../Interface/FileBrowser';
+import { DocumentProps, DocumentType } from '../../../Interface/FileBrowser';
 import ListItem from '@mui/material/ListItem';
-import { theme } from '../../Themes/theme';
-import { fileIcon } from '../../Icons/fileIcon';
-import { ItemTypes } from '../../Interface/Constants';
+import { theme } from '../../../Themes/theme';
+import { fileIcon } from '../../../Icons/fileIcon';
+import { ItemTypes } from 'components/documents/Interface/Constants';
 import { DragSourceMonitor, useDrop, useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { useStore } from '../../data/global_state';
-import ActionMenu from './UI/Menus/DocumentActionMenu';
-import { useViewStore } from '../../data/global_state/slices/view';
-import { MemorizedFcFolder } from './Document';
+import { useStore } from 'components/documents/data/global_state/';
+import ActionMenu from 'components/documents/components/browser/UI/Menus/DocumentActionMenu';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/Document';
 
-export function ListDocument({
+export function ListViewItem({
     document,
     selected,
     setSelected,

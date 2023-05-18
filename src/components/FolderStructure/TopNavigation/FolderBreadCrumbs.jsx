@@ -30,10 +30,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 }); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
-const nullable =
-    (propType) =>
-    (props, propName, ...rest) =>
-        props[propName] === null ? null : propType(props, propName, ...rest);
+const nullable = (propType) => (props, propName, ...rest) => (props[propName] === null ? null : propType(props, propName, ...rest));
 
 export default function FolderBreadCrumbs({ history, setHistory }) {
     const [anchorEl, setAnchorEl] = React.useState(null);

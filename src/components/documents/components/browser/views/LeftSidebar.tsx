@@ -6,14 +6,14 @@ import ListSubheader from '@mui/material/ListSubheader';
 import { Divider, ListItemIcon } from '@mui/material';
 import { FiHardDrive } from 'react-icons/fi';
 import { FiEdit } from 'react-icons/fi';
-import { DocumentType } from '../../Interface/FileBrowser';
-import { useViewStore } from '../../data/global_state/slices/view';
+import { DocumentType } from 'components/documents/Interface/FileBrowser';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
 
 interface DocumentDetailsProps {
     selected: DocumentType[];
 }
 
-export default function DocumentDetails({ selected }: DocumentDetailsProps) {
+export default function LeftSidebar({ selected }: DocumentDetailsProps) {
     const { browserHeight } = useViewStore();
     return (
         <List

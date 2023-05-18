@@ -1,9 +1,9 @@
 import { Divider, Grid, Stack } from '@mui/material';
 import React from 'react';
-import { DocumentType } from '../../Interface/FileBrowser';
-import TopNavActions from './TopNavActions';
-import TopNavHandles from './TopNavHandles';
-import TopWindowActions from './TopWindowActions';
+import { DocumentType } from 'components/documents/Interface/FileBrowser';
+import TopNavActions from 'components/documents/components/browser/navigation/top/TopNavActions';
+import TopNavHandles from 'components/documents/components/browser/navigation/top/TopNavHandles';
+import TopWindowActions from 'components/documents/components/browser/navigation/top/TopWindowActions';
 
 export interface FileBrowserTopNavProps {
     bgColor: string | undefined;

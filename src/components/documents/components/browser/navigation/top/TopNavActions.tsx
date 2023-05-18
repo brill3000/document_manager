@@ -3,10 +3,10 @@ import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from 'react-icons/bs';
 import { alpha, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dropzone from 'react-dropzone';
-import { DocumentType, Units } from '../../Interface/FileBrowser';
-import { HtmlTooltip } from './UI/Poppers/CustomPoppers';
-import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
-import { useViewStore } from '../../data/global_state/slices/view';
+import { DocumentType, Units } from 'components/documents/Interface/FileBrowser';
+import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
 
 interface TopNavActionProps {
     doc: DocumentType | undefined;

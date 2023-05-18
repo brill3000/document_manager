@@ -43,8 +43,7 @@ const OverviewFlow = () => {
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
             <GoogleLoader height={150} width={150} loop={true} />
         </Box>
-    ) : // @ts-ignore
-    workflowQuery.isError ? (
+    ) : workflowQuery.isError ? (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
             <Error height={100} width={100} />
             <Typography level="body3">Error Occured..</Typography>

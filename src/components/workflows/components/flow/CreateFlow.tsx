@@ -190,7 +190,7 @@ export default function CreateFlow() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    let formComponentsCopy = [...formComponents];
+                                    const formComponentsCopy = [...formComponents];
 
                                     const index = formComponentsCopy.findIndex((x) => {
                                         return x.id === uid;
@@ -234,7 +234,7 @@ export default function CreateFlow() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    let formComponentsCopy = [...formComponents];
+                                    const formComponentsCopy = [...formComponents];
                                     const index = formComponentsCopy.findIndex((x) => x.id === uid);
                                     if (index > -1) {
                                         formComponentsCopy.splice(index, 1);
@@ -268,7 +268,7 @@ export default function CreateFlow() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    let formComponentsCopy = [...formComponents];
+                                    const formComponentsCopy = [...formComponents];
                                     const index = formComponentsCopy.findIndex((x) => x.id === uid);
                                     if (index > -1) {
                                         formComponentsCopy.splice(index, 1);
@@ -306,7 +306,7 @@ export default function CreateFlow() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    let formComponentsCopy = [...formComponents];
+                                    const formComponentsCopy = [...formComponents];
                                     const index = formComponentsCopy.findIndex((x) => x.id === uid);
                                     if (index > -1) {
                                         formComponentsCopy.splice(index, 1);
@@ -523,47 +523,43 @@ function WorkflowPanel(
                     <TestFlow />
                 </Grid>
                 <Grid item xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5, p: 3 }}>
-                    {
-                        //@ts-ignore
-                        workflowQuery.isLoading || workflowQuery.isFetching ? (
-                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                                <GoogleLoader height={150} width={150} loop={true} />
-                            </Box>
-                        ) : // @ts-ignore
-                        workflowQuery.isError ? (
-                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                                <Error height={100} width={100} />
-                                <Typography level="body3">Error Occured..</Typography>
-                            </Box>
-                        ) : (
-                            <Stack direction="column" spacing={1}>
-                                <Typography level="h1" component="div" fontSize="xl2" mb={2} textColor="text.secondary">
-                                    Templates Workflows
-                                </Typography>
+                    {workflowQuery.isLoading || workflowQuery.isFetching ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                            <GoogleLoader height={150} width={150} loop={true} />
+                        </Box>
+                    ) : workflowQuery.isError ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                            <Error height={100} width={100} />
+                            <Typography level="body3">Error Occured..</Typography>
+                        </Box>
+                    ) : (
+                        <Stack direction="column" spacing={1}>
+                            <Typography level="h1" component="div" fontSize="xl2" mb={2} textColor="text.secondary">
+                                Templates Workflows
+                            </Typography>
 
-                                {workflowQuery.data &&
-                                    Array.isArray(workflowQuery.data) &&
-                                    workflowQuery.data.map((workflow: any, index: number) => {
-                                        return (
-                                            <div
-                                                onClick={() => {
-                                                    setNodes(workflow.nodes);
-                                                    setEdges(workflow.edge);
-                                                }}
-                                                key={index}
-                                            >
-                                                <FormsCard
-                                                    key={workflow.id}
-                                                    title={workflow.title}
-                                                    description={workflow.title}
-                                                    type="workflow"
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                            </Stack>
-                        )
-                    }
+                            {workflowQuery.data &&
+                                Array.isArray(workflowQuery.data) &&
+                                workflowQuery.data.map((workflow: any, index: number) => {
+                                    return (
+                                        <div
+                                            onClick={() => {
+                                                setNodes(workflow.nodes);
+                                                setEdges(workflow.edge);
+                                            }}
+                                            key={index}
+                                        >
+                                            <FormsCard
+                                                key={workflow.id}
+                                                title={workflow.title}
+                                                description={workflow.title}
+                                                type="workflow"
+                                            />
+                                        </div>
+                                    );
+                                })}
+                        </Stack>
+                    )}
                 </Grid>
             </Grid>
         </TabPanel>

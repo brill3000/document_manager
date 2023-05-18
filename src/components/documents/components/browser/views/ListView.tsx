@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Typography, darken, lighten } from '@mui/material';
-import { DocumentListProps } from '../../Interface/FileBrowser';
+import { DocumentListProps } from 'components/documents/Interface/FileBrowser';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { ListDocument } from './ListDocument';
+import { ListViewItem } from 'components/documents/components/browser/item/ListViewItem';
 // import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
-export function DocumentList({
+export function ListView({
     documents,
     selected,
     setSelected,
@@ -100,7 +100,7 @@ export function DocumentList({
                 </Grid>
             </ListItem>
             {documents.map((document, i: number) => (
-                <ListDocument
+                <ListViewItem
                     isColored={i % 2 === 0}
                     setCloseContext={setCloseContext}
                     closeContext={closeContext}

@@ -2,17 +2,17 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Box, ButtonBase, Stack } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
-import { fileIcon } from '../../Icons/fileIcon';
+import { fileIcon } from '../../../Icons/fileIcon';
 import { FcFolder } from 'react-icons/fc';
-import { DocumentType, DocumentProps } from '../../Interface/FileBrowser';
-import { ItemTypes } from '../../Interface/Constants';
-import { theme } from '../../Themes/theme';
+import { ItemTypes } from 'components/documents/Interface/Constants';
+import { theme } from '../../../Themes/theme';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { useStore } from '../../data/global_state';
-import ActionMenu from './UI/Menus/DocumentActionMenu';
-import { RenameDocument } from './RenameDocument';
-import { useViewStore } from '../../data/global_state/slices/view';
+import ActionMenu from '../UI/Menus/DocumentActionMenu';
+import { RenameDocument } from './Rename';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { useStore } from 'components/documents/data/global_state';
+import { DocumentType, DocumentProps } from 'components/documents/Interface/FileBrowser';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 

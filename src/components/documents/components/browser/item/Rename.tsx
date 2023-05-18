@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { styled, TextField } from '@mui/material';
-import { DocumentType } from '../../Interface/FileBrowser';
+import { DocumentType } from 'components/documents/Interface/FileBrowser';
 
 interface RenameDocumentProps {
     selected: DocumentType[];

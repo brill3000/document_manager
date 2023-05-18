@@ -68,7 +68,7 @@ export function FormsPanel(
                                     variant="solid"
                                     color={type === 'submit' ? 'success' : 'primary'}
                                     onClick={() => {
-                                        let openEditIndexCopy: {
+                                        const openEditIndexCopy: {
                                             input: boolean;
                                             checkbox: boolean;
                                             radio: boolean;
@@ -76,7 +76,7 @@ export function FormsPanel(
                                             select: boolean;
                                             submit: boolean;
                                         } = { ...openEditIndex };
-                                        for (let key in openEditIndexCopy) {
+                                        for (const key in openEditIndexCopy) {
                                             if (key === type) {
                                                 // 👇️ ts-ignore ignores any ts errors on the next line
                                                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -145,8 +145,8 @@ export function FormsPanel(
                                                     }
                                                 ]);
 
-                                                let openEditIndexCopy = { ...openEditIndex };
-                                                for (let key in openEditIndexCopy) {
+                                                const openEditIndexCopy = { ...openEditIndex };
+                                                for (const key in openEditIndexCopy) {
                                                     // 👇️ ts-ignore ignores any ts errors on the next line
                                                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                                     // @ts-ignore
