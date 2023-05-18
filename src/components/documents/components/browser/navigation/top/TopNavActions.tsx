@@ -119,7 +119,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                             columnGap={0.7}
                         >
                             <BsFolderPlus size={19} />
-                            <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 Create Folder
                             </Typography>
                         </Stack>
@@ -164,7 +164,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                     columnGap={0.7}
                                 >
                                     <BsFileArrowUp size={19} />
-                                    <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                         Upload files
                                     </Typography>
                                     <input {...getInputProps()} />
@@ -231,7 +231,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                             onClick={() => toogleView('list')}
                         >
                             <BsViewStacked size={19} />
-                            <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 List View
                             </Typography>
                         </Stack>
@@ -275,7 +275,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                             onClick={() => toogleView('grid')}
                         >
                             <BsGrid size={18.5} />
-                            <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 Icon View
                             </Typography>
                         </Stack>
@@ -336,7 +336,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                             columnGap={0.7}
                         >
                             <BsPencilSquare size={20} />
-                            <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 Edit Files
                             </Typography>
                         </Stack>
@@ -377,7 +377,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                             columnGap={0.7}
                         >
                             <BsTrashFill size={19} color={isDeleteHovered ? theme.palette.error.contrastText : theme.palette.error.main} />
-                            <Typography variant="caption" fontSize={10.5} display={md ? 'none' : 'block'}>
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 Delete Folder
                             </Typography>
                         </Stack>
