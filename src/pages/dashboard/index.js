@@ -36,6 +36,7 @@ import { useUserAuth } from 'context/authContext';
 import { RecentActivity } from './RecentActivity';
 import { useGetUsersSummaryQuery } from 'store/async/usersQuery';
 import AnalyticCard from 'components/cards/statistics/AnalyticsCard';
+import { useGetUsersQuery } from 'store/async/dms/auth/authApi';
 // avatar style
 export const avatarSX = {
     width: 36,

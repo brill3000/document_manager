@@ -33,7 +33,7 @@ export default function Roles() {
     const [collapseUnread, setCollapseUnread] = React.useState<boolean>(false);
     const [collapseOthers, setCollapseOthers] = React.useState<boolean>(false);
 
-    const title: string = 'Approvals';
+    const title = 'Approvals';
     return (
         <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
             <Sheet variant="outlined" color="neutral" sx={{ borderRadius: 10, maxHeight: 650, overflowY: 'hidden' }}>

@@ -13,7 +13,7 @@ import 'assets/third-party/apex-chart.css';
 
 // project import
 import App from './App';
-import { store } from 'store';
+import { store } from 'store/index';
 import reportWebVitals from './reportWebVitals';
 
 // ==============================|| MAIN - REACT DOM RENDER  ||============================== //

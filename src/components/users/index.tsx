@@ -39,7 +39,7 @@ export default function Users({ title }: { title: string }) {
         if (usersQuery.isSuccess) {
             setUsers(usersQuery.data);
 
-            const users = usersQuery.data?.map((user) => ({
+            const users = usersQuery.data?.map((user: any) => ({
                 address: { country: 'USA OF A', state: 'West Virginia', city: 'Parkersburg', street: '2849 Fulton Street' },
                 avatarUrl: '/static/images/avatars/avatar_3.png',
                 createdAt: user.registration_date,

@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 

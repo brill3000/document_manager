@@ -147,8 +147,8 @@ export default function Email() {
     React.useEffect(() => {
         if (usersQuery.isSuccess) {
             const users = usersQuery.data
-                ?.filter((data) => data.user_id !== user.uid)
-                .map((user) => ({
+                ?.filter((data: any) => data.user_id !== user.uid)
+                .map((user: any) => ({
                     id: user.user_id,
                     name: user.name.first_name + ' ' + user.name.last_name,
                     role: user.position,
