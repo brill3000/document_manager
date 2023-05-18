@@ -36,6 +36,10 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
             color: 'inherit'
         }
     },
+    [`& .${treeItemClasses.iconContainer}`]: {
+        height: '100%',
+        width: '8%'
+    },
     [`& .${treeItemClasses.group}`]: {
         marginLeft: 0,
         [`& .${treeItemClasses.content}`]: {
@@ -50,7 +54,7 @@ function StyledTreeItem(props: { [x: string]: any; bgColor: any; color: any; lab
     return (
         <StyledTreeItemRoot
             nodeId={nodeId}
-            label={<Box sx={{ display: 'flex', alignItems: 'center', p: 0.4, pr: 0 }}>{labelText}</Box>}
+            label={<Box sx={{ display: 'flex', alignItems: 'center', p: 0.35, pr: 0 }}>{labelText}</Box>}
             sx={{
                 '--tree-view-color': (theme) => theme.palette.primary.main,
                 '--tree-view-bg-color': (theme) => alpha(theme.palette.primary.light, 0.3)
@@ -78,9 +82,9 @@ export default function RightSidebar() {
             <TreeView
                 aria-label="Folder Sidebar"
                 selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '1'}
-                defaultCollapseIcon={<MemorizedFcFolderOpen />}
-                defaultExpandIcon={<MemorizedFcFolder />}
-                defaultEndIcon={<MemorizedFcFolder />}
+                defaultCollapseIcon={<MemorizedFcFolderOpen size={20} />}
+                defaultExpandIcon={<MemorizedFcFolder size={20} />}
+                defaultEndIcon={<MemorizedFcFolder size={20} />}
                 sx={{ flexGrow: 1, width: '100%', overflowY: 'auto', pt: 1.2, pr: 1 }}
             >
                 {[...parentFolders]
