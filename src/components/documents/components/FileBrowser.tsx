@@ -11,7 +11,7 @@ import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { useViewStore } from '../data/global_state/slices/view';
 import MainCard from 'components/MainCard';
 
-const sampleFiles: DocumentType[] = Array.from(Array(10)).map((_, i) => {
+export const sampleFiles: DocumentType[] = Array.from(Array(10)).map((_, i) => {
     const id: string = i.toString() + 'file';
     return {
         id: id,
@@ -26,7 +26,7 @@ const sampleFiles: DocumentType[] = Array.from(Array(10)).map((_, i) => {
         parent: i === 0 ? '0folder' : '1folder'
     };
 });
-const sampleFolders: DocumentType[] = Array.from(Array(10)).map((_, i) => {
+export const sampleFolders: DocumentType[] = Array.from(Array(10)).map((_, i) => {
     return {
         id: i.toString() + 'folder',
         doc_name: `${faker.word.adjective()} ${faker.word.noun()} ${faker.word.verb()}`,

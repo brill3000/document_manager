@@ -6,15 +6,30 @@ import { fileIcon } from 'components/documents/Icons/fileIcon';
 import LeftSidebar from 'components/documents/components/browser/views/LeftSidebar';
 import MainGrid from 'components/documents/components/browser/views/MainGrid';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { MemorizedFcFolder } from 'components/documents/components/browser/item/Document';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridView';
+import TreeView from 'components/documents/components/browser/views/Treeview';
 
 const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gridRef }: FileBrowserContentProps): JSX.Element => {
     const { browserHeight } = useViewStore();
     return (
         <Grid container width="100%" height="100%" overflow="hidden">
+            <Grid
+                md={3}
+                height="100%"
+                width="100%"
+                component={Stack}
+                direction="column"
+                borderLeft={(theme) => `1px solid ${theme.palette.divider}`}
+                justifyContent="start"
+                alignItems="start"
+                px={1}
+                pt={1}
+            >
+                <TreeView />
+            </Grid>
             <MainGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
             <Grid
-                md={4}
+                md={3}
                 height="100%"
                 width="100%"
                 component={Stack}

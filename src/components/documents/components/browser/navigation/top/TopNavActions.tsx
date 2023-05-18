@@ -106,7 +106,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 pl: 0.5,
                                 borderRadius: 1,
                                 '&:hover': {
-                                    bgcolor: 'theme.primary'
+                                    bgcolor: (theme) => theme.palette.primary.main
                                 },
                                 width: 'max-content',
                                 height: '100%'
@@ -212,10 +212,10 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 pl: 0.5,
                                 borderRadius: 1,
                                 color: view === 'list' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
-                                bgcolor: view === 'list' ? (theme) => theme.palette.secondary.main : 'transparent',
+                                bgcolor: view === 'list' ? (theme) => theme.palette.secondary.dark : 'transparent',
                                 '&:hover': {
                                     color: (theme) => theme.palette.secondary.contrastText,
-                                    bgcolor: (theme) => alpha(theme.palette.secondary.dark, 0.8)
+                                    bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
                                 },
                                 transition: 'all .1s',
                                 transitionTimingFunction: 'ease-in-out',
@@ -256,10 +256,10 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 pr: 0.7,
                                 borderRadius: 1,
                                 color: view === 'grid' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
-                                bgcolor: view === 'grid' ? (theme) => theme.palette.secondary.main : 'inherit',
+                                bgcolor: view === 'grid' ? (theme) => theme.palette.secondary.dark : 'inherit',
                                 '&:hover': {
                                     color: (theme) => theme.palette.secondary.contrastText,
-                                    bgcolor: (theme) => alpha(theme.palette.secondary.dark, 0.8)
+                                    bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
                                 },
                                 transition: 'all .1s',
                                 transitionTimingFunction: 'ease-in-out',

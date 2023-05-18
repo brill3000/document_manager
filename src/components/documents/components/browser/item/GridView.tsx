@@ -3,7 +3,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Box, ButtonBase, Stack } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
 import { fileIcon } from '../../../Icons/fileIcon';
-import { FcFolder } from 'react-icons/fc';
+import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { theme } from '../../../Themes/theme';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
@@ -15,8 +15,9 @@ import { useStore } from 'components/documents/data/global_state';
 import { DocumentType, DocumentProps } from 'components/documents/Interface/FileBrowser';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
+export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function Document({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext }: DocumentProps): JSX.Element {
+function GridView({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext }: DocumentProps): JSX.Element {
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -203,7 +204,7 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
             xs={12}
             sm={6}
             md={4}
-            lg={3}
+            lg={4}
             xl={3}
         >
             {document !== undefined ? (
@@ -406,4 +407,4 @@ function Document({ document, selected, setSelected, select, actions, setIsOverD
     );
 }
 
-export { Document };
+export { GridView };

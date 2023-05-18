@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha } from '@mui/material';
-import { Document } from 'components/documents/components/browser/item/Document';
+import { GridView } from 'components/documents/components/browser/item/GridView';
 import { CustomDragDocument } from 'components/documents/components/browser/drag&drop/CustomDragDocument';
 import { FolderGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/components/browser/UI/Menus/FolderActionMenu';
@@ -113,7 +113,7 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
         <Grid
             container
             sm={12}
-            md={8}
+            md={6}
             bgcolor={alpha(brown[100], 0.2)}
             sx={{
                 overflowY: 'auto',
@@ -147,7 +147,7 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
                 />
             ) : (
                 documents.map((document, i: number) => (
-                    <Document
+                    <GridView
                         setCloseContext={setCloseContext}
                         closeContext={closeContext}
                         key={document !== undefined ? document.id : i}

@@ -7,7 +7,7 @@ import { useViewStore } from '../../../data/global_state/slices/view';
 import { fileIcon } from '../../../Icons/fileIcon';
 import { ItemTypes } from '../../../Interface/Constants';
 import { theme } from '../../../Themes/theme';
-import { MemorizedFcFolder } from '../item/Document';
+import { MemorizedFcFolder } from '../item/GridView';
 
 export const CustomDragDocument = () => {
     const { itemType, isDragging, item, currentOffset } = useDragLayer((monitor) => ({
