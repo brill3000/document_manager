@@ -12,7 +12,7 @@ import { StyledMenu } from 'components/documents/components/browser/UI/Menus/Sty
 import { BsClipboard } from 'react-icons/bs';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridView';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
 
 interface CustomChipProps extends ChipProps {
     doc?: DocumentType | undefined;

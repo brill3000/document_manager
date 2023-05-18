@@ -162,50 +162,45 @@ const FileBrowser = ({ height, width, bgColor, borderRadius, browserDocuments, t
     // }, [height, windowHeight, windowWidth])
 
     return (
-        <Stack spacing={2}>
-            <Typography variant="h5">{title ?? 'Documents'}</Typography>
-            {
-                // @ts-expect-error The component takes children
-                <MainCard
-                    sx={{
-                        width: width ?? browserWidth,
-                        height: height ?? browserHeight,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        '& .MuiCardContent-root': {
-                            p: 0,
-                            height: '100%',
-                            width: '100%'
-                        }
-                    }}
-                >
-                    <Box height="20%">
-                        <FileBrowserTopNav
-                            ref={topRef}
-                            bgColor={bgColor}
-                            borderRadius={borderRadius}
-                            doc={fileMap.get(nav[nav.length - 1])}
-                            handleBack={handleBack}
-                            handleForward={handleForward}
-                        />
-                    </Box>
-                    <Box height="72%">
-                        <FileBrowserContent
-                            select={select}
-                            selected={selected}
-                            setSelected={setSelected}
-                            documents={documents}
-                            nav={nav}
-                            gridRef={ref}
-                        />
-                    </Box>
-                    <Divider />
-                    <Box height="8%">
-                        <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
-                    </Box>
-                </MainCard>
-            }
-        </Stack>
+        // @ts-expect-error The component takes children
+        <MainCard
+            sx={{
+                width: width ?? browserWidth,
+                height: height ?? browserHeight,
+                display: 'flex',
+                flexDirection: 'column',
+                '& .MuiCardContent-root': {
+                    p: 0,
+                    height: '100%',
+                    width: '100%'
+                }
+            }}
+        >
+            <Box height="20%">
+                <FileBrowserTopNav
+                    ref={topRef}
+                    bgColor={bgColor}
+                    borderRadius={borderRadius}
+                    doc={fileMap.get(nav[nav.length - 1])}
+                    handleBack={handleBack}
+                    handleForward={handleForward}
+                />
+            </Box>
+            <Box height="72%">
+                <FileBrowserContent
+                    select={select}
+                    selected={selected}
+                    setSelected={setSelected}
+                    documents={documents}
+                    nav={nav}
+                    gridRef={ref}
+                />
+            </Box>
+            <Divider />
+            <Box height="8%">
+                <FileBrowserNavigation ref={bottomRef} history={nav} select={select} />
+            </Box>
+        </MainCard>
     );
 };
 

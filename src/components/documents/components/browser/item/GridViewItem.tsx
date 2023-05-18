@@ -17,7 +17,7 @@ import { DocumentType, DocumentProps } from 'components/documents/Interface/File
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridView({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext }: DocumentProps): JSX.Element {
+function GridViewItem({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext }: DocumentProps): JSX.Element {
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -407,4 +407,4 @@ function GridView({ document, selected, setSelected, select, actions, setIsOverD
     );
 }
 
-export { GridView };
+export { GridViewItem };

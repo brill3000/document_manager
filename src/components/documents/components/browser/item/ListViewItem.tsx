@@ -11,7 +11,7 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useStore } from 'components/documents/data/global_state/';
 import ActionMenu from 'components/documents/components/browser/UI/Menus/DocumentActionMenu';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridView';
+import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
 
 export function ListViewItem({
     document,

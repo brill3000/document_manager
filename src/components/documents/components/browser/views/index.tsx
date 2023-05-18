@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha } from '@mui/material';
-import { GridView } from 'components/documents/components/browser/item/GridView';
+import { GridViewItem } from 'components/documents/components/browser/item/GridViewItem';
 import { CustomDragDocument } from 'components/documents/components/browser/drag&drop/CustomDragDocument';
 import { FolderGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/components/browser/UI/Menus/FolderActionMenu';
 import { useStore } from 'components/documents/data/global_state';
 import { useSnackbar } from 'notistack';
-import { ListView } from 'components/documents/components/browser/views/ListView';
+import { ListView } from 'components/documents/components/browser/views/main/ListView';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { brown } from '@mui/material/colors';
@@ -147,7 +147,7 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
                 />
             ) : (
                 documents.map((document, i: number) => (
-                    <GridView
+                    <GridViewItem
                         setCloseContext={setCloseContext}
                         closeContext={closeContext}
                         key={document !== undefined ? document.id : i}
