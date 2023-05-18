@@ -13,7 +13,7 @@ import config from 'config';
 const LogoSection = ({ sx, to, nologo, title }) => (
     <ButtonBase disableRipple component={Link} to={!to ? config.defaultPath : to} sx={sx}>
         {!nologo && <Logo />}
-        <Typography variant="h4" color={(theme) => theme.palette.text.secondary}>
+        <Typography variant="h4" color={(theme) => theme.palette.text.primary}>
             {title ?? 'E-DMS'}
         </Typography>
     </ButtonBase>

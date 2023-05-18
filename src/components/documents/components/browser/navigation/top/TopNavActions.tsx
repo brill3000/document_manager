@@ -57,7 +57,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                     border: (theme) => `1px solid ${theme.palette.divider}`,
                     borderRadius: 1,
                     bgcolor: alpha(theme.palette.text.secondary, 0.01),
-                    color: 'text.secondary',
+                    color: 'text.primary',
                     transition: 'all .2s',
                     '& svg': {
                         m: 0
@@ -106,8 +106,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 pl: 0.5,
                                 borderRadius: 1,
                                 '&:hover': {
-                                    color: (theme) => theme.palette.primary.contrastText,
-                                    bgcolor: (theme) => theme.palette.primary.main
+                                    bgcolor: 'theme.primary'
                                 },
                                 width: 'max-content',
                                 height: '100%'

@@ -16,35 +16,103 @@ export const authApi = createApi({
             return headers;
         }
     }),
-
     tagTypes: ['DMS_USER', 'DMS_USER_SUCCESS', 'DMS_USER_ERROR'],
     endpoints: (build: {
         query: (arg0: {
             // note: an optional `queryFn` may be used in place of `query`
-            query: () => { url: string };
+            query: (id: string) => { url: string };
             // Pick out data and prevent nested properties in a hook or selector
-            transformResponse: (response: { data: any }) => any;
-            // Pick out errors and prevent nested properties in a hook or selector
+            transformResponse: (response: any) => any;
             providesTags: (result: any, error: any) => FullTagDescription<UserTags>[];
         }) => any;
     }) => ({
         getUsers: build.query({
-            // note: an optional `queryFn` may be used in place of `query`
             query: () => ({ url: `${UriHelper.AUTH_GET_USERS}` }),
-            // Pick out data and prevent nested properties in a hook or selector
             transformResponse: (response: { data: any }) => response.data,
-            // Pick out errors and prevent nested properties in a hook or selector
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
-
-                if (result) {
-                    return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
-                }
-
-                if (error) {
-                    return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
-                }
-
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getRoles: build.query({
+            query: () => ({ url: `${UriHelper.AUTH_GET_ROLES}` }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getGrantedRoles: build.query({
+            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, params: { id: id } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getGrantedUsers: build.query({
+            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_USERS}`, params: { id: id } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getUsersByRole: build.query({
+            query: (role) => ({ url: `${UriHelper.AUTH_GET_USERS_BY_ROLE}`, params: { role: role } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getRolesByUser: build.query({
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, params: { user: user } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getMail: build.query({
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, params: { user: user } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getName: build.query({
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_NAME}`, params: { user: user } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        isAuthenticated: build.query({
+            query: (user) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, params: { user: user } }),
+            transformResponse: (response: { data: any }) => response.data,
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
+                if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
                 return tags;
             }
         })
@@ -52,4 +120,12 @@ export const authApi = createApi({
 });
 
 export const auth_api = authApi.reducer;
-export const { useGetUsersQuery } = authApi;
+export const {
+    useGetUsersQuery,
+    useGetGrantedRolesQuery,
+    useGetGrantedUsersQuery,
+    useGetMailQuery,
+    useGetRolesByUserQuery,
+    useGetRolesQuery,
+    useGetNameQuery
+} = authApi;

@@ -30,7 +30,7 @@ export default function TopNavHandles({
                 border: (theme) => `1px solid ${theme.palette.divider}`,
                 borderRadius: 1,
                 bgcolor: 'background.paper',
-                color: 'text.secondary',
+                color: 'text.primary',
                 '& svg': {
                     m: 0
                 },

@@ -8,7 +8,7 @@ export const UriHelper = {
     /**
      * Auth
      */
-    AUTHORIZATION: 'Bearer 279efbb0-373b-43b7-baba-25fdbb658460',
+    AUTHORIZATION: 'Bearer 9486d9d3-903e-4b04-a8ff-f4bf47c7c878',
     AUTH_GET_GRANTED_ROLES: 'auth/getGrantedRoles',
     AUTH_GET_GRANTED_USERS: 'auth/getGrantedUsers',
     AUTH_GET_MAIL: 'auth/getMail',
