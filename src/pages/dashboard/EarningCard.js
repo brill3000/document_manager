@@ -18,7 +18,7 @@ import FileCopyTwoToneIcon from '@mui/icons-material/FileCopyOutlined';
 import PictureAsPdfTwoToneIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveOutlined';
 
-const CardWrapper = styled(MainCard)(({color, theme }) => ({
+const CardWrapper = styled(MainCard)(({ color, theme }) => ({
     backgroundColor: theme.palette[color].dark,
     color: '#fff',
     overflow: 'hidden',
@@ -28,7 +28,7 @@ const CardWrapper = styled(MainCard)(({color, theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: color !== "primary" ? theme.palette[color]['light'] :theme.palette[color][100],
+        background: color !== 'primary' ? theme.palette[color]['light'] : theme.palette[color][100],
         borderRadius: '50%',
         top: -85,
         right: -95,
@@ -42,7 +42,7 @@ const CardWrapper = styled(MainCard)(({color, theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: color !== "primary" ? theme.palette[color]['light'] :theme.palette[color][100],
+        background: color !== 'primary' ? theme.palette[color]['light'] : theme.palette[color][100],
         borderRadius: '50%',
         top: -125,
         right: -15,
@@ -99,7 +99,7 @@ const EarningCard = ({ isLoading, count, title, color }) => {
                                                 ...theme.typography.commonAvatar,
                                                 ...theme.typography.mediumAvatar,
                                                 backgroundColor: theme.palette[color].darker,
-                                                color: color !== "primary" ? theme.palette[color]['light'] :theme.palette[color][100],
+                                                color: color !== 'primary' ? theme.palette[color]['light'] : theme.palette[color][100],
                                                 zIndex: 1
                                             }}
                                             aria-controls="menu-earning-card"

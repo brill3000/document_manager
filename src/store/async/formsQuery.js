@@ -1,21 +1,20 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { db } from "../../firebase-config"
-import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, endAt } from "firebase/firestore"
-
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { db } from '../../firebase-config';
+import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, endAt } from 'firebase/firestore';
 
 class Form {
     constructor(id, title, created_by, date_created, date_modified, nodes, edges, viewport) {
-        this.id = id
-        this.created_by = created_by
-        this.title = title
-        this.date_created = new Date(date_created.seconds).toLocaleString() 
-        this.date_modified = date_modified ? new Date(date_modified.seconds).toLocaleString() : null
-        this.nodes = nodes
-        this.edges = edges
-        this.viewport = viewport
+        this.id = id;
+        this.created_by = created_by;
+        this.title = title;
+        this.date_created = new Date(date_created.seconds).toLocaleString();
+        this.date_modified = date_modified ? new Date(date_modified.seconds).toLocaleString() : null;
+        this.nodes = nodes;
+        this.edges = edges;
+        this.viewport = viewport;
     }
     toString() {
-        return this.user_id + ', '
+        return this.user_id + ', ';
     }
     getWorkflow() {
         return {
@@ -27,11 +26,9 @@ class Form {
             nodes: this.nodes,
             edges: this.edges,
             viewport: this.viewport
-        }
+        };
     }
 }
-
-
 
 // Firestore data converter
 const userConverter = {
@@ -52,7 +49,6 @@ const userConverter = {
     }
 };
 
-
 export const formsQuery = createApi({
     reducerPath: 'forms_query',
     baseQuery: fakeBaseQuery(),
@@ -61,40 +57,38 @@ export const formsQuery = createApi({
         getSavedForms: builder.query({
             async queryFn() {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     let users = [];
                     // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
-                    const q = query(collection(db, "forms"));
+                    const q = query(collection(db, 'forms'));
 
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
-                        console.log(data.data(), "DATA");
+                        console.log(data.data(), 'DATA');
                         let userData = userConverter.fromFirestore(data);
 
-                        users.push(userData.getWorkflow())
-                    })
-                    return { data: users }
-
+                        users.push(userData.getWorkflow());
+                    });
+                    return { data: users };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
             },
             providesTags: ['forms']
         }),
         createForm: builder.mutation({
             async queryFn(workflow) {
-
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
-                    const q = collection(db, "forms");
-                    await addDoc(q, userConverter.toFirestore(workflow))
-                    return { data: true }
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
+                    const q = collection(db, 'forms');
+                    await addDoc(q, userConverter.toFirestore(workflow));
+                    return { data: true };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
             },
             invalidatesTags: ['forms']
-        }),
+        })
         // removeUserFromoDepartment: builder.mutation({
         //     async queryFn(user) {
         //         try {
@@ -107,7 +101,6 @@ export const formsQuery = createApi({
         //             };
         //             const docRef = doc(db, "departments", "users", user.id);
         //             const response = await updateDoc(docRef, data)
-
 
         //             return { data: response }
 
@@ -132,7 +125,6 @@ export const formsQuery = createApi({
 
         //             const response = await updateDoc(docRef, data)
         //             const response2 = await updateDoc(docRef2, data)
-
 
         //             return { data: response && response2 }
 
@@ -186,9 +178,6 @@ export const formsQuery = createApi({
         //     invalidatesTags: ['files']
         // })
     })
-})
-export const forms_query = formsQuery.reducer
-export const {
-    useCreateFormMutation,
-    useGetSavedFormsQuery,
-} = formsQuery
+});
+export const forms_query = formsQuery.reducer;
+export const { useCreateFormMutation, useGetSavedFormsQuery } = formsQuery;

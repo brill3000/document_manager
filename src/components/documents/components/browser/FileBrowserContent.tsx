@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Divider, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { FileBrowserContentProps } from '../../Interface/FileBrowser';
 import { fileIcon } from '../../Icons/fileIcon';
 import DocumentDetails from './DocumentDetails';
@@ -13,9 +13,17 @@ const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gri
     return (
         <Grid container width="100%" height="100%" overflow="hidden">
             <FolderGrid documents={documents} selected={selected} setSelected={setSelected} select={select} nav={nav} gridRef={gridRef} />
-            <Grid md={4} height={'100%'} component={Stack} direction="row">
-                <Divider orientation="vertical" />
-                {Array.isArray(selected) && selected.length > 0 && (
+            <Grid
+                md={4}
+                height="100%"
+                width="100%"
+                component={Stack}
+                direction="row"
+                borderLeft={(theme) => `1px solid ${theme.palette.divider}`}
+                justifyContent="center"
+                alignItems="center"
+            >
+                {Array.isArray(selected) && selected.length > 0 ? (
                     <Stack spacing={2} height="100%" width="100%">
                         {selected[0].is_dir ? (
                             <>
@@ -35,6 +43,8 @@ const FileBrowserContent = ({ selected, setSelected, documents, select, nav, gri
                             </>
                         )}
                     </Stack>
+                ) : (
+                    <Typography>Nothing Selected</Typography>
                 )}
             </Grid>
         </Grid>

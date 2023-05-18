@@ -1,23 +1,23 @@
 .App {
     text-align: center;
-  }
-  
-  .list {
+}
+
+.list {
     padding: 10px;
-  }
-  
-  .row {
+}
+
+.row {
     border-bottom: 1px solid #ebeced;
     text-align: left;
     margin: 5px 0;
     display: flex;
     align-items: center;
-  }
-  
-  .image {
+}
+
+.image {
     margin-right: 10px;
-  }
-  
-  .content {
+}
+
+.content {
     padding: 10px;
-  }
+}

@@ -1,11 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { Button, Card, useTheme } from '@mui/material';
-import { BsHandIndex } from "react-icons/bs";
+import { BsHandIndex } from 'react-icons/bs';
 import { DataGrid, GridToolbar, gridClasses } from '@mui/x-data-grid';
 import { Stack } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
-
 
 const ODD_OPACITY = 0.2;
 
@@ -16,34 +15,24 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
         '&:hover, &.Mui-hovered': {
             backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
             '@media (hover: none)': {
-                backgroundColor: 'transparent',
-            },
+                backgroundColor: 'transparent'
+            }
         },
         '&.Mui-selected': {
-            backgroundColor: alpha(
-                theme.palette.primary.main,
-                ODD_OPACITY + theme.palette.action.selectedOpacity,
-            ),
+            backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY + theme.palette.action.selectedOpacity),
             '&:hover, &.Mui-hovered': {
                 backgroundColor: alpha(
                     theme.palette.primary.main,
-                    ODD_OPACITY +
-                    theme.palette.action.selectedOpacity +
-                    theme.palette.action.hoverOpacity,
+                    ODD_OPACITY + theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity
                 ),
                 // Reset on touch devices, it doesn't add specificity
                 '@media (hover: none)': {
-                    backgroundColor: alpha(
-                        theme.palette.primary.main,
-                        ODD_OPACITY + theme.palette.action.selectedOpacity,
-                    ),
-                },
-            },
-        },
-    },
+                    backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY + theme.palette.action.selectedOpacity)
+                }
+            }
+        }
+    }
 }));
-
-
 
 const columns2 = [
     { id: 'id', label: 'ID', minWidth: 30 },
@@ -52,42 +41,36 @@ const columns2 = [
     {
         id: 'no_of_docs',
         label: 'No of Documents',
-        minWidth: 50,
+        minWidth: 50
     },
     {
         id: 'last_modified',
         label: 'Last Modfified',
-        minWidth: 50,
+        minWidth: 50
     }
 ];
 
 export default function IndexTable() {
-
     const columns = React.useMemo(() => {
-        return [...columns2.map((x) => {
-            return {
-                field: x.id,
-                editable: true,
-                headerName: x.label,
-                width: x.id === 'description' ? 220 : 200,
-                aggregable: false
-            }
-        })]
-    }, [])
-
+        return [
+            ...columns2.map((x) => {
+                return {
+                    field: x.id,
+                    editable: true,
+                    headerName: x.label,
+                    width: x.id === 'description' ? 220 : 200,
+                    aggregable: false
+                };
+            })
+        ];
+    }, []);
 
     const theme = useTheme();
 
-
     return (
         <Stack spacing={2}>
-            <Box
-                maxHeight={50}
-                maxWidth={200}
-            >
-                <Button variant="contained"
-                    startIcon={<BsHandIndex size={20} />}
-                >
+            <Box maxHeight={50} maxWidth={200}>
+                <Button variant="contained" startIcon={<BsHandIndex size={20} />}>
                     Create Index
                 </Button>
             </Box>
@@ -122,8 +105,8 @@ export default function IndexTable() {
                         componentsProps={{
                             toolbar: {
                                 showQuickFilter: true,
-                                quickFilterProps: { debounceMs: 500 },
-                            },
+                                quickFilterProps: { debounceMs: 500 }
+                            }
                         }}
                     />
                 </Box>

@@ -16,7 +16,6 @@ import App from './App';
 import { store } from 'store';
 import reportWebVitals from './reportWebVitals';
 
-
 // ==============================|| MAIN - REACT DOM RENDER  ||============================== //
 
 ReactDOM.render(

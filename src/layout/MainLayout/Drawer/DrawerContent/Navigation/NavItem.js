@@ -38,15 +38,16 @@ const NavItem = ({ item, level, children }) => {
     if (item?.external) {
         listItemProps = { component: 'a', href: item.url, target: itemTarget };
     }
-    let listChildreItemProps = (child) => ({ component: forwardRef((props, ref) => <Link ref={ref} {...props} to={child.url} target={itemTarget} />) });
-
+    let listChildreItemProps = (child) => ({
+        component: forwardRef((props, ref) => <Link ref={ref} {...props} to={child.url} target={itemTarget} />)
+    });
 
     const itemHandler = (id, parent) => {
         handleClick();
         const menuChildren = item.children ? item.children.map((child) => child.id) : [];
         const isSelected = openItem.some((id) => menuChildren?.includes(id));
         if (!isSelected) dispatch(activeItem({ openItem: [id] }));
-        if(parent.toLowerCase() === 'departments') {
+        if (parent.toLowerCase() === 'departments') {
             dispatch(setCurrentDepartment({ currentDepartment: 'All Departments' }));
             dispatch(setUsers({ users: customers }));
         }
@@ -168,11 +169,12 @@ const NavItem = ({ item, level, children }) => {
                             <ArrowDropUp color="primary" />
                         </IconButton>
                     ) : (
-                        <IconButton size="small" 
-                        sx={{ color: 'warning' }}
-                        variant="outlined" 
-                        onClick={() => setOpen(true)}
-                        onMouseOver={() => setIsDisabled(false)}
+                        <IconButton
+                            size="small"
+                            sx={{ color: 'warning' }}
+                            variant="outlined"
+                            onClick={() => setOpen(true)}
+                            onMouseOver={() => setIsDisabled(false)}
                         >
                             <ArrowDropDown color="primary" />
                         </IconButton>

@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -18,9 +17,6 @@ import { getInitials } from './utils/get-initials';
 import { CircularProgress } from '../../../node_modules/@mui/material/index';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 
-
-
-
 const columns = [
     { id: 'id', label: 'ID', minWidth: 30 },
     { id: 'name', label: 'Name', minWidth: 100 },
@@ -29,20 +25,20 @@ const columns = [
         id: 'position',
         label: 'Position',
         minWidth: 50,
-        format: (value) => value.toLocaleString(),
+        format: (value) => value.toLocaleString()
     },
     {
         id: 'is_admin',
         label: 'Is Admin',
         minWidth: 50,
-        format: (value) => value.toLocaleString('en-US'),
+        format: (value) => value.toLocaleString('en-US')
     },
     {
         id: 'registration_date',
         label: 'Registration Date',
         minWidth: 50,
-        format: (value) => value.toLocaleString('en-US'),
-    },
+        format: (value) => value.toLocaleString('en-US')
+    }
     // {
     //     id: 'phone',
     //     label: 'Phone',
@@ -50,7 +46,6 @@ const columns = [
     //     align: 'right',
     //     format: (value) => value.toLocaleString('en-US'),
     // },
-
 ];
 
 function createData(name, email, phone, access) {
@@ -63,9 +58,8 @@ const rows = [
     createData('Mollie Bishop', '1-751-742-3328', 'libero.proin.mi@protonmail.net', 'admin'),
     createData('United States', '1-418-621-8367', 'quisque.tincidunt@icloud.org', 'admin'),
     createData('Meredith Cunningham', '1-418-621-8367', 'quisque.tincidunt@icloud.org', 'admin'),
-    createData('Claire Mayo', '(348) 515-4184', 'eu.turpis@aol.org', 'admin'),
+    createData('Claire Mayo', '(348) 515-4184', 'eu.turpis@aol.org', 'admin')
 ];
-
 
 export default function UserTable({ users, usersIsLoading, usersIsError, usersError, usersIsFetching, ...rest }) {
     const [page, setPage] = React.useState(0);
@@ -124,130 +118,95 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-
             <TableContainer sx={{ minHeight: 440, maxHeight: 440 }}>
-                {
-                    usersIsLoading || usersIsFetching?
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            minHeight="100%"
-                            minWidth="100%"
-                            sx={{
-                                mt: 25
-                            }}
-                        >
-                            <GoogleLoader height={150} width={150} loop={true} />
-                        </Box>
-                        :
-                        usersIsError ?
-                            <Box
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                minHeight="100%"
-                                minWidth="100%"
-                                sx={{
-                                    mt: 25
-                                }}
-                            >
-                                <Stack direction="column">
-                                    <Error height={70} width={70} />
-                                    <Typography variant='subtitle1'>{usersError ?? "Opps... A Error has occured"}</Typography>
-                                </Stack>
-
-                            </Box>
-                            :
-                            <Table stickyHeader aria-label="sticky table">
-                                <TableHead>
-                                    <TableRow>
-                                        {columns.map((column, index) => (
-                                            index === 0
-                                                ?
-                                                <TableCell
-                                                    key={column.id}
-                                                    align={column.align}
-                                                    style={{ minWidth: column.minWidth }}
-                                                >
-                                                    <Checkbox
-                                                        checked={users.length > 0 && selectedUserIds.length === users.length}
-                                                        color="primary"
-                                                        indeterminate={
-                                                            users.length > 0 && selectedUserIds.length > 0
-                                                            && selectedUserIds.length < users.length
-                                                        }
-                                                        onChange={handleSelectAll}
-                                                    />
-                                                </TableCell>
-                                                :
-                                                <TableCell
-                                                    key={column.id}
-                                                    align={column.align}
-                                                    style={{ minWidth: column.minWidth }}
-                                                >
-                                                    {column.label}
-                                                </TableCell>
-                                        ))}
+                {usersIsLoading || usersIsFetching ? (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="100%"
+                        minWidth="100%"
+                        sx={{
+                            mt: 25
+                        }}
+                    >
+                        <GoogleLoader height={150} width={150} loop={true} />
+                    </Box>
+                ) : usersIsError ? (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="100%"
+                        minWidth="100%"
+                        sx={{
+                            mt: 25
+                        }}
+                    >
+                        <Stack direction="column">
+                            <Error height={70} width={70} />
+                            <Typography variant="subtitle1">{usersError ?? 'Opps... A Error has occured'}</Typography>
+                        </Stack>
+                    </Box>
+                ) : (
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                {columns.map((column, index) =>
+                                    index === 0 ? (
+                                        <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                                            <Checkbox
+                                                checked={users.length > 0 && selectedUserIds.length === users.length}
+                                                color="primary"
+                                                indeterminate={
+                                                    users.length > 0 && selectedUserIds.length > 0 && selectedUserIds.length < users.length
+                                                }
+                                                onChange={handleSelectAll}
+                                            />
+                                        </TableCell>
+                                    ) : (
+                                        <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                                            {column.label}
+                                        </TableCell>
+                                    )
+                                )}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {users.slice(0, limit).map((user) => {
+                                return (
+                                    <TableRow hover key={user.id} selected={selectedUserIds.indexOf(user.id) !== -1}>
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                checked={selectedUserIds.indexOf(user.id) !== -1}
+                                                onChange={(event) => handleSelectOne(event, user.id)}
+                                                value="true"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box
+                                                sx={{
+                                                    alignItems: 'center',
+                                                    display: 'flex'
+                                                }}
+                                            >
+                                                <Avatar src={user.avatarUrl} sx={{ mr: 2 }}>
+                                                    {getInitials(user.name)}
+                                                </Avatar>
+                                                <Typography color="textPrimary" variant="body1">
+                                                    {user.name}
+                                                </Typography>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>{user.email}</TableCell>
+                                        <TableCell>{user.position ?? 'Guest'}</TableCell>
+                                        <TableCell>{user.is_admin ? 'true' : 'false'}</TableCell>
+                                        <TableCell>{user.createdAt}</TableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {
-                                        users.slice(0, limit).map((user) => {
-                                            return (
-                                                <TableRow
-                                                    hover
-                                                    key={user.id}
-                                                    selected={selectedUserIds.indexOf(user.id) !== -1}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={selectedUserIds.indexOf(user.id) !== -1}
-                                                            onChange={(event) => handleSelectOne(event, user.id)}
-                                                            value="true"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Box
-                                                            sx={{
-                                                                alignItems: 'center',
-                                                                display: 'flex'
-                                                            }}
-                                                        >
-                                                            <Avatar
-                                                                src={user.avatarUrl}
-                                                                sx={{ mr: 2 }}
-                                                            >
-                                                                {getInitials(user.name)}
-                                                            </Avatar>
-                                                            <Typography
-                                                                color="textPrimary"
-                                                                variant="body1"
-                                                            >
-                                                                {user.name}
-                                                            </Typography>
-                                                        </Box>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {user.email}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {user.position ?? 'Guest'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {user.is_admin ? 'true' : 'false'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {user.createdAt}
-                                                    </TableCell>
-                                                </TableRow>
-                                            )
-                                        })
+                                );
+                            })}
 
-
-                                    }
-
-                                    {/* {rows
+                            {/* {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
@@ -265,10 +224,9 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
                       </TableRow>
                     );
                   })} */}
-                                </TableBody>
-                            </Table>
-                }
-
+                        </TableBody>
+                    </Table>
+                )}
             </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
@@ -279,6 +237,6 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-        </Paper >
+        </Paper>
     );
 }

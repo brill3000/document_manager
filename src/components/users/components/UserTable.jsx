@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -19,9 +18,6 @@ import { CircularProgress } from '@mui/material';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import CustomDataGrid from './CustomDataGrid';
 
-
-
-
 const columns = [
     { id: 'id', label: 'ID', minWidth: 30 },
     { id: 'name', label: 'Name', minWidth: 100 },
@@ -30,20 +26,20 @@ const columns = [
         id: 'position',
         label: 'Position',
         minWidth: 50,
-        format: (value) => value.toLocaleString(),
+        format: (value) => value.toLocaleString()
     },
     {
         id: 'is_admin',
         label: 'Is Admin',
         minWidth: 50,
-        format: (value) => value.toLocaleString('en-US'),
+        format: (value) => value.toLocaleString('en-US')
     },
     {
         id: 'createdAt',
         label: 'Registration Date',
         minWidth: 50,
-        format: (value) => value.toLocaleString('en-US'),
-    },
+        format: (value) => value.toLocaleString('en-US')
+    }
     // {
     //     id: 'phone',
     //     label: 'Phone',
@@ -51,9 +47,7 @@ const columns = [
     //     align: 'right',
     //     format: (value) => value.toLocaleString('en-US'),
     // },
-
 ];
-
 
 export default function UserTable({ users, usersIsLoading, usersIsError, usersError, usersIsFetching, ...rest }) {
     const [page, setPage] = React.useState(0);
@@ -110,41 +104,36 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
     //     setPage(newPage);
     // };
 
-    return (
-        usersIsLoading || usersIsFetching ?
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="100%"
-                minWidth="100%"
-                sx={{
-                    mt: 25
-                }}
-            >
-                <GoogleLoader height={150} width={150} loop={true} />
-            </Box>
-            :
-            usersIsError ?
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    minHeight="100%"
-                    minWidth="100%"
-                    sx={{
-                        mt: 25
-                    }}
-                >
-                    <Stack direction="column">
-                        <Error height={70} width={70} />
-                        <Typography variant='subtitle1'>{usersError ?? "Opps... A Error has occured"}</Typography>
-                    </Stack>
-
-                </Box>
-                :
-                <CustomDataGrid columns={columns} users={users} />
-
-
+    return usersIsLoading || usersIsFetching ? (
+        <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="100%"
+            minWidth="100%"
+            sx={{
+                mt: 25
+            }}
+        >
+            <GoogleLoader height={150} width={150} loop={true} />
+        </Box>
+    ) : usersIsError ? (
+        <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="100%"
+            minWidth="100%"
+            sx={{
+                mt: 25
+            }}
+        >
+            <Stack direction="column">
+                <Error height={70} width={70} />
+                <Typography variant="subtitle1">{usersError ?? 'Opps... A Error has occured'}</Typography>
+            </Stack>
+        </Box>
+    ) : (
+        <CustomDataGrid columns={columns} users={users} />
     );
 }

@@ -22,28 +22,25 @@ import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import { avatarSX, actionSX } from './index';
 
 // Icons
-import { FileAddOutlined, QuestionCircleOutlined, DeleteOutlined, FolderAddOutlined, FolderOutlined, FileOutlined } from '@ant-design/icons';
+import {
+    FileAddOutlined,
+    QuestionCircleOutlined,
+    DeleteOutlined,
+    FolderAddOutlined,
+    FolderOutlined,
+    FileOutlined
+} from '@ant-design/icons';
 export function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
 }
 
 export function formatDate(date) {
     return (
-        [
-            date.getFullYear(),
-            padTo2Digits(date.getMonth() + 1),
-            padTo2Digits(date.getDate()),
-        ].join('-') +
+        [date.getFullYear(), padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate())].join('-') +
         ' ' +
-        [
-            padTo2Digits(date.getHours()),
-            padTo2Digits(date.getMinutes()),
-            padTo2Digits(date.getSeconds()),
-        ].join(':')
+        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes()), padTo2Digits(date.getSeconds())].join(':')
     );
 }
-
-
 
 export function RecentActivity({ recentActivity }) {
     return (
@@ -67,170 +64,153 @@ export function RecentActivity({ recentActivity }) {
                         }
                     }}
                 >
-                    {
-                        recentActivity.isLoading || recentActivity.isFetching
-                            ?
-                            <Box
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                minHeight="100%"
-                                minWidth="100%"
-                            >
-                                <GoogleLoader height={100} width={150} loop={true} />
-                            </Box>
-                            :
-                            recentActivity.isError
-                                ?
-                                <Box
-                                    display="flex"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                    minHeight={450}
-                                    minWidth="100%"
+                    {recentActivity.isLoading || recentActivity.isFetching ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                            <GoogleLoader height={100} width={150} loop={true} />
+                        </Box>
+                    ) : recentActivity.isError ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight={450} minWidth="100%">
+                            <Stack direction="column">
+                                <Error height={50} width={50} />
+                                <Typography variant="body3">{recentActivity.error ?? 'Opps... An Error  has occured'}</Typography>
+                            </Stack>
+                        </Box>
+                    ) : recentActivity.isSuccess &&
+                      recentActivity.data &&
+                      Array.isArray(recentActivity.data) &&
+                      recentActivity.data.length > 0 ? (
+                        recentActivity.data.map((activity) => {
+                            let newDate = formatDate(new Date(Date.parse(activity.date_created)));
+                            if (new Date(Date.parse(activity.date_created)).toDateString() === new Date().toDateString()) {
+                                newDate = 'Today, ' + newDate.split(' ')[1];
+                            }
+                            switch (activity.log_category) {
+                                case 'folders':
+                                    return (
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color:
+                                                            activity.log_type.includes('trash') || activity.log_type.includes('delete')
+                                                                ? 'error.main'
+                                                                : 'success.main',
+                                                        bgcolor:
+                                                            activity.log_type.includes('trash') || activity.log_type.includes('delete')
+                                                                ? 'error.lighter'
+                                                                : 'success.lighter'
+                                                    }}
+                                                >
+                                                    {activity.log_type.includes('trash') || activity.log_type.includes('delete') ? (
+                                                        <DeleteOutlined />
+                                                    ) : activity.log_type.includes('create') ? (
+                                                        <FolderAddOutlined />
+                                                    ) : (
+                                                        <FolderOutlined />
+                                                    )}
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
+                                                secondary={newDate}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        {activity.log_category}
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                    );
+                                case 'files':
+                                    return (
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color:
+                                                            activity.log_type.includes('trash') || activity.log_type.includes('delete')
+                                                                ? 'error.main'
+                                                                : 'success.main',
+                                                        bgcolor:
+                                                            activity.log_type.includes('trash') || activity.log_type.includes('delete')
+                                                                ? 'error.lighter'
+                                                                : 'success.lighter'
+                                                    }}
+                                                >
+                                                    {activity.log_type.includes('trash') || activity.log_type.includes('delete') ? (
+                                                        <DeleteOutlined />
+                                                    ) : activity.log_type.includes('create') ? (
+                                                        <FileAddOutlined />
+                                                    ) : (
+                                                        <FileOutlined />
+                                                    )}
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
+                                                secondary={newDate}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        {activity.log_category}
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                    );
+                                default:
+                                    return (
+                                        <ListItemButton divider>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    sx={{
+                                                        color: 'success.main',
+                                                        bgcolor: 'success.lighter'
+                                                    }}
+                                                >
+                                                    <FolderOutlined />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
+                                                secondary={newDate}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Stack alignItems="flex-end">
+                                                    <Typography variant="h6" color="secondary" noWrap>
+                                                        {activity.log_category}
+                                                    </Typography>
+                                                </Stack>
+                                            </ListItemSecondaryAction>
+                                        </ListItemButton>
+                                    );
+                            }
+                        })
+                    ) : (
+                        <ListItemButton divider>
+                            <ListItemAvatar>
+                                <Avatar
+                                    sx={{
+                                        color: 'warning.main',
+                                        bgcolor: 'warning.lighter'
+                                    }}
                                 >
-                                    <Stack direction="column">
-                                        <Error height={50} width={50} />
-                                        <Typography variant='body3'>{recentActivity.error ?? "Opps... An Error  has occured"}</Typography>
-                                    </Stack>
-                                </Box>
-                                :
-                                recentActivity.isSuccess && recentActivity.data && Array.isArray(recentActivity.data) &&
-                                    recentActivity.data.length > 0 ?
-                                    recentActivity.data.map(activity => {
-                                        let newDate = formatDate(new Date(Date.parse(activity.date_created)))
-                                        if (new Date(Date.parse(activity.date_created)).toDateString() === new Date().toDateString()) {
-                                            newDate = "Today, " + newDate.split(" ")[1]
-                                        }
-                                        switch (activity.log_category) {
-                                            case 'folders':
-                                                return (
-                                                    <ListItemButton divider>
-                                                        <ListItemAvatar>
-                                                            <Avatar
-                                                                sx={{
-                                                                    color: activity.log_type.includes('trash') || activity.log_type.includes('delete') ? 'error.main' : 'success.main',
-                                                                    bgcolor: activity.log_type.includes('trash') || activity.log_type.includes('delete') ? 'error.lighter' : 'success.lighter'
-                                                                }}
-                                                            >
-                                                                {
-                                                                    activity.log_type.includes('trash') || activity.log_type.includes('delete')
-                                                                        ?
-                                                                        <DeleteOutlined />
-                                                                        :
-                                                                        activity.log_type.includes('create')
-                                                                            ?
-                                                                            <FolderAddOutlined />
-                                                                            :
-                                                                            <FolderOutlined />
-
-                                                                }
-                                                            </Avatar>
-                                                        </ListItemAvatar>
-                                                        <ListItemText
-                                                            primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
-                                                            secondary={newDate}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <Stack alignItems="flex-end">
-                                                                <Typography variant="h6" color="secondary" noWrap>
-                                                                    {activity.log_category}
-                                                                </Typography>
-                                                            </Stack>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItemButton>
-                                                )
-                                            case 'files':
-                                                return (
-                                                    <ListItemButton divider>
-                                                        <ListItemAvatar>
-                                                            <Avatar
-                                                                sx={{
-                                                                    color: activity.log_type.includes('trash') || activity.log_type.includes('delete') ? 'error.main' : 'success.main',
-                                                                    bgcolor: activity.log_type.includes('trash') || activity.log_type.includes('delete') ? 'error.lighter' : 'success.lighter'
-                                                                }}
-                                                            >
-                                                                {
-                                                                    activity.log_type.includes('trash') || activity.log_type.includes('delete')
-                                                                        ?
-                                                                        <DeleteOutlined />
-                                                                        :
-                                                                        activity.log_type.includes('create')
-                                                                            ?
-                                                                            <FileAddOutlined />
-                                                                            :
-                                                                            <FileOutlined />
-                                                                }
-                                                            </Avatar>
-                                                        </ListItemAvatar>
-                                                        <ListItemText
-                                                            primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
-                                                            secondary={newDate}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <Stack alignItems="flex-end">
-                                                                <Typography variant="h6" color="secondary" noWrap>
-                                                                    {activity.log_category}
-                                                                </Typography>
-                                                            </Stack>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItemButton>
-                                                )
-                                            default:
-                                                return (
-                                                    <ListItemButton divider>
-                                                        <ListItemAvatar>
-                                                            <Avatar
-                                                                sx={{
-                                                                    color: 'success.main',
-                                                                    bgcolor: 'success.lighter'
-                                                                }}
-                                                            >
-                                                                <FolderOutlined />
-                                                            </Avatar>
-                                                        </ListItemAvatar>
-                                                        <ListItemText
-                                                            primary={<Typography variant="subtitle1">{activity.log_description}</Typography>}
-                                                            secondary={newDate}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <Stack alignItems="flex-end">
-                                                                <Typography variant="h6" color="secondary" noWrap>
-                                                                    {activity.log_category}
-                                                                </Typography>
-                                                            </Stack>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItemButton>
-                                                );
-                                        }
-
-                                    })
-                                    :
-                                    <ListItemButton divider>
-                                        <ListItemAvatar>
-                                            <Avatar
-                                                sx={{
-                                                    color: 'warning.main',
-                                                    bgcolor: 'warning.lighter'
-                                                }}
-                                            >
-                                                <QuestionCircleOutlined />
-                                            </Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={<Typography variant="subtitle1">No Recent Activity</Typography>}
-                                        />
-                                        <ListItemSecondaryAction>
-                                            <Stack alignItems="flex-end">
-                                                <Typography variant="h6" color="secondary" noWrap>
-                                                    0 Activity
-                                                </Typography>
-                                            </Stack>
-                                        </ListItemSecondaryAction>
-                                    </ListItemButton>
-
-
-                    }
+                                    <QuestionCircleOutlined />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={<Typography variant="subtitle1">No Recent Activity</Typography>} />
+                            <ListItemSecondaryAction>
+                                <Stack alignItems="flex-end">
+                                    <Typography variant="h6" color="secondary" noWrap>
+                                        0 Activity
+                                    </Typography>
+                                </Stack>
+                            </ListItemSecondaryAction>
+                        </ListItemButton>
+                    )}
                 </List>
             </MainCard>
             <MainCard sx={{ mt: 2 }}>
@@ -261,5 +241,5 @@ export function RecentActivity({ recentActivity }) {
                 </Stack>
             </MainCard>
         </>
-    )
+    );
 }

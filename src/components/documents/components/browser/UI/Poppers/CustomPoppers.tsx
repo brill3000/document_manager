@@ -10,11 +10,11 @@ export const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
         // color: theme.palette.getContrastText(theme.palette.secondary.light),
         maxWidth: 220,
         fontSize: theme.typography.pxToRem(12),
-        border: `1px solid ${theme.palette.divider}`,
+        border: `1px solid ${theme.palette.divider}`
         // display: 'none'
     },
     [`& .${tooltipClasses.arrow}`]: {
-        '&:before ':{
+        '&:before ': {
             // backgroundColor: theme.palette.secondary.light,
         }
     }

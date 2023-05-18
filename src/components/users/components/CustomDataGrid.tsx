@@ -5,7 +5,6 @@ import { Card, useTheme } from '@mui/material';
 import { Stack } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 
-
 const ODD_OPACITY = 0.2;
 
 const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -15,60 +14,49 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
         '&:hover, &.Mui-hovered': {
             backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
             '@media (hover: none)': {
-                backgroundColor: 'transparent',
-            },
+                backgroundColor: 'transparent'
+            }
         },
         '&.Mui-selected': {
-            backgroundColor: alpha(
-                theme.palette.primary.main,
-                ODD_OPACITY + theme.palette.action.selectedOpacity,
-            ),
+            backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY + theme.palette.action.selectedOpacity),
             '&:hover, &.Mui-hovered': {
                 backgroundColor: alpha(
                     theme.palette.primary.main,
-                    ODD_OPACITY +
-                    theme.palette.action.selectedOpacity +
-                    theme.palette.action.hoverOpacity,
+                    ODD_OPACITY + theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity
                 ),
                 // Reset on touch devices, it doesn't add specificity
                 '@media (hover: none)': {
-                    backgroundColor: alpha(
-                        theme.palette.primary.main,
-                        ODD_OPACITY + theme.palette.action.selectedOpacity,
-                    ),
-                },
-            },
-        },
-    },
+                    backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY + theme.palette.action.selectedOpacity)
+                }
+            }
+        }
+    }
 }));
 
-
-export default function CustomDataGrid({ users, columns }: { users: Array<any>, columns: Array<any> }) {
-
-
+export default function CustomDataGrid({ users, columns }: { users: Array<any>; columns: Array<any> }) {
     const newColumns = React.useMemo(() => {
-        return [...columns.map((x) => {
-            return {
-                field: x.id,
-                editable: true,
-                headerName: x.label,
-                width: x.id === 'createdAt' || x.id === 'email' ? 280 : 150,
-                aggregable: false
-            }
-        })]
-    }, [columns])
-
-
+        return [
+            ...columns.map((x) => {
+                return {
+                    field: x.id,
+                    editable: true,
+                    headerName: x.label,
+                    width: x.id === 'createdAt' || x.id === 'email' ? 280 : 150,
+                    aggregable: false
+                };
+            })
+        ];
+    }, [columns]);
 
     const theme = useTheme();
 
     const initialState = {
         columns: {
             columnVisibilityModel: {
-                id: false,
+                id: false
             }
         }
-    }
+    };
 
     return (
         <Stack spacing={2}>
@@ -103,12 +91,10 @@ export default function CustomDataGrid({ users, columns }: { users: Array<any>, 
                         componentsProps={{
                             toolbar: {
                                 showQuickFilter: true,
-                                quickFilterProps: { debounceMs: 500 },
-                            },
+                                quickFilterProps: { debounceMs: 500 }
+                            }
                         }}
-                        getRowClassName={(params) =>
-                            params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
-                        }
+                        getRowClassName={(params) => (params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd')}
                     />
                 </Box>
             </Card>

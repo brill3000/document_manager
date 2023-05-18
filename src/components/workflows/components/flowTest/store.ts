@@ -1,88 +1,86 @@
 import create from 'zustand';
 import {
-  Connection,
-  Edge,
-  EdgeChange,
-  Node,
-  NodeChange,
-  addEdge,
-  OnNodesChange,
-  OnEdgesChange,
-  OnConnect,
-  applyNodeChanges,
-  applyEdgeChanges,
+    Connection,
+    Edge,
+    EdgeChange,
+    Node,
+    NodeChange,
+    addEdge,
+    OnNodesChange,
+    OnEdgesChange,
+    OnConnect,
+    applyNodeChanges,
+    applyEdgeChanges
 } from 'react-flow-renderer';
 
 const initialNodes = [
-  {
-      id: '0',
-      type: 'input',
-      data: { label: 'Node' },
-      position: { x: 0, y: 50 },
-  },
+    {
+        id: '0',
+        type: 'input',
+        data: { label: 'Node' },
+        position: { x: 0, y: 50 }
+    }
 ];
 
 export type NodeData = {
-  label: string;
-  action?: any
+    label: string;
+    action?: any;
 };
 
 export type RFState = {
-  nodes: Node<NodeData>[];
-  edges: Edge[];
-  onNodesChange: OnNodesChange;
-  onEdgesChange: OnEdgesChange;
-  onConnect: OnConnect;
-  updateNodeLabel: (nodeId: string, title: string) => void;
+    nodes: Node<NodeData>[];
+    edges: Edge[];
+    onNodesChange: OnNodesChange;
+    onEdgesChange: OnEdgesChange;
+    onConnect: OnConnect;
+    updateNodeLabel: (nodeId: string, title: string) => void;
 };
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
 const useStore = create<RFState>((set, get) => ({
-  nodes: initialNodes,
-  edges: [],
-  onNodesChange: (changes: NodeChange[]) => {
-    set({
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
-  },
-  onEdgesChange: (changes: EdgeChange[]) => {
-    set({
-      edges: applyEdgeChanges(changes, get().edges),
-    });
-  },
-  onConnect: (connection: Connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
-  },
-  updateNodeLabel: (nodeId: string, label: string, action?: any) => {
-    set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === nodeId) {
-          // it's important to create a new object here, to inform React Flow about the changes
+    nodes: initialNodes,
+    edges: [],
+    onNodesChange: (changes: NodeChange[]) => {
+        set({
+            nodes: applyNodeChanges(changes, get().nodes)
+        });
+    },
+    onEdgesChange: (changes: EdgeChange[]) => {
+        set({
+            edges: applyEdgeChanges(changes, get().edges)
+        });
+    },
+    onConnect: (connection: Connection) => {
+        set({
+            edges: addEdge(connection, get().edges)
+        });
+    },
+    updateNodeLabel: (nodeId: string, label: string, action?: any) => {
+        set({
+            nodes: get().nodes.map((node) => {
+                if (node.id === nodeId) {
+                    // it's important to create a new object here, to inform React Flow about the changes
 
-          node.data.label = label
-          if(action){
-            node.data['action'] = action
-          }
-        }
+                    node.data.label = label;
+                    if (action) {
+                        node.data['action'] = action;
+                    }
+                }
 
-        return node;
-      }),
-    });
-  },
-  addNode: (newNode: Node) => {
-    set({
-      nodes: get().nodes.concat(newNode),
-    });
-  },
-  addEdge: (newEdge: Edge) => {
-    set({
-      edges: get().edges.concat(newEdge),
-    });
-  },
-
-  
+                return node;
+            })
+        });
+    },
+    addNode: (newNode: Node) => {
+        set({
+            nodes: get().nodes.concat(newNode)
+        });
+    },
+    addEdge: (newEdge: Edge) => {
+        set({
+            edges: get().edges.concat(newEdge)
+        });
+    }
 }));
 
 export default useStore;

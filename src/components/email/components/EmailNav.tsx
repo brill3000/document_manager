@@ -18,23 +18,34 @@ import { DropdownButton } from '../../../global/UI/DropdownButton';
 import { CircularProgress } from '@mui/material';
 import { GoogleLoader } from 'ui-component/LoadHandlers';
 
+const EmailNav: React.FC<any> = ({
+    users,
+    isLoading,
+    isFetching,
+    isError,
+    selectedIndex,
+    setSelectedIndex,
+    setSelectedUser
+}: {
+    users: Array<any>;
+    isLoading: Boolean;
+    isFetching: Boolean;
+    isError: Boolean;
+    selectedIndex: string;
+    setSelectedIndex: Function;
+    selectedUser: any;
+    setSelectedUser: Function;
+}) => {
+    const [collapseTop, setCollapseTop] = React.useState<boolean>(false);
+    const [collapseBottom, setCollapseBottom] = React.useState<boolean>(false);
+    const handleListItemClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, selected: string, user?: any) => {
+        setSelectedUser(user);
+        setSelectedIndex(selected);
+    };
 
-
-const EmailNav: React.FC<any> = ({ users, isLoading, isFetching, isError, selectedIndex, setSelectedIndex, setSelectedUser }: { users: Array<any>, isLoading: Boolean, isFetching: Boolean, isError: Boolean, selectedIndex: string, setSelectedIndex: Function, selectedUser: any, setSelectedUser: Function }) => {
-  const [collapseTop, setCollapseTop] = React.useState<boolean>(false);
-  const [collapseBottom, setCollapseBottom] = React.useState<boolean>(false);
-  const handleListItemClick = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    selected: string,
-    user?: any
-  ) => {
-    setSelectedUser(user)
-    setSelectedIndex(selected);
-  };
-
-  return (
-    <List size="sm" sx={{ '--List-item-radius': '8px' }}>
-      {/* <ListItem nested sx={{ p: 0 }}>
+    return (
+        <List size="sm" sx={{ '--List-item-radius': '8px' }}>
+            {/* <ListItem nested sx={{ p: 0 }}>
         <Box
           sx={{
             mb: 1,
@@ -141,85 +152,75 @@ const EmailNav: React.FC<any> = ({ users, isLoading, isFetching, isError, select
           </List>)
         }
       </ListItem> */}
-      <ListItem nested>
-        <Box
-          sx={{
-            mt: 2,
-            mb: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography
-            id="nav-list-tags"
-            textColor="neutral.500"
-            fontWeight={700}
-            sx={{
-              fontSize: '10px',
-              textTransform: 'uppercase',
-              letterSpacing: '.1rem',
-            }}
-          >
-            Contacts
-          </Typography>
-          <IconButton
-            size="sm"
-            variant="plain"
-            color="primary"
-            sx={{ '--IconButton-size': '24px' }}
-          >
-            {DropdownButton(collapseBottom, setCollapseBottom)}
-          </IconButton>
-        </Box>
-        {
-          !collapseBottom && (
-            isLoading || isFetching?
-              <GoogleLoader height={100} width={100} loop={true} />
-              :
-              isError ?
-                <Typography level="body3"></Typography>
-                :
-                users &&
-                <List
-                  aria-labelledby="nav-list-tags"
-                  size="sm"
-                  sx={{
-                    '--List-decorator-width': '32px',
-                    '& .JoyListItemButton-root': { p: '8px' },
-                  }}
+            <ListItem nested>
+                <Box
+                    sx={{
+                        mt: 2,
+                        mb: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}
                 >
-                  {
-                    users.map((user) =>
-                      <ListItem >
-                        <ListItemButton
-                          variant={selectedIndex === user.id ? 'soft' : 'plain'}
-                          color={selectedIndex === user.id ? 'primary' : 'neutral'}
-                          selected={selectedIndex === user.id}
-                          onClick={(event) => handleListItemClick(event, user.id, user)}
-                        >
-                          <ListItemDecorator>
-                            <Box
-                              sx={{
-                                width: '10px',
-                                height: '10px',
-                                borderRadius: '99px',
-                                bgcolor: user.color,
-                              }}
-                            />
-                          </ListItemDecorator>
-                          <ListItemContent>{user.name}</ListItemContent>
-                        </ListItemButton>
-                      </ListItem>
-                    )
-                  }
-                </List>
+                    <Typography
+                        id="nav-list-tags"
+                        textColor="neutral.500"
+                        fontWeight={700}
+                        sx={{
+                            fontSize: '10px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '.1rem'
+                        }}
+                    >
+                        Contacts
+                    </Typography>
+                    <IconButton size="sm" variant="plain" color="primary" sx={{ '--IconButton-size': '24px' }}>
+                        {DropdownButton(collapseBottom, setCollapseBottom)}
+                    </IconButton>
+                </Box>
+                {!collapseBottom &&
+                    (isLoading || isFetching ? (
+                        <GoogleLoader height={100} width={100} loop={true} />
+                    ) : isError ? (
+                        <Typography level="body3"></Typography>
+                    ) : (
+                        users && (
+                            <List
+                                aria-labelledby="nav-list-tags"
+                                size="sm"
+                                sx={{
+                                    '--List-decorator-width': '32px',
+                                    '& .JoyListItemButton-root': { p: '8px' }
+                                }}
+                            >
+                                {users.map((user) => (
+                                    <ListItem>
+                                        <ListItemButton
+                                            variant={selectedIndex === user.id ? 'soft' : 'plain'}
+                                            color={selectedIndex === user.id ? 'primary' : 'neutral'}
+                                            selected={selectedIndex === user.id}
+                                            onClick={(event) => handleListItemClick(event, user.id, user)}
+                                        >
+                                            <ListItemDecorator>
+                                                <Box
+                                                    sx={{
+                                                        width: '10px',
+                                                        height: '10px',
+                                                        borderRadius: '99px',
+                                                        bgcolor: user.color
+                                                    }}
+                                                />
+                                            </ListItemDecorator>
+                                            <ListItemContent>{user.name}</ListItemContent>
+                                        </ListItemButton>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        )
+                    ))}
+            </ListItem>
+        </List>
+    );
+};
 
-          )
-        }
-      </ListItem >
-    </List >
-  );
-}
-
-export default EmailNav
+export default EmailNav;

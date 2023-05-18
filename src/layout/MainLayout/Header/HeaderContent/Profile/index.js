@@ -33,7 +33,6 @@ import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { getInitials } from 'components/departments/utils/get-initials';
 
-
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
     return (
@@ -63,17 +62,16 @@ const Profile = () => {
     const navigator = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { logout, user } = useUserAuth()
+    const { logout, user } = useUserAuth();
 
     const handleLogout = async () => {
         try {
-            await logout()
-            navigator('/login')
+            await logout();
+            navigator('/login');
         } catch (err) {
-            const message = `User Logout Failed`
-            enqueueSnackbar(message, { variant: 'error' })
+            const message = `User Logout Failed`;
+            enqueueSnackbar(message, { variant: 'error' });
         }
-
     };
 
     const anchorRef = useRef(null);
@@ -113,11 +111,7 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar
-                        alt="profile user"
-                        src={user.providerData.photorURL}
-                        sx={{ width: 32, height: 32 }}
-                    >
+                    <Avatar alt="profile user" src={user.providerData.photorURL} sx={{ width: 32, height: 32 }}>
                         {getInitials(user.displayName)}
                     </Avatar>
                     <Typography variant="subtitle1">{user.displayName}</Typography>
@@ -161,10 +155,7 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        <Avatar
-                                                            src={user.providerData.photorURL}
-                                                            sx={{ width: 32, height: 32 }}
-                                                        >
+                                                        <Avatar src={user.providerData.photorURL} sx={{ width: 32, height: 32 }}>
                                                             {getInitials(user.displayName)}
                                                         </Avatar>
                                                         <Stack>

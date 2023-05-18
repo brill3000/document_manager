@@ -7,7 +7,6 @@ const initialState = {
     currentFolder: null,
     documents: [],
     modalType: 'view'
-
 };
 
 // ==============================|| SLICE - MENU ||============================== //
@@ -27,9 +26,7 @@ const documents = createSlice({
         },
         setModalType(state, action) {
             state.modalType = action.payload.modalType;
-        },
-
-
+        }
     }
 });
 

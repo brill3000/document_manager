@@ -8,7 +8,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { CancelRounded, CloseFullscreen } from '@mui/icons-material';
 
-
 export default function ViewFile({ children, modalType, viewUrl, isFullScreen, openView, setOpenView }) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -21,25 +20,23 @@ export default function ViewFile({ children, modalType, viewUrl, isFullScreen, o
                 onClose={() => setOpenView(false)}
                 aria-labelledby="responsive-dialog-title"
             >
-                <DialogTitle id="responsive-dialog-title">
-                    {modalType ?? 'Modal'}
-                </DialogTitle>
-                <DialogContent>
-                    {children}
-                </DialogContent>
+                <DialogTitle id="responsive-dialog-title">{modalType ?? 'Modal'}</DialogTitle>
+                <DialogContent>{children}</DialogContent>
                 <DialogActions>
-                    <Button autoFocus variant='contained' startIcon={<CancelRounded />} color='error' onClick={() => setOpenView(false)}>
+                    <Button autoFocus variant="contained" startIcon={<CancelRounded />} color="error" onClick={() => setOpenView(false)}>
                         Close
                     </Button>
-                    {
-                        modalType.toLowerCase() === 'view' &&
-                        <Button variant='contained' color='primary' onClick={() => setOpenView(false)}>
-                            {
-                                viewUrl ? <a href={viewUrl} download>Download</a> : 'Download'
-                            }
+                    {modalType.toLowerCase() === 'view' && (
+                        <Button variant="contained" color="primary" onClick={() => setOpenView(false)}>
+                            {viewUrl ? (
+                                <a href={viewUrl} download>
+                                    Download
+                                </a>
+                            ) : (
+                                'Download'
+                            )}
                         </Button>
-                    }
-
+                    )}
                 </DialogActions>
             </Dialog>
         </div>

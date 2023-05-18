@@ -22,7 +22,7 @@ const NavGroup = ({ item }) => {
                     </Typography>
                 );
             case 'item':
-                return <NavItem key={menuItem.id} item={menuItem} level={1} children={menuItem.children}/>;
+                return <NavItem key={menuItem.id} item={menuItem} level={1} children={menuItem.children} />;
             default:
                 return (
                     <Typography key={menuItem.id} variant="h6" color="error" align="center">

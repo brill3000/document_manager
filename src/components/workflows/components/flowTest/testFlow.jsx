@@ -1,21 +1,15 @@
 import * as React from 'react';
-import ReactFlow, {
-    useReactFlow,
-    ReactFlowProvider,
-    Controls,
-    Background,
-} from 'react-flow-renderer';
+import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, Background } from 'react-flow-renderer';
 
 import './testFlow.css';
 import TextUpdaterNode from './TextUpdaterNode';
 import useStore from './store';
 
-
 let id = 1;
 const getId = () => `${id++}`;
 
 const fitViewOptions = {
-    padding: 3,
+    padding: 3
 };
 
 const AddNodeOnEdgeDrop = () => {
@@ -23,7 +17,6 @@ const AddNodeOnEdgeDrop = () => {
     const connectingNodeId = React.useRef(null);
 
     const { nodes, edges, addEdge, addNode, onNodesChange, onEdgesChange, onConnect } = useStore();
-
 
     const { project } = useReactFlow();
 
@@ -48,20 +41,20 @@ const AddNodeOnEdgeDrop = () => {
                 };
 
                 addNode(newNode);
-                addEdge({ 
-                    id, 
-                    source: connectingNodeId.current, 
+                addEdge({
+                    id,
+                    source: connectingNodeId.current,
                     target: id,
-                    type: 'smoothstep',
-                 });
+                    type: 'smoothstep'
+                });
             }
         },
         [project]
     );
     const nodeTypes = React.useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
-    
-    console.log(nodes, "NODE")
-    console.log(edges, "EDGES")
+
+    console.log(nodes, 'NODE');
+    console.log(edges, 'EDGES');
 
     return (
         <div className="wrapper" ref={reactFlowWrapper}>
@@ -89,4 +82,4 @@ const TestFlow = () => (
         <AddNodeOnEdgeDrop />
     </ReactFlowProvider>
 );
-export default TestFlow
+export default TestFlow;

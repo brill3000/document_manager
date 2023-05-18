@@ -1,14 +1,14 @@
-import * as React from 'react'
+import * as React from 'react';
 
 interface UseHistoryExports {
-    select: ( nodeId: string | number) => void
-    history: Map<string | number, number>
-    nav: any[]
+    select: (nodeId: string | number) => void;
+    history: Map<string | number, number>;
+    nav: any[];
 }
 
 const useHistory = (): UseHistoryExports => {
-    const [history, setHistory] = React.useState<Map<string | number, number>>(new Map())
-    const [nav, setNav] = React.useState<any[]>([])
+    const [history, setHistory] = React.useState<Map<string | number, number>>(new Map());
+    const [nav, setNav] = React.useState<any[]>([]);
 
     const selectFn = React.useCallback((nodeId: string | number) => {
         setHistory((_history) => {
@@ -22,34 +22,34 @@ const useHistory = (): UseHistoryExports => {
                     });
                 }
                 let newMap = new Map();
-                const it = copy.entries()
-                let result = it.next()
+                const it = copy.entries();
+                let result = it.next();
                 while (!result.done) {
                     // @ts-expect-error
-                    if (result.value[1] <= index) newMap.set(result.value[0], result.value[1])
-                    result = it.next()
+                    if (result.value[1] <= index) newMap.set(result.value[0], result.value[1]);
+                    result = it.next();
                     // }
                 }
-                return newMap
+                return newMap;
             } else {
                 copy.set(nodeId, copy.size);
                 setNav((_nav) => [...new Set([..._nav, nodeId])]);
             }
             return copy;
         });
-    }, [])
+    }, []);
 
     const { select } = React.useMemo(() => {
         return {
             select: selectFn
-        }
-    }, [selectFn])
+        };
+    }, [selectFn]);
 
     return {
         select: select,
         history: history,
         nav: nav
-    }
-}
+    };
+};
 
-export { useHistory }
+export { useHistory };

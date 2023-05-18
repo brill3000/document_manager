@@ -1,7 +1,6 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { db } from "../../firebase-config"
-import { getDocs, collection, query, where, orderBy, limit } from "firebase/firestore"
-
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { db } from '../../firebase-config';
+import { getDocs, collection, query, where, orderBy, limit } from 'firebase/firestore';
 
 // class Log {
 //     constructor(
@@ -21,7 +20,6 @@ import { getDocs, collection, query, where, orderBy, limit } from "firebase/fire
 //     }
 // }
 
-
 // Firestore data converter
 // const logConverter = {
 //     fromFirestore: (snapshot, options) => {
@@ -39,8 +37,6 @@ import { getDocs, collection, query, where, orderBy, limit } from "firebase/fire
 //     }
 // };
 
-
-
 export const logsQuery = createApi({
     reducerPath: 'logs_query',
     baseQuery: fakeBaseQuery(),
@@ -49,47 +45,53 @@ export const logsQuery = createApi({
         getAllRecentLogs: builder.query({
             async queryFn(queryParams) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     let logs = [];
                     // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
-                    const q = query(collection(db, "logs"), where("created_by", '==', queryParams.user), orderBy("date_created", "desc"), limit(3));
+                    const q = query(
+                        collection(db, 'logs'),
+                        where('created_by', '==', queryParams.user),
+                        orderBy('date_created', 'desc'),
+                        limit(3)
+                    );
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
                         let fileData = { ...data.data() };
-                        fileData.date_created = new Date(fileData.date_created.seconds * 1000).toString()
-                        logs.push(fileData)
-                    })
-                    return { data: logs }
-
+                        fileData.date_created = new Date(fileData.date_created.seconds * 1000).toString();
+                        logs.push(fileData);
+                    });
+                    return { data: logs };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-            },
+            }
         }),
         getAllRecentlyModifiedDocuments: builder.query({
             async queryFn(queryParams) {
                 try {
-                    if (!navigator.onLine) throw new Error(`It seems that you are offline`)
+                    if (!navigator.onLine) throw new Error(`It seems that you are offline`);
                     let logs = [];
                     // const q = query(collection(db, "files"), where("parent", "==", parentId), orderBy("file_name"), endAt(50));
-                    const q = query(collection(db, "logs"), where("created_by", '==', queryParams.user), where("file_modified", "==", true), orderBy("date_created", "desc"), limit(5));
+                    const q = query(
+                        collection(db, 'logs'),
+                        where('created_by', '==', queryParams.user),
+                        where('file_modified', '==', true),
+                        orderBy('date_created', 'desc'),
+                        limit(5)
+                    );
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
                         let fileData = { ...data.data() };
-                        fileData.date_created = new Date(fileData.date_created.seconds * 1000).toString()
-                        logs.push(fileData)
-                    })
-                    return { data: logs }
-
+                        fileData.date_created = new Date(fileData.date_created.seconds * 1000).toString();
+                        logs.push(fileData);
+                    });
+                    return { data: logs };
                 } catch (e) {
-                    return { error: e.message }
+                    return { error: e.message };
                 }
-            },
-        }),
+            }
+        })
     })
-})
-export const logs_query = logsQuery.reducer
-export const {
-    useGetAllRecentLogsQuery,
-    useGetAllRecentlyModifiedDocumentsQuery
-} = logsQuery
+});
+export const logs_query = logsQuery.reducer;
+export const { useGetAllRecentLogsQuery, useGetAllRecentlyModifiedDocumentsQuery } = logsQuery;

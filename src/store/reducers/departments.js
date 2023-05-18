@@ -3,9 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 // initial state
 const initialState = {
-    currentDepartment: "All Departments",
+    currentDepartment: 'All Departments',
     users: []
-
 };
 
 // ==============================|| SLICE - MENU ||============================== //

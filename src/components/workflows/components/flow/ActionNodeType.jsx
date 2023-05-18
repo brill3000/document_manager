@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import Typography from '@mui/joy/Typography';
 import { Box, Stack } from '@mui/material';
-import { Handle, Position} from 'react-flow-renderer';
+import { Handle, Position } from 'react-flow-renderer';
 import { FormsCard } from './CreateFlow';
 
 export default memo(({ data }) => {
-    console.log(data, "DATA")
+    console.log(data, 'DATA');
     return (
         <>
             <Stack direction="column" spacing={1} sx={{ bgcolor: 'white', borderRadius: 3, p: 1 }}>
@@ -13,7 +13,7 @@ export default memo(({ data }) => {
                     <Typography
                         level="h5"
                         sx={{
-                            wordBreak: "break-word"
+                            wordBreak: 'break-word'
                         }}
                         textColor="neutral.500"
                     >
@@ -22,17 +22,8 @@ export default memo(({ data }) => {
                 </Box>
                 <FormsCard title={data.type} description={data.action} type={data.type} />
             </Stack>
-            <Handle
-                type={"target"}
-                id={"input"}
-                position={Position.Top}
-                
-            />
-            <Handle
-                type={"target"}
-                id={"output"}
-                position={Position.Bottom}
-            />
+            <Handle type={'target'} id={'input'} position={Position.Top} />
+            <Handle type={'target'} id={'output'} position={Position.Bottom} />
         </>
     );
 });

@@ -18,16 +18,16 @@ function createData(name, fat, carbs, protein) {
 }
 
 const rows = [
-    createData('Budget Approval', "pdf", 2, 4.5),
-    createData('New Approval', "pdf", 0, 1.8),
-    createData('Sample Approval', "pdf", 1, 9.0),
-    createData('Test Approval', "pdf", 1, 10.2),
-    createData('Computer Accessories', "pdf", 1, 8.3),
-    createData('EBRS', "pdf", 0, 4.1),
-    createData('Cases', "pdf", 2, 7.0),
-    createData('Training', "pdf", 2, 10.5),
-    createData('DBMS', "pdf", 1, 9.8),
-    createData('OpenInNewIcon', "pdf", 0, 1.4)
+    createData('Budget Approval', 'pdf', 2, 4.5),
+    createData('New Approval', 'pdf', 0, 1.8),
+    createData('Sample Approval', 'pdf', 1, 9.0),
+    createData('Test Approval', 'pdf', 1, 10.2),
+    createData('Computer Accessories', 'pdf', 1, 8.3),
+    createData('EBRS', 'pdf', 0, 4.1),
+    createData('Cases', 'pdf', 2, 7.0),
+    createData('Training', 'pdf', 2, 10.5),
+    createData('DBMS', 'pdf', 1, 9.8),
+    createData('OpenInNewIcon', 'pdf', 0, 1.4)
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -179,100 +179,71 @@ export default function AccesedDocTables({ recentlyModified }) {
                     '& td, & th': { whiteSpace: 'nowrap' }
                 }}
             >
-
-                {
-                    recentlyModified.isLoading || recentlyModified.isFetching
-                        ?
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            minHeight={300}
-                            minWidth="100%"
-                        >
-                            <GoogleLoader height={100} width={150} loop={true} />
-                        </Box>
-                        :
-                        recentlyModified.isError
-                            ?
-                            <Box
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                minHeight={300}
-                                minWidth="100%"
-                            >
-                                <Stack direction="column">
-                                    <Error height={50} width={50} />
-                                    <Typography variant='body3'>{recentlyModified.error ?? "Opps... An Error  has occured"}</Typography>
-                                </Stack>
-                            </Box>
-                            :
-                            recentlyModified.isSuccess && recentlyModified.data && Array.isArray(recentlyModified.data) &&
-                                recentlyModified.data.length > 0
-                                ?
-                                <Table
-                                    aria-labelledby="tableTitle"
-                                    sx={{
-                                        '& .MuiTableCell-root:first-of-type': {
-                                            pl: 2
-                                        },
-                                        '& .MuiTableCell-root:last-child': {
-                                            pr: 3
-                                        }
-                                    }}
-                                >
-                                    <AccesedDocTableHead order={order} orderBy={orderBy} />
-                                    <TableBody>
-                                        {
-                                            stableSort(recentlyModified.data, getComparator(order, orderBy)).map((row, index) => {
-                                                const isItemSelected = isSelected(row.name);
-                                                const labelId = `enhanced-table-checkbox-${index}`;
-                                                let newDate = formatDate(new Date(Date.parse(row.date_created)))
-                                                if (new Date(Date.parse(row.date_created)).toDateString() === new Date().toDateString()) {
-                                                    newDate = "Today, " + newDate.split(" ")[1]
-                                                }
-                                                return (
-                                                    <TableRow
-                                                        hover
-                                                        role="checkbox"
-                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                        aria-checked={isItemSelected}
-                                                        tabIndex={-1}
-                                                        key={index}
-                                                        selected={isItemSelected}
-                                                    >
-                                                        <TableCell component="th" id={labelId} scope="row" align="left">
-                                                            <Link color="secondary" component={RouterLink} to="">
-                                                                {row.file_name}
-                                                            </Link>
-                                                        </TableCell>
-                                                        <TableCell align="right">{newDate}</TableCell>
-                                                        <TableCell align="left">
-                                                            <AccessStatus status={row.log_type} />
-                                                        </TableCell>
-                                                        <TableCell align="right">
-                                                            {row.created_by_name}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })
-                                        }
-                                    </TableBody>
-                                </Table>
-
-                                :
-                                <Box
-                                    display="flex"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                    minHeight={300}
-                                    minWidth="100%"
-                                    p={3}
-                                >
-                                    <Typography variant='h5'> No Recently Modified Document </Typography>
-                                </Box>
-                }
+                {recentlyModified.isLoading || recentlyModified.isFetching ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={300} minWidth="100%">
+                        <GoogleLoader height={100} width={150} loop={true} />
+                    </Box>
+                ) : recentlyModified.isError ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={300} minWidth="100%">
+                        <Stack direction="column">
+                            <Error height={50} width={50} />
+                            <Typography variant="body3">{recentlyModified.error ?? 'Opps... An Error  has occured'}</Typography>
+                        </Stack>
+                    </Box>
+                ) : recentlyModified.isSuccess &&
+                  recentlyModified.data &&
+                  Array.isArray(recentlyModified.data) &&
+                  recentlyModified.data.length > 0 ? (
+                    <Table
+                        aria-labelledby="tableTitle"
+                        sx={{
+                            '& .MuiTableCell-root:first-of-type': {
+                                pl: 2
+                            },
+                            '& .MuiTableCell-root:last-child': {
+                                pr: 3
+                            }
+                        }}
+                    >
+                        <AccesedDocTableHead order={order} orderBy={orderBy} />
+                        <TableBody>
+                            {stableSort(recentlyModified.data, getComparator(order, orderBy)).map((row, index) => {
+                                const isItemSelected = isSelected(row.name);
+                                const labelId = `enhanced-table-checkbox-${index}`;
+                                let newDate = formatDate(new Date(Date.parse(row.date_created)));
+                                if (new Date(Date.parse(row.date_created)).toDateString() === new Date().toDateString()) {
+                                    newDate = 'Today, ' + newDate.split(' ')[1];
+                                }
+                                return (
+                                    <TableRow
+                                        hover
+                                        role="checkbox"
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        aria-checked={isItemSelected}
+                                        tabIndex={-1}
+                                        key={index}
+                                        selected={isItemSelected}
+                                    >
+                                        <TableCell component="th" id={labelId} scope="row" align="left">
+                                            <Link color="secondary" component={RouterLink} to="">
+                                                {row.file_name}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell align="right">{newDate}</TableCell>
+                                        <TableCell align="left">
+                                            <AccessStatus status={row.log_type} />
+                                        </TableCell>
+                                        <TableCell align="right">{row.created_by_name}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={300} minWidth="100%" p={3}>
+                        <Typography variant="h5"> No Recently Modified Document </Typography>
+                    </Box>
+                )}
             </TableContainer>
         </Box>
     );

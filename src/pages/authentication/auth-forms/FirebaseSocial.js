@@ -40,7 +40,7 @@ const FirebaseSocial = () => {
                 onClick={googleHandler}
             >
                 {!matchDownSM && 'Google'}
-             </Button>
+            </Button>
             <Button
                 variant="outlined"
                 color="secondary"

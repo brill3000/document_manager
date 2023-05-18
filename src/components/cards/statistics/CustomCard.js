@@ -45,7 +45,7 @@ const CustomCard = ({ color, title, count, percentage, isLoss, icon }) => (
                 </Grid>
                 <Grid item>
                     <IconButton color="primary" aria-label={`open-${title}`} component="label">
-                        <OpenInNewIcon sx={{ fontSize: '1.1rem'}} />
+                        <OpenInNewIcon sx={{ fontSize: '1.1rem' }} />
                     </IconButton>
                 </Grid>
             </Grid>

@@ -14,150 +14,162 @@ import RotateRightRoundedIcon from '@mui/icons-material/RotateRightRounded';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 
 const data = [
-  {
-    name: 'John Doe',
-    date: '21 Oct 2022',
-    title: 'Licencing Agreement',
-    body: 'The Progress on the Project has been fast tracked through use of Streamlined Code ...',
-  },
-  {
-    name: 'Steve Mooy',
-    date: '06 Jul 2022',
-    title: 'Tickets for our upcoming trip',
-    body: 'Good day, mate! It seems that our tickets just arrived…',
-  },
-  {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  },
-  {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  }, {
-    name: 'Kate Gates',
-    date: '16 May 2022',
-    title: 'Brunch this Saturday?',
-    body: "Hey! I'll be around the city this weekend, how about a…",
-  },
+    {
+        name: 'John Doe',
+        date: '21 Oct 2022',
+        title: 'Licencing Agreement',
+        body: 'The Progress on the Project has been fast tracked through use of Streamlined Code ...'
+    },
+    {
+        name: 'Steve Mooy',
+        date: '06 Jul 2022',
+        title: 'Tickets for our upcoming trip',
+        body: 'Good day, mate! It seems that our tickets just arrived…'
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    },
+    {
+        name: 'Kate Gates',
+        date: '16 May 2022',
+        title: 'Brunch this Saturday?',
+        body: "Hey! I'll be around the city this weekend, how about a…"
+    }
 ];
 
 export default function EmailList() {
-  return (
-    <List>
-      {data.map((item, index) => (
-        <React.Fragment key={index}>
-          <ListItem>
-            <ListItemButton
-              {...(index === 0 && { variant: 'soft', color: 'primary' })}
-              sx={{ p: 2 }}
-            >
-              <ListItemDecorator sx={{ alignSelf: 'flex-start' }}>
-                <RotateRightRoundedIcon sx={{ fontSize: 40 }} />
-              </ListItemDecorator>
-              <Box sx={{ pl: 2, width: '100%' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    mb: 0.5,
-                  }}
-                >
-                  <Typography level="body3">{item.name}</Typography>
-                  <Typography level="body3" textColor="text.tertiary">
-                    Due date: {item.date}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography sx={{ mb: 0.5 }}>{item.title}</Typography>
-                  <Stack direction="row" alignContent="center">
-                    <Box
-                      sx={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        bgcolor: 'primary.300',
-                        mt: .5
-                      }}
-                    />
-                    <Typography level="body4" sx={{ pl: 1 }}>Inprogress</Typography>
-                  </Stack>
-
-                </Box>
-              </Box>
-            </ListItemButton>
-          </ListItem>
-          <ListDivider sx={{ m: 0 }} />
-        </React.Fragment>
-      ))}
-    </List>
-  );
+    return (
+        <List>
+            {data.map((item, index) => (
+                <React.Fragment key={index}>
+                    <ListItem>
+                        <ListItemButton {...(index === 0 && { variant: 'soft', color: 'primary' })} sx={{ p: 2 }}>
+                            <ListItemDecorator sx={{ alignSelf: 'flex-start' }}>
+                                <RotateRightRoundedIcon sx={{ fontSize: 40 }} />
+                            </ListItemDecorator>
+                            <Box sx={{ pl: 2, width: '100%' }}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mb: 0.5
+                                    }}
+                                >
+                                    <Typography level="body3">{item.name}</Typography>
+                                    <Typography level="body3" textColor="text.tertiary">
+                                        Due date: {item.date}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography sx={{ mb: 0.5 }}>{item.title}</Typography>
+                                    <Stack direction="row" alignContent="center">
+                                        <Box
+                                            sx={{
+                                                width: '8px',
+                                                height: '8px',
+                                                borderRadius: '50%',
+                                                bgcolor: 'primary.300',
+                                                mt: 0.5
+                                            }}
+                                        />
+                                        <Typography level="body4" sx={{ pl: 1 }}>
+                                            Inprogress
+                                        </Typography>
+                                    </Stack>
+                                </Box>
+                            </Box>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListDivider sx={{ m: 0 }} />
+                </React.Fragment>
+            ))}
+        </List>
+    );
 }

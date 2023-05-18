@@ -1,18 +1,6 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { db } from '../../firebase-config';
-import {
-    getDocs,
-    collection,
-    query,
-    where,
-    Timestamp,
-    doc,
-    addDoc,
-    deleteDoc,
-    updateDoc,
-    getDoc,
-    runTransaction
-} from 'firebase/firestore';
+import { getDocs, collection, query, where, Timestamp, doc, addDoc, updateDoc, getDoc, runTransaction } from 'firebase/firestore';
 
 const omit = (obj, omitKeys) => {
     let newobj = { ...obj };
@@ -334,10 +322,5 @@ export const filesQuery = createApi({
     })
 });
 export const files_query = filesQuery.reducer;
-export const {
-    useGetFilesByParentIdQuery,
-    useUploadFileMutation,
-    useRenameFilesMutation,
-    useTrashFileMutation,
-    useRestorFileMutation
-} = filesQuery;
+export const { useGetFilesByParentIdQuery, useUploadFileMutation, useRenameFilesMutation, useTrashFileMutation, useRestorFileMutation } =
+    filesQuery;

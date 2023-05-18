@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { ListItemIcon } from '@mui/material';
+import { Divider, ListItemIcon } from '@mui/material';
 import { FiHardDrive } from 'react-icons/fi';
 import { FiEdit } from 'react-icons/fi';
 import { DocumentType } from '../../Interface/FileBrowser';
@@ -24,7 +24,7 @@ export default function DocumentDetails({ selected }: DocumentDetailsProps) {
                 position: 'relative',
                 overflow: 'auto',
                 maxHeight: browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.8 : '50%',
-                '& ul': { padding: 1 }
+                '& ul': { padding: 0 }
             }}
             subheader={<li />}
         >
@@ -37,27 +37,31 @@ export default function DocumentDetails({ selected }: DocumentDetailsProps) {
                                     ? browserHeight !== 0 && browserHeight !== undefined
                                         ? browserHeight * 0.7 * 0.4
                                         : '40%'
-                                    : 'max-content'
+                                    : 'max-content',
+                            padding: 0
                         }}
                     >
                         <ListSubheader color="primary">{sectionId.title}</ListSubheader>
+                        <Divider variant="middle" />
                         <ListItem>
+                            <ListItemText secondary={selected[0].doc_name} sx={{ width: '90%' }} />
                             <ListItemIcon>
                                 <FiEdit />
                             </ListItemIcon>
-                            <ListItemText secondary={selected[0].doc_name} />
                         </ListItem>
+                        <Divider variant="middle" />
                         <ListItem>
+                            <ListItemText secondary={selected[0].size} sx={{ width: '90%' }} />
                             <ListItemIcon>
                                 <FiHardDrive />
                             </ListItemIcon>
-                            <ListItemText secondary={selected[0].size} />
                         </ListItem>
+                        <Divider variant="middle" />
                         <ListItem>
+                            <ListItemText secondary={selected[0].type ?? 'folder'} sx={{ width: '90%' }} />
                             <ListItemIcon>
                                 <FiEdit />
                             </ListItemIcon>
-                            <ListItemText secondary={selected[0].type ?? 'folder'} />
                         </ListItem>
                         {/* <Divider /> */}
                     </ul>

@@ -39,9 +39,7 @@ const AuthLogin = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
 
-
-    const { user, login } = useUserAuth()
-
+    const { user, login } = useUserAuth();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -65,16 +63,16 @@ const AuthLogin = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                        if (navigator.onLine) throw new Error('No Internet connection')
+                        if (navigator.onLine) throw new Error('No Internet connection');
 
-                        const loggedIn = await login(values.email, values.password)
+                        const loggedIn = await login(values.email, values.password);
                         if (loggedIn) {
-                            const message = `Successfully Logged in`
-                            enqueueSnackbar(message, { variant: 'success' })
+                            const message = `Successfully Logged in`;
+                            enqueueSnackbar(message, { variant: 'success' });
                             setStatus({ success: false });
                             setSubmitting(false);
-                            !checked && localStorage.removeItem("user");
-                            navigator('/dashboard')
+                            !checked && localStorage.removeItem('user');
+                            navigator('/dashboard');
                         }
                     } catch (err) {
                         setStatus({ success: false });

@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material";
-import { brown } from "@mui/material/colors";
+import { createTheme } from '@mui/material';
+import { brown } from '@mui/material/colors';
 
 export const theme = createTheme({
     typography: {
-        fontFamily: "quicksand,  sans-serif",
+        fontFamily: 'quicksand,  sans-serif'
     },
     palette: {
-        secondary: brown,
+        secondary: brown
     },
     breakpoints: {
         values: {
@@ -14,7 +14,7 @@ export const theme = createTheme({
             sm: 400,
             md: 900,
             lg: 1200,
-            xl: 1440,
+            xl: 1440
         }
     }
-})
+});

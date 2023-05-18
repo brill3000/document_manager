@@ -56,7 +56,6 @@
 //   }
 // }));
 
-
 // export const FileUploaded = forwardRef(
 //   ({ id, ...props }, ref) => {
 //     const classes = useStyles();
@@ -120,4 +119,3 @@
 // );
 
 // FileUploaded.displayName = "FileUploaded";
-

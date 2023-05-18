@@ -3,55 +3,55 @@
     display: flex;
     flex-grow: 1;
     height: 100%;
-  }
-  
-  .zoompanflow aside {
+}
+
+.zoompanflow aside {
     border-left: 1px solid #eee;
     padding: 15px 10px;
     font-size: 12px;
     background: #fff;
-  }
-  
-  .zoompanflow aside .description {
+}
+
+.zoompanflow aside .description {
     margin-bottom: 10px;
-  }
-  
-  .zoompanflow aside button {
+}
+
+.zoompanflow aside button {
     display: block;
     margin-bottom: 5px;
-  }
-  
-  .zoompanflow .reactflow-wrapper {
-    flex-grow: 1;
-  }
-  
-  @media screen and (min-width: 768px) {
-    .zoompanflow {
-      flex-direction: row;
-    }
-  
-    .zoompanflow aside {
-      width: 20%;
-      max-width: 250px;
-    }
-  }
+}
 
-  .react-flow .react-flow__handle {
+.zoompanflow .reactflow-wrapper {
+    flex-grow: 1;
+}
+
+@media screen and (min-width: 768px) {
+    .zoompanflow {
+        flex-direction: row;
+    }
+
+    .zoompanflow aside {
+        width: 20%;
+        max-width: 250px;
+    }
+}
+
+.react-flow .react-flow__handle {
     width: 30px;
     height: 14px;
     border-radius: 3px;
     background-color: #784be8;
-  }
-  
-  .react-flow .react-flow__handle-top {
+}
+
+.react-flow .react-flow__handle-top {
     top: -10px;
-  }
-  
-  .react-flow .react-flow__handle-bottom {
+}
+
+.react-flow .react-flow__handle-bottom {
     bottom: -10px;
-  }
-  
-  .react-flow .react-flow__node {
+}
+
+.react-flow .react-flow__node {
     min-height: 40px;
     max-height: min-content;
     min-width: 150px;
@@ -61,14 +61,13 @@
     display: flex;
     border-width: 2px;
     font-weight: 700;
-  }
-  
-  .react-flow .react-flow__edge path,
-  .react-flow__connectionline path {
+}
+
+.react-flow .react-flow__edge path,
+.react-flow__connectionline path {
     stroke-width: 2;
-  }
-  
-  .wrapper {
+}
+
+.wrapper {
     height: 100%;
-  }
-  
+}

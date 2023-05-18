@@ -10,14 +10,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setOpenFileView } from 'store/reducers/documents';
 import { CancelRounded } from '@mui/icons-material';
 
-
 export default function ViewFile({ children, modalType, viewUrl, isFullScreen, openView, setOpenView }) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const dispatch = useDispatch();
-
-
-
 
     return (
         <div>
@@ -27,25 +23,23 @@ export default function ViewFile({ children, modalType, viewUrl, isFullScreen, o
                 onClose={() => setOpenView(false)}
                 aria-labelledby="responsive-dialog-title"
             >
-                <DialogTitle id="responsive-dialog-title">
-                    {modalType ?? 'Modal'}
-                </DialogTitle>
-                <DialogContent>
-                    {children}
-                </DialogContent>
+                <DialogTitle id="responsive-dialog-title">{modalType ?? 'Modal'}</DialogTitle>
+                <DialogContent>{children}</DialogContent>
                 <DialogActions>
-                <Button autoFocus variant='contained' startIcon={<CancelRounded />} color='error' onClick={() => setOpenView(false)}>
+                    <Button autoFocus variant="contained" startIcon={<CancelRounded />} color="error" onClick={() => setOpenView(false)}>
                         Cancel
                     </Button>
-                    {
-                        modalType.toLowerCase() === 'view' &&
-                        <Button variant='contained' color='primary' onClick={() => setOpenView(false)}>
-                            {
-                                viewUrl ? <a href={viewUrl} download>Download</a> : 'Download'
-                            }
+                    {modalType.toLowerCase() === 'view' && (
+                        <Button variant="contained" color="primary" onClick={() => setOpenView(false)}>
+                            {viewUrl ? (
+                                <a href={viewUrl} download>
+                                    Download
+                                </a>
+                            ) : (
+                                'Download'
+                            )}
                         </Button>
-                    }
-
+                    )}
                 </DialogActions>
             </Dialog>
         </div>

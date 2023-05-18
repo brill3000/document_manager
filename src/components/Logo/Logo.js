@@ -1,4 +1,3 @@
-
 /**
  * if you want to use image instead of <svg> uncomment following.
  *
@@ -10,7 +9,6 @@
 // ==============================|| LOGO SVG ||============================== //
 
 const Logo = () => {
-
     return (
         /**
          * if you want to use image instead of svg uncomment following, and comment out <svg> element.
@@ -51,17 +49,17 @@ const Logo = () => {
                     </linearGradient>
                 </defs>
             </svg> */}
-            <svg version="1.1" id="Layer_1"
-                xmlns="http://www.w3.org/2000/svg"
-                x="0px"
-                y="0px"
-                viewBox="0 0 58 15"
-                width="88" height="35"
-            >
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 58 15" width="88" height="35">
                 <g id="Layer_2_1_">
                     <g id="Layer_2-2">
-                        <path fill="#EC1F27" d="M27.3,10.7c-2-4-4-4.3-5.6-4.8c-2.5-0.8-5.3-0.2-7.2-2c-0.6-0.6-0.9-1.5-0.8-2.3c0.5-1.9,6.9-2.2,12-0.5c2.5,0.9,4.8,2.3,6.7,4.1L27.3,10.7z" />
-                        <path fill="#9D9FA1" d="M4.1,5.4c1,1.7,1.8,2.9,5.8,4.4c4.7,1.8,7.6,1.3,8.3,4.1c0.2,1-1.1,1.6-1.6,1.7C10.5,17.3,2.3,14,0,12.5L4.1,5.4z" />
+                        <path
+                            fill="#EC1F27"
+                            d="M27.3,10.7c-2-4-4-4.3-5.6-4.8c-2.5-0.8-5.3-0.2-7.2-2c-0.6-0.6-0.9-1.5-0.8-2.3c0.5-1.9,6.9-2.2,12-0.5c2.5,0.9,4.8,2.3,6.7,4.1L27.3,10.7z"
+                        />
+                        <path
+                            fill="#9D9FA1"
+                            d="M4.1,5.4c1,1.7,1.8,2.9,5.8,4.4c4.7,1.8,7.6,1.3,8.3,4.1c0.2,1-1.1,1.6-1.6,1.7C10.5,17.3,2.3,14,0,12.5L4.1,5.4z"
+                        />
                     </g>
                 </g>
             </svg>

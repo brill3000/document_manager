@@ -35,10 +35,7 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useUserAuth } from 'context/authContext';
 import { useCreateUserMutation } from 'store/async/usersQuery';
 
-
 // ============================|| FIREBASE - REGISTER ||============================ //
-
-
 
 const AuthRegister = () => {
     const [level, setLevel] = useState();
@@ -47,12 +44,8 @@ const AuthRegister = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
 
-
-    const { user, signUp, updateUserName, sendVerification } = useUserAuth()
-    const [createUser] = useCreateUserMutation()
-
-
-
+    const { user, signUp, updateUserName, sendVerification } = useUserAuth();
+    const [createUser] = useCreateUserMutation();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -90,9 +83,9 @@ const AuthRegister = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
-                        if (navigator.onLine) throw new Error('No Internet connection')
+                        if (navigator.onLine) throw new Error('No Internet connection');
 
-                        const response = await signUp(values.email, values.password)
+                        const response = await signUp(values.email, values.password);
                         // await updateUserName(values.firstname + " " + values.lastname, user.email)
                         if (response) {
                             const userDetails = {
@@ -100,7 +93,7 @@ const AuthRegister = () => {
                                 name: {
                                     first_name: values.firstname,
                                     last_name: values.lastname,
-                                    display_name: values.firstname + " " + values.lastname
+                                    display_name: values.firstname + ' ' + values.lastname
                                 },
                                 email: response.user.email,
                                 job_title: 'intern',
@@ -108,32 +101,30 @@ const AuthRegister = () => {
                                 deregistration_date: null,
                                 is_logged_in: true,
                                 company: values.company,
-                                blocked: false,
-                            }
-                            const verification = await sendVerification()
-                            console.log(verification, "VERIFICATION")
-                            await updateUserName(values.firstname + " " + values.lastname)
-                            await createUser(userDetails).then(() => {
-                                const message = `Successfully  Signed Up`
-                                enqueueSnackbar(message, { variant: 'success' })
-                                setStatus({ success: false });
-                                setSubmitting(false);
-                                navigator('/dashboard')
-                            }).catch(() => {
-                                const message = `Registration Failed`
-                                enqueueSnackbar(message, { variant: 'error' })
-                                setStatus({ success: false });
-                                setErrors({ submit: 'Registration Failed' });
-                                setSubmitting(false);
-                            })
-
-
+                                blocked: false
+                            };
+                            const verification = await sendVerification();
+                            console.log(verification, 'VERIFICATION');
+                            await updateUserName(values.firstname + ' ' + values.lastname);
+                            await createUser(userDetails)
+                                .then(() => {
+                                    const message = `Successfully  Signed Up`;
+                                    enqueueSnackbar(message, { variant: 'success' });
+                                    setStatus({ success: false });
+                                    setSubmitting(false);
+                                    navigator('/dashboard');
+                                })
+                                .catch(() => {
+                                    const message = `Registration Failed`;
+                                    enqueueSnackbar(message, { variant: 'error' });
+                                    setStatus({ success: false });
+                                    setErrors({ submit: 'Registration Failed' });
+                                    setSubmitting(false);
+                                });
                         }
-
-
                     } catch (err) {
-                        const message = `Registration Failed`
-                        enqueueSnackbar(message, { variant: 'error' })
+                        const message = `Registration Failed`;
+                        enqueueSnackbar(message, { variant: 'error' });
                         setStatus({ success: false });
                         setErrors({ submit: err.message });
                         setSubmitting(false);
