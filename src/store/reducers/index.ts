@@ -11,6 +11,7 @@ import { users_query } from '../async/usersQuery';
 import { messages_query } from 'store/async/messagesQuery';
 import { workflow_query } from 'store/async/workflowQuery';
 import { logs_query } from 'store/async/logsQuery';
+import { auth_api } from 'store/async/dms/auth/authApi';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -23,7 +24,8 @@ const reducers = combineReducers({
     users_query: users_query,
     messages_query: messages_query,
     workflow_query: workflow_query,
-    logs_query: logs_query
+    logs_query: logs_query,
+    auth_api: auth_api
 });
 
 export default reducers;
