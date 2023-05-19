@@ -30,6 +30,10 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
+import { useLoginMutation } from 'store/async/dms/auth/authApi';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from 'store/reducers/auth/auth';
+import { useLocalStorage } from 'context/useLocalStorage';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -38,8 +42,11 @@ const AuthLogin = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
-
+    const dispatch = useDispatch();
     const { user, login } = useUserAuth();
+    const [loginWithPassword, { isLoading, isError }] = useLoginMutation();
+    const [token, setToken] = useLocalStorage('token', '');
+    const [loggedInUser, setLoggedInUser] = useLocalStorage('loggedInUser', '');
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -64,6 +71,19 @@ const AuthLogin = () => {
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
                         if (navigator.onLine) throw new Error('No Internet connection');
+                        try {
+                            const user = await loginWithPassword({ username: 'okmAdmin', password: 'admin' }).unwrap();
+                            console.log(user, 'USER');
+                            // dispatch(setCredentials({ user: 'okmAdmin', token: user.TOKEN }));
+                            setLoggedInUser('okmAdmin');
+                            console.log(user);
+                            setToken(user.TOKEN ?? '');
+                            const message = `Login to openkm succeded`;
+                            enqueueSnackbar(message, { variant: 'success' });
+                        } catch (err) {
+                            const message = `Loggin to openkm failed`;
+                            enqueueSnackbar(message, { variant: 'error' });
+                        }
 
                         const loggedIn = await login(values.email, values.password);
                         if (loggedIn) {

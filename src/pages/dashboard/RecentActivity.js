@@ -79,7 +79,7 @@ export function RecentActivity({ recentActivity }) {
                       recentActivity.data &&
                       Array.isArray(recentActivity.data) &&
                       recentActivity.data.length > 0 ? (
-                        recentActivity.data.map((activity) => {
+                        recentActivity.data.map((activity, i) => {
                             let newDate = formatDate(new Date(Date.parse(activity.date_created)));
                             if (new Date(Date.parse(activity.date_created)).toDateString() === new Date().toDateString()) {
                                 newDate = 'Today, ' + newDate.split(' ')[1];
@@ -87,7 +87,7 @@ export function RecentActivity({ recentActivity }) {
                             switch (activity.log_category) {
                                 case 'folders':
                                     return (
-                                        <ListItemButton divider>
+                                        <ListItemButton divider key={i}>
                                             <ListItemAvatar>
                                                 <Avatar
                                                     sx={{
@@ -125,7 +125,7 @@ export function RecentActivity({ recentActivity }) {
                                     );
                                 case 'files':
                                     return (
-                                        <ListItemButton divider>
+                                        <ListItemButton divider key={i}>
                                             <ListItemAvatar>
                                                 <Avatar
                                                     sx={{
@@ -163,7 +163,7 @@ export function RecentActivity({ recentActivity }) {
                                     );
                                 default:
                                     return (
-                                        <ListItemButton divider>
+                                        <ListItemButton divider key={i}>
                                             <ListItemAvatar>
                                                 <Avatar
                                                     sx={{
