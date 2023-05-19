@@ -1,5 +1,7 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { LoginRequest, UserResponse } from 'global/interfaces';
+import { RootState } from 'store';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
@@ -7,25 +9,18 @@ export const authApi = createApi({
     reducerPath: 'auth_api',
     baseQuery: fetchBaseQuery({
         baseUrl: UriHelper.HOST,
-        prepareHeaders: (headers) => {
+        prepareHeaders: (headers, { getState }) => {
             // Get the token from your state or any other source
-            const token = UriHelper.AUTHORIZATION;
+            const token = (getState() as RootState).auth.token;
             if (token) {
-                headers.set('Authorization', `${token}`);
+                headers.set('authorization', `Bearer ${token}`);
             }
             return headers;
         }
     }),
     tagTypes: ['DMS_USER', 'DMS_USER_SUCCESS', 'DMS_USER_ERROR'],
-    endpoints: (build: {
-        query: (arg0: {
-            // note: an optional `queryFn` may be used in place of `query`
-            query: (id: string) => { url: string };
-            // Pick out data and prevent nested properties in a hook or selector
-            transformResponse: (response: any) => any;
-            providesTags: (result: any, error: any) => FullTagDescription<UserTags>[];
-        }) => any;
-    }) => ({
+    endpoints: (build) => ({
+        // ===========================| GETTERS |===================== //
         getUsers: build.query({
             query: () => ({ url: `${UriHelper.AUTH_GET_USERS}` }),
             transformResponse: (response: { data: any }) => response.data,
@@ -115,6 +110,25 @@ export const authApi = createApi({
                 if (error) return [...tags, { type: 'DMS_USER_ERROR', id: 'error' }];
                 return tags;
             }
+        }),
+        // ===========================| MUTATIIONS: POST |===================== //
+        login: build.mutation<UserResponse, LoginRequest>({
+            query: ({ username, password }) => ({
+                url: UriHelper.AUTH_LOGIN_WITH_PASSWORD,
+                method: 'POST',
+                headers: { Authentication: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}` },
+                body: {}
+            }),
+            transformResponse: (response: { data: any }) => response.data,
+            invalidatesTags: ['DMS_USER']
+        }),
+        logoutUser: build.mutation<void, LoginRequest>({
+            query: () => ({
+                url: UriHelper.AUTH_LOGOUT,
+                method: 'PUT'
+            }),
+            transformResponse: (response: { data: any }) => response.data,
+            invalidatesTags: ['DMS_USER']
         })
     })
 });
@@ -127,5 +141,6 @@ export const {
     useGetMailQuery,
     useGetRolesByUserQuery,
     useGetRolesQuery,
-    useGetNameQuery
+    useGetNameQuery,
+    useLoginMutation
 } = authApi;
