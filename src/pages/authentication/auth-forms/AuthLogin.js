@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 // material-ui
 import {
@@ -32,7 +31,6 @@ import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
 import { useLoginMutation } from 'store/async/dms/auth/authApi';
-import { useDispatch } from 'react-redux';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -41,9 +39,8 @@ const AuthLogin = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
-    const dispatch = useDispatch();
     const { login } = useUserAuth();
-    const [loginWithPassword, { isLoading }] = useLoginMutation();
+    const [loginWithPassword] = useLoginMutation();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
