@@ -15,6 +15,7 @@ const slice = createSlice({
         setCredentials: (state, { payload: { user, token } }: PayloadAction<{ user: User; token: string }>) => {
             state.user = user;
             state.token = token;
+            document.cookie = `token=${token}; Path=/; Secure; SameSite=Strict`;
         }
     }
 });

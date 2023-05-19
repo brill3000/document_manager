@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 // material-ui
 import {
-    Button,
     Checkbox,
     Divider,
     FormControlLabel,
@@ -15,7 +15,8 @@ import {
     InputLabel,
     OutlinedInput,
     Stack,
-    Typography
+    Typography,
+    Button
 } from '@mui/material';
 
 // third party
@@ -32,8 +33,6 @@ import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
 import { useLoginMutation } from 'store/async/dms/auth/authApi';
 import { useDispatch } from 'react-redux';
-import { setCredentials } from 'store/reducers/auth/auth';
-import { useLocalStorage } from 'context/useLocalStorage';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -43,10 +42,8 @@ const AuthLogin = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
     const dispatch = useDispatch();
-    const { user, login } = useUserAuth();
-    const [loginWithPassword, { isLoading, isError }] = useLoginMutation();
-    const [token, setToken] = useLocalStorage('token', '');
-    const [loggedInUser, setLoggedInUser] = useLocalStorage('loggedInUser', '');
+    const { login } = useUserAuth();
+    const [loginWithPassword, { isLoading }] = useLoginMutation();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -72,12 +69,7 @@ const AuthLogin = () => {
                     try {
                         if (navigator.onLine) throw new Error('No Internet connection');
                         try {
-                            const user = await loginWithPassword({ username: 'okmAdmin', password: 'admin' }).unwrap();
-                            console.log(user, 'USER');
-                            // dispatch(setCredentials({ user: 'okmAdmin', token: user.TOKEN }));
-                            setLoggedInUser('okmAdmin');
-                            console.log(user);
-                            setToken(user.TOKEN ?? '');
+                            await loginWithPassword({ username: 'okmAdmin', password: 'admin' }).unwrap();
                             const message = `Login to openkm succeded`;
                             enqueueSnackbar(message, { variant: 'success' });
                         } catch (err) {

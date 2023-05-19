@@ -1,7 +1,6 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginRequest, UserResponse } from 'global/interfaces';
-import { RootState } from 'store';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
@@ -9,12 +8,9 @@ export const authApi = createApi({
     reducerPath: 'auth_api',
     baseQuery: fetchBaseQuery({
         baseUrl: UriHelper.HOST,
-        prepareHeaders: (headers, { getState }) => {
-            // Get the token from your state or any other source
-            const token = (getState() as RootState).auth.token;
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
+        prepareHeaders: (headers) => {
+            const cookies = document.cookie;
+            headers.set('Cookie', cookies);
             return headers;
         }
     }),
@@ -116,10 +112,9 @@ export const authApi = createApi({
             query: ({ username, password }) => ({
                 url: UriHelper.AUTH_LOGIN_WITH_PASSWORD,
                 method: 'POST',
-                headers: { Authentication: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}` },
-                body: {}
+                headers: { Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}` }
             }),
-            transformResponse: (response: { data: any }) => response.data,
+            transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
         logoutUser: build.mutation<void, LoginRequest>({
