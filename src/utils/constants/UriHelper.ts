@@ -4,7 +4,7 @@
  * @author brilliant
  */
 export const UriHelper = {
-    HOST: 'http://localhost:3000/',
+    HOST: 'http://localhost:3456/',
     /**
      * Auth
      */
@@ -24,6 +24,8 @@ export const UriHelper = {
     AUTH_GRANT_USER: 'auth/grantUser',
     AUTH_GET_SESSIONS: 'auth/sessions',
     AUTH_LOGIN: 'auth/login',
+    AUTH_LOGOUT: 'auth/logout',
+    AUTH_LOGIN_WITH_PASSWORD: 'auth/loginWithPassword',
     AUTH_CREATE_USER: 'auth/createUser',
     AUTH_CREATE_ROLE: 'auth/createRole',
     AUTH_UPDATE_ROLE: 'auth/updateRole',
