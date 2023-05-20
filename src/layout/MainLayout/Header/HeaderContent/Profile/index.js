@@ -26,14 +26,12 @@ import ProfileTab from './ProfileTab';
 import SettingTab from './SettingTab';
 
 // assets
-import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { useUserAuth } from 'context/authContext';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { getInitials } from 'components/departments/utils/get-initials';
 import { useLogoutUserMutation } from 'store/async/dms/auth/authApi';
-import { useLocalStorage } from 'context/useLocalStorage';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -63,17 +61,12 @@ const Profile = () => {
     const theme = useTheme();
     const navigator = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
-    const [token, setToken] = useLocalStorage('token', null);
-    const [loggedInUser, setLoggedInUser] = useLocalStorage('loggedInUser', null);
-
     const { logout, user } = useUserAuth();
-    // const [logoutUser, { isLoading }] = useLogoutUserMutation();
+    const [logoutUser, { isLoading }] = useLogoutUserMutation();
 
     const handleLogout = async () => {
         try {
-            // await logoutUser().unwrap();
-            setToken('null');
-            setLoggedInUser('null');
+            await logoutUser().unwrap();
             await logout();
             navigator('/login');
         } catch (err) {
