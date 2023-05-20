@@ -1,6 +1,14 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { LoginRequest, UserResponse } from 'global/interfaces';
+import {
+    AssignRoleRequest,
+    CreateRoleRequest,
+    CreateUserRequest,
+    DeleteUserRequest,
+    GrantRoleRequest,
+    LoginRequest,
+    UserResponse
+} from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
@@ -12,7 +20,8 @@ export const authApi = createApi({
             const cookies = document.cookie;
             headers.set('Cookie', cookies);
             return headers;
-        }
+        },
+        credentials: 'include'
     }),
     tagTypes: ['DMS_USER', 'DMS_USER_SUCCESS', 'DMS_USER_ERROR'],
     endpoints: (build) => ({
@@ -124,12 +133,106 @@ export const authApi = createApi({
             }),
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_USER']
+        }),
+        createUser: build.mutation<any, CreateUserRequest>({
+            query: ({ username, password, email, active }) => ({
+                url: UriHelper.AUTH_CREATE_USER,
+                method: 'POST',
+                body: { username, password, email, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data,
+            invalidatesTags: ['DMS_USER']
+        }),
+        createRole: build.mutation<any, CreateRoleRequest>({
+            query: ({ role, active }) => ({
+                url: UriHelper.AUTH_CREATE_ROLE,
+                method: 'POST',
+                body: { role, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        updateUser: build.mutation<any, CreateUserRequest>({
+            query: ({ username, password, email, active }) => ({
+                url: UriHelper.AUTH_UPDATE_USER,
+                method: 'PUT',
+                body: { username, password, email, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data,
+            invalidatesTags: ['DMS_USER']
+        }),
+        grantRole: build.mutation<any, GrantRoleRequest>({
+            query: ({ nodeId, role, permissions, recursive }) => ({
+                url: UriHelper.AUTH_GRANT_ROLE,
+                method: 'PUT',
+                body: { nodeId, role, permissions, recursive }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data,
+            invalidatesTags: ['DMS_USER']
+        }),
+        grantUser: build.mutation<any, GrantRoleRequest>({
+            query: ({ nodeId, role, permissions, recursive }) => ({
+                url: UriHelper.AUTH_GRANT_USER,
+                method: 'PUT',
+                body: { nodeId, role, permissions, recursive }
+            }),
+            invalidatesTags: ['DMS_USER']
+        }),
+        updateRole: build.mutation<any, CreateRoleRequest>({
+            query: ({ role, active }) => ({
+                url: UriHelper.AUTH_UPDATE_ROLE,
+                method: 'PUT',
+                body: { role, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        assignRole: build.mutation<any, AssignRoleRequest>({
+            query: ({ user, active }) => ({
+                url: UriHelper.AUTH_ASSIGN_ROLE,
+                method: 'PUT',
+                body: { user, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        removeRole: build.mutation<any, CreateRoleRequest>({
+            query: ({ role, active }) => ({
+                url: UriHelper.AUTH_REMOVE_ROLE,
+                method: 'PUT',
+                body: { role, active }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        revokeRole: build.mutation<any, GrantRoleRequest>({
+            query: ({ nodeId, role, permissions, recursive }) => ({
+                url: UriHelper.AUTH_REVOKE_ROLE,
+                method: 'PUT',
+                body: { nodeId, role, permissions, recursive }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        deleteUser: build.mutation<any, DeleteUserRequest>({
+            query: ({ user }) => ({
+                url: UriHelper.AUTH_DELETE_USER,
+                method: 'PUT',
+                params: { user }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
+        }),
+        deleteRole: build.mutation<any, DeleteUserRequest>({
+            query: ({ user }) => ({
+                url: UriHelper.AUTH_DELETE_ROLE,
+                method: 'PUT',
+                params: { user }
+            }),
+            transformResponse: (response: { data: UserResponse }) => response.data
         })
     })
 });
 
 export const auth_api = authApi.reducer;
 export const {
+    /**
+     * Getters
+     */
     useGetUsersQuery,
     useGetGrantedRolesQuery,
     useGetGrantedUsersQuery,
@@ -137,5 +240,26 @@ export const {
     useGetRolesByUserQuery,
     useGetRolesQuery,
     useGetNameQuery,
-    useLoginMutation
+    /**
+     * Mutations: POST
+     */
+    useLoginMutation,
+    useLogoutUserMutation,
+    useCreateRoleMutation,
+    useCreateUserMutation,
+    /**
+     * Mutations: PUT
+     */
+    useUpdateUserMutation,
+    useUpdateRoleMutation,
+    useGrantRoleMutation,
+    useGrantUserMutation,
+    useAssignRoleMutation,
+    useRemoveRoleMutation,
+    useRevokeRoleMutation,
+    /**
+     * Mutations: DELETE
+     */
+    useDeleteRoleMutation,
+    useDeleteUserMutation
 } = authApi;
