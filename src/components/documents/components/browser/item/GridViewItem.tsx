@@ -251,7 +251,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                 py={isRenaming ? 0 : 1}
                                 bgcolor={(theme) =>
                                     (isSelected || isOver) && !isRenaming
-                                        ? theme.palette.primary.main
+                                        ? alpha(theme.palette.primary.main, 0.4)
                                         : isHovered && !isRenaming
                                         ? alpha(theme.palette.primary.main, 0.1)
                                         : '#f9f7f6'
@@ -290,7 +290,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                     <Box
                                         sx={{
                                             overflow: 'hidden',
-                                            color: isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.text.primary,
+                                            color: theme.palette.text.primary,
                                             fontWeight: isSelected || isOver ? 500 : 400,
                                             textOverflow: 'ellipsis',
                                             fontSize: '.84rem',
@@ -343,10 +343,10 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                             py={isRenaming ? 0 : 1}
                             bgcolor={
                                 (isSelected || isOver) && !isRenaming
-                                    ? blue[600]
+                                    ? alpha(theme.palette.primary.main, 0.4)
                                     : isHovered && !isRenaming
-                                    ? alpha(blue[100], 0.4)
-                                    : alpha(blue[100], 0)
+                                    ? alpha(theme.palette.primary.main, 0.1)
+                                    : 'transparent'
                             }
                             width={isRenaming ? '100%' : 115}
                             height="max-content"
@@ -382,7 +382,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                 <Box
                                     sx={{
                                         overflow: 'hidden',
-                                        color: isSelected || isOver ? theme.palette.primary.contrastText : theme.palette.text.primary,
+                                        color: theme.palette.text.primary,
                                         fontWeight: isSelected || isOver ? 500 : 400,
                                         textOverflow: 'ellipsis',
                                         fontSize: '.84rem',
