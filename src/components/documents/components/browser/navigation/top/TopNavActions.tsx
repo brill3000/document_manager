@@ -106,6 +106,7 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                                 pl: 0.5,
                                 borderRadius: 1,
                                 '&:hover': {
+                                    color: (theme) => theme.palette.primary.contrastText,
                                     bgcolor: (theme) => theme.palette.primary.main
                                 },
                                 width: 'max-content',
