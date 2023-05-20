@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
+import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 
 // hero icons
@@ -10,51 +10,68 @@ import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewIte
 import { DocumentType } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
 import { sampleFolders } from '../../../FileBrowser';
-import { Button, alpha } from '@mui/material';
-import { HiOutlineDocumentAdd } from 'react-icons/hi';
+import { Button, Collapse, alpha } from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
+import { useSpring, animated } from '@react-spring/web';
+import { BsFolderPlus } from 'react-icons/bs';
 
-const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
-    color: theme.palette.text.secondary,
-    [`& .${treeItemClasses.content}`]: {
-        borderRadius: theme.spacing(0.5),
-        paddingRight: theme.spacing(1),
-        fontWeight: theme.typography.fontWeightRegular,
-        '&.Mui-expanded': {
-            fontWeight: theme.typography.fontWeightLight
+function TransitionComponent(props: TransitionProps) {
+    const style = useSpring({
+        from: {
+            opacity: 0,
+            transform: 'translate3d(20px,0,0)'
         },
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover
-        },
-        '&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused': {
-            backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
-            color: 'var(--tree-view-color)',
-            borderRight: `3px solid ${theme.palette.primary.main}`,
-            borderLeft: `3px solid ${theme.palette.primary.main}`
-        },
-        [`& .${treeItemClasses.label}`]: {
-            fontWeight: 'inherit',
-            color: 'inherit'
+        to: {
+            opacity: props.in ? 1 : 0,
+            transform: `translate3d(${props.in ? 0 : 20}px,0,0)`
         }
-    },
-    [`& .${treeItemClasses.iconContainer}`]: {
-        height: '100%',
-        width: '8%'
-    },
-    [`& .${treeItemClasses.group}`]: {
-        marginLeft: 0,
+    });
+
+    return (
+        <animated.div style={style}>
+            <Collapse {...props} />
+        </animated.div>
+    );
+}
+
+const StyledTreeItemRoot = styled((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />)(
+    ({ theme }) => ({
+        color: theme.palette.text.secondary,
         [`& .${treeItemClasses.content}`]: {
-            paddingLeft: theme.spacing(2)
+            borderRadius: theme.spacing(0.5),
+            paddingRight: theme.spacing(1),
+            fontWeight: theme.typography.fontWeightMedium,
+            '&.Mui-expanded': {
+                fontWeight: theme.typography.fontWeightRegular
+            },
+            '&:hover': {
+                backgroundColor: theme.palette.action.hover
+            },
+            '&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused': {
+                backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+                color: 'var(--tree-view-color)',
+                borderRight: `3px solid ${theme.palette.primary.main}`,
+                borderLeft: `3px solid ${theme.palette.primary.main}`
+            }
+        },
+        [`& .${treeItemClasses.iconContainer}`]: {
+            height: '100%',
+            width: '8%'
         }
-    }
-}));
+    })
+);
 
 function StyledTreeItem(props: { [x: string]: any; bgColor: any; color: any; labelInfo: any; labelText: any }) {
-    const { bgColor, color, labelInfo, labelText, nodeId, ...other } = props;
+    const { labelText, nodeId, ...other } = props;
 
     return (
         <StyledTreeItemRoot
             nodeId={nodeId}
-            label={<Box sx={{ display: 'flex', alignItems: 'center', p: 0.35, pr: 0 }}>{labelText}</Box>}
+            label={
+                <Box sx={{ display: 'flex', alignItems: 'center', p: 0.35, pr: 0 }}>
+                    <Typography>{labelText}</Typography>
+                </Box>
+            }
             sx={{
                 '--tree-view-color': (theme) => theme.palette.primary.main,
                 '--tree-view-bg-color': (theme) => alpha(theme.palette.primary.light, 0.3)
@@ -76,16 +93,16 @@ export default function RightSidebar() {
     const [selected, setSelected] = React.useState<[{ id: string; doc_name: string }] | []>([]);
     return (
         <>
-            <Button size="small" color="secondary" variant="outlined" startIcon={<HiOutlineDocumentAdd />}>
+            <Button size="small" color="secondary" variant="outlined" startIcon={<BsFolderPlus />}>
                 New Base folder
             </Button>
             <TreeView
                 aria-label="Folder Sidebar"
                 selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '1'}
-                defaultCollapseIcon={<MemorizedFcFolderOpen size={20} />}
-                defaultExpandIcon={<MemorizedFcFolder size={20} />}
-                defaultEndIcon={<MemorizedFcFolder size={20} />}
-                sx={{ flexGrow: 1, width: '100%', overflowY: 'auto', pt: 1.2, pr: 1 }}
+                defaultCollapseIcon={<MemorizedFcFolderOpen size={25} />}
+                defaultExpandIcon={<MemorizedFcFolder size={25} />}
+                defaultEndIcon={<MemorizedFcFolder size={25} />}
+                sx={{ flexGrow: 1, maxWidth: '100vw', overflowY: 'auto', pt: 1.2, pr: 1 }}
             >
                 {[...parentFolders]
                     ?.sort((a, b) => a.doc_name.localeCompare(b.doc_name))
