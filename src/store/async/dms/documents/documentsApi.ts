@@ -2,14 +2,14 @@ import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefiniti
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
     CheckInProps,
-    CreateDocument,
-    CreateDocumentSimple,
-    ExtendeCopyProps,
-    GetChildren,
-    GetContent,
-    GetContentByVersion,
-    MoveProps,
-    RenameProps
+    CreateDocumentProps,
+    CreateDocumentSimpleProps,
+    ExtendeCopyDocumentsProps,
+    GetChildrenDocumentsProps,
+    GetDocumentContentByVersionProps,
+    GetDocumentContentProps,
+    MoveDocumentProps,
+    RenameDocumentsProps
 } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_DOCUMENTS' | 'DMS_DOCUMENTS_SUCCESS' | 'DMS_DOCUMENTS_ERROR';
@@ -38,7 +38,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getContent: build.query<any, GetContent>({
+        getContent: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_GET_CONTENT}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -48,7 +48,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getContentByVersion: build.query<any, GetContentByVersion>({
+        getContentByVersion: build.query<any, GetDocumentContentByVersionProps>({
             query: ({ docId, versionId }) => ({ url: `${UriHelper.DOCUMENT_GET_CONTENT_BY_VERSION}`, params: { docId, versionId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -58,7 +58,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getChildren: build.query<any, GetChildren>({
+        getChildren: build.query<any, GetChildrenDocumentsProps>({
             query: (fldId) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -68,7 +68,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        checkout: build.query<any, GetContent>({
+        checkout: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_CHECKOUT}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -78,7 +78,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        isCheckedOut: build.query<any, GetContent>({
+        isCheckedOut: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_IS_CHECKOUT}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -88,7 +88,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getVersionHistory: build.query<any, GetContent>({
+        getVersionHistory: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -98,7 +98,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        isLocked: build.query<any, GetContent>({
+        isLocked: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_IS_LOCKED}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -108,7 +108,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getLockInfo: build.query<any, GetContent>({
+        getLockInfo: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_GET_LOCKINFO}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -118,7 +118,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getVersionHistorySize: build.query<any, GetContent>({
+        getVersionHistorySize: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY_SIZE}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -128,7 +128,7 @@ export const documentsApi = createApi({
                 return tags;
             }
         }),
-        getPath: build.query<any, GetContent>({
+        getPath: build.query<any, GetDocumentContentProps>({
             query: (docId) => ({ url: `${UriHelper.DOCUMENT_GET_PATH}`, params: { docId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -139,7 +139,7 @@ export const documentsApi = createApi({
             }
         }),
         // ===========================| MUTATIIONS: POST |===================== //
-        create: build.mutation<any, CreateDocument>({
+        create: build.mutation<any, CreateDocumentProps>({
             query: ({ doc, content }) => ({
                 url: UriHelper.DOCUMENT_CREATE,
                 method: 'POST',
@@ -148,7 +148,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        createSimple: build.mutation<any, CreateDocumentSimple>({
+        createSimple: build.mutation<any, CreateDocumentSimpleProps>({
             query: ({ docPath, content }) => ({
                 url: UriHelper.DOCUMENT_CREATE,
                 method: 'POST',
@@ -168,7 +168,7 @@ export const documentsApi = createApi({
         }),
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
 
-        rename: build.mutation<any, RenameProps>({
+        rename: build.mutation<any, RenameDocumentsProps>({
             query: ({ docId, newName }) => ({
                 url: UriHelper.DOCUMENT_RENAME,
                 method: 'PUT',
@@ -186,7 +186,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        cancelCheckout: build.mutation<any, GetContent>({
+        cancelCheckout: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_SET_PROPERTIES,
                 method: 'PUT',
@@ -195,7 +195,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        forceCancelCheckout: build.mutation<any, GetContent>({
+        forceCancelCheckout: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_FORCE_CANCEL_CHECKOUT,
                 method: 'PUT',
@@ -204,7 +204,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        lock: build.mutation<any, GetContent>({
+        lock: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_LOCK,
                 method: 'PUT',
@@ -213,7 +213,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        unlock: build.mutation<any, GetContent>({
+        unlock: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_UNLOCK,
                 method: 'PUT',
@@ -222,7 +222,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        forceUnlock: build.mutation<any, GetContent>({
+        forceUnlock: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_FORCE_UNLOCK,
                 method: 'PUT',
@@ -231,7 +231,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        purge: build.mutation<any, GetContent>({
+        purge: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_PURGE,
                 method: 'PUT',
@@ -240,7 +240,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        move: build.mutation<any, MoveProps>({
+        move: build.mutation<any, MoveDocumentProps>({
             query: ({ docId, dstId }) => ({
                 url: UriHelper.DOCUMENT_MOVE,
                 method: 'PUT',
@@ -249,7 +249,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        restoreVersion: build.mutation<any, GetContentByVersion>({
+        restoreVersion: build.mutation<any, GetDocumentContentByVersionProps>({
             query: ({ docId, versionId }) => ({
                 url: UriHelper.DOCUMENT_RESTORE_VERSION,
                 method: 'PUT',
@@ -258,7 +258,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        purgeVersionHistory: build.mutation<any, GetContentByVersion>({
+        purgeVersionHistory: build.mutation<any, GetDocumentContentByVersionProps>({
             query: ({ docId, versionId }) => ({
                 url: UriHelper.DOCUMENT_PURGE_VERSION_HISTORY,
                 method: 'PUT',
@@ -267,7 +267,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        extendedCopy: build.mutation<any, ExtendeCopyProps>({
+        extendedCopy: build.mutation<any, ExtendeCopyDocumentsProps>({
             query: ({ docId, dstId, name, categories, keywords, notes, propertyGroups, wiki }) => ({
                 url: UriHelper.DOCUMENT_EXTEND_COPY,
                 method: 'PUT',
@@ -276,7 +276,7 @@ export const documentsApi = createApi({
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
-        createFromTemplate: build.mutation<any, ExtendeCopyProps>({
+        createFromTemplate: build.mutation<any, ExtendeCopyDocumentsProps>({
             query: ({ docId, dstId, name, categories, keywords, notes, propertyGroups, wiki }) => ({
                 url: UriHelper.DOCUMENT_CREATE_FROM_TEMPLATE,
                 method: 'PUT',
@@ -286,7 +286,7 @@ export const documentsApi = createApi({
             invalidatesTags: ['DMS_DOCUMENTS']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
-        deleteDoc: build.mutation<any, GetContent>({
+        deleteDoc: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_DELETE,
                 method: 'DELETE',
