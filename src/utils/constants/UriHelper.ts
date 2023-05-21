@@ -141,9 +141,12 @@ export const UriHelper = {
      * Repository
      */
     REPOSITORY_GET_ROOT_FOLDER: 'repository/getRootFolder',
-    REPOSITORY_GET_ROOT_TRASH: 'repository/getTrashFolder',
+    REPOSITORY_GET_TRASH_FOLDER: 'repository/getTrashFolder',
+    REPOSITORY_GET_ROOT_TRASH: 'repository/getTrashFolderBase',
     REPOSITORY_GET_ROOT_TEMPLATES: 'repository/getTemplatesFolder',
-    REPOSITORY_GET_ROOT_PERSONAL: 'repository/getPersonalFolder',
+    REPOSITORY_GET_ROOT_PERSONAL: 'repository/getPersonalFolderBase',
+    REPOSITORY_GET_MAIL_FOLDER: 'repository/getPersonalFolderBase',
+    REPOSITORY_GET_PERSONAL_FOLDER: 'repository/getPersonalFolder',
     REPOSITORY_GET_ROOT_MAIL: 'repository/getMailFolder',
     REPOSITORY_GET_ROOT_THESAURUS: 'repository/getThesaurusFolder',
     REPOSITORY_GET_ROOT_CATEGORIES: 'repository/getCategoriesFolder',
@@ -168,6 +171,7 @@ export const UriHelper = {
     REPOSITORY_FIND_PAGINATED: 'search/findPaginated',
     REPOSITORY_FIND_SIMPLE_QUERY_PAGINATED: 'search/findSimpleQueryPaginated',
     REPOSITORY_FIND_MORE_LIKE_THIS: 'search/findMoreLikeThis',
+    REPOSITORY_GET_CATEGORIES_FOLDERS: 'search/getCategoriesFolder',
     REPOSITORY_GET_KEYWORD_MAP: 'search/getKeywordMap',
     REPOSITORY_GET_CATEGORIZED_DOCUMENTS: 'search/getCategorizedDocuments',
     REPOSITORY_SAVE_SEARCH: 'search/saveSearch',
@@ -175,6 +179,7 @@ export const UriHelper = {
     REPOSITORY_GET_SEARCH: 'search/getSearch',
     REPOSITORY_GET_ALL_SEARCH: 'search/getAllSearchs',
     REPOSITORY_DELETE_SEARCH: 'search/deleteSearch',
+    REPOSITORY_GET_CONFIGURATION: 'search/getConfiguration',
 
     /**
      * Property

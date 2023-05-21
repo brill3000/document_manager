@@ -30,6 +30,7 @@ import logger from 'redux-logger';
 import reducers from './reducers';
 import { documentsApi } from 'store/async/dms/documents/documentsApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
+import { repositoryApi } from 'store/async/dms/repository/repositoryApi';
 
 export const store = configureStore({
     reducer: reducers,
@@ -45,6 +46,7 @@ export const store = configureStore({
             .concat(authApi.middleware)
             .concat(documentsApi.middleware)
             .concat(foldersApi.middleware)
+            .concat(repositoryApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;
