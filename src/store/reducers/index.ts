@@ -14,6 +14,7 @@ import { workflow_query } from 'store/async/workflowQuery';
 import { logs_query } from 'store/async/logsQuery';
 import { auth_api } from 'store/async/dms/auth/authApi';
 import { documents_api } from 'store/async/dms/documents/documentsApi';
+import { folders_api } from 'store/async/dms/folders/foldersApi';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -29,7 +30,8 @@ const reducers = combineReducers({
     workflow_query,
     logs_query,
     auth_api,
-    documents_api
+    documents_api,
+    folders_api
 });
 
 export default reducers;

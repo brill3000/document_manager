@@ -14,7 +14,7 @@ import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_FOLDERS' | 'DMS_FOLDERS_SUCCESS' | 'DMS_FOLDERS_ERROR';
 
 export const foldersApi = createApi({
-    reducerPath: 'documents_api',
+    reducerPath: 'folders_api',
     baseQuery: fetchBaseQuery({
         baseUrl: UriHelper.HOST,
         prepareHeaders: (headers) => {
