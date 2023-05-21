@@ -13,6 +13,7 @@ import { messages_query } from 'store/async/messagesQuery';
 import { workflow_query } from 'store/async/workflowQuery';
 import { logs_query } from 'store/async/logsQuery';
 import { auth_api } from 'store/async/dms/auth/authApi';
+import { documents_api } from 'store/async/dms/documents/documentsApi';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -21,13 +22,14 @@ const reducers = combineReducers({
     departments,
     documents,
     auth,
-    folders_query: folders_query,
-    files_query: files_query,
-    users_query: users_query,
-    messages_query: messages_query,
-    workflow_query: workflow_query,
-    logs_query: logs_query,
-    auth_api: auth_api
+    folders_query,
+    files_query,
+    users_query,
+    messages_query,
+    workflow_query,
+    logs_query,
+    auth_api,
+    documents_api
 });
 
 export default reducers;

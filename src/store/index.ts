@@ -28,6 +28,7 @@ import { authApi } from 'store/async/dms/auth/authApi';
 
 import logger from 'redux-logger';
 import reducers from './reducers';
+import { documentsApi } from './async/dms/documents/documentsApi';
 
 export const store = configureStore({
     reducer: reducers,
@@ -41,6 +42,7 @@ export const store = configureStore({
             .concat(workflowQuery.middleware)
             .concat(logsQuery.middleware)
             .concat(authApi.middleware)
+            .concat(documentsApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

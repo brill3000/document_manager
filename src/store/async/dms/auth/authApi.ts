@@ -209,10 +209,11 @@ export const authApi = createApi({
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
+        // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
         deleteUser: build.mutation<any, DeleteUserRequest>({
             query: ({ user }) => ({
                 url: UriHelper.AUTH_DELETE_USER,
-                method: 'PUT',
+                method: 'DELETE',
                 params: { user }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
@@ -220,7 +221,7 @@ export const authApi = createApi({
         deleteRole: build.mutation<any, DeleteUserRequest>({
             query: ({ user }) => ({
                 url: UriHelper.AUTH_DELETE_ROLE,
-                method: 'PUT',
+                method: 'DELETe',
                 params: { user }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
