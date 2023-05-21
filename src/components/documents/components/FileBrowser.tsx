@@ -76,15 +76,6 @@ const FileBrowser = ({ height, width, bgColor, borderRadius, browserDocuments, t
     const stack = React.useRef<string[] | number[]>([]);
     const { setBrowserHeight, setBrowserWidth, browserHeight, browserWidth } = useViewStore();
     const ref = React.useRef<HTMLDivElement>(null);
-
-    // React.useEffect(() => {
-    //   if (okmUsers.isSuccess) {
-    //     console.log(okmUsers.data, "DATA")
-    //   } else {
-    //     console.log(okmUsers, "OKM USERS")
-    //   }
-    // })
-
     React.useEffect(() => {
         initiateFileBrowser(browserDocuments ? browserDocuments : [...sampleFolders, ...sampleFiles]);
     }, []);
