@@ -39,46 +39,82 @@ export interface DeleteUserRequest {
     active: string;
 }
 
-export interface GetContent {
+export interface GetDocumentContentProps {
     docId: string;
 }
 
-export interface GetContentByVersion extends GetContent {
+export interface GetDocumentContentByVersionProps extends GetDocumentContentProps {
     versionId: string;
 }
 
-export interface GetChildren {
+export interface GetChildrenDocumentsProps {
     fldId: string;
 }
 
-export interface CreateDocument {
+export interface CreateDocumentProps {
     doc: string;
     content: string;
 }
-export interface CreateDocumentSimple {
+export interface CreateDocumentSimpleProps {
     docPath: string;
     content: string;
 }
 
-export interface CheckInProps extends GetContent {
+export interface CheckInProps extends GetDocumentContentProps {
     content: string;
     comment: string;
     increment: string;
 }
 
-export interface RenameProps extends GetContent {
+export interface RenameDocumentsProps extends GetDocumentContentProps {
     newName: string;
 }
 
-export interface MoveProps extends GetContent {
+export interface MoveDocumentProps extends GetDocumentContentProps {
     dstId: string;
 }
 
-export interface ExtendeCopyProps extends MoveProps {
+export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
     name: string;
     categories: boolean;
     keywords: boolean;
     notes: boolean;
     propertyGroups: boolean;
     wiki: boolean;
+}
+
+export interface GetFoldersContentProps {
+    fldId: string;
+}
+export interface CreateFoldersProps {
+    fld: any;
+}
+export interface CreateFoldersSimpleProps {
+    docPath: string;
+    content: string;
+}
+
+export interface RenameFoldersProps extends GetFoldersContentProps {
+    newName: string;
+}
+
+export interface SetFoldersPropertiesProps {
+    doc: any;
+}
+
+export interface MoveFoldersProps extends GetFoldersContentProps {
+    dstId: string;
+}
+
+export interface ExtendeCopyFoldersProps extends MoveFoldersProps {
+    name: string;
+    categories: boolean;
+    keywords: boolean;
+    notes: boolean;
+    propertyGroups: boolean;
+    wiki: boolean;
+}
+
+export interface CreateMissingFoldersProps {
+    fldPath: string;
 }
