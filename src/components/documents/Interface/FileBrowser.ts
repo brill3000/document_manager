@@ -125,3 +125,10 @@ export interface StoreState {
 }
 
 export type key = string | number;
+
+export interface RenderTree {
+    id: string;
+    doc_name: string;
+    children?: Array<RenderTree | null>;
+    hasChildren: boolean;
+}
