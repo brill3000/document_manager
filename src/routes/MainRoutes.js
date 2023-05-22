@@ -41,10 +41,6 @@ const MainRoutes = {
                 </ProtectedRoutes>
             )
         },
-        // {
-        //     path: 'color',
-        //     element: <Color />
-        // },
         {
             path: 'documents',
             element: (
@@ -54,12 +50,48 @@ const MainRoutes = {
             ),
             children: [
                 {
+                    path: ':pathParam',
+                    element: (
+                        <ProtectedRoutes>
+                            <CustomizedTreeView />
+                        </ProtectedRoutes>
+                    )
+                },
+                {
+                    path: 'system-documents',
+                    element: (
+                        <ProtectedRoutes>
+                            <CustomizedTreeView title="system_documents" />
+                        </ProtectedRoutes>
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="system_documents" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
+                },
+                {
                     path: 'my-documents',
                     element: (
                         <ProtectedRoutes>
                             <CustomizedTreeView title="my_documents" />
                         </ProtectedRoutes>
-                    )
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="my_documents" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
                 },
                 {
                     path: 'templates',
@@ -67,7 +99,17 @@ const MainRoutes = {
                         <ProtectedRoutes>
                             <CustomizedTreeView title="templates" />,
                         </ProtectedRoutes>
-                    )
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="templates" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
                 },
                 {
                     path: 'email-attachments',
@@ -75,7 +117,17 @@ const MainRoutes = {
                         <ProtectedRoutes>
                             <CustomizedTreeView title="email-attachments" />
                         </ProtectedRoutes>
-                    )
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="email-attachments" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
                 },
                 {
                     path: 'trash',
@@ -83,7 +135,17 @@ const MainRoutes = {
                         <ProtectedRoutes>
                             <CustomizedTreeView title="trash" />
                         </ProtectedRoutes>
-                    )
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="trash" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
                 }
             ]
         },

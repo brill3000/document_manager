@@ -7,14 +7,16 @@ import Typography from '@mui/material/Typography';
 
 // hero icons
 import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
-import { DocumentType } from 'components/documents/Interface/FileBrowser';
+import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
-import { sampleFolders } from '../../../FileBrowser';
-import { Button, Collapse, alpha } from '@mui/material';
+import { Collapse, Skeleton, alpha } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { useSpring, animated } from '@react-spring/web';
-import { BsFolderPlus } from 'react-icons/bs';
-
+import { useLocation, useNavigate, useParams } from 'react-router';
+import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import _, { uniqueId } from 'lodash';
+import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -34,49 +36,59 @@ function TransitionComponent(props: TransitionProps) {
     );
 }
 
-const StyledTreeItemRoot = styled((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />)(
-    ({ theme }) => ({
-        color: theme.palette.text.secondary,
-        [`& .${treeItemClasses.content}`]: {
-            borderRadius: theme.spacing(0.5),
-            paddingRight: theme.spacing(1),
-            fontWeight: theme.typography.fontWeightMedium,
-            '&.Mui-expanded': {
-                fontWeight: theme.typography.fontWeightRegular
-            },
-            '&:hover': {
-                backgroundColor: theme.palette.action.hover
-            },
-            '&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused': {
-                backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
-                color: 'var(--tree-view-color)',
-                borderRight: `3px solid ${theme.palette.primary.main}`,
-                borderLeft: `3px solid ${theme.palette.primary.main}`
-            }
+const StyledTreeItemRoot = styled(
+    (props: TreeItemProps & { isLoader: boolean }) => <TreeItem {...props} TransitionComponent={TransitionComponent} />,
+    { shouldForwardProp: (props) => props !== 'isLoader' && props !== 'bgColor' && props !== 'labelInfo' && props !== 'labelText' }
+)(({ theme, isLoader }) => ({
+    color: theme.palette.text.secondary,
+    paddingRight: isLoader ? 0 : theme.spacing(0.5),
+    paddingTop: theme.spacing(0.5),
+    [`& .${treeItemClasses.content}`]: {
+        borderRadius: theme.spacing(0.5),
+        backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.2),
+        ...(isLoader && { paddingLeft: '0 !important' }),
+        fontWeight: theme.typography.fontWeightMedium,
+        '&.Mui-expanded': {
+            fontWeight: theme.typography.fontWeightRegular
         },
-        [`& .${treeItemClasses.iconContainer}`]: {
-            height: '100%',
-            width: '8%'
+        '&:hover': {
+            backgroundColor: isLoader ? 'transparent' : theme.palette.action.hover
+        },
+        '&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused': {
+            backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+            color: 'var(--tree-view-color)',
+            borderRight: `3px solid ${theme.palette.primary.main}`,
+            borderLeft: `3px solid ${theme.palette.primary.main}`
         }
-    })
-);
+    },
+    [`& .${treeItemClasses.iconContainer}`]: {
+        height: '100%',
+        width: '15%',
+        display: isLoader ? 'none' : 'inherit'
+    }
+}));
 
-function StyledTreeItem(props: { [x: string]: any; bgColor: any; color: any; labelInfo: any; labelText: any }) {
-    const { labelText, nodeId, ...other } = props;
-
+function StyledTreeItem(props: TreeItemProps) {
+    const { label, nodeId, ...other } = props;
+    const otherOmitted = _.omit(other, ['label']);
     return (
         <StyledTreeItemRoot
             nodeId={nodeId}
             label={
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 0.35, pr: 0 }}>
-                    <Typography>{labelText}</Typography>
-                </Box>
+                !nodeId.includes('loader') ? (
+                    label
+                ) : (
+                    <Box sx={{ p: 0 }}>
+                        <Skeleton width="100%" height="2.2rem" animation="wave" />
+                    </Box>
+                )
             }
             sx={{
                 '--tree-view-color': (theme) => theme.palette.primary.main,
                 '--tree-view-bg-color': (theme) => alpha(theme.palette.primary.light, 0.3)
             }}
-            {...other}
+            {...otherOmitted}
+            isLoader={nodeId.includes('loader')}
         />
     );
 }
@@ -89,73 +101,157 @@ StyledTreeItem.propTypes = {
 };
 
 export default function RightSidebar() {
-    const [parentFolders, setParentFolders] = React.useState<DocumentType[]>(sampleFolders);
+    const [data, setData] = React.useState<RenderTree | null>(null);
     const [selected, setSelected] = React.useState<[{ id: string; doc_name: string }] | []>([]);
+    // =========================== | Render Function | ================================//
+
+    const renderTree = (nodes: RenderTree | null) => {
+        const uniqueLoaderId = uniqueId('loader');
+        return nodes !== null ? (
+            <StyledTreeItem
+                key={nodes.id}
+                nodeId={nodes.id}
+                label={nodes.doc_name}
+                onClick={() => {
+                    handleDocumentClick(String(nodes.id), nodes.doc_name);
+                }}
+                bgColor={undefined}
+                color={undefined}
+                labelText={''}
+            >
+                {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+            </StyledTreeItem>
+        ) : (
+            <StyledTreeItem
+                key={uniqueLoaderId}
+                nodeId={uniqueLoaderId}
+                label={uniqueLoaderId}
+                disabled
+                onClick={() => {
+                    return;
+                }}
+                sx={{
+                    '& .Mui-disabled': {
+                        opacity: 1
+                    },
+                    '& .MuiTreeItem-label': {
+                        p: 0
+                    }
+                }}
+                bgColor={undefined}
+                color={undefined}
+                labelText={''}
+            />
+        );
+    };
+    // =========================== | Data Functions | ================================//
+    /**
+     * Fetch root folder
+     */
+    const {
+        data: rootFolder,
+        error: rootFolderError,
+        isLoading: rootFolderIsLoading,
+        isSuccess: rootFolderIsSuccess
+    } = useGetRootFolderQuery({});
+    React.useEffect(() => {
+        if (rootFolderIsSuccess) {
+            const data: RenderTree = {
+                id: rootFolder.path,
+                doc_name: 'home',
+                hasChildren: rootFolder.hasChildren,
+                children: [
+                    {
+                        id: rootFolder.path + '/test',
+                        doc_name: 'test',
+                        children: rootFolder.hasChildren ? [null] : [],
+                        hasChildren: true
+                    },
+                    null
+                ]
+            };
+            setData(data);
+        }
+    }, [rootFolderIsSuccess]);
+    /**
+     * Fetch children
+     */
+
+    const {
+        data: folderChildren,
+        error: folderChildrenError,
+        isLoading: folderChildrenIsLoading,
+        isSuccess: folderChildrenIsSuccess
+    } = useGetFoldersChildrenQuery({ fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' });
+
+    React.useEffect(() => {
+        if (folderChildrenIsSuccess) {
+            console.log(folderChildren, 'CHILDREN');
+            // const data: RenderTree = {
+            //     id: rootFolder.path,
+            //     doc_name: 'home',
+            //     hasChildren: rootFolder.hasChildren,
+            //     children: [
+            //         {
+            //             id: rootFolder.path + '/test',
+            //             doc_name: 'test',
+            //             children: rootFolder.hasChildren ? [null] : [],
+            //             hasChildren: true
+            //         },
+            //         null
+            //     ]
+            // };
+            // setData(data);
+        }
+    }, [folderChildrenIsSuccess, data]);
+    // =========================== | Route Functions | ================================//
+    const navigate = useNavigate();
+    const { pathParam } = useParams();
+    const { pathname } = useLocation();
+
+    /**
+     * Function that add the seleted folder path to the route
+     * This is critical for reload purposes
+     * @param folderId: string
+     * @param folderName: string
+     * @returns void
+     */
+    const handleDocumentClick = (folderId: string, folderName: string) => {
+        setSelected([{ id: String(folderId), doc_name: folderName }]);
+        const encodedPathParam = encodeURIComponent(folderId);
+        const documentPath = pathParam
+            ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
+            : `${pathname}/${encodedPathParam}`;
+        navigate(documentPath);
+    };
+
     return (
         <>
-            <Button size="small" color="secondary" variant="outlined" startIcon={<BsFolderPlus />}>
-                New Base folder
-            </Button>
-            <TreeView
-                aria-label="Folder Sidebar"
-                selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '1'}
-                defaultCollapseIcon={<MemorizedFcFolderOpen size={25} />}
-                defaultExpandIcon={<MemorizedFcFolder size={25} />}
-                defaultEndIcon={<MemorizedFcFolder size={25} />}
-                sx={{ flexGrow: 1, maxWidth: '100vw', overflowY: 'auto', pt: 1.2, pr: 1 }}
-            >
-                {[...parentFolders]
-                    ?.sort((a, b) => a.doc_name.localeCompare(b.doc_name))
-                    .map((folder) => (
-                        <StyledTreeItem
-                            nodeId={folder.id}
-                            key={folder.id}
-                            labelText={folder.doc_name}
-                            color="text.primary"
-                            bgColor="#e6f7ff"
-                            labelInfo={`${folder.size} MB`}
-                            onClick={() => {
-                                setSelected([{ id: String(folder.id), doc_name: folder.doc_name }]);
-                            }}
-                        >
-                            <StyledTreeItem
-                                nodeId={folder.id + '10'}
-                                key={folder.id + '10'}
-                                labelText={folder.doc_name}
-                                color="text.primary"
-                                bgColor="#e6f7ff"
-                                labelInfo={`${folder.size} MB`}
-                                onClick={() => {
-                                    setSelected([{ id: String(folder.id + '10'), doc_name: folder.doc_name }]);
-                                }}
-                            >
-                                <StyledTreeItem
-                                    nodeId={folder.id + '20'}
-                                    key={folder.id + '20'}
-                                    labelText={folder.doc_name}
-                                    color="text.primary"
-                                    bgColor="#e6f7ff"
-                                    labelInfo={`${folder.size} MB`}
-                                    onClick={() => {
-                                        setSelected([{ id: String(folder.id + '20'), doc_name: folder.doc_name }]);
-                                    }}
-                                >
-                                    <StyledTreeItem
-                                        nodeId={folder.id + '30'}
-                                        key={folder.id + '30'}
-                                        labelText={folder.doc_name}
-                                        color="text.primary"
-                                        bgColor="#e6f7ff"
-                                        labelInfo={`${folder.size} MB`}
-                                        onClick={() => {
-                                            setSelected([{ id: String(folder.id + '30'), doc_name: folder.doc_name }]);
-                                        }}
-                                    />
-                                </StyledTreeItem>
-                            </StyledTreeItem>
-                        </StyledTreeItem>
-                    ))}
-            </TreeView>
+            {/* Initial Loader */}
+            {rootFolderIsLoading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
+                    <GoogleLoader height={100} width={100} loop={true} />
+                </Box>
+            ) : rootFolderError ? (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
+                    <Error height={100} width={100} />
+                </Box>
+            ) : data !== null && data !== undefined ? (
+                <TreeView
+                    aria-label="Folder Sidebar"
+                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '1'}
+                    defaultCollapseIcon={<MemorizedFcFolderOpen size={25} />}
+                    defaultExpandIcon={<MemorizedFcFolder size={25} />}
+                    defaultEndIcon={<MemorizedFcFolder size={25} />}
+                    sx={{ flexGrow: 1, maxWidth: '100vw', minWidth: '100%', overflowY: 'auto', pt: 1.2, pr: 1 }}
+                >
+                    {renderTree(data)}
+                </TreeView>
+            ) : (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
+                    <Typography>No base folders available</Typography>
+                </Box>
+            )}
         </>
     );
 }
