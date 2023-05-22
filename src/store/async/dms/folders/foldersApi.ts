@@ -28,7 +28,7 @@ export const foldersApi = createApi({
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
         getFoldersProperties: build.query({
-            query: (fldId) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
@@ -38,7 +38,7 @@ export const foldersApi = createApi({
             }
         }),
         getFoldersContentPropsInfo: build.query<any, GetFoldersContentProps>({
-            query: (fldId) => ({ url: `${UriHelper.FOLDER_GET_CONTENT_INFO}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CONTENT_INFO}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
@@ -48,7 +48,7 @@ export const foldersApi = createApi({
             }
         }),
         getFoldersChildren: build.query<any, GetFoldersContentProps>({
-            query: (fldId) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
@@ -58,7 +58,7 @@ export const foldersApi = createApi({
             }
         }),
         isFolderValid: build.query<any, GetFoldersContentProps>({
-            query: (fldId) => ({ url: `${UriHelper.FOLDER_IS_VALID}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_IS_VALID}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
@@ -68,7 +68,7 @@ export const foldersApi = createApi({
             }
         }),
         getFolderPath: build.query<any, GetFoldersContentProps>({
-            query: (fldId) => ({ url: `${UriHelper.FOLDER_GET_PATH}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PATH}`, params: { fldId } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
