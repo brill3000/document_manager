@@ -209,7 +209,7 @@ const NavItem = ({ item, level, children }) => {
                                     })
                                 }}
                             >
-                                {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1.1rem' }} />}</ListItemIcon>}
+                                {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1rem' }} />}</ListItemIcon>}
                                 <ListItemText primary={child.title} sx={{ pl: 1 }} primaryTypographyProps={{ fontSize: '.8rem' }} />
                             </ListItemButton>
                         ))}

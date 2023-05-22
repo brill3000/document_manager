@@ -1,4 +1,4 @@
-// assets
+// icons
 import { DashboardOutlined } from '@ant-design/icons';
 import { ApartmentOutlined } from '@ant-design/icons';
 import { HddOutlined } from '@ant-design/icons';
@@ -26,8 +26,10 @@ import MiscellaneousServicesOutlinedIcon from '@mui/icons-material/Miscellaneous
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
-// icons
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
+import { BsFolder, BsPersonRolodex, BsTrash, BsFilesAlt } from 'react-icons/bs';
+import { MdOutlineAttachEmail, MdOutlineMailOutline } from 'react-icons/md';
+
 const icons = {
     DashboardOutlined,
     ApartmentOutlined,
@@ -56,7 +58,13 @@ const icons = {
     LocalShippingOutlinedIcon,
     CampaignOutlinedIcon,
     MessageOutlinedIcon,
-    PeopleOutlineIcon
+    PeopleOutlineIcon,
+    BsFolder,
+    BsPersonRolodex,
+    MdOutlineAttachEmail,
+    BsTrash,
+    BsFilesAlt,
+    MdOutlineMailOutline
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -83,11 +91,19 @@ const dashboard = {
             breadcrumbs: false,
             children: [
                 {
+                    id: 'system_documents',
+                    title: 'System Documents',
+                    type: 'item',
+                    url: 'documents/system-documents',
+                    icon: icons.BsFolder,
+                    breadcrumbs: false
+                },
+                {
                     id: 'my-documents',
                     title: 'My Documents',
                     type: 'item',
                     url: 'documents/my-documents',
-                    icon: icons.FileOpenOutlinedIcon,
+                    icon: icons.BsPersonRolodex,
                     breadcrumbs: false
                 },
                 {
@@ -95,7 +111,7 @@ const dashboard = {
                     title: 'Templates',
                     type: 'item',
                     url: '/documents/templates',
-                    icon: icons.PostAddOutlinedIcon,
+                    icon: icons.BsFilesAlt,
                     breadcrumbs: false
                 },
                 {
@@ -103,7 +119,7 @@ const dashboard = {
                     title: 'Email Attachments',
                     type: 'item',
                     url: '/documents/email-attachments',
-                    icon: icons.StarBorderIcon,
+                    icon: icons.MdOutlineAttachEmail,
                     breadcrumbs: false
                 },
                 {
@@ -111,7 +127,7 @@ const dashboard = {
                     title: 'Trash',
                     type: 'item',
                     url: '/documents/trash',
-                    icon: icons.FolderDeleteOutlinedIcon,
+                    icon: icons.BsTrash,
                     breadcrumbs: false
                 }
             ]
@@ -129,7 +145,7 @@ const dashboard = {
             title: 'emails',
             type: 'item',
             url: '/emails',
-            icon: icons.MessageOutlinedIcon,
+            icon: icons.MdOutlineMailOutline,
             breadcrumbs: false
         }
     ]
