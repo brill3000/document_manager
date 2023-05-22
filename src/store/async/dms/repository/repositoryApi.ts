@@ -178,6 +178,21 @@ export const {
     /**
      * Getters
      */
+    useGetRootFolderQuery,
+    useGetTrashFolderQuery,
+    useGetTrashFolderBaseQuery,
+    useGetPersonalFolderBaseQuery,
+    useGetPersonalFolderQuery,
+    useGetMailFolderQuery,
+    useGetMailFolderBaseQuery,
+    useGetThesaurusFolderQuery,
+    useGetCategoriesFolderQuery,
+    useGetUpdateMessageQuery,
+    useGetRepositoryUuidQuery,
+    useHasNodeQuery,
+    useGetNodePathQuery,
+    useGetAppVersionQuery,
+    useGetConfigurationQuery
     /**
      * Mutations: POST
      */
