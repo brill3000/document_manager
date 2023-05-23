@@ -15,6 +15,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GetChildrenFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
@@ -67,6 +68,8 @@ function GridViewItem({ folder, closeContext }: { folder: GetChildrenFoldersProp
             closeRename();
         }
     };
+    // ================================= | RTK MUTATIONS | ============================ //
+    const [move] = useMoveFolderMutation();
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
@@ -74,6 +77,9 @@ function GridViewItem({ folder, closeContext }: { folder: GetChildrenFoldersProp
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
+                if (moveDoc === true && item.path !== undefined && item.path !== null && path !== undefined && path !== null) {
+                    move({ fldId: item.path, dstId: path });
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     console.log(e.message);
