@@ -87,7 +87,7 @@ export interface GetFoldersContentProps {
     fldId: string;
 }
 
-export interface GetChildrenFoldersProps {
+export interface GetFetchedFoldersProps {
     author: string;
     created: string;
     hasChildren: boolean;

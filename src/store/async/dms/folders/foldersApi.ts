@@ -5,7 +5,7 @@ import {
     CreateFoldersSimpleProps,
     CreateMissingFoldersProps,
     ExtendeCopyFoldersProps,
-    GetChildrenFoldersProps,
+    GetFetchedFoldersProps,
     GetFoldersContentProps,
     MoveFoldersProps,
     RenameFoldersProps,
@@ -29,9 +29,19 @@ export const foldersApi = createApi({
     tagTypes: ['DMS_FOLDERS', 'DMS_FOLDERS_SUCCESS', 'DMS_FOLDERS_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        getFoldersProperties: build.query({
+        getFoldersProperties: build.query<GetFetchedFoldersProps | null, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, params: { fldId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            transformResponse: (response: { data: GetFetchedFoldersProps }) => {
+                const folderCopy = { ...response.data };
+                if (_.isObject(folderCopy) && !_.isEmpty(folderCopy)) {
+                    const pathArray = folderCopy.path.split('/');
+                    folderCopy['doc_name'] = pathArray[pathArray.length - 1];
+                    folderCopy['is_dir'] = true;
+                    return folderCopy;
+                } else {
+                    return null;
+                }
+            },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
                 if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
@@ -49,9 +59,9 @@ export const foldersApi = createApi({
                 return tags;
             }
         }),
-        getFoldersChildren: build.query<{ folder: GetChildrenFoldersProps[] | GetChildrenFoldersProps }, GetFoldersContentProps>({
+        getFoldersChildren: build.query<{ folder: GetFetchedFoldersProps[] | GetFetchedFoldersProps }, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, params: { fldId } }),
-            transformResponse: (response: { data: { folder: GetChildrenFoldersProps[] | GetChildrenFoldersProps } }) => {
+            transformResponse: (response: { data: { folder: GetFetchedFoldersProps[] | GetFetchedFoldersProps } }) => {
                 const dataCopy = { ...response.data };
                 if (Array.isArray(dataCopy.folder)) {
                     dataCopy.folder = dataCopy.folder.map((fld) => {

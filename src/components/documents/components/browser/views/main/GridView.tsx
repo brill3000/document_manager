@@ -5,7 +5,6 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import { useStore } from 'components/documents/data/global_state';
 
 export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     const { selected } = useBrowserStore();
@@ -18,7 +17,7 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '' },
         {
-            skip: !(Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '')
+            skip: selected === null || selected === undefined || (Array.isArray(selected) && selected.length < 1)
         }
     );
 
@@ -28,12 +27,12 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <GoogleLoader height={150} width={150} loop={true} />
                 </Box>
-            ) : folderChildrenIsSuccess && Array.isArray(folderChildren.folder) && folderChildren.folder.length > 0 ? (
-                folderChildren.folder.map((folder) => <GridViewItem closeContext={closeContext} folder={folder} key={folder.path} />)
             ) : folderChildrenError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={150} width={150} />
                 </Box>
+            ) : folderChildrenIsSuccess && Array.isArray(folderChildren.folder) && folderChildren.folder.length > 0 ? (
+                folderChildren.folder.map((folder) => <GridViewItem closeContext={closeContext} folder={folder} key={folder.path} />)
             ) : (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Typography>No Folders</Typography>

@@ -21,7 +21,7 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '' },
         {
-            skip: !(Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '')
+            skip: selected === null || selected === undefined || (Array.isArray(selected) && selected.length < 1)
         }
     );
 

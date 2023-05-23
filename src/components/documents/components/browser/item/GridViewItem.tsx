@@ -13,14 +13,14 @@ import { RenameDocument } from './Rename';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GetChildrenFoldersProps } from 'global/interfaces';
+import { GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridViewItem({ folder, closeContext }: { folder: GetChildrenFoldersProps; closeContext: boolean }): JSX.Element {
+function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps; closeContext: boolean }): JSX.Element {
     const { doc_name, path, is_dir } = folder;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
@@ -73,7 +73,7 @@ function GridViewItem({ folder, closeContext }: { folder: GetChildrenFoldersProp
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: GetChildrenFoldersProps) => {
+        drop: (item: GetFetchedFoldersProps) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);

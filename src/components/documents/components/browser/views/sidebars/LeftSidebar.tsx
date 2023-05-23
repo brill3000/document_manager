@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 
 // hero icons
 import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
-import { DocumentType, RenderTree, Units } from 'components/documents/Interface/FileBrowser';
+import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
 import { Collapse, Skeleton, alpha } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
@@ -18,7 +18,7 @@ import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import _, { uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-// import { GetChildrenFoldersProps } from 'global/interfaces';
+// import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -30,7 +30,6 @@ function TransitionComponent(props: TransitionProps) {
             transform: `translate3d(${props.in ? 0 : 20}px,0,0)`
         }
     });
-
     return (
         <animated.div style={style}>
             <Collapse {...props} />
@@ -39,77 +38,54 @@ function TransitionComponent(props: TransitionProps) {
 }
 
 const StyledTreeItemRoot = styled(
-    (props: TreeItemProps & { isLoader: boolean; isFocused: boolean }) => <TreeItem {...props} TransitionComponent={TransitionComponent} />,
+    (props: TreeItemProps & { isLoader: boolean }) => <TreeItem {...props} TransitionComponent={TransitionComponent} />,
     {
         shouldForwardProp: (props) =>
             props !== 'isLoader' && props !== 'bgColor' && props !== 'labelInfo' && props !== 'labelText' && props !== 'isFocused'
     }
-)(({ theme, isLoader, isFocused }) => ({
+)(({ theme, isLoader }) => ({
     color: theme.palette.text.secondary,
-    paddingRight: isLoader ? 0 : theme.spacing(0.5),
+    paddingRight: 0,
     paddingTop: theme.spacing(0.5),
     [`& .${treeItemClasses.content}`]: {
         borderRadius: theme.spacing(0.5),
-        backgroundColor: isLoader
-            ? 'transparent'
-            : isFocused
-            ? `var(--tree-view-bg-color, ${theme.palette.action.selected})`
-            : alpha(theme.palette.secondary.light, 0.5),
-        ...(isLoader && { paddingLeft: '0 !important' }),
-        ...(isFocused && {
-            color: 'var(--tree-view-color)',
-            borderRight: `3px solid ${theme.palette.primary.main}`,
-            borderLeft: `3px solid ${theme.palette.primary.main}`
-        }),
+        backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.3),
+        ...(isLoader && { padding: '0 !important', height: '1.5rem !important' }),
         fontWeight: theme.typography.fontWeightMedium,
         '&.Mui-expanded': {
             fontWeight: theme.typography.fontWeightRegular
         },
         '&:hover': {
-            backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.9)
-        },
-        '&.Mui-selected': {
-            backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
-            color: 'var(--tree-view-color)',
-            borderRight: `3px solid ${theme.palette.primary.main}`,
-            borderLeft: `3px solid ${theme.palette.primary.main}`
+            backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.35)
         },
         '&.Mui-focused': {
-            backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
+            backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.45)
+        },
+        '&.Mui-selected': {
+            backgroundColor: `var(--tree-view-bg-color, ${alpha(theme.palette.action.selected, 0.4)})`,
             color: 'var(--tree-view-color)',
-            borderRight: `3px solid ${theme.palette.primary.main}`,
-            borderLeft: `3px solid ${theme.palette.primary.main}`
+            borderRight: `3px solid ${alpha(theme.palette.primary.main, 0.4)}`,
+            borderLeft: `3px solid ${alpha(theme.palette.primary.main, 0.4)}`
         }
     },
     [`& .${treeItemClasses.iconContainer}`]: {
-        height: '100%',
-        width: '15%',
         display: isLoader ? 'none' : 'inherit'
     }
 }));
 
-function StyledTreeItem(props: TreeItemProps & { focused: string | null }) {
-    const { label, nodeId, focused, ...other } = props;
-    const otherOmitted = _.omit(other, ['label']);
+function StyledTreeItem(props: TreeItemProps) {
+    const { label, nodeId, ...other } = props;
+    const otherOmitted = _.omit(other, ['label', 'focused']);
     return (
         <StyledTreeItemRoot
             nodeId={nodeId}
-            label={
-                !nodeId.includes('loader') ? (
-                    label
-                ) : (
-                    <Box sx={{ p: 0 }}>
-                        <Skeleton width="100%" height="2.2rem" animation="wave" />
-                    </Box>
-                )
-            }
+            label={!nodeId.includes('loader') ? label : <Skeleton width="100%" height="2.3rem" animation="wave" />}
             sx={{
                 '--tree-view-color': (theme) => theme.palette.primary.main,
                 '--tree-view-bg-color': (theme) => alpha(theme.palette.primary.light, 0.3)
             }}
             {...otherOmitted}
             isLoader={nodeId.includes('loader')}
-            isFocused={focused === nodeId}
         />
     );
 }
@@ -121,17 +97,20 @@ StyledTreeItem.propTypes = {
     labelText: PropTypes.string.isRequired
 };
 
-export default function RightSidebar() {
+export default function LeftSidebar() {
     const [data, setData] = React.useState<RenderTree | null>(null);
-    const { actions, initiateFileBrowser, selected, focused } = useBrowserStore();
+    const { actions, selected, focused } = useBrowserStore();
     // =========================== | Controlled treeview Function | ================================//
     const [expanded, setExpanded] = React.useState<string[]>([]);
-    const handleExpandClick = React.useCallback(
-        (path: string) => {
-            setExpanded((oldExpanded) => (oldExpanded.length === 0 ? [...oldExpanded, path] : [path]));
-        },
-        [selected]
-    );
+    const handleExpandClick = React.useCallback((path: string) => {
+        setExpanded((oldExpanded) => {
+            return oldExpanded.length > 0
+                ? oldExpanded.includes(path)
+                    ? [...oldExpanded.filter((x) => x !== path)]
+                    : [...oldExpanded, path]
+                : [path];
+        });
+    }, []);
     // =========================== | Render Function | ================================//
 
     const renderTree = (nodes: RenderTree | null) => {
@@ -144,11 +123,12 @@ export default function RightSidebar() {
                 onDoubleClickCapture={() => {
                     handleDocumentClick(String(nodes.id));
                 }}
-                onClick={() => handleExpandClick(nodes.id)}
+                onClick={() => {
+                    handleExpandClick(nodes.id);
+                }}
                 bgColor={undefined}
                 color={undefined}
                 labelText={''}
-                focused={focused}
             >
                 {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
             </StyledTreeItem>
@@ -172,10 +152,35 @@ export default function RightSidebar() {
                 bgColor={undefined}
                 color={undefined}
                 labelText={''}
-                focused={focused}
             />
         );
     };
+    // ====================== | Update Tree: Recursive function  | ========================== //
+    function recursiveUpdate(tree: RenderTree | null, pathToCompare: RenderTree['id'], children: RenderTree[]): RenderTree | null {
+        if (tree === null) return null;
+        // Base case: Check if the current tree path matches the pathToCompare
+        if (tree.id === pathToCompare && Array.isArray(children)) {
+            // Update the tree or perform desired operations
+            // For example, you can set a flag or modify properties within the tree
+            tree.children = children;
+        }
+
+        // Recursive case: Check if the current child index matches the childIndexToCompare
+        if (tree.index !== undefined) {
+            const childIndex = tree.index;
+            if (tree.children && childIndex >= 0 && childIndex < tree.children.length) {
+                const child = tree.children[childIndex];
+                tree.children[childIndex] = recursiveUpdate(child, pathToCompare, children);
+            }
+        } else {
+            // If childIndexToCompare is not defined, recursively call for all children
+            if (tree.children) {
+                tree.children = tree.children.map((child) => recursiveUpdate(child, pathToCompare, children));
+            }
+        }
+
+        return tree;
+    }
     // =========================== | Data Functions | ================================//
     /**
      * Fetch root folder
@@ -188,24 +193,9 @@ export default function RightSidebar() {
     } = useGetRootFolderQuery({});
     React.useEffect(() => {
         if (rootFolderIsSuccess) {
-            // set root folder
-            actions.setRoot(rootFolder.path);
-            const folders: DocumentType[] = [
-                {
-                    id: rootFolder.path,
-                    doc_name: rootFolder.doc_name,
-                    is_dir: true,
-                    size_units: Units.Mb,
-                    size: 100,
-                    is_archived: false,
-                    parent: null,
-                    children: null,
-                    type: 'folder'
-                }
-            ];
-            initiateFileBrowser(folders);
             handleExpandClick(rootFolder.path);
             actions.setSelected([rootFolder.path]);
+            actions.setFocused(rootFolder.path);
             const data: RenderTree = {
                 id: rootFolder.path,
                 doc_name: rootFolder.doc_name,
@@ -216,6 +206,11 @@ export default function RightSidebar() {
             setData(data);
         }
     }, [rootFolderIsSuccess]);
+
+    React.useEffect(() => {
+        console.log(expanded, 'EXPANDED');
+    }, [expanded]);
+
     /**
      * Fetch children
      */
@@ -226,9 +221,9 @@ export default function RightSidebar() {
         isFetching: folderChildrenIsFetching,
         isSuccess: folderChildrenIsSuccess
     } = useGetFoldersChildrenQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '' },
+        { fldId: focused !== null && focused !== undefined && focused.length > 0 ? focused : '' },
         {
-            skip: !(Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '')
+            skip: focused === null || focused === undefined || focused.length < 1
         }
     );
 
@@ -241,63 +236,28 @@ export default function RightSidebar() {
             Array.isArray(selected) &&
             selected.length > 0
         ) {
-            const newChildren: string[] = folderChildren.folder.map((child, i: number) => {
-                const newFolder: DocumentType = {
+            const newChildren: RenderTree[] = folderChildren.folder.map((child, i: number) => {
+                const treeItem: RenderTree = {
                     id: child.path,
+                    index: i,
                     doc_name: child.doc_name,
-                    is_dir: true,
-                    size_units: Units.Mb,
-                    size: 100,
-                    is_archived: false,
-                    parent: selected[selected.length - 1],
-                    children: [],
-                    type: 'folder'
+                    children: child.hasChildren ? [null] : [],
+                    hasChildren: child.hasChildren
                 };
-                // const treeItem: RenderTree = {
-                //     id: child.path,
-                //     index: i,
-                //     doc_name: child.path,
-                //     children: child.hasChildren ? [null] : [],
-                //     hasChildren: child.hasChildren
-                // };
-                actions.createDocument(child.path, newFolder);
-                return child.path;
+                return treeItem;
             });
-            actions.changeDetails(selected[selected.length - 1], { children: newChildren });
-            // const data: RenderTree = {
-            //     id: rootFolder.path,
-            //     doc_name: 'home',
-            //     hasChildren: rootFolder.hasChildren,
-            //     children: [
-            //         {
-            //             id: rootFolder.path + '/test',
-            //             doc_name: 'test',
-            //             children: rootFolder.hasChildren ? [null] : [],
-            //             hasChildren: true
-            //         },
-            //         null
-            //     ]
-            // };
+            setData((data) => {
+                let dataCopy = data !== null ? { ...data } : null;
+                dataCopy = recursiveUpdate(data, selected[selected.length - 1], newChildren);
+                return dataCopy;
+            });
         }
     }, [folderChildrenIsSuccess, folderChildrenIsFetching]);
-
-    // const setChild = (data: RenderTree) => {
-    //     const dataCopy = { ...data };
-    //     return dataCopy;
-    // };
-    // function fibonacci(n: number): number {
-    //     if (n <= 1) {
-    //         return n;
-    //     }
-
-    //     return fibonacci(n - 1) + fibonacci(n - 2);
-    // }
 
     // =========================== | Route Functions | ================================//
     const navigate = useNavigate();
     const { pathParam } = useParams();
     const { pathname } = useLocation();
-
     /**
      * Function that add the seleted folder path to the route
      * This is critical for reload purposes
@@ -330,12 +290,19 @@ export default function RightSidebar() {
             ) : data !== null && data !== undefined ? (
                 <TreeView
                     aria-label="Folder Sidebar"
-                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '1'}
+                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : undefined}
                     defaultCollapseIcon={<MemorizedFcFolderOpen size={25} />}
                     defaultExpandIcon={<MemorizedFcFolder size={25} />}
                     defaultEndIcon={<MemorizedFcFolder size={25} />}
                     expanded={expanded}
-                    sx={{ flexGrow: 1, maxWidth: '100vw', minWidth: '100%', overflowY: 'auto', pt: 1.2, pr: 1 }}
+                    sx={{
+                        flexGrow: 1,
+                        maxWidth: '100vw',
+                        minWidth: '100%',
+                        overflowY: 'auto',
+                        pt: 1.2,
+                        pr: 1
+                    }}
                 >
                     {renderTree(data)}
                 </TreeView>

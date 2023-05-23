@@ -9,23 +9,27 @@ import { FiEdit } from 'react-icons/fi';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { MemorizedFcFolder } from '../../item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { DocumentType } from 'components/documents/Interface/FileBrowser';
-import { BsFilePerson } from 'react-icons/bs';
+import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
+import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { SiAuth0 } from 'react-icons/si';
 
-export default function LeftSidebar() {
+export default function RightSidebar() {
     const { browserHeight } = useViewStore();
-    const { actions, focused, splitScreen } = useBrowserStore();
-    const [current, setCurrent] = React.useState<DocumentType | null>(null);
+    const { focused, splitScreen } = useBrowserStore();
 
-    React.useEffect(() => {
-        if (focused !== null && focused !== undefined) {
-            const doc = actions.getDocument(focused);
-            if (doc !== undefined) {
-                setCurrent(doc);
-            }
+    const {
+        data: folderInfo,
+        error: folderInfoError,
+        isFetching: folderInfoIsFetching,
+        isLoading: folderInfoIsLoading,
+        isSuccess: folderInfoIsSuccess
+    } = useGetFoldersPropertiesQuery(
+        { fldId: focused !== null ? focused : '' },
+        {
+            skip: focused === null || focused === undefined || focused.length < 1
         }
-    }, [focused]);
-
+    );
     {
         /*      <Box display="flex" justifyContent="center" pt={1}>
                        {fileIcon(selected[0].type, browserHeight * 0.1, 0)}
@@ -34,7 +38,15 @@ export default function LeftSidebar() {
     }
     return (
         <>
-            {focused !== null && focused !== undefined ? (
+            {folderInfoIsFetching || folderInfoIsLoading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <GoogleLoader height={100} width={100} loop={true} />
+                </Box>
+            ) : folderInfoError ? (
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <Error height={100} width={100} />
+                </Box>
+            ) : folderInfoIsSuccess && folderInfo ? (
                 <Stack
                     spacing={2}
                     height="100%"
@@ -61,45 +73,81 @@ export default function LeftSidebar() {
                         }}
                         subheader={<li />}
                     >
-                        {[{ title: 'General Infomation' }, { title: 'Permissions & Access' }, { title: 'tags' }].map((sectionId, i) => (
-                            <li key={`section-${sectionId.title}`}>
-                                <ul
-                                    style={{
-                                        minHeight:
-                                            i === 2
-                                                ? browserHeight !== 0 && browserHeight !== undefined
-                                                    ? browserHeight * 0.7 * 0.4
-                                                    : '40%'
-                                                : 'max-content',
-                                        padding: 0
-                                    }}
-                                >
-                                    <ListSubheader color="primary">{sectionId.title}</ListSubheader>
-                                    <Divider variant="middle" />
-                                    <ListItem>
-                                        <ListItemText secondary={current?.doc_name} sx={{ width: '90%' }} />
-                                        <ListItemIcon>
-                                            <FiEdit />
-                                        </ListItemIcon>
-                                    </ListItem>
-                                    <Divider variant="middle" />
-                                    <ListItem>
-                                        <ListItemText secondary={current?.size} sx={{ width: '90%' }} />
-                                        <ListItemIcon>
-                                            <BsFilePerson />
-                                        </ListItemIcon>
-                                    </ListItem>
-                                    <Divider variant="middle" />
-                                    <ListItem>
-                                        <ListItemText secondary={current?.type ?? 'folder'} sx={{ width: '90%' }} />
-                                        <ListItemIcon>
-                                            <FiEdit />
-                                        </ListItemIcon>
-                                    </ListItem>
-                                    {/* <Divider /> */}
-                                </ul>
-                            </li>
-                        ))}
+                        {/* {[{ title: 'General Infomation' }, { title: 'Permissions & Access' }, { title: 'tags' }].map((sectionId, i) => ( */}
+                        <li>
+                            <ul
+                                style={{
+                                    minHeight: 'max-content',
+                                    padding: 0
+                                }}
+                            >
+                                <ListSubheader color="primary">General Infomation</ListSubheader>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.doc_name} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <FiEdit />
+                                    </ListItemIcon>
+                                </ListItem>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.author} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <BsFilePerson />
+                                    </ListItemIcon>
+                                </ListItem>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.created ?? 'folder'} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <BsCalendar2Check />
+                                    </ListItemIcon>
+                                </ListItem>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.hasChildren ?? 'folder'} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <BsCalendar2Check />
+                                    </ListItemIcon>
+                                </ListItem>
+                                {/* <Divider /> */}
+                            </ul>
+                        </li>
+                        <li>
+                            <ul
+                                style={{
+                                    minHeight: 'max-content',
+                                    padding: 0
+                                }}
+                            >
+                                <ListSubheader color="primary">Permissions & Access</ListSubheader>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.permissions} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <SiAuth0 />
+                                    </ListItemIcon>
+                                </ListItem>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul
+                                style={{
+                                    minHeight: 'max-content',
+                                    padding: 0
+                                }}
+                            >
+                                <ListSubheader color="primary">Subscriptions</ListSubheader>
+                                <Divider variant="middle" />
+                                <ListItem>
+                                    <ListItemText secondary={folderInfo.subscribed} sx={{ width: '90%' }} />
+                                    <ListItemIcon>
+                                        <SiAuth0 />
+                                    </ListItemIcon>
+                                </ListItem>
+                            </ul>
+                        </li>
+                        {/* ))} */}
                     </List>
                 </Stack>
             ) : (

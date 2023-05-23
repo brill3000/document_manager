@@ -1,4 +1,4 @@
-import { alpha, Box, Divider, IconButton, Typography } from '@mui/material';
+import { alpha, Box, Divider, IconButton, Skeleton, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
 import { CiSearch } from 'react-icons/ci';
@@ -6,6 +6,7 @@ import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { IoReturnUpForwardOutline } from 'react-icons/io5';
 import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 
@@ -26,6 +27,18 @@ export default function TopNavHandles() {
             }
         }
     };
+    const {
+        data: folderInfo,
+        error: folderInfoError,
+        isFetching: folderInfoIsFetching,
+        isLoading: folderInfoIsLoading,
+        isSuccess: folderInfoIsSuccess
+    } = useGetFoldersPropertiesQuery(
+        { fldId: selected !== null && Array.isArray(selected) ? selected[selected.length - 1] : '' },
+        {
+            skip: selected === null || selected === undefined || selected.length < 1
+        }
+    );
     return (
         <Box
             sx={{
@@ -134,8 +147,15 @@ export default function TopNavHandles() {
                 alignItems="center"
             >
                 <Typography variant="body1" width={250} noWrap>
-                    {Array.isArray(selected) ? actions.getDocument(selected[selected.length - 1])?.doc_name : 'Current folder'}
+                    {folderInfoIsLoading && folderInfoIsLoading ? (
+                        <Skeleton />
+                    ) : folderInfoIsSuccess && folderInfo ? (
+                        folderInfo.doc_name
+                    ) : (
+                        'Current Folder'
+                    )}
                 </Typography>
+
                 <IconButton
                     color="secondary"
                     sx={{

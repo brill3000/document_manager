@@ -13,7 +13,7 @@ import ActionMenu from 'components/documents/components/browser/UI/Menus/Documen
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GetChildrenFoldersProps } from 'global/interfaces';
+import { GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 
@@ -23,7 +23,7 @@ export function ListViewItem({
     isColored,
     width
 }: {
-    folder: GetChildrenFoldersProps;
+    folder: GetFetchedFoldersProps;
     isColored: boolean;
     width?: string | number;
     height?: string | number;
@@ -58,7 +58,7 @@ export function ListViewItem({
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: GetChildrenFoldersProps) => {
+        drop: (item: GetFetchedFoldersProps) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
