@@ -7,6 +7,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     selected: [],
     farthestPath: null,
     focused: null,
+    splitScreen: true,
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -36,9 +37,12 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
             set(() => ({ selected: selected ?? null }));
             return true;
         },
-        setFocused: (focused: string) => {
+        setFocused: (focused: string | null) => {
             set(() => ({ focused: focused ?? null }));
             return true;
+        },
+        setSplitScreen: (splitScreen: boolean) => {
+            set(() => ({ splitScreen: splitScreen }));
         },
         clear: () => {
             set(() => ({ fileMap: new Map() }));

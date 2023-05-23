@@ -14,7 +14,7 @@ import { BsFilePerson } from 'react-icons/bs';
 
 export default function LeftSidebar() {
     const { browserHeight } = useViewStore();
-    const { actions, focused, selected } = useBrowserStore();
+    const { actions, focused, splitScreen } = useBrowserStore();
     const [current, setCurrent] = React.useState<DocumentType | null>(null);
 
     React.useEffect(() => {
@@ -35,7 +35,16 @@ export default function LeftSidebar() {
     return (
         <>
             {focused !== null && focused !== undefined ? (
-                <Stack spacing={2} height="100%" width="100%">
+                <Stack
+                    spacing={2}
+                    height="100%"
+                    width="100%"
+                    sx={{
+                        opacity: splitScreen ? 1 : 0,
+                        transition: '0.1s all',
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                    }}
+                >
                     <Box display="flex" justifyContent="center">
                         <MemorizedFcFolder size={browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.2 : '30%'} />
                     </Box>
@@ -94,7 +103,18 @@ export default function LeftSidebar() {
                     </List>
                 </Stack>
             ) : (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight="100%"
+                    minWidth="100%"
+                    sx={{
+                        opacity: splitScreen ? 1 : 0,
+                        transition: '0.2s all',
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                    }}
+                >
                     <Typography>Nothing Selected</Typography>
                 </Box>
             )}

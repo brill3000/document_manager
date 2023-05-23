@@ -115,6 +115,7 @@ export interface UseModelActions {
     setFocused: (focused: string | null) => void;
     getDocument: (key: string) => DocumentType | undefined;
     documentExists: (key: string) => boolean;
+    setSplitScreen: (splitScreen: boolean) => void;
 }
 
 export interface StoreState {
@@ -123,6 +124,7 @@ export interface StoreState {
     farthestPath: string | null;
     selected: Array<string>;
     focused: string | null;
+    splitScreen: boolean;
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
     actions: UseModelActions;
 }

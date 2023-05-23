@@ -346,7 +346,7 @@ export default function TopNavActions() {
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Delete file/folder
                                 </Typography>
-                                <Typography fontSize={10.5}>his button allows you to delete the selected file/folder</Typography>
+                                <Typography fontSize={10.5}>This button allows you to delete the selected file/folder</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* File deletion is a permanent operation and cannot be reverted"}</Typography> */}
                             </React.Fragment>
                         }

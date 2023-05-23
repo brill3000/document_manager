@@ -25,7 +25,11 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     const [children, setChildren] = React.useState<Array<string | null>>([]);
     const { nav } = useHistory();
 
-    const { actions, selected, fileMap } = useBrowserStore();
+    const { actions, selected, fileMap, splitScreen } = useBrowserStore();
+
+    React.useEffect(() => {
+        view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
+    }, [view]);
 
     // ========================= | Fetch data | =========================== //
 
@@ -126,7 +130,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
         <Grid
             container
             sm={12}
-            md={6}
+            md={splitScreen ? 6 : 9}
             bgcolor={alpha(brown[100], 0.2)}
             sx={{
                 overflowY: 'auto',
@@ -135,7 +139,9 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                 pb: 5,
                 pt: view === 'list' ? 0 : 2,
                 m: 0,
-                userSelect: 'none'
+                userSelect: 'none',
+                transition: '0.3s all',
+                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
             }}
             rowSpacing={1}
             onClick={handleClick}
