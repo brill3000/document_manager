@@ -15,6 +15,7 @@ import { MemorizedFcFolder } from 'components/documents/components/browser/item/
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GetChildrenFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 export function ListViewItem({
     folder,
@@ -52,12 +53,18 @@ export function ListViewItem({
     const { pathParam } = useParams();
     const { pathname } = useLocation();
 
+    // ================================= | RTK MUTATIONS | ============================ //
+    const [move] = useMoveFolderMutation();
+
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: OkmDocumentType) => {
+        drop: (item: GetChildrenFoldersProps) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
+                if (moveDoc === true && item.path !== undefined && item.path !== null && path !== undefined && path !== null) {
+                    move({ fldId: item.path, dstId: path });
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     console.log(e.message);
@@ -80,9 +87,9 @@ export function ListViewItem({
     React.useEffect(() => {
         setDragging(isDragging);
         if (isDragging) {
-            path !== undefined && actions.setSelected([path]);
+            path !== undefined && actions.setFocused(path);
         }
-    }, [path, isDragging, setDragging, actions.setSelected]);
+    }, [path, isDragging, setDragging]);
 
     React.useEffect(() => {
         closeContext && setContextMenu(null);
@@ -196,12 +203,17 @@ export function ListViewItem({
                 height: 'max-content',
                 minWidth: width,
                 webkitTransform: 'translate3d(0, 0, 0)',
-                px: 0
+                px: 0,
+                '& .MuiListItemButton-root:hover': {
+                    bgcolor: 'transparent',
+                    transition: 'none'
+                }
             }}
             onFocus={() => {
                 console.log(path, 'PATH');
                 actions.setFocused(path);
             }}
+            disableRipple
             onBlur={() => focused === path && actions.setFocused(null)}
         >
             {document !== undefined ? (
@@ -215,9 +227,9 @@ export function ListViewItem({
                     display={isDragging ? 'none' : 'flex'}
                     bgcolor={(theme) =>
                         (isFocused || isOver) && !isRenaming
-                            ? lighten(theme.palette.primary.main, 0.8)
+                            ? lighten(theme.palette.primary.main, 0.85)
                             : isHovered && !isRenaming
-                            ? 'rgba(225, 232, 240, 1)'
+                            ? 'background.paper'
                             : isColored
                             ? lighten(theme.palette.secondary.light, 0.7)
                             : lighten(theme.palette.secondary.light, 0.9)
@@ -236,6 +248,9 @@ export function ListViewItem({
                     sx={{
                         '& :hover': {
                             cursor: isRenaming ? 'text' : 'pointer'
+                        },
+                        '& .MuiDivider-root': {
+                            borderColor: lighten(theme.palette.secondary.light, 0.6)
                         }
                     }}
                     ml={1}
@@ -256,9 +271,9 @@ export function ListViewItem({
                         }}
                         bgcolor={(theme) =>
                             (isFocused || isOver) && !isRenaming
-                                ? lighten(theme.palette.primary.main, 0.8)
+                                ? lighten(theme.palette.primary.main, 0.85)
                                 : isHovered && !isRenaming
-                                ? 'rgba(225, 232, 240, 1)'
+                                ? 'background.paper'
                                 : isColored
                                 ? lighten(theme.palette.secondary.light, 0.7)
                                 : lighten(theme.palette.secondary.light, 0.9)
