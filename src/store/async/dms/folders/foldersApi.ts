@@ -5,11 +5,13 @@ import {
     CreateFoldersSimpleProps,
     CreateMissingFoldersProps,
     ExtendeCopyFoldersProps,
+    GetChildrenFoldersProps,
     GetFoldersContentProps,
     MoveFoldersProps,
     RenameFoldersProps,
     SetFoldersPropertiesProps
 } from 'global/interfaces';
+import _ from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_FOLDERS' | 'DMS_FOLDERS_SUCCESS' | 'DMS_FOLDERS_ERROR';
 
@@ -47,9 +49,31 @@ export const foldersApi = createApi({
                 return tags;
             }
         }),
-        getFoldersChildren: build.query<any, GetFoldersContentProps>({
+        getFoldersChildren: build.query<{ folder: GetChildrenFoldersProps[] | GetChildrenFoldersProps }, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, params: { fldId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            transformResponse: (response: { data: { folder: GetChildrenFoldersProps[] | GetChildrenFoldersProps } }) => {
+                const dataCopy = { ...response.data };
+                if (Array.isArray(dataCopy.folder)) {
+                    dataCopy.folder = dataCopy.folder.map((fld) => {
+                        const folderCopy = { ...fld };
+                        const pathArray = fld.path.split('/');
+                        folderCopy['doc_name'] = pathArray[pathArray.length - 1];
+                        folderCopy['is_dir'] = true;
+
+                        return folderCopy;
+                    });
+                    return dataCopy;
+                } else if (_.isObject(dataCopy.folder) && !_.isEmpty(dataCopy.folder)) {
+                    const pathArray = dataCopy.folder.path.split('/');
+                    dataCopy.folder['doc_name'] = pathArray[pathArray.length - 1];
+                    dataCopy.folder['is_dir'] = true;
+                    dataCopy.folder = [dataCopy.folder];
+                    return dataCopy;
+                } else {
+                    dataCopy.folder = [];
+                    return dataCopy;
+                }
+            },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
                 if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];

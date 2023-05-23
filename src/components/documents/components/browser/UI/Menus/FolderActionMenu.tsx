@@ -6,6 +6,9 @@ import { StyledMenu } from './StyledMenu';
 import { BiPaste, BiBrush } from 'react-icons/bi';
 import { IoMdTrash } from 'react-icons/io';
 import { theme } from '../../../../Themes/theme';
+import { useCopyFoldersMutation, useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { useStore } from 'components/documents/data/global_state';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -18,6 +21,12 @@ interface ActionMenuProps {
 
 export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<'new_folder' | 'paste' | 'paste_all' | 'edit' | 'delete' | null>(null);
+    // ================================= | Mutations | ============================= //
+    const { clipboard, addToClipBoard } = useStore();
+    const [move] = useMoveFolderMutation();
+    const [copy] = useCopyFoldersMutation();
+    const { selected: dstFld } = useBrowserStore();
+
     React.useEffect(() => {
         return () => {
             setSelected(null);
@@ -57,6 +66,17 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 onClick={(e) => {
                     setSelected('paste');
                     handleMenuClick(e, 'paste');
+                    if (clipboard.size > 0 && Array.isArray(dstFld) && dstFld.length > 0) {
+                        const keysArray = [...clipboard.keys()];
+                        const fldId = keysArray[keysArray.length - 1];
+                        const type = clipboard.get(fldId);
+                        const dstId = dstFld[dstFld.length - 1];
+                        if (type === 'copy') {
+                            copy({ fldId, dstId });
+                        } else if (type === 'cut') {
+                            move({ fldId, dstId });
+                        }
+                    }
                 }}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>

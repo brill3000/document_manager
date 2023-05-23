@@ -2,23 +2,23 @@ import * as React from 'react';
 import { DocumentType, EditDocumentType } from '../Interface/FileBrowser';
 
 export interface UseModelActions {
-    delete: (KeyToRemove: string | number) => boolean | Error;
-    set: (key: string | number, value: DocumentType) => void;
+    delete: (KeyToRemove: string) => boolean | Error;
+    set: (key: string, value: DocumentType) => void;
     clear: () => void;
-    setValue: React.Dispatch<React.SetStateAction<Map<string | number, DocumentType>>>;
-    has: (key: string | number) => boolean;
-    getChildren: (parent: string | number | null) => Array<DocumentType | undefined> | null;
-    changeDetails: (key: string | number, details: EditDocumentType) => boolean | Error;
-    move: (key: string | number | null, parent: string | number | null) => boolean | Error;
-    createFolder: (parent: string | number, folder: DocumentType) => boolean | Error;
-    uploadFiles: (parent: string | number, files: DocumentType[]) => boolean | Error;
+    setValue: React.Dispatch<React.SetStateAction<Map<string, DocumentType>>>;
+    has: (key: string) => boolean;
+    getChildren: (parent: string | null) => Array<string | null> | null;
+    changeDetails: (key: string, details: EditDocumentType) => boolean | Error;
+    move: (key: string | null, parent: string | null) => boolean | Error;
+    createFolder: (parent: string, folder: DocumentType) => boolean | Error;
+    uploadFiles: (parent: string, files: DocumentType[]) => boolean | Error;
 }
 /*
     Module type interface for the useModel hook
 */
 export interface UseModelExports {
-    root: string | number | null | undefined;
-    fileMap: Map<string | number, DocumentType>;
+    root: string | null | undefined;
+    fileMap: Map<string, DocumentType>;
     actions: UseModelActions;
 }
 /*
@@ -26,15 +26,15 @@ export interface UseModelExports {
     @deprecated This hook's functionality will be moved to global store to avoid prop drilling
     @returns {UserModelActions}
 */
-export const useModel = (root: string | number | null | undefined, documents: DocumentType[]): UseModelExports => {
+export const useModel = (root: string | null | undefined, documents: DocumentType[]): UseModelExports => {
     /**
      * The base is the root of the tree, this will the entry point of the file system i.e the root folder
      */
-    const [base, setBase] = React.useState<string | number | null | undefined>(root);
+    const [base, setBase] = React.useState<string | null | undefined>(root);
     /**
      * Is the dictionary or hash map containing documents with their ids as the key
      */
-    const [map, setMap] = React.useState<Map<string | number, DocumentType>>(new Map<string | number, DocumentType>(new Map()));
+    const [map, setMap] = React.useState<Map<string, DocumentType>>(new Map<string, DocumentType>(new Map()));
     /**
      * Initiate population of the map with the array of documents supplied as parameter
      */
@@ -58,11 +58,11 @@ export const useModel = (root: string | number | null | undefined, documents: Do
     }, []);
     /**
      * Add or Mutate value of a node given the identifier and value
-     * @param {string | number} key
+     * @param {string} key
      * @param {string | DocumentType} value
      * @returns {boolean}
      * */
-    const set = React.useCallback((key: string | number, value: DocumentType): boolean => {
+    const set = React.useCallback((key: string, value: DocumentType): boolean => {
         setMap((_map) => {
             const copy = new Map(_map);
             copy.set(key, value).has(key);
@@ -76,19 +76,19 @@ export const useModel = (root: string | number | null | undefined, documents: Do
      * @returns {boolean}
      * */
     const has = React.useCallback(
-        (key: string | number): boolean => {
+        (key: string): boolean => {
             return map.has(key);
         },
         [map]
     );
     /**
      * Create a new folder
-     * @param {string | number} parent
+     * @param {string } parent
      * @param {DocumentType} files
      * @returns {boolean}
      */
     const uploadFiles = React.useCallback(
-        (parent: string | number, files: DocumentType[]): boolean | Error => {
+        (parent: string, files: DocumentType[]): boolean | Error => {
             try {
                 if (!parent && !map.has(parent))
                     throw new Error('The folder you are uploading appears to have been deleted, reload to check for changes');
@@ -118,12 +118,12 @@ export const useModel = (root: string | number | null | undefined, documents: Do
     );
     /**
      * Create a new folder
-     * @param {string | number} parent
+     * @param {string } parent
      * @param {DocumentType} files
      * @returns {boolean}
      */
     const createFolder = React.useCallback(
-        (parent: string | number, folder: DocumentType): boolean | Error => {
+        (parent: string, folder: DocumentType): boolean | Error => {
             try {
                 if (!parent && !map.has(parent))
                     throw new Error('The folder you are uploading appears to have been deleted, reload to check for changes');
@@ -148,23 +148,16 @@ export const useModel = (root: string | number | null | undefined, documents: Do
     );
 
     const getChildren = React.useCallback(
-        (parent: string | number | null): Array<DocumentType | undefined> | null => {
+        (parent: string | null): Array<string | null> | null => {
             if (parent && has(parent)) {
                 const children = map.get(parent)?.children;
-                if (Array.isArray(children) && children.length > 0) {
-                    return children
-                        .filter((x) => map.has(x))
-                        .map((child) => {
-                            const childDoc: DocumentType | undefined = map.get(child);
-                            return childDoc;
-                        });
-                } else return null;
+                return children !== undefined ? children : null;
             } else return null;
         },
         [map]
     );
     const changeDetails = React.useCallback(
-        (key: string | number, details: EditDocumentType): boolean | Error => {
+        (key: string, details: EditDocumentType): boolean | Error => {
             if (!key) return new Error('You did not select a valid file id');
             const doc = map.get(key);
             const properties = Object.keys(details);
@@ -190,7 +183,7 @@ export const useModel = (root: string | number | null | undefined, documents: Do
     );
 
     const move = React.useCallback(
-        (key: string | number | null, parent: string | number | null): boolean | Error => {
+        (key: string | null, parent: string | null): boolean | Error => {
             try {
                 const mapCopy = new Map(map);
                 if (!key || !parent) throw new Error('You did not select a valid file id');
@@ -246,7 +239,7 @@ export const useModel = (root: string | number | null | undefined, documents: Do
     );
 
     const deleteById = React.useCallback(
-        (key: string | number): boolean | Error => {
+        (key: string): boolean | Error => {
             try {
                 let deleted = false;
                 const copy = new Map(map);

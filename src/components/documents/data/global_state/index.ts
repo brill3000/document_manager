@@ -5,10 +5,10 @@ import { useModel, UseModelActions } from '../Model';
 interface State {
     dragging: boolean;
     setDragging: (val: boolean) => void;
-    clipboard: Map<string | number, 'cut' | 'copy'>;
-    addToClipBoard: (node: { id: number | string; action: 'cut' | 'copy' }) => void;
-    root: string | number | null | undefined;
-    fileMap: Map<string | number, DocumentType | undefined>;
+    clipboard: Map<string, 'cut' | 'copy'>;
+    addToClipBoard: (node: { id: string; action: 'cut' | 'copy' }) => void;
+    root: string | null | undefined;
+    fileMap: Map<string, DocumentType | undefined>;
     actions: UseModelActions | null;
     documents: DocumentType[];
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
@@ -48,7 +48,7 @@ export const useStore = create<State>((set) => {
          * Clipboard
          */
         clipboard: new Map(),
-        addToClipBoard: (node: { id: number | string; action: 'cut' | 'copy' }) =>
+        addToClipBoard: (node: { id: string; action: 'cut' | 'copy' }) =>
             set((state) => {
                 const { clipboard } = state;
                 if (clipboard.has(node.id)) {

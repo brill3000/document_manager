@@ -86,6 +86,18 @@ export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
 export interface GetFoldersContentProps {
     fldId: string;
 }
+
+export interface GetChildrenFoldersProps {
+    author: string;
+    created: string;
+    hasChildren: boolean;
+    doc_name: string;
+    path: string;
+    permissions: number;
+    subscribed: boolean;
+    uuid: string;
+    is_dir: boolean;
+}
 export interface CreateFoldersProps {
     fld: any;
 }

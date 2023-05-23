@@ -1,4 +1,5 @@
 import React, { RefObject, SetStateAction } from 'react';
+import { boolean } from 'yup';
 
 export interface FileBrowserProps {
     height?: key;
@@ -23,12 +24,7 @@ export interface HistoryInteface {
     id: key;
     label: string;
 }
-export interface FolderGridProps {
-    documents: (DocumentType | undefined)[];
-    selected: DocumentType[];
-    setSelected: React.Dispatch<React.SetStateAction<DocumentType[]>>;
-    select: (nodeId: key) => void;
-    nav: any[];
+export interface MainGridProps {
     gridRef: RefObject<HTMLDivElement>;
 }
 
@@ -37,16 +33,32 @@ export interface FileBrowserNaviagationProps {
     select: (nodeId: key) => void;
 }
 export interface DocumentType {
-    id: key;
+    id: string;
     doc_name: string;
     is_dir: boolean;
     size: number;
     size_units: Units;
     is_archived: boolean;
     custom_attributes?: any;
-    parent: key | null;
-    children: (number | string)[] | null;
+    parent: string | null;
+    children: Array<string | null> | null;
     type: string;
+}
+export interface OkmDocumentType {
+    author: string;
+    created: string;
+    doc_name: string;
+    hasChildren: boolean;
+    path: string;
+    permissions: 15;
+    subscribed: boolean;
+    uuid: string;
+    is_dir: boolean;
+}
+
+export interface ViewsProps {
+    setCloseContext: React.Dispatch<React.SetStateAction<boolean>>;
+    closeContext: boolean;
 }
 
 export enum Units {
@@ -62,17 +74,12 @@ export interface EditDocumentType {
     size_units?: Units;
     is_archived?: boolean;
     custom_attributes?: any;
-    parent?: key | null;
-    children?: (number | string)[] | null;
+    parent?: string | null;
+    children?: Array<string | null> | null;
 }
 
 export interface FileBrowserContentProps {
-    selected: DocumentType[];
-    setSelected: React.Dispatch<React.SetStateAction<DocumentType[]>>;
-    documents: (DocumentType | undefined)[];
-    select: (nodeId: key) => void;
-    nav: any[];
-    gridRef: RefObject<HTMLDivElement>;
+    gridRef: React.MutableRefObject<HTMLInputElement | null>;
 }
 
 export interface FileBrowserFooterProps {
@@ -80,26 +87,14 @@ export interface FileBrowserFooterProps {
 }
 
 export interface DocumentProps {
-    document: DocumentType | undefined;
-    selected: DocumentType[];
-    setSelected: React.Dispatch<SetStateAction<DocumentType[]>>;
-    select: (nodeId: key) => void;
-    actions: UseModelActions;
+    documentId: string | null;
     isOverDoc: boolean;
     setIsOverDoc: React.Dispatch<SetStateAction<boolean>>;
     setCloseContext: React.Dispatch<SetStateAction<boolean>>;
     closeContext: boolean;
     scrollPosition?: number;
 }
-export interface DocumentListProps {
-    documents: (DocumentType | undefined)[];
-    selected: DocumentType[];
-    setSelected: React.Dispatch<SetStateAction<DocumentType[]>>;
-    select: (nodeId: key) => void;
-    actions: UseModelActions;
-    isOverDoc: boolean;
-    setIsOverDoc: React.Dispatch<SetStateAction<boolean>>;
-    setCloseContext: React.Dispatch<SetStateAction<boolean>>;
+export interface ListViewsProps extends ViewsProps {
     closeContext: boolean;
     scrollPosition: number;
     width?: string | number;
@@ -108,26 +103,35 @@ export interface DocumentListProps {
 
 export interface UseModelActions {
     createDocument: (key: key, val: DocumentType | undefined) => boolean | Error;
+    setRoot: (key: key) => boolean | Error;
     clear: () => boolean | Error;
     delete: (key: key) => boolean | Error;
-    getChildren: (parent: key | null) => Array<DocumentType | undefined> | null;
+    getChildren: (parent: string | null) => Array<string | null> | null;
     changeDetails: (key: key | null, details: EditDocumentType) => boolean | Error;
-    move: (key: key | null, parent: key | null) => boolean | Error;
-    uploadFiles: (parent: string | number, files: DocumentType[]) => boolean | Error;
+    move: (key: string | null, parent: string | null) => boolean | Error;
+    uploadFiles: (parent: string, files: DocumentType[]) => boolean | Error;
     deleteById: (key: key | null) => boolean | Error;
+    setSelected: (arg0: Array<string>) => void;
+    setFocused: (focused: string | null) => void;
+    getDocument: (key: string) => DocumentType | undefined;
+    documentExists: (key: string) => boolean;
 }
 
 export interface StoreState {
     fileMap: Map<key, DocumentType | undefined>;
     root: key | null | undefined;
+    farthestPath: string | null;
+    selected: Array<string>;
+    focused: string | null;
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
     actions: UseModelActions;
 }
 
-export type key = string | number;
+export type key = string;
 
 export interface RenderTree {
     id: string;
+    index: number;
     doc_name: string;
     children?: Array<RenderTree | null>;
     hasChildren: boolean;

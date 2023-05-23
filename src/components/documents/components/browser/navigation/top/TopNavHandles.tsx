@@ -4,22 +4,28 @@ import React from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { IoReturnUpForwardOutline } from 'react-icons/io5';
-import { DocumentType } from 'components/documents/Interface/FileBrowser';
 import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 
-export default function TopNavHandles({
-    handleBack,
-    handleForward,
-    doc
-}: {
-    handleBack: () => void;
-    handleForward: () => void;
-    doc: DocumentType | undefined;
-}) {
+export default function TopNavHandles() {
     const tooltipDelay = 200;
+    const { selected, actions } = useBrowserStore();
 
+    const handleBack = () => {
+        if (Array.isArray(selected) && selected.length > 0) {
+            const currentPath = selected[selected.length - 1];
+            if (typeof currentPath === 'string') {
+                const pathArray = currentPath.split('/');
+                if (pathArray.length > 2) {
+                    pathArray.pop();
+                    const newPath = pathArray.join('/');
+                    actions.setSelected([newPath]);
+                }
+            }
+        }
+    };
     return (
         <Box
             sx={{
@@ -80,7 +86,7 @@ export default function TopNavHandles({
                     </IconButton>
                 </HtmlTooltip>
 
-                <HtmlTooltip
+                {/* <HtmlTooltip
                     enterNextDelay={tooltipDelay}
                     placement="bottom-start"
                     title={
@@ -92,21 +98,22 @@ export default function TopNavHandles({
                         </React.Fragment>
                     }
                     arrow
+                > */}
+                <IconButton
+                    color="primary"
+                    sx={{
+                        borderRadius: 1,
+                        '&:hover': {
+                            color: (theme) => theme.palette.primary.contrastText,
+                            bgcolor: (theme) => theme.palette.primary.main
+                        }
+                    }}
+                    disabled
+                    // onClick={handleForward}
                 >
-                    <IconButton
-                        color="primary"
-                        sx={{
-                            borderRadius: 1,
-                            '&:hover': {
-                                color: (theme) => theme.palette.primary.contrastText,
-                                bgcolor: (theme) => theme.palette.primary.main
-                            }
-                        }}
-                        onClick={handleForward}
-                    >
-                        <IoReturnUpForwardOutline size={17} />
-                    </IconButton>
-                </HtmlTooltip>
+                    <IoReturnUpForwardOutline size={17} />
+                </IconButton>
+                {/* </HtmlTooltip> */}
             </Stack>
             <Divider orientation="vertical" variant="fullWidth" flexItem />
             <Stack
@@ -127,7 +134,7 @@ export default function TopNavHandles({
                 alignItems="center"
             >
                 <Typography variant="body1" width={250} noWrap>
-                    {doc === undefined ? 'Current folder' : doc.doc_name}{' '}
+                    {Array.isArray(selected) ? actions.getDocument(selected[selected.length - 1])?.doc_name : 'Current folder'}
                 </Typography>
                 <IconButton
                     color="secondary"

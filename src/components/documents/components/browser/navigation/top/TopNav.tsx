@@ -1,6 +1,5 @@
 import { Divider, Grid, Stack } from '@mui/material';
 import React from 'react';
-import { DocumentType } from 'components/documents/Interface/FileBrowser';
 import TopNavActions from 'components/documents/components/browser/navigation/top/TopNavActions';
 import TopNavHandles from 'components/documents/components/browser/navigation/top/TopNavHandles';
 import TopWindowActions from 'components/documents/components/browser/navigation/top/TopWindowActions';
@@ -8,14 +7,11 @@ import TopWindowActions from 'components/documents/components/browser/navigation
 export interface FileBrowserTopNavProps {
     bgColor: string | undefined;
     borderRadius: string | number | undefined;
-    doc: DocumentType | undefined;
-    handleBack: () => void;
-    handleForward: () => void;
 }
 // ({ bgColor, borderRadius, title, handleBack, handleForward }: FileBrowserTopNavProps)
 
 const FileBrowserTopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(function FileBrowserTopNav(props, ref) {
-    const { bgColor, borderRadius, doc, handleBack, handleForward } = props;
+    const { bgColor, borderRadius } = props;
 
     return (
         <Grid
@@ -35,7 +31,7 @@ const FileBrowserTopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavPr
         >
             <Grid item md={5} xs={6} justifyContent="start" display="flex">
                 <Stack direction="row" justifyContent="space-between" width="max-content" alignItems="center" spacing={2}>
-                    <TopNavHandles handleBack={handleBack} handleForward={handleForward} doc={doc} />
+                    <TopNavHandles />
                 </Stack>
                 <Divider absolute />
             </Grid>
@@ -44,7 +40,7 @@ const FileBrowserTopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavPr
                 <TopWindowActions />
             </Grid>
             <Grid item xs={12} justifyContent="start" display="flex">
-                <TopNavActions doc={doc} />
+                <TopNavActions />
             </Grid>
         </Grid>
     );

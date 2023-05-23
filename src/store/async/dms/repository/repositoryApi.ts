@@ -1,5 +1,7 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { GetChildrenFoldersProps } from 'global/interfaces';
+import _ from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 type UserTags = 'DMS_REPOSITORY' | 'DMS_REPOSITORY_SUCCESS' | 'DMS_REPOSITORY_ERROR';
 
@@ -17,9 +19,21 @@ export const repositoryApi = createApi({
     tagTypes: ['DMS_REPOSITORY', 'DMS_REPOSITORY_SUCCESS', 'DMS_REPOSITORY_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        getRootFolder: build.query({
+        getRootFolder: build.query<GetChildrenFoldersProps, Record<string, never>>({
             query: () => ({ url: `${UriHelper.REPOSITORY_GET_ROOT_FOLDER}` }),
-            transformResponse: (response: { data: any }) => response.data,
+            transformResponse: (response: { data: GetChildrenFoldersProps }) => {
+                const dataCopy = { ...response.data };
+                if (_.isObject(dataCopy) && !_.isEmpty(dataCopy)) {
+                    const pathArray = dataCopy.path.split('/');
+                    const name = pathArray[pathArray.length - 1];
+                    if (name) {
+                        const nameArray = name.split(':');
+                        dataCopy['doc_name'] = nameArray[nameArray.length - 1];
+                    }
+                    return dataCopy;
+                }
+                return dataCopy;
+            },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_REPOSITORY' }];
                 if (result) return [...tags, { type: 'DMS_REPOSITORY_SUCCESS', id: 'success' }];

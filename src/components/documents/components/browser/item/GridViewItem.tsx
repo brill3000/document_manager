@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Box, ButtonBase, Stack } from '@mui/material';
-import { blue, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { fileIcon } from '../../../Icons/fileIcon';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
@@ -12,41 +12,48 @@ import ActionMenu from '../UI/Menus/DocumentActionMenu';
 import { RenameDocument } from './Rename';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useStore } from 'components/documents/data/global_state';
-import { DocumentType, DocumentProps } from 'components/documents/Interface/FileBrowser';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { GetChildrenFoldersProps } from 'global/interfaces';
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridViewItem({ document, selected, setSelected, select, actions, setIsOverDoc, closeContext }: DocumentProps): JSX.Element {
+function GridViewItem({ folder, closeContext }: { folder: GetChildrenFoldersProps; closeContext: boolean }): JSX.Element {
+    const { doc_name, path, is_dir } = folder;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);
-    const [renameTarget, setRenameTarget] = React.useState<{ doc: DocumentType; rename: boolean } | null>(null);
+    const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
-    const { id, doc_name, is_dir, type, parent } =
-        document !== undefined ? document : { id: null, doc_name: null, is_dir: null, type: null, parent: null };
-    const isSelected = React.useMemo(() => {
-        return Array.isArray(selected) && selected.some((x) => document !== undefined && x.id === document.id);
-    }, [document, selected]);
+
+    const { actions, selected, focused } = useBrowserStore();
+    // ================================= | Routes | ============================= //
+    const navigate = useNavigate();
+    const { pathParam } = useParams();
+    const { pathname } = useLocation();
+
+    const isFocused = React.useMemo(() => {
+        return path === focused;
+    }, [path, focused]);
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: is_dir ? ItemTypes.Folder : ItemTypes.File,
         collect: (monitor: DragSourceMonitor) => ({
             isDragging: !!monitor.isDragging()
         }),
-        item: { id, doc_name, is_dir, type, parent }
+        item: { path, doc_name, is_dir }
     }));
     const renameFn = (value: string) => {
-        if (value && renameTarget && renameTarget.doc.id && renameTarget.doc.doc_name !== value) {
+        if (value && renameTarget && renameTarget.id !== value) {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const res = confirm('Rename document ? ');
                 if (res === true) {
-                    actions.changeDetails(renameTarget.doc.id, { doc_name: value });
                     closeRename();
                 } else {
                     closeRename();
@@ -63,13 +70,10 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: DocumentType) => {
+        drop: (item: GetChildrenFoldersProps) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
-                if (moveDoc) {
-                    actions.move(item.id, id);
-                }
             } catch (e) {
                 if (e instanceof Error) {
                     console.log(e.message);
@@ -82,7 +86,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
             isOver: monitor.isOver()
         }),
         canDrop: (item) => {
-            return item.id !== id && is_dir ? true : false;
+            return item.path !== path && is_dir ? true : false;
         }
     }));
     React.useEffect(() => {
@@ -91,8 +95,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
 
     React.useEffect(() => {
         setDragging(isDragging);
-        if (isDragging) {
-            document !== undefined && setSelected([document]);
+        if (isDragging && path !== undefined) {
         }
     }, [isDragging]);
 
@@ -103,9 +106,8 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
         e.preventDefault();
-        if (e.nativeEvent.button === 0) {
-            document !== undefined && setSelected([document]);
-        } else if (e.nativeEvent.button === 2) {
+        if (e.nativeEvent.button === 0 && path !== undefined && path !== null) {
+        } else if (e.nativeEvent.button === 2 && path !== undefined) {
             setContextMenu(
                 contextMenu === null
                     ? {
@@ -117,21 +119,37 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                       // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
                       null
             );
-            document !== undefined && setSelected([document]);
         }
     };
     const handleDoubleClick = () => {
         if (disableDoubleClick) return true;
-        if (document !== undefined && document.is_dir) {
-            select(document.id);
-        } else {
-            document !== undefined && setSelected([document]);
+        if (path !== undefined && path !== null) {
+            handleChangeRoute(path);
         }
     };
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
         setContextMenu(null);
     };
+
+    /**
+     * Function that add the seleted folder path to the route
+     * This is critical for reload purposes
+     * @param folderId: string
+     * @param folderName: string
+     * @returns void
+     */
+    const handleChangeRoute = (path: string) => {
+        if (path !== null || path !== undefined) {
+            actions.setSelected([path]);
+            const encodedPathParam = encodeURIComponent(path);
+            const documentPath = pathParam
+                ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
+                : `${pathname}/${encodedPathParam}`;
+            navigate(documentPath);
+        }
+    };
+
     const handleMenuClick = (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
         type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete'
@@ -141,30 +159,23 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
             if (selected.length > 0) {
                 switch (type) {
                     case 'open':
-                        if (selected[selected.length - 1].is_dir) {
-                            select(selected[selected.length - 1].id);
-                            setContextMenu(null);
-                        } else {
-                            setContextMenu(null);
+                        if (path !== undefined) {
+                            if (is_dir) {
+                                if (path !== null || path !== undefined) {
+                                    handleChangeRoute(path);
+                                }
+                            }
                         }
                         break;
                     case 'copy':
                     case 'cut':
-                        addToClipBoard({ id: selected[selected.length - 1].id, action: type });
+                        addToClipBoard({ id: path, action: type });
                         setContextMenu(null);
                         break;
                     case 'delete':
                         try {
                             // eslint-disable-next-line no-restricted-globals
-                            const res = confirm(`You are about to DELETE ${selected[selected.length - 1].doc_name}. Delete the document?`);
-                            const id = selected[selected.length - 1].id;
-                            if (res === true) {
-                                setSelected([...selected.filter((x) => x.id !== id)]);
-                                const deleted = actions.delete(selected[selected.length - 1].id);
-                                if (deleted !== true) {
-                                    throw deleted;
-                                }
-                            }
+                            const res = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
                         } catch (e) {
                             if (e instanceof Error) {
                                 console.log(e.message);
@@ -175,7 +186,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                         setContextMenu(null);
                         break;
                     case 'rename':
-                        setRenameTarget(() => ({ doc: selected[selected.length - 1], rename: true }));
+                        setRenameTarget(() => ({ id: path, rename: true }));
                         setContextMenu(null);
                         break;
                     default:
@@ -186,17 +197,16 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
             console.error(e);
         }
     };
-    const isRenaming = React.useMemo(
-        () => renameTarget && document !== undefined && renameTarget.doc.id === document.id && renameTarget.rename,
-        [renameTarget]
-    );
+    const isRenaming = React.useMemo(() => renameTarget && path !== undefined && renameTarget.id === path && renameTarget.rename, [
+        renameTarget
+    ]);
     const closeRename = () => {
         setRenameTarget(null);
     };
 
     return (
         <Grid
-            key={document !== undefined ? document.id : 'key'}
+            key={path !== undefined ? path : 'key'}
             height="max-content"
             justifyContent="center"
             alignItems="center"
@@ -207,8 +217,8 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
             lg={4}
             xl={3}
         >
-            {document !== undefined ? (
-                document.is_dir ? (
+            {path !== undefined ? (
+                is_dir ? (
                     <Box
                         ref={drop}
                         sx={{
@@ -218,7 +228,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                         <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
                             <Box
                                 borderRadius={2}
-                                {...(isSelected || isOver
+                                {...(isFocused || isOver
                                     ? { bgcolor: alpha(grey[300], 0.5) }
                                     : isHovered
                                     ? { bgcolor: alpha(grey[300], 0.2) }
@@ -228,13 +238,13 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                 onClick={handleClick}
                                 onContextMenu={handleClick}
                                 onDoubleClick={handleDoubleClick}
+                                onFocus={() => actions.setFocused(path)}
+                                onBlur={() => focused === path && actions.setFocused(null)}
                                 onMouseOver={() => {
                                     setIsHovered(true);
-                                    setIsOverDoc(true);
                                 }}
                                 onMouseLeave={() => {
                                     setIsHovered(false);
-                                    setIsOverDoc(false);
                                 }}
                                 sx={{
                                     '& :hover': {
@@ -250,7 +260,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                 px={isRenaming ? 0 : 1}
                                 py={isRenaming ? 0 : 1}
                                 bgcolor={(theme) =>
-                                    (isSelected || isOver) && !isRenaming
+                                    (isFocused || isOver) && !isRenaming
                                         ? alpha(theme.palette.primary.main, 0.4)
                                         : isHovered && !isRenaming
                                         ? alpha(theme.palette.primary.main, 0.1)
@@ -265,11 +275,9 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                 onDoubleClick={handleDoubleClick}
                                 onMouseOver={() => {
                                     setIsHovered(true);
-                                    setIsOverDoc(true);
                                 }}
                                 onMouseLeave={() => {
                                     setIsHovered(false);
-                                    setIsOverDoc(false);
                                 }}
                                 sx={{
                                     '& :hover': {
@@ -291,7 +299,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                         sx={{
                                             overflow: 'hidden',
                                             color: theme.palette.text.primary,
-                                            fontWeight: isSelected || isOver ? 500 : 400,
+                                            fontWeight: isFocused || isOver ? 500 : 400,
                                             textOverflow: 'ellipsis',
                                             fontSize: '.84rem',
                                             display: '-webkit-box',
@@ -301,7 +309,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                             lineHeight: 1.1
                                         }}
                                     >
-                                        {document.doc_name}
+                                        {doc_name}
                                     </Box>
                                 )}
                             </Box>
@@ -311,7 +319,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                     <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
                         <Box
                             borderRadius={2}
-                            {...(isSelected ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
+                            {...(isFocused ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
                             width="max-content"
                             height="max-content"
                             pt={2}
@@ -322,11 +330,9 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                             onDoubleClick={handleDoubleClick}
                             onMouseOver={() => {
                                 setIsHovered(true);
-                                setIsOverDoc(true);
                             }}
                             onMouseLeave={() => {
                                 setIsHovered(false);
-                                setIsOverDoc(false);
                             }}
                             sx={{
                                 '& :hover': {
@@ -335,15 +341,15 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                             }}
                             component={ButtonBase}
                         >
-                            {fileIcon(document.type, browserHeight * 0.1, browserHeight * 0.005)}
+                            {fileIcon('application/pdf', browserHeight * 0.1, browserHeight * 0.005)}
                         </Box>
                         <Box
                             borderRadius={1}
                             px={isRenaming ? 0 : 1}
                             py={isRenaming ? 0 : 1}
                             bgcolor={
-                                (isSelected || isOver) && !isRenaming
-                                    ? alpha(theme.palette.primary.main, 0.4)
+                                (isFocused || isOver) && !isRenaming
+                                    ? alpha(theme.palette.primary.main, 0.3)
                                     : isHovered && !isRenaming
                                     ? alpha(theme.palette.primary.main, 0.1)
                                     : 'transparent'
@@ -357,11 +363,9 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                             onDoubleClick={handleDoubleClick}
                             onMouseOver={() => {
                                 setIsHovered(true);
-                                setIsOverDoc(true);
                             }}
                             onMouseLeave={() => {
                                 setIsHovered(false);
-                                setIsOverDoc(false);
                             }}
                             sx={{
                                 '& :hover': {
@@ -383,7 +387,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                     sx={{
                                         overflow: 'hidden',
                                         color: theme.palette.text.primary,
-                                        fontWeight: isSelected || isOver ? 500 : 400,
+                                        fontWeight: isFocused || isOver ? 500 : 400,
                                         textOverflow: 'ellipsis',
                                         fontSize: '.84rem',
                                         display: '-webkit-box',
@@ -393,7 +397,7 @@ function GridViewItem({ document, selected, setSelected, select, actions, setIsO
                                         lineHeight: 1.1
                                     }}
                                 >
-                                    {document.doc_name}
+                                    {doc_name}
                                 </Box>
                             )}
                         </Box>

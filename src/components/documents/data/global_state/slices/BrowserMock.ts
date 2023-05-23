@@ -2,8 +2,11 @@ import { DocumentType, EditDocumentType, key, StoreState } from '../../../Interf
 import { create } from '../../../__mocks__/zustand';
 
 export const useBrowserStore = create<StoreState>((set, get) => ({
-    fileMap: new Map(),
+    fileMap: new Map<string, DocumentType>(),
     root: null,
+    selected: [],
+    farthestPath: null,
+    focused: null,
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -17,6 +20,24 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     actions: {
         createDocument: (key: key, val: DocumentType | undefined) => {
             set((state) => ({ fileMap: new Map(state.fileMap).set(key, val) }));
+            return true;
+        },
+        getDocument: (key: string) => {
+            return get().fileMap.get(key);
+        },
+        documentExists: (key: string) => {
+            return get().fileMap.has(key);
+        },
+        setRoot: (key: key) => {
+            set(() => ({ root: key ?? null }));
+            return true;
+        },
+        setSelected: (selected: Array<string>) => {
+            set(() => ({ selected: selected ?? null }));
+            return true;
+        },
+        setFocused: (focused: string) => {
+            set(() => ({ focused: focused ?? null }));
             return true;
         },
         clear: () => {
@@ -33,17 +54,10 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
             });
             return !get().fileMap.has(key);
         },
-        getChildren: (parent: key | null) => {
+        getChildren: (parent: string | null) => {
             if (parent && get().fileMap.has(parent)) {
-                const children: Array<string | number> | null | undefined = get().fileMap.get(parent)?.children;
-                if (Array.isArray(children) && children.length > 0) {
-                    return children
-                        .filter((x) => get().fileMap.has(x))
-                        .map((child) => {
-                            const childDoc: DocumentType | undefined = get().fileMap.get(child);
-                            return childDoc;
-                        });
-                } else return null;
+                const children: Array<string | null> | null | undefined = get().fileMap.get(parent)?.children;
+                return children !== undefined ? children : null;
             } else return null;
         },
         changeDetails: (key: key | null, details: EditDocumentType): boolean | Error => {
@@ -73,7 +87,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
                 return typeof e === 'string' ? new Error(e) : new Error('Failed to create folder');
             }
         },
-        move: (key: string | number | null, target: string | number | null): boolean | Error => {
+        move: (key: string | null, target: string | null): boolean | Error => {
             try {
                 const mapCopy = new Map(get().fileMap);
                 const removeFromCurrentParent = (prevParent: key, childKey: key) => {
@@ -134,7 +148,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
                 return typeof e === 'string' ? new Error(e) : new Error('Failed to move folder');
             }
         },
-        uploadFiles: (parent: string | number, files: DocumentType[]): boolean | Error => {
+        uploadFiles: (parent: string, files: DocumentType[]): boolean | Error => {
             try {
                 const mapCopy = new Map(get().fileMap);
                 if (parent === null || parent === undefined || !mapCopy.has(parent))

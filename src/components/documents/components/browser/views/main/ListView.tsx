@@ -1,26 +1,30 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Typography, darken, lighten } from '@mui/material';
-import { DocumentListProps } from 'components/documents/Interface/FileBrowser';
+import { Box, Typography, darken, lighten } from '@mui/material';
+import { ListViewsProps } from 'components/documents/Interface/FileBrowser';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { ListViewItem } from 'components/documents/components/browser/item/ListViewItem';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
+import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 // import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
-export function ListView({
-    documents,
-    selected,
-    setSelected,
-    select,
-    actions,
-    setIsOverDoc,
-    closeContext,
-    setCloseContext,
-    isOverDoc,
-    scrollPosition,
-    width,
-    height
-}: DocumentListProps): React.ReactElement {
+export function ListView({ closeContext, setCloseContext, scrollPosition, width, height }: ListViewsProps): React.ReactElement {
+    const { selected } = useBrowserStore();
+    const {
+        data: folderChildren,
+        error: folderChildrenError,
+        isFetching: folderChildrenIsFetching,
+        isLoading: folderChildrenIsLoading,
+        isSuccess: folderChildrenIsSuccess
+    } = useGetFoldersChildrenQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '' },
+        {
+            skip: !(Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '')
+        }
+    );
+
     return (
         <List
             sx={{
@@ -67,7 +71,7 @@ export function ListView({
                         py={1}
                     >
                         <Typography noWrap fontSize=".85rem">
-                            Type
+                            Author
                         </Typography>
                     </Grid>
                     <Grid
@@ -78,7 +82,7 @@ export function ListView({
                         py={1}
                     >
                         <Typography noWrap fontSize=".85rem">
-                            Date Added
+                            Date Created
                         </Typography>
                     </Grid>
                     <Grid
@@ -89,34 +93,42 @@ export function ListView({
                         py={1}
                     >
                         <Typography noWrap fontSize=".85rem">
-                            Archived
+                            Subscribed
                         </Typography>
                     </Grid>
                     <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={1}>
                         <Typography noWrap fontSize=".85rem">
-                            Size
+                            Permission
                         </Typography>
                     </Grid>
                 </Grid>
             </ListItem>
-            {documents.map((document, i: number) => (
-                <ListViewItem
-                    isColored={i % 2 === 0}
-                    setCloseContext={setCloseContext}
-                    closeContext={closeContext}
-                    key={document !== undefined ? document.id : i}
-                    document={document}
-                    selected={selected}
-                    setSelected={setSelected}
-                    select={select}
-                    actions={actions}
-                    isOverDoc={isOverDoc}
-                    setIsOverDoc={setIsOverDoc}
-                    scrollPosition={scrollPosition}
-                    width={width}
-                    height={height}
-                />
-            ))}
+            <>
+                {folderChildrenIsLoading || folderChildrenIsFetching ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                        <GoogleLoader height={150} width={150} loop={true} />
+                    </Box>
+                ) : folderChildrenIsSuccess && Array.isArray(folderChildren.folder) && folderChildren.folder.length > 0 ? (
+                    folderChildren.folder.map((folder, i: number) => (
+                        <ListViewItem
+                            isColored={i % 2 === 0}
+                            closeContext={closeContext}
+                            folder={folder}
+                            width={width}
+                            height={height}
+                            key={folder.path}
+                        />
+                    ))
+                ) : folderChildrenError ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                        <Error height={150} width={150} />
+                    </Box>
+                ) : (
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                        <Typography>No Folders</Typography>
+                    </Box>
+                )}
+            </>
         </List>
         // <VirtualizedList />
     );

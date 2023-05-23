@@ -13,6 +13,7 @@ import { BsClipboard } from 'react-icons/bs';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
+import { useHistory } from 'components/documents/data/History';
 
 interface CustomChipProps extends ChipProps {
     doc?: DocumentType | undefined;
@@ -84,8 +85,9 @@ const StyledBreadcrumb = styled(Chip, {
 
 // { navHistory, select, fileMap }: FileBrowserNaviagationProps)
 
-const Footer = React.forwardRef<HTMLInputElement, FileBrowserNaviagationProps>(function FolderBrowserNavigation(props, ref) {
-    const { history: navHistory, select } = props;
+const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<HTMLInputElement> }>((props, ref) => {
+    const { nav: navHistory, select } = useHistory();
+
     const [anchorEl, setAnchorEl] = React.useState(null);
     const { clipboard } = useStore();
     const open = Boolean(anchorEl);
@@ -100,7 +102,7 @@ const Footer = React.forwardRef<HTMLInputElement, FileBrowserNaviagationProps>(f
         setAnchorEl(null);
     };
 
-    const handleClick = (event: FileBrowerClickEvent, id: string | number) => {
+    const handleClick = (event: FileBrowerClickEvent, id: string) => {
         event.preventDefault();
         Array.isArray(navHistory) && navHistory[navHistory.length - 1] && navHistory[navHistory.length - 1] !== id && select(id);
     };
@@ -121,8 +123,8 @@ const Footer = React.forwardRef<HTMLInputElement, FileBrowserNaviagationProps>(f
                 <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose} aria-labelledby="with-menu-demo-breadcrumbs">
                     {Array.isArray(navHistory) &&
                         navHistory
-                            .filter((_: string | number, i: number) => i !== navHistory.length - 1 && i > 0)
-                            .map((hist: string | number, index: number) => (
+                            .filter((_: string, i: number) => i !== navHistory.length - 1 && i > 0)
+                            .map((hist: string, index: number) => (
                                 <RefactoredMenuItem
                                     key={hist}
                                     handleClose={handleClose}
@@ -242,8 +244,8 @@ export default Footer;
 
 interface RefactoredMenuItemInterface {
     handleClose: () => void;
-    handleClick: (event: FileBrowerClickEvent, id: string | number) => void;
-    hist: string | number;
+    handleClick: (event: FileBrowerClickEvent, id: string) => void;
+    hist: string;
     doc?: DocumentType | undefined;
     index: number;
 }

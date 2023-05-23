@@ -3,26 +3,22 @@ import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from 'react-icons/bs';
 import { alpha, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dropzone from 'react-dropzone';
-import { DocumentType, Units } from 'components/documents/Interface/FileBrowser';
 import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { Units } from 'components/documents/Interface/FileBrowser';
 
-interface TopNavActionProps {
-    doc: DocumentType | undefined;
-}
-
-export default function TopNavActions({ doc }: TopNavActionProps) {
+export default function TopNavActions() {
     const { toogleView, view } = useViewStore();
     const [isDeleteHovered, setIsDeleteHovered] = React.useState<boolean>(false);
     const minWidth = 'max-content';
     const tooltipDelay = 200;
     const theme = useTheme();
-    const { actions } = useBrowserStore();
-
+    const { actions, selected } = useBrowserStore();
     const changeHandler = (files: File[]) => {
         try {
-            if (doc !== undefined) {
+            const parent = Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : null;
+            if (parent !== null) {
                 const uploadedFiles = files.map((file: File, i: number) => ({
                     id: `${i} ${file.name}`,
                     doc_name: file.name,
@@ -31,11 +27,11 @@ export default function TopNavActions({ doc }: TopNavActionProps) {
                     size_units: Units.Kb,
                     is_archived: false,
                     custom_attributes: {},
-                    parent: doc.id,
+                    parent: parent,
                     children: null,
                     type: file.type
                 }));
-                const uploaded = actions.uploadFiles(doc.id, uploadedFiles);
+                const uploaded = actions.uploadFiles(parent, uploadedFiles);
                 if (uploaded !== true) {
                     throw uploaded;
                 }

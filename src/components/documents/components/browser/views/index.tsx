@@ -1,9 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha } from '@mui/material';
-import { GridViewItem } from 'components/documents/components/browser/item/GridViewItem';
 import { CustomDragDocument } from 'components/documents/components/browser/drag&drop/CustomDragDocument';
-import { FolderGridProps } from 'components/documents/Interface/FileBrowser';
+import { MainGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/components/browser/UI/Menus/FolderActionMenu';
 import { useStore } from 'components/documents/data/global_state';
 import { useSnackbar } from 'notistack';
@@ -11,8 +10,10 @@ import { ListView } from 'components/documents/components/browser/views/main/Lis
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { brown } from '@mui/material/colors';
+import { useHistory } from 'components/documents/data/History';
+import { GridView } from './main/GridView';
 
-const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: FolderGridProps) => {
+const MainGrid = ({ gridRef }: MainGridProps) => {
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [isOverDoc, setIsOverDoc] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
@@ -21,8 +22,21 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
     const { view } = useViewStore();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [scrollPosition, setScrollPosition] = React.useState<number>(0);
+    const [children, setChildren] = React.useState<Array<string | null>>([]);
+    const { nav } = useHistory();
 
-    const { actions } = useBrowserStore();
+    const { actions, selected, fileMap } = useBrowserStore();
+
+    // ========================= | Fetch data | =========================== //
+
+    React.useEffect(() => {
+        if (Array.isArray(selected) && selected.length > 0) {
+            const childrenArray = actions.getChildren(selected[selected.length - 1]);
+            if (childrenArray !== null) {
+                setChildren(childrenArray);
+            }
+        }
+    }, [fileMap]);
 
     React.useEffect(() => {
         if (open === true)
@@ -43,7 +57,6 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
         e.preventDefault();
-        setSelected([]);
         if (e.nativeEvent.button === 0) return;
         else if (e.nativeEvent.button === 2) {
             setIsOverDoc(false);
@@ -132,34 +145,14 @@ const MainGrid = ({ documents, selected, setSelected, select, nav, gridRef }: Fo
         >
             {view === 'list' ? (
                 <ListView
-                    documents={documents}
                     setCloseContext={setCloseContext}
                     closeContext={closeContext}
-                    selected={selected}
-                    setSelected={setSelected}
-                    select={select}
-                    actions={actions}
-                    isOverDoc={isOverDoc}
-                    setIsOverDoc={setIsOverDoc}
                     scrollPosition={scrollPosition}
                     height={gridRef.current ? gridRef.current.clientHeight : '100vh'}
                     width={gridRef.current ? gridRef.current.clientWidth : '100vw'}
                 />
             ) : (
-                documents.map((document, i: number) => (
-                    <GridViewItem
-                        setCloseContext={setCloseContext}
-                        closeContext={closeContext}
-                        key={document !== undefined ? document.id : i}
-                        document={document}
-                        selected={selected}
-                        setSelected={setSelected}
-                        select={select}
-                        actions={actions}
-                        isOverDoc={isOverDoc}
-                        setIsOverDoc={setIsOverDoc}
-                    />
-                ))
+                <GridView setCloseContext={setCloseContext} closeContext={closeContext} />
             )}
             <CustomDragDocument />
             <FolderActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />

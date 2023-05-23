@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
 import { styled, TextField } from '@mui/material';
 import { DocumentType } from 'components/documents/Interface/FileBrowser';
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
 interface RenameDocumentProps {
-    selected: DocumentType[];
+    selected: string[];
     renameFn: (value: string) => void;
-    renameTarget: { doc: DocumentType; rename: boolean } | null;
+    renameTarget: { id: string; rename: boolean } | null;
     disableDoubleClick: (disabled: boolean) => void;
 }
 
@@ -33,9 +34,9 @@ const ValidationTextField = styled(TextField)({
 
 export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick }: RenameDocumentProps): ReactElement => {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
-    const [value, setValue] = React.useState<string>(renameTarget !== null ? renameTarget.doc.doc_name : '');
+    const [value, setValue] = React.useState<string>('');
     const [error, setError] = React.useState<Error | null>(null);
-    const is_dir = renameTarget !== null ? (renameTarget.doc.is_dir ? true : false) : null;
+    const { selected } = useBrowserStore();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
     };
@@ -56,7 +57,7 @@ export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick }: R
             inputRef={inputRef}
             value={value}
             error={error !== null}
-            label={`Rename ${is_dir === true ? 'folder' : is_dir === false ? 'file' : 'document'}`}
+            label={`Rename folder`}
             required
             variant="outlined"
             helperText={error && error.message ? error.message : ''}
