@@ -1,5 +1,4 @@
 import React, { RefObject, SetStateAction } from 'react';
-import { boolean } from 'yup';
 
 export interface FileBrowserProps {
     height?: key;
