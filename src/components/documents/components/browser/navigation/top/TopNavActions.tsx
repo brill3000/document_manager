@@ -54,7 +54,8 @@ export default function TopNavActions() {
                     borderRadius: 1,
                     bgcolor: alpha(theme.palette.text.secondary, 0.01),
                     color: 'text.primary',
-                    transition: 'all .2s',
+                    transition: 'all .3s',
+                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                     '& svg': {
                         m: 0
                     },
@@ -184,7 +185,7 @@ export default function TopNavActions() {
                         px: 0.5,
                         '&:hover': {
                             px: 1,
-                            bgcolor: alpha(theme.palette.secondary.main, 0.1)
+                            bgcolor: alpha(theme.palette.secondary.main, 0.2)
                         }
                     }}
                 >
