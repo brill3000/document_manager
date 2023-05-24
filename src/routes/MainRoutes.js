@@ -155,89 +155,89 @@ const MainRoutes = {
                 <ProtectedRoutes>
                     <Users title="All Departments" />
                 </ProtectedRoutes>
-            ),
-            children: [
-                {
-                    path: 'speakersOffice',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Speaker's Office" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'clerksoffice',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Clerk's Office" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'finance',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Finance" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'supplychain',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Supply Chain" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'research_and_records',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Research and Record" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'hansard',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Hansard" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'ict',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="ICT" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'clerks_at_the_table',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Clerks at the Table" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'sergent_at_arms',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Sergent at arms" />
-                        </ProtectedRoutes>
-                    )
-                },
-                {
-                    path: 'reception',
-                    element: (
-                        <ProtectedRoutes>
-                            <Users title="Reception" />
-                        </ProtectedRoutes>
-                    )
-                }
-            ]
+            )
+            // children: [
+            //     {
+            //         path: 'speakersOffice',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Speaker's Office" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'clerksoffice',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Clerk's Office" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'finance',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Finance" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'supplychain',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Supply Chain" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'research_and_records',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Research and Record" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'hansard',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Hansard" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'ict',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="ICT" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'clerks_at_the_table',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Clerks at the Table" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'sergent_at_arms',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Sergent at arms" />
+            //             </ProtectedRoutes>
+            //         )
+            //     },
+            //     {
+            //         path: 'reception',
+            //         element: (
+            //             <ProtectedRoutes>
+            //                 <Users title="Reception" />
+            //             </ProtectedRoutes>
+            //         )
+            //     }
+            // ]
         },
         {
             path: 'metadata',

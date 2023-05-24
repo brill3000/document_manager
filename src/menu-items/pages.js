@@ -71,89 +71,89 @@ const pages = {
             type: 'item',
             url: '/users',
             icon: icons.PeopleOutlineIcon,
-            breadcrumbs: false,
-            children: [
-                {
-                    id: 'speakersOffice',
-                    title: 'Speakers Office',
-                    type: 'item',
-                    url: '/users/speakersOffice',
-                    icon: icons.CampaignOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'clerksoffice',
-                    title: 'Clerks Office',
-                    type: 'item',
-                    url: '/users/clerksoffice',
-                    icon: icons.MiscellaneousServicesOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'finance',
-                    title: 'Finance',
-                    type: 'item',
-                    url: '/users/finance',
-                    icon: icons.MonetizationOnOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'supplychain',
-                    title: 'Supply Chain',
-                    type: 'item',
-                    url: '/users/supplychain',
-                    icon: icons.LocalShippingOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'research_and_records',
-                    title: 'Research And Records',
-                    type: 'item',
-                    url: '/users/research_and_records',
-                    icon: icons.BiotechOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'hansard',
-                    title: 'Hansard',
-                    type: 'item',
-                    url: '/users/hansard',
-                    icon: icons.NoteAltOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'ict',
-                    title: 'ICT',
-                    type: 'item',
-                    url: '/users/ict',
-                    icon: icons.DesktopWindowsOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'clerks_at_the_table',
-                    title: 'Clerks at The Table',
-                    type: 'item',
-                    url: '/users/clerks_at_the_table',
-                    icon: icons.MiscellaneousServicesOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'sergent_at_arms',
-                    title: 'Sergent at arms',
-                    type: 'item',
-                    url: '/users/sergent_at_arms',
-                    icon: icons.GavelOutlinedIcon,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'reception',
-                    title: 'Reception',
-                    type: 'item',
-                    url: '/users/reception',
-                    icon: icons.SettingsPhoneOutlinedIcon,
-                    breadcrumbs: false
-                }
-            ]
+            breadcrumbs: false
+            // children: [
+            //     {
+            //         id: 'speakersOffice',
+            //         title: 'Speakers Office',
+            //         type: 'item',
+            //         url: '/users/speakersOffice',
+            //         icon: icons.CampaignOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'clerksoffice',
+            //         title: 'Clerks Office',
+            //         type: 'item',
+            //         url: '/users/clerksoffice',
+            //         icon: icons.MiscellaneousServicesOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'finance',
+            //         title: 'Finance',
+            //         type: 'item',
+            //         url: '/users/finance',
+            //         icon: icons.MonetizationOnOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'supplychain',
+            //         title: 'Supply Chain',
+            //         type: 'item',
+            //         url: '/users/supplychain',
+            //         icon: icons.LocalShippingOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'research_and_records',
+            //         title: 'Research And Records',
+            //         type: 'item',
+            //         url: '/users/research_and_records',
+            //         icon: icons.BiotechOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'hansard',
+            //         title: 'Hansard',
+            //         type: 'item',
+            //         url: '/users/hansard',
+            //         icon: icons.NoteAltOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'ict',
+            //         title: 'ICT',
+            //         type: 'item',
+            //         url: '/users/ict',
+            //         icon: icons.DesktopWindowsOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'clerks_at_the_table',
+            //         title: 'Clerks at The Table',
+            //         type: 'item',
+            //         url: '/users/clerks_at_the_table',
+            //         icon: icons.MiscellaneousServicesOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'sergent_at_arms',
+            //         title: 'Sergent at arms',
+            //         type: 'item',
+            //         url: '/users/sergent_at_arms',
+            //         icon: icons.GavelOutlinedIcon,
+            //         breadcrumbs: false
+            //     },
+            //     {
+            //         id: 'reception',
+            //         title: 'Reception',
+            //         type: 'item',
+            //         url: '/users/reception',
+            //         icon: icons.SettingsPhoneOutlinedIcon,
+            //         breadcrumbs: false
+            //     }
+            // ]
         },
         {
             id: 'metadata',
