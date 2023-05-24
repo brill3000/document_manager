@@ -87,13 +87,7 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
             }}
         >
             <Box height="20%">
-                <FileBrowserTopNav
-                    ref={topRef}
-                    bgColor={bgColor}
-                    borderRadius={borderRadius}
-                    handleBack={handleBack}
-                    handleForward={handleForward}
-                />
+                <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} />
             </Box>
             <Box height="72%">
                 <Content gridRef={ref} />
