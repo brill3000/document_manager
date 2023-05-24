@@ -17,7 +17,7 @@ export default function TopNavActions() {
     const { actions, selected } = useBrowserStore();
     const changeHandler = (files: File[]) => {
         try {
-            const parent = Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : null;
+            const parent = Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : null;
             if (parent !== null) {
                 const uploadedFiles = files.map((file: File, i: number) => ({
                     id: `${i} ${file.name}`,

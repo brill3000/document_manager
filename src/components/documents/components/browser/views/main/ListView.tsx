@@ -8,6 +8,7 @@ import { ListViewItem } from 'components/documents/components/browser/item/ListV
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 // import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
 export function ListView({ closeContext, setCloseContext, scrollPosition, width, height }: ListViewsProps): React.ReactElement {
@@ -19,9 +20,27 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
         isLoading: folderChildrenIsLoading,
         isSuccess: folderChildrenIsSuccess
     } = useGetFoldersChildrenQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : '' },
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
-            skip: selected === null || selected === undefined || (Array.isArray(selected) && selected.length < 1)
+            skip:
+                selected === null ||
+                selected === undefined ||
+                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+        }
+    );
+    const {
+        data: childrenDocuments,
+        error: childrenDocumentsError,
+        isFetching: childrenDocumentsIsFetching,
+        isLoading: childrenDocumentsnIsLoading,
+        isSuccess: childrenDocumentsIsSuccess
+    } = useGetFolderChildrenFilesQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        {
+            skip:
+                selected === null ||
+                selected === undefined ||
+                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
         }
     );
 
@@ -104,19 +123,22 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
                 </Grid>
             </ListItem>
             <>
-                {folderChildrenIsLoading || folderChildrenIsFetching ? (
+                {folderChildrenIsLoading || folderChildrenIsFetching || childrenDocumentsIsFetching || childrenDocumentsnIsLoading ? (
                     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                         <GoogleLoader height={150} width={150} loop={true} />
                     </Box>
-                ) : folderChildrenIsSuccess && Array.isArray(folderChildren.folder) && folderChildren.folder.length > 0 ? (
-                    folderChildren.folder.map((folder, i: number) => (
+                ) : folderChildrenIsSuccess &&
+                  Array.isArray(folderChildren.folder) &&
+                  childrenDocumentsIsSuccess &&
+                  Array.isArray(childrenDocuments.document) ? (
+                    folderChildren.folder.map((document, i: number) => (
                         <ListViewItem
                             isColored={i % 2 === 0}
                             closeContext={closeContext}
-                            folder={folder}
+                            document={document}
                             width={width}
                             height={height}
-                            key={folder.path}
+                            key={document.path}
                         />
                     ))
                 ) : folderChildrenError ? (

@@ -9,8 +9,8 @@ const MemorizedRiFileExcel2Fill = React.memo(RiFileExcel2Fill);
 const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Filll = React.memo(RiFileWord2Fill);
 
-export function fileIcon(fileType: string | undefined, size: number, file_icon_margin: number, contrast: string | null = null) {
-    switch (fileType) {
+export function fileIcon(mimeType: string | undefined, size: number, file_icon_margin: number, contrast: string | null = null) {
+    switch (mimeType) {
         case 'application/pdf':
             return (
                 <MemorizedBsFileEarmarkPdfFill

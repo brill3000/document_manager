@@ -141,11 +141,16 @@ export const foldersApi = createApi({
             invalidatesTags: ['DMS_FOLDERS']
         }),
         renameFolder: build.mutation<any, RenameFoldersProps>({
-            query: ({ fldId, newName }) => ({
-                url: UriHelper.FOLDER_RENAME,
-                method: 'PUT',
-                body: { fldId, newName }
-            }),
+            query: ({ fldId, newName }) => {
+                console.log(fldId, 'FLDID');
+                console.log(newName, 'NEW NAME');
+
+                return {
+                    url: UriHelper.FOLDER_RENAME,
+                    method: 'PUT',
+                    body: { fldId, newName }
+                };
+            },
             transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),

@@ -6,7 +6,7 @@ import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 
 // hero icons
-import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
+import { MemorizedFcFolder } from '../../item/GridViewItem';
 import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
 import { ButtonBase, Collapse, Skeleton, Stack, alpha } from '@mui/material';
@@ -18,7 +18,10 @@ import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import _, { uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { RxCaretDown, RxCaretRight } from 'react-icons/rx';
+import { RxCaretRight } from 'react-icons/rx';
+import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { BsCaretRight, BsFillCaretRightFill } from 'react-icons/bs';
 // import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -48,29 +51,30 @@ const StyledTreeItemRoot = styled(
     color: theme.palette.text.secondary,
     paddingRight: 0,
     paddingTop: theme.spacing(0.5),
+
     [`& .${treeItemClasses.content}`]: {
         borderRadius: theme.spacing(0.5),
         paddingLeft: theme.spacing(1.5),
-        backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.3),
+        backgroundColor: 'transparent',
         ...(isLoader && { padding: '0 !important', height: '1.5rem !important' }),
         fontWeight: theme.typography.fontWeightMedium,
         '&.Mui-expanded': {
             fontWeight: theme.typography.fontWeightRegular
         },
-        '.MuiTreeItem-label': {
-            paddingLeft: theme.spacing(1)
-        },
-        '&:hover': {
-            backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.35)
+        '&.Mui-selected': {
+            backgroundColor: `${alpha(theme.palette.primary.main, 0.25)} !important`,
+            '&.Mui-focused': {
+                backgroundColor: `${alpha(theme.palette.primary.main, 0.3)} !important`
+            }
         },
         '&.Mui-focused': {
-            backgroundColor: isLoader ? 'transparent' : alpha(theme.palette.secondary.light, 0.6)
+            backgroundColor: `${alpha(theme.palette.primary.main, 0.1)} !important`
         },
-        '&.Mui-selected': {
-            backgroundColor: `var(--tree-view-bg-color, ${alpha(theme.palette.action.selected, 0.4)})`,
-            color: 'var(--tree-view-color)',
-            borderRight: `3px solid ${alpha(theme.palette.primary.main, 0.4)}`,
-            borderLeft: `3px solid ${alpha(theme.palette.primary.main, 0.4)}`
+        '&.Mui-hover': {
+            backgroundColor: `${alpha(theme.palette.primary.main, 0.1)} !important`
+        },
+        '& .MuiTreeItem-label': {
+            paddingLeft: theme.spacing(1)
         }
     },
     [`& .${treeItemClasses.iconContainer}`]: {
@@ -93,10 +97,6 @@ function StyledTreeItem(props: TreeItemProps) {
                     </Box>
                 )
             }
-            sx={{
-                '--tree-view-color': (theme) => theme.palette.primary.main,
-                '--tree-view-bg-color': (theme) => alpha(theme.palette.primary.light, 0.3)
-            }}
             {...otherOmitted}
             isLoader={nodeId.includes('loader')}
         />
@@ -114,12 +114,13 @@ export default function LeftSidebar() {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
-    const { actions, selected, focused } = useBrowserStore();
+    const { actions, selected } = useBrowserStore();
 
     // =========================== | Controlled treeview Function | ================================//
     const [expanded, setExpanded] = React.useState<string[]>([]);
+    const [currentExpanded, setCurrentExpanded] = React.useState<string | null>(null);
     const handleExpandClick = React.useCallback((path: string) => {
-        actions.setFocused(path);
+        setCurrentExpanded(path);
         setExpanded((oldExpanded) => {
             return oldExpanded.length > 0
                 ? oldExpanded.includes(path)
@@ -138,28 +139,27 @@ export default function LeftSidebar() {
                 nodeId={nodes.id}
                 label={nodes.doc_name}
                 onDoubleClickCapture={() => {
-                    handleDocumentClick(String(nodes.id));
+                    nodes.is_dir && handleDocumentClick(String(nodes.id), nodes.is_dir);
                 }}
-                onClick={() => actions.setFocused(nodes.id)}
                 icon={
                     nodes.hasChildren ? (
                         <Stack direction="row" alignItems="center">
                             <ButtonBase
                                 sx={{
                                     borderRadius: '50%',
+                                    color: 'secondary.main',
                                     '& :hover': {
-                                        bgcolor: 'secondary.light'
+                                        color: 'primary.dark'
                                     }
                                 }}
                             >
                                 <RxCaretRight
-                                    size={16}
+                                    size={14}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleExpandClick(nodes.id);
                                     }}
                                     style={{
-                                        borderRadius: '50%',
                                         transform: expanded.includes(nodes.id) ? 'rotate(90deg)' : 'initial',
                                         transition: '.3s all',
                                         transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
@@ -168,8 +168,10 @@ export default function LeftSidebar() {
                             </ButtonBase>
                             <MemorizedFcFolder size={16} />
                         </Stack>
-                    ) : (
+                    ) : nodes.is_dir ? (
                         <MemorizedFcFolder size={16} />
+                    ) : (
+                        fileIcon(nodes.mimeType, 16, 0)
                     )
                 }
                 bgColor={undefined}
@@ -240,44 +242,72 @@ export default function LeftSidebar() {
 
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching) {
-            console.log('called root');
-            handleExpandClick(rootFolder.path);
-            actions.setSelected([rootFolder.path]);
-            actions.setFocused(rootFolder.path);
+            actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
             const data: RenderTree = {
                 id: rootFolder.path,
                 doc_name: rootFolder.doc_name,
                 hasChildren: rootFolder.hasChildren,
                 index: 0,
+                is_dir: true,
                 children: [null]
             };
             setData(data);
         }
     }, [rootFolderIsSuccess, rootFolderIsFetching]);
-
+    // ================================== | FETCH: CHILDREN  | ================================== //
     /**
-     * Fetch children
+     * Fetch children folders
      */
-
     const {
         data: folderChildren,
         error: folderChildrenError,
         isFetching: folderChildrenIsFetching,
+        isFetching: folderChildrenIsLoading,
         isSuccess: folderChildrenIsSuccess
     } = useGetFoldersChildrenQuery(
-        { fldId: focused !== null && focused !== undefined && focused.length > 0 ? focused : '' },
+        { fldId: currentExpanded !== null ? currentExpanded : '' },
         {
-            skip: focused === null || focused === undefined || focused.length < 1
+            skip:
+                currentExpanded === null ||
+                currentExpanded === undefined ||
+                (typeof currentExpanded === 'string' && currentExpanded.length < 1)
         }
     );
+
+    /**
+     * add children files to tree
+     */
+    const {
+        data: childrenFiles,
+        error: childrenFilesError,
+        isFetching: childrenFilesIsFetching,
+        isLoading: childrenFilesIsLoading,
+        isSuccess: childrenFilesIsSuccess
+    } = useGetFolderChildrenFilesQuery(
+        { fldId: currentExpanded !== null ? currentExpanded : '' },
+        {
+            skip:
+                currentExpanded === null ||
+                currentExpanded === undefined ||
+                (typeof currentExpanded === 'string' && currentExpanded.length < 1)
+        }
+    );
+    /**
+     * add children folders to tree
+     */
     React.useEffect(() => {
         if (
             folderChildrenIsSuccess &&
             folderChildren &&
             !folderChildrenIsFetching &&
+            !folderChildrenIsLoading &&
             Array.isArray(folderChildren.folder) &&
-            focused !== null &&
-            focused.length > 1
+            childrenFilesIsSuccess &&
+            folderChildren &&
+            !childrenFilesIsFetching &&
+            !childrenFilesIsLoading &&
+            Array.isArray(childrenFiles.document) &&
+            currentExpanded !== null
         ) {
             const newChildren: RenderTree[] = folderChildren.folder.map((child, i: number) => {
                 // @ts-expect-error is set below
@@ -285,18 +315,42 @@ export default function LeftSidebar() {
                     id: child.path,
                     doc_name: child.doc_name,
                     children: child.hasChildren ? [null] : [],
+                    is_dir: true,
                     hasChildren: child.hasChildren
+                };
+                treeItem['index'] = i;
+                return treeItem;
+            });
+            const newFilesChildren: RenderTree[] = childrenFiles.document.map((child, i: number) => {
+                // @ts-expect-error is set below
+                const treeItem: RenderTree = {
+                    id: child.path,
+                    doc_name: child.doc_name,
+                    children: [],
+                    is_dir: false,
+                    hasChildren: false,
+                    mimeType: child.mimeType
                 };
                 treeItem['index'] = i;
                 return treeItem;
             });
             setData((data) => {
                 let dataCopy = data !== null ? { ...data } : null;
-                dataCopy = recursiveUpdate(data, focused, newChildren);
+                dataCopy = expanded.includes(currentExpanded)
+                    ? recursiveUpdate(data, currentExpanded, [...newChildren, ...newFilesChildren])
+                    : dataCopy;
                 return dataCopy !== null ? { ...dataCopy } : null;
             });
         }
-    }, [folderChildrenIsSuccess, folderChildrenIsFetching]);
+    }, [
+        folderChildrenIsSuccess,
+        folderChildrenIsFetching,
+        folderChildrenIsLoading,
+        childrenFilesIsFetching,
+        childrenFilesIsSuccess,
+        childrenFilesIsLoading,
+        currentExpanded
+    ]);
 
     // =========================== | Route Functions | ================================//
     const navigate = useNavigate();
@@ -307,13 +361,13 @@ export default function LeftSidebar() {
     /**
      * Function that add the seleted folder path to the route
      * This is critical for reload purposes
-     * @param folderId: string
+     * @param documentId: string
      * @returns void
      */
-    const handleDocumentClick = (folderId: string) => {
-        if (folderId !== null || folderId !== undefined) {
-            actions.setSelected([folderId]);
-            const encodedPathParam = encodeURIComponent(folderId);
+    const handleDocumentClick = (documentId: string, is_dir: boolean) => {
+        if (documentId !== null || documentId !== undefined) {
+            actions.setSelected([{ id: documentId, is_dir }]);
+            const encodedPathParam = encodeURIComponent(documentId);
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
                 : `${pathname}/${encodedPathParam}`;
@@ -334,13 +388,7 @@ export default function LeftSidebar() {
             ) : data !== null && data !== undefined ? (
                 <TreeView
                     aria-label="Folder Sidebar"
-                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1] : undefined}
-                    defaultCollapseIcon={
-                        <Stack direction="row" alignContent="center">
-                            <RxCaretDown size={14} />
-                            <MemorizedFcFolderOpen size={16} />
-                        </Stack>
-                    }
+                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : undefined}
                     expanded={expanded}
                     sx={{
                         flexGrow: 1,

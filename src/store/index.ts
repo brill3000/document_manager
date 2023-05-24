@@ -28,7 +28,7 @@ import { authApi } from 'store/async/dms/auth/authApi';
 
 // import logger from 'redux-logger';
 import reducers from './reducers';
-import { documentsApi } from 'store/async/dms/documents/documentsApi';
+import { filesApi } from 'store/async/dms/files/filesApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { repositoryApi } from 'store/async/dms/repository/repositoryApi';
 
@@ -44,7 +44,7 @@ export const store = configureStore({
             .concat(workflowQuery.middleware)
             .concat(logsQuery.middleware)
             .concat(authApi.middleware)
-            .concat(documentsApi.middleware)
+            .concat(filesApi.middleware)
             .concat(foldersApi.middleware)
             .concat(repositoryApi.middleware)
 });

@@ -47,7 +47,7 @@ export interface GetDocumentContentByVersionProps extends GetDocumentContentProp
     versionId: string;
 }
 
-export interface GetChildrenDocumentsProps {
+export interface FolderRequestType {
     fldId: string;
 }
 
@@ -87,15 +87,37 @@ export interface GetFoldersContentProps {
     fldId: string;
 }
 
-export interface GetFetchedFoldersProps {
+// ================================= | Create Generic Document type | =============================== //
+
+export interface GenericDocument {
     author: string;
     created: string;
-    hasChildren: boolean;
     doc_name: string;
     path: string;
     permissions: number;
     subscribed: boolean;
     uuid: string;
+    is_dir: boolean;
+    mimeType?: string;
+    size?: number;
+}
+
+export interface GetFetchedFoldersProps extends GenericDocument {
+    hasChildren: boolean;
+}
+export interface FileResponseInterface extends GenericDocument {
+    actualVersion: ActualVersionType;
+    checkedOut: boolean;
+    convertibleToPdf: boolean;
+    convertibleToSwf: boolean;
+    lastModified: string;
+    lockInfo: LockInfoType;
+    locked: boolean;
+    mimeType: string;
+    signed: boolean;
+    title: string;
+    uuid: string;
+    doc_name: string;
     is_dir: boolean;
 }
 export interface CreateFoldersProps {
@@ -129,4 +151,41 @@ export interface ExtendeCopyFoldersProps extends MoveFoldersProps {
 
 export interface CreateMissingFoldersProps {
     fldPath: string;
+}
+
+export interface LockInfoType {
+    nodePath: string;
+    owner: string;
+    token: string;
+}
+
+// =============================== | Documents: Response Types | ============================== //
+
+export type ActualVersionType = {
+    actual: boolean;
+    author: string;
+    checksum: string;
+    created: string;
+    name: number;
+    size: numeber;
+};
+export interface FileResponseInterface {
+    actualVersion: ActualVersionType;
+    author: string;
+    checkedOut: boolean;
+    convertibleToPdf: boolean;
+    convertibleToSwf: boolean;
+    created: string;
+    lastModified: string;
+    lockInfo: LockInfoType;
+    locked: boolean;
+    mimeType: string;
+    path: string;
+    permissions: number;
+    signed: boolean;
+    subscribed: boolean;
+    title: string;
+    uuid: string;
+    doc_name: string;
+    is_dir: boolean;
 }

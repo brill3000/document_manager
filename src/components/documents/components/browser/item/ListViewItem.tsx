@@ -1,10 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Divider, ListItemButton, Stack, Typography, lighten } from '@mui/material';
-import { OkmDocumentType } from '../../../Interface/FileBrowser';
-import ListItem from '@mui/material/ListItem';
 import { theme } from '../../../Themes/theme';
-import { fileIcon } from '../../../Icons/fileIcon';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { DragSourceMonitor, useDrop, useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -13,24 +11,24 @@ import ActionMenu from 'components/documents/components/browser/UI/Menus/Documen
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GetFetchedFoldersProps } from 'global/interfaces';
+import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 export function ListViewItem({
-    folder,
+    document,
     closeContext,
     isColored,
     width
 }: {
-    folder: GetFetchedFoldersProps;
+    document: GenericDocument;
     isColored: boolean;
     width?: string | number;
     height?: string | number;
     closeContext: boolean;
 }): React.ReactElement {
     const { browserHeight } = useViewStore();
-    const { author, created, doc_name, hasChildren, path, permissions, subscribed, uuid, is_dir } = folder;
+    const { author, created, doc_name, path, permissions, subscribed, is_dir, size, mimeType } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);
@@ -38,7 +36,7 @@ export function ListViewItem({
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const { actions, selected, focused } = useBrowserStore();
     const isFocused = React.useMemo(() => {
-        return path === focused;
+        return path === focused.id;
     }, [path, focused]);
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
@@ -87,7 +85,7 @@ export function ListViewItem({
     React.useEffect(() => {
         setDragging(isDragging);
         if (isDragging) {
-            path !== undefined && actions.setFocused(path);
+            path !== undefined && actions.setFocused(path, is_dir);
         }
     }, [path, isDragging, setDragging]);
 
@@ -114,10 +112,10 @@ export function ListViewItem({
             );
         }
     };
-    const handleDoubleClick = () => {
+    const handleDoubleClick = (is_dir: boolean) => {
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
-            handleChangeRoute(path);
+            handleChangeRoute(path, is_dir);
         }
     };
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -132,9 +130,9 @@ export function ListViewItem({
      * @param folderName: string
      * @returns void
      */
-    const handleChangeRoute = (path: string) => {
+    const handleChangeRoute = (path: string, is_dir: boolean) => {
         if (path !== null || path !== undefined) {
-            actions.setSelected([path]);
+            actions.setSelected([{ id: path, is_dir }]);
             const encodedPathParam = encodeURIComponent(path);
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
@@ -154,19 +152,19 @@ export function ListViewItem({
                         if (path !== undefined) {
                             if (is_dir) {
                                 if (path !== null || path !== undefined) {
-                                    handleChangeRoute(path);
+                                    handleChangeRoute(path, is_dir);
                                 }
                             }
                         }
                         break;
                     case 'copy':
                     case 'cut':
-                        addToClipBoard({ id: selected[selected.length - 1], action: type });
+                        addToClipBoard({ id: selected[selected.length - 1].id, action: type });
                         setContextMenu(null);
                         break;
                     case 'delete':
                         try {
-                            const res = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            // const res = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
                         } catch (e) {
                             if (e instanceof Error) {
                                 console.log(e.message);
@@ -210,11 +208,9 @@ export function ListViewItem({
                 }
             }}
             onFocus={() => {
-                console.log(path, 'PATH');
-                actions.setFocused(path);
+                actions.setFocused(path, is_dir);
             }}
-            disableRipple
-            onBlur={() => focused === path && actions.setFocused(null)}
+            onBlur={() => focused.id === path && actions.setFocused(null, false)}
         >
             {document !== undefined ? (
                 <Grid
@@ -227,18 +223,18 @@ export function ListViewItem({
                     display={isDragging ? 'none' : 'flex'}
                     bgcolor={(theme) =>
                         (isFocused || isOver) && !isRenaming
-                            ? lighten(theme.palette.primary.main, 0.85)
+                            ? lighten(theme.palette.primary.main, 0.6)
                             : isHovered && !isRenaming
-                            ? 'background.paper'
+                            ? lighten(theme.palette.primary.main, 0.7)
                             : isColored
                             ? lighten(theme.palette.secondary.light, 0.7)
-                            : lighten(theme.palette.secondary.light, 0.9)
+                            : lighten(theme.palette.secondary.light, 0.8)
                     }
                     color={isFocused || isOver ? theme.palette.text.primary : theme.palette.text.secondary}
                     borderRadius={1}
                     onClick={handleClick}
                     onContextMenu={handleClick}
-                    onDoubleClick={handleDoubleClick}
+                    onDoubleClick={() => handleDoubleClick(is_dir)}
                     onMouseOver={() => {
                         setIsHovered(true);
                     }}
@@ -271,12 +267,12 @@ export function ListViewItem({
                         }}
                         bgcolor={(theme) =>
                             (isFocused || isOver) && !isRenaming
-                                ? lighten(theme.palette.primary.main, 0.85)
+                                ? lighten(theme.palette.primary.main, 0.6)
                                 : isHovered && !isRenaming
                                 ? lighten(theme.palette.primary.main, 0.7)
                                 : isColored
                                 ? lighten(theme.palette.secondary.light, 0.7)
-                                : lighten(theme.palette.secondary.light, 0.9)
+                                : lighten(theme.palette.secondary.light, 0.8)
                         }
                         color={isFocused || isOver ? theme.palette.text.primary : theme.palette.text.secondary}
                         pl={1}
@@ -284,7 +280,7 @@ export function ListViewItem({
                         justifyContent="space-between"
                     >
                         <Grid xs={1} display="flex" padding={0} alignItems="center">
-                            {is_dir ? <MemorizedFcFolder size={25} /> : fileIcon('application/pdf', browserHeight * 0.025, 0)}
+                            {is_dir ? <MemorizedFcFolder size={25} /> : fileIcon(mimeType, browserHeight * 0.025, 0)}
                         </Grid>
                         <Grid xs={11} maxWidth="80%" alignItems="center">
                             <Typography noWrap fontSize=".85rem">

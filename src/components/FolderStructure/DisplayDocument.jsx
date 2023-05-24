@@ -4,7 +4,7 @@ import { FcFolder } from 'react-icons/fc';
 import { DragFolder } from './DragFolder';
 import { Box, TextField } from '../../../node_modules/@mui/material/index';
 import { StyledLinearProgress } from 'ui-component/CustomProgressBars';
-import { fileIcon } from '../../ui-component/fileIcon';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { GoogleLoader } from 'ui-component/LoadHandlers';
 
 export const DisplayDocument = ({
@@ -76,7 +76,7 @@ export const DisplayDocument = ({
                 </>
             ) : (
                 <>
-                    {fileIcon(document.file_type)}
+                    {fileIcon(document.file_type, 16, 0)}
                     {document.status && (document.status === 'failed' || document.status === 'uploading') ? (
                         <StyledLinearProgress variant="determinate" value={document.progress} />
                     ) : (

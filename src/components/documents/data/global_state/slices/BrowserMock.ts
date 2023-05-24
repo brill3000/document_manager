@@ -6,7 +6,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     root: null,
     selected: [],
     farthestPath: null,
-    focused: null,
+    focused: { id: null, is_dir: false },
     splitScreen: true,
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
@@ -33,12 +33,12 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
             set(() => ({ root: key ?? null }));
             return true;
         },
-        setSelected: (selected: Array<string>) => {
+        setSelected: (selected: Array<{ id: string; is_dir: boolean }>) => {
             set(() => ({ selected: selected ?? null }));
             return true;
         },
-        setFocused: (focused: string | null) => {
-            set(() => ({ focused: focused ?? null }));
+        setFocused: (id: string | null, is_dir: boolean) => {
+            set(() => ({ focused: { id, is_dir } ?? null }));
             return true;
         },
         setSplitScreen: (splitScreen: boolean) => {

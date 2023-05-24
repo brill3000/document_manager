@@ -1,12 +1,11 @@
 import React, { ReactElement } from 'react';
 import { styled, TextField } from '@mui/material';
-import { DocumentType } from 'components/documents/Interface/FileBrowser';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
 interface RenameDocumentProps {
-    selected: string[];
     renameFn: (value: string) => void;
     renameTarget: { id: string; rename: boolean } | null;
+    name: string;
     disableDoubleClick: (disabled: boolean) => void;
 }
 
@@ -32,11 +31,11 @@ const ValidationTextField = styled(TextField)({
     }
 });
 
-export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick }: RenameDocumentProps): ReactElement => {
+export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick, name }: RenameDocumentProps): ReactElement => {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const [value, setValue] = React.useState<string>('');
     const [error, setError] = React.useState<Error | null>(null);
-    const { selected } = useBrowserStore();
+    const { focused } = useBrowserStore();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
     };
@@ -51,6 +50,10 @@ export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick }: R
             inputRef.current.select();
         }
     }, []);
+
+    React.useEffect(() => {
+        setValue(name);
+    }, [focused]);
 
     return (
         <ValidationTextField

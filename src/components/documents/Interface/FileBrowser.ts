@@ -110,8 +110,8 @@ export interface UseModelActions {
     move: (key: string | null, parent: string | null) => boolean | Error;
     uploadFiles: (parent: string, files: DocumentType[]) => boolean | Error;
     deleteById: (key: key | null) => boolean | Error;
-    setSelected: (arg0: Array<string>) => void;
-    setFocused: (focused: string | null) => void;
+    setSelected: (arg0: Array<{ id: string; is_dir: boolean }>) => void;
+    setFocused: (focused: string | null, is_dir: boolean) => void;
     getDocument: (key: string) => DocumentType | undefined;
     documentExists: (key: string) => boolean;
     setSplitScreen: (splitScreen: boolean) => void;
@@ -121,8 +121,8 @@ export interface StoreState {
     fileMap: Map<key, DocumentType | undefined>;
     root: key | null | undefined;
     farthestPath: string | null;
-    selected: Array<string>;
-    focused: string | null;
+    selected: Array<{ id: string; is_dir: boolean }>;
+    focused: { id: string | null; is_dir: boolean };
     splitScreen: boolean;
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
     actions: UseModelActions;
@@ -136,4 +136,6 @@ export interface RenderTree {
     doc_name: string;
     children?: Array<RenderTree | null>;
     hasChildren: boolean;
+    is_dir: boolean;
+    mimeType?: string;
 }

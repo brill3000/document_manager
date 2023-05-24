@@ -1,19 +1,13 @@
 import * as React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
-import { Box, Divider, ListItemIcon, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 // import { FiHardDrive } from 'react-icons/fi';
-import { FiEdit } from 'react-icons/fi';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { MemorizedFcFolder } from '../../item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import { SiAuth0 } from 'react-icons/si';
-import { TbHierarchy3 } from 'react-icons/tb';
+import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
+import { FolderDetailsList } from './DetailsList/FolderDetailsList';
+import { FileDetailsList } from './DetailsList/FileDetailsList';
 
 export default function RightSidebar() {
     const { browserHeight } = useViewStore();
@@ -26,157 +20,54 @@ export default function RightSidebar() {
         isLoading: folderInfoIsLoading,
         isSuccess: folderInfoIsSuccess
     } = useGetFoldersPropertiesQuery(
-        { fldId: focused !== null ? focused : '' },
+        { fldId: focused.id !== null ? focused.id : '' },
         {
-            skip: focused === null || focused === undefined || focused.length < 1
+            skip: !focused.is_dir || focused.id === null || focused.id === undefined || focused.id.length < 1
         }
     );
-    {
-        /*      <Box display="flex" justifyContent="center" pt={1}>
-                       {fileIcon(selected[0].type, browserHeight * 0.1, 0)}
-                     </Box>
-                 <Typography>Nothing Selected</Typography> */
-    }
+    const {
+        data: fileInfo,
+        error: fileInfoError,
+        isFetching: fileInfoIsFetching,
+        isLoading: fileInfoIsLoading,
+        isSuccess: fileInfoIsSuccess
+    } = useGetFilePropertiesQuery(
+        { docId: focused.id !== null ? focused.id : '' },
+        {
+            skip: focused.is_dir || focused.id === null || focused.id === undefined || focused.id.length < 1
+        }
+    );
     return (
         <>
-            {folderInfoIsFetching || folderInfoIsLoading ? (
+            {folderInfoIsFetching || folderInfoIsLoading || fileInfoIsFetching || fileInfoIsLoading ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <GoogleLoader height={100} width={100} loop={true} />
                 </Box>
-            ) : folderInfoError ? (
+            ) : folderInfoError || fileInfoError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />
                 </Box>
-            ) : folderInfoIsSuccess && folderInfo ? (
-                <Stack
-                    spacing={2}
-                    height="100%"
-                    width="100%"
-                    sx={{
-                        opacity: splitScreen ? 1 : 0,
-                        transition: '0.1s all',
-                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
-                    }}
-                >
-                    <Box display="flex" justifyContent="center">
-                        <MemorizedFcFolder size={browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.2 : '30%'} />
-                    </Box>
-
-                    <List
+            ) : focused.is_dir ? (
+                folderInfoIsSuccess && folderInfo !== null ? (
+                    <FolderDetailsList splitScreen={splitScreen} browserHeight={browserHeight} folderInfo={folderInfo} />
+                ) : (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="100%"
+                        minWidth="100%"
                         sx={{
-                            width: '100%',
-                            height: 'max-content',
-                            bgcolor: 'background.paper',
-                            position: 'relative',
-                            overflow: 'auto',
-                            maxHeight: browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.8 : '50%',
-                            '& ul': { padding: 0 }
+                            opacity: splitScreen ? 1 : 0,
+                            transition: '0.2s all',
+                            transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                         }}
-                        subheader={<li />}
                     >
-                        <li>
-                            <ul
-                                style={{
-                                    minHeight: 'max-content',
-                                    padding: 0
-                                }}
-                            >
-                                <ListSubheader color="primary">General Infomation</ListSubheader>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        name
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <FiEdit />
-                                    </ListItemIcon>
-                                    <ListItemText secondary={<span>{folderInfo.doc_name}</span>} sx={{ width: '90%' }} />
-                                </ListItem>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        author
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <BsFilePerson />
-                                    </ListItemIcon>
-                                    <ListItemText secondary={<span>{folderInfo.author}</span>} sx={{ width: '90%' }} />
-                                </ListItem>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        date created
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <BsCalendar2Check />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        secondary={<span>{new Date(folderInfo.created).toDateString()}</span>}
-                                        sx={{ width: '90%' }}
-                                    />
-                                </ListItem>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        has children
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <TbHierarchy3 />
-                                    </ListItemIcon>
-                                    <ListItemText secondary={<span>{String(folderInfo.hasChildren)}</span>} sx={{ width: '90%' }} />
-                                </ListItem>
-                                {/* <Divider /> */}
-                            </ul>
-                        </li>
-                        <li>
-                            <ul
-                                style={{
-                                    minHeight: 'max-content',
-                                    padding: 0
-                                }}
-                            >
-                                <ListSubheader color="primary">Permissions & Access</ListSubheader>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        permission group
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <SiAuth0 />
-                                    </ListItemIcon>
-                                    <ListItemText secondary={<span>{folderInfo.permissions}</span>} sx={{ width: '90%' }} />
-                                </ListItem>
-                            </ul>
-                        </li>
-                        <li>
-                            <ul
-                                style={{
-                                    minHeight: 'max-content',
-                                    padding: 0
-                                }}
-                            >
-                                <ListSubheader color="primary">Subscriptions</ListSubheader>
-                                <Divider variant="middle">
-                                    <Typography fontSize={10} color="text.secondary">
-                                        is subscribed
-                                    </Typography>
-                                </Divider>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <SiAuth0 />
-                                    </ListItemIcon>
-                                    <ListItemText secondary={<span>{folderInfo.subscribed}</span>} sx={{ width: '90%' }} />
-                                </ListItem>
-                            </ul>
-                        </li>
-                        {/* ))} */}
-                    </List>
-                </Stack>
+                        <Typography>Nothing Selected</Typography>
+                    </Box>
+                )
+            ) : fileInfoIsSuccess && fileInfo !== null ? (
+                <FileDetailsList splitScreen={splitScreen} browserHeight={browserHeight} fileInfo={fileInfo} />
             ) : (
                 <Box
                     display="flex"

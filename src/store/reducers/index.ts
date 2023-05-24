@@ -13,7 +13,7 @@ import { messages_query } from 'store/async/messagesQuery';
 import { workflow_query } from 'store/async/workflowQuery';
 import { logs_query } from 'store/async/logsQuery';
 import { auth_api } from 'store/async/dms/auth/authApi';
-import { documents_api } from 'store/async/dms/documents/documentsApi';
+import { files_api } from 'store/async/dms/files/filesApi';
 import { folders_api } from 'store/async/dms/folders/foldersApi';
 import { repository_api } from 'store/async/dms/repository/repositoryApi';
 
@@ -31,7 +31,7 @@ const reducers = combineReducers({
     workflow_query,
     logs_query,
     auth_api,
-    documents_api,
+    files_api,
     folders_api,
     repository_api
 });

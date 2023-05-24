@@ -16,13 +16,13 @@ export default function TopNavHandles() {
 
     const handleBack = () => {
         if (Array.isArray(selected) && selected.length > 0) {
-            const currentPath = selected[selected.length - 1];
+            const currentPath = selected[selected.length - 1].id;
             if (typeof currentPath === 'string') {
                 const pathArray = currentPath.split('/');
                 if (pathArray.length > 2) {
                     pathArray.pop();
                     const newPath = pathArray.join('/');
-                    actions.setSelected([newPath]);
+                    actions.setSelected([{ id: newPath, is_dir: true }]);
                 }
             }
         }
@@ -34,9 +34,12 @@ export default function TopNavHandles() {
         isLoading: folderInfoIsLoading,
         isSuccess: folderInfoIsSuccess
     } = useGetFoldersPropertiesQuery(
-        { fldId: selected !== null && Array.isArray(selected) ? selected[selected.length - 1] : '' },
+        { fldId: selected !== null && Array.isArray(selected) && selected.length > 1 ? selected[selected.length - 1].id : '' },
         {
-            skip: selected === null || selected === undefined || selected.length < 1
+            skip:
+                selected === null ||
+                selected === undefined ||
+                (selected.length < 1 && Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
         }
     );
     return (

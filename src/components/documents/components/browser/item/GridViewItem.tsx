@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Box, ButtonBase, Stack } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { fileIcon } from '../../../Icons/fileIcon';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { theme } from '../../../Themes/theme';
@@ -13,15 +13,15 @@ import { RenameDocument } from './Rename';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GetFetchedFoldersProps } from 'global/interfaces';
+import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps; closeContext: boolean }): JSX.Element {
-    const { doc_name, path, is_dir } = folder;
+function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean }): JSX.Element {
+    const { doc_name, path, is_dir, mimeType, size } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -38,8 +38,11 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
     const { pathParam } = useParams();
     const { pathname } = useLocation();
 
+    // ================================= | Mutations | ============================= //
+    const [renameFolder] = useRenameFolderMutation();
+
     const isFocused = React.useMemo(() => {
-        return path === focused;
+        return path === focused.id;
     }, [path, focused]);
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
@@ -55,6 +58,14 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                 // eslint-disable-next-line no-restricted-globals
                 const res = confirm('Rename document ? ');
                 if (res === true) {
+                    const fldId = renameTarget.id;
+                    const newName = value;
+                    const newPath = renameTarget.id.split('/');
+                    newPath.pop();
+                    newPath.push(newName);
+                    actions.setFocused(newPath.join('/'), is_dir);
+                    renameFolder({ fldId, newName });
+
                     closeRename();
                 } else {
                     closeRename();
@@ -127,10 +138,10 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
             );
         }
     };
-    const handleDoubleClick = () => {
+    const handleDoubleClick = (is_dir: boolean) => {
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
-            handleChangeRoute(path);
+            handleChangeRoute(path, is_dir);
         }
     };
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -145,9 +156,9 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
      * @param folderName: string
      * @returns void
      */
-    const handleChangeRoute = (path: string) => {
+    const handleChangeRoute = (path: string, is_dir: boolean) => {
         if (path !== null || path !== undefined) {
-            actions.setSelected([path]);
+            actions.setSelected([{ id: path, is_dir }]);
             const encodedPathParam = encodeURIComponent(path);
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
@@ -168,7 +179,7 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                         if (path !== undefined) {
                             if (is_dir) {
                                 if (path !== null || path !== undefined) {
-                                    handleChangeRoute(path);
+                                    handleChangeRoute(path, is_dir);
                                 }
                             }
                         }
@@ -209,6 +220,9 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
     const closeRename = () => {
         setRenameTarget(null);
     };
+    React.useEffect(() => {
+        isRenaming && renameTarget && actions.setFocused(renameTarget?.id, is_dir);
+    }, [isRenaming, renameTarget]);
 
     return (
         <Grid
@@ -243,9 +257,9 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                                 height="max-content"
                                 onClick={handleClick}
                                 onContextMenu={handleClick}
-                                onDoubleClick={handleDoubleClick}
-                                onFocus={() => actions.setFocused(path)}
-                                onBlur={() => focused === path && actions.setFocused(null)}
+                                onDoubleClick={() => handleDoubleClick(is_dir)}
+                                onFocus={() => actions.setFocused(path, is_dir)}
+                                onBlur={() => focused.id === path && actions.setFocused(null, false)}
                                 onMouseOver={() => {
                                     setIsHovered(true);
                                 }}
@@ -278,7 +292,7 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                                 borderColor={(theme) => theme.palette.secondary.light}
                                 onClick={handleClick}
                                 onContextMenu={handleClick}
-                                onDoubleClick={handleDoubleClick}
+                                onDoubleClick={() => handleDoubleClick(is_dir)}
                                 onMouseOver={() => {
                                     setIsHovered(true);
                                 }}
@@ -295,9 +309,13 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                             >
                                 {isRenaming ? (
                                     <RenameDocument
-                                        selected={selected}
                                         renameFn={renameFn}
                                         renameTarget={renameTarget}
+                                        name={
+                                            renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
+                                                ? document.doc_name
+                                                : ''
+                                        }
                                         disableDoubleClick={disableDoubleClickFn}
                                     />
                                 ) : (
@@ -333,7 +351,9 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                             px={0.5}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={handleDoubleClick}
+                            onDoubleClick={() => handleDoubleClick(is_dir)}
+                            onFocus={() => actions.setFocused(path, is_dir)}
+                            onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}
@@ -347,7 +367,7 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                             }}
                             component={ButtonBase}
                         >
-                            {fileIcon('application/pdf', browserHeight * 0.1, browserHeight * 0.005)}
+                            {fileIcon(mimeType, browserHeight * 0.1, browserHeight * 0.005)}
                         </Box>
                         <Box
                             borderRadius={1}
@@ -366,7 +386,7 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={handleDoubleClick}
+                            onDoubleClick={() => handleDoubleClick(is_dir)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}
@@ -383,9 +403,13 @@ function GridViewItem({ folder, closeContext }: { folder: GetFetchedFoldersProps
                         >
                             {isRenaming ? (
                                 <RenameDocument
-                                    selected={selected}
                                     renameFn={renameFn}
                                     renameTarget={renameTarget}
+                                    name={
+                                        renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
+                                            ? document.doc_name
+                                            : ''
+                                    }
                                     disableDoubleClick={disableDoubleClickFn}
                                 />
                             ) : (

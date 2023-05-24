@@ -3,9 +3,9 @@ import { blue } from '@mui/material/colors';
 import React from 'react';
 import type { XYCoord } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
-import { useViewStore } from '../../../data/global_state/slices/view';
-import { fileIcon } from '../../../Icons/fileIcon';
-import { ItemTypes } from '../../../Interface/Constants';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { ItemTypes } from 'components/documents/Interface/Constants';
 import { theme } from '../../../Themes/theme';
 import { MemorizedFcFolder } from '../item/GridViewItem';
 
