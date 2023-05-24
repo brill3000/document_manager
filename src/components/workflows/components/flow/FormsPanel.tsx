@@ -203,7 +203,7 @@ export function FormsPanel(
                                                             value={values.minRows}
                                                         />
                                                     )}
-                                                    <FormikCheckbox
+                                                    {/* <FormikCheckbox
                                                         label="Is input required"
                                                         name="isRequired"
                                                         onChange={handleChange}
@@ -220,7 +220,7 @@ export function FormsPanel(
                                                             value={values.defaultChecked}
                                                             sx={{ py: 1.5 }}
                                                         />
-                                                    )}
+                                                    )} */}
                                                     {(type === 'input' || type === 'large_input') && (
                                                         <FormikText
                                                             // 👇️ ts-ignore ignores any ts errors on the next line
