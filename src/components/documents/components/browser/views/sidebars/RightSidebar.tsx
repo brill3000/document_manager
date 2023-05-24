@@ -82,33 +82,52 @@ export default function RightSidebar() {
                                 }}
                             >
                                 <ListSubheader color="primary">General Infomation</ListSubheader>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        name
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.doc_name}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <FiEdit />
                                     </ListItemIcon>
+                                    <ListItemText secondary={<span>{folderInfo.doc_name}</span>} sx={{ width: '90%' }} />
                                 </ListItem>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        author
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.author}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <BsFilePerson />
                                     </ListItemIcon>
+                                    <ListItemText secondary={<span>{folderInfo.author}</span>} sx={{ width: '90%' }} />
                                 </ListItem>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        date created
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.created}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <BsCalendar2Check />
                                     </ListItemIcon>
+                                    <ListItemText
+                                        secondary={<span>{new Date(folderInfo.created).toDateString()}</span>}
+                                        sx={{ width: '90%' }}
+                                    />
                                 </ListItem>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        has children
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{String(folderInfo.hasChildren)}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
-                                        <TbHierarchy3 size={20} />
+                                        <TbHierarchy3 />
                                     </ListItemIcon>
+                                    <ListItemText secondary={<span>{String(folderInfo.hasChildren)}</span>} sx={{ width: '90%' }} />
                                 </ListItem>
                                 {/* <Divider /> */}
                             </ul>
@@ -121,12 +140,16 @@ export default function RightSidebar() {
                                 }}
                             >
                                 <ListSubheader color="primary">Permissions & Access</ListSubheader>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        permission group
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.permissions}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <SiAuth0 />
                                     </ListItemIcon>
+                                    <ListItemText secondary={<span>{folderInfo.permissions}</span>} sx={{ width: '90%' }} />
                                 </ListItem>
                             </ul>
                         </li>
@@ -138,12 +161,16 @@ export default function RightSidebar() {
                                 }}
                             >
                                 <ListSubheader color="primary">Subscriptions</ListSubheader>
-                                <Divider variant="middle" />
+                                <Divider variant="middle">
+                                    <Typography fontSize={10} color="text.secondary">
+                                        is subscribed
+                                    </Typography>
+                                </Divider>
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.subscribed}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <SiAuth0 />
                                     </ListItemIcon>
+                                    <ListItemText secondary={<span>{folderInfo.subscribed}</span>} sx={{ width: '90%' }} />
                                 </ListItem>
                             </ul>
                         </li>
