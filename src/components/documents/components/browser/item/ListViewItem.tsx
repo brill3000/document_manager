@@ -273,7 +273,7 @@ export function ListViewItem({
                             (isFocused || isOver) && !isRenaming
                                 ? lighten(theme.palette.primary.main, 0.85)
                                 : isHovered && !isRenaming
-                                ? 'background.paper'
+                                ? lighten(theme.palette.primary.main, 0.7)
                                 : isColored
                                 ? lighten(theme.palette.secondary.light, 0.7)
                                 : lighten(theme.palette.secondary.light, 0.9)

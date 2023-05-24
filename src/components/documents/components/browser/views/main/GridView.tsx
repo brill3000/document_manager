@@ -25,11 +25,11 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
         <>
             {folderChildrenIsLoading || folderChildrenIsFetching ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <GoogleLoader height={150} width={150} loop={true} />
+                    <GoogleLoader height={100} width={100} loop={true} />
                 </Box>
             ) : folderChildrenError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <Error height={150} width={150} />
+                    <Error height={50} width={50} />
                 </Box>
             ) : folderChildrenIsSuccess && Array.isArray(folderChildren.folder) && folderChildren.folder.length > 0 ? (
                 folderChildren.folder.map((folder) => <GridViewItem closeContext={closeContext} folder={folder} key={folder.path} />)

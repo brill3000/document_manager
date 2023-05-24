@@ -44,7 +44,7 @@ export default function RightSidebar() {
                 </Box>
             ) : folderInfoError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <Error height={100} width={100} />
+                    <Error height={50} width={50} />
                 </Box>
             ) : folderInfoIsSuccess && folderInfo ? (
                 <Stack
@@ -84,28 +84,28 @@ export default function RightSidebar() {
                                 <ListSubheader color="primary">General Infomation</ListSubheader>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.doc_name} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.doc_name}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <FiEdit />
                                     </ListItemIcon>
                                 </ListItem>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.author} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.author}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <BsFilePerson />
                                     </ListItemIcon>
                                 </ListItem>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.created ?? 'folder'} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.created}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <BsCalendar2Check />
                                     </ListItemIcon>
                                 </ListItem>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.hasChildren ?? 'folder'} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.hasChildren}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <BsCalendar2Check />
                                     </ListItemIcon>
@@ -123,7 +123,7 @@ export default function RightSidebar() {
                                 <ListSubheader color="primary">Permissions & Access</ListSubheader>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.permissions} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.permissions}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <SiAuth0 />
                                     </ListItemIcon>
@@ -140,7 +140,7 @@ export default function RightSidebar() {
                                 <ListSubheader color="primary">Subscriptions</ListSubheader>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={folderInfo.subscribed} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{folderInfo.subscribed}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
                                         <SiAuth0 />
                                     </ListItemIcon>
