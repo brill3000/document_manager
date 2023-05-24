@@ -237,11 +237,14 @@ export default function LeftSidebar() {
         data: rootFolder,
         error: rootFolderError,
         isFetching: rootFolderIsFetching,
+        isLoading: rootFolderIsLoading,
         isSuccess: rootFolderIsSuccess
     } = useGetRootFolderQuery({});
 
     React.useEffect(() => {
-        if (rootFolderIsSuccess && !rootFolderIsFetching) {
+        if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
+            handleExpandClick(rootFolder.path);
+            setCurrentExpanded(rootFolder.path);
             actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
             const data: RenderTree = {
                 id: rootFolder.path,
@@ -253,7 +256,7 @@ export default function LeftSidebar() {
             };
             setData(data);
         }
-    }, [rootFolderIsSuccess, rootFolderIsFetching]);
+    }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading]);
     // ================================== | FETCH: CHILDREN  | ================================== //
     /**
      * Fetch children folders
@@ -392,7 +395,7 @@ export default function LeftSidebar() {
                     expanded={expanded}
                     sx={{
                         flexGrow: 1,
-                        maxWidth: '100vw',
+                        maxWidth: '100%',
                         minWidth: '100%',
                         overflowY: 'auto',
                         pt: 1.2,
