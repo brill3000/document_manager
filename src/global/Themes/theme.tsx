@@ -27,7 +27,7 @@ export default extendTheme({
         }
     },
     fontFamily: {
-        display: "'Public Sans', sans-serif', var(--joy-fontFamily-fallback)",
-        body: "'Public Sans', sans-serif', var(--joy-fontFamily-fallback)"
+        display: "'quicksand', sans-serif', var(--joy-fontFamily-fallback)",
+        body: "'quicksand', sans-serif', var(--joy-fontFamily-fallback)"
     }
 });

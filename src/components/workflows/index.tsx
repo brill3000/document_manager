@@ -7,7 +7,6 @@ import Typography from '@mui/joy/Typography';
 import IconButton from '@mui/joy/IconButton';
 
 // custom
-import emailTheme from '../../global/Themes/theme';
 import Layout from '../../global/UI/Layout';
 import Navigation from './components/Navigation';
 import WorkFlowsList from './components/WorkFlowsList';
@@ -22,6 +21,7 @@ import ViewFile from './components/ViewFile';
 import ThemeCustomization from 'themes';
 import { Experimental_CssVarsProvider } from '@mui/material';
 import CreateFlow from './components/flow/CreateFlow';
+import theme from '../../global/Themes/theme';
 
 const Create: React.FC<any> = ({ setOpenView }: { setOpenView: (open: boolean) => void }) => {
     return (
@@ -40,13 +40,12 @@ export default function Workflow() {
 
     const title = 'Workflow';
     return (
-        <CssVarsProvider disableTransitionOnChange theme={emailTheme}>
+        <CssVarsProvider disableTransitionOnChange theme={theme}>
             <Sheet variant="outlined" color="neutral" sx={{ borderRadius: 10, maxHeight: 650, overflowY: 'hidden' }}>
                 <GlobalStyles<Theme>
                     styles={(theme) => ({
                         body: {
-                            margin: 0,
-                            fontFamily: theme.vars.fontFamily.body
+                            margin: 0
                         }
                     })}
                 />

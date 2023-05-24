@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
-import Avatar from '@mui/joy/Avatar';
 import List from '@mui/joy/List';
 import ListDivider from '@mui/joy/ListDivider';
 import ListItem from '@mui/joy/ListItem';
@@ -20,104 +19,8 @@ const data = [
     {
         name: 'Steve Mooy',
         date: '06 Jul 2022',
-        title: 'Tickets for our upcoming trip',
-        body: 'Good day, mate! It seems that our tickets just arrived…'
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
-    },
-    {
-        name: 'Kate Gates',
-        date: '16 May 2022',
-        title: 'Brunch this Saturday?',
-        body: "Hey! I'll be around the city this weekend, how about a…"
+        title: 'Car loan Approval',
+        body: 'Processing of a car loan request'
     }
 ];
 

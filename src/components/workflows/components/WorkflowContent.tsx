@@ -25,7 +25,7 @@ export function LinearDeterminate({ percentage }: { percentage: number }) {
     );
 }
 
-export default function EmailContent() {
+export default function WorkflowContent() {
     return (
         <Sheet
             variant="outlined"

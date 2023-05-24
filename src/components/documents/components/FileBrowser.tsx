@@ -18,26 +18,8 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
     const topRef = React.useRef<HTMLInputElement | null>(null);
     const bottomRef = React.useRef<HTMLInputElement | null>(null);
     // const [heightContent, setHeightContent] = React.useState<number | null>(null);
-    const stack = React.useRef<string[] | number[]>([]);
     const { setBrowserHeight, setBrowserWidth, browserHeight, browserWidth } = useViewStore();
     const ref = React.useRef<HTMLInputElement | null>(null);
-    const { nav, select } = useHistory();
-
-    const handleForward = () => {
-        if (Array.isArray(stack.current) && stack.current.length >= 1) {
-            select(stack.current[stack.current.length - 1]);
-            stack.current.pop();
-        }
-    };
-    const handleBack = () => {
-        const navCopy = [...nav];
-        if (Array.isArray(navCopy) && navCopy.length > 1) {
-            const popped = navCopy.pop();
-            const selected = navCopy[navCopy.length - 1];
-            stack.current = [...stack.current, popped];
-            select(selected);
-        }
-    };
     React.useEffect(() => {
         const handleWindowResize = () => {
             setBrowserHeight(window.innerHeight);

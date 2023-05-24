@@ -26,18 +26,18 @@ const OverviewFlow = () => {
     const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'buttonedge' }, eds)), []);
     const workflowQuery = useGetSavedWorkflowsQuery(null);
 
-    React.useEffect(() => {
-        if (Array.isArray(workflowQuery.data)) {
-            workflowQuery.data.forEach((workflow, index) => {
-                if (index === 0) {
-                    console.log(workflow.nodes, 'NODES');
-                    console.log(workflow.edges, 'EDGES');
-                    setNodes(workflow.nodes);
-                    setEdges(workflow.edges);
-                }
-            });
-        }
-    }, [workflowQuery.data]);
+    // React.useEffect(() => {
+    //     if (Array.isArray(workflowQuery.data)) {
+    //         workflowQuery.data.forEach((workflow, index) => {
+    //             if (index === 0) {
+    //                 console.log(workflow.nodes, 'NODES');
+    //                 console.log(workflow.edges, 'EDGES');
+    //                 setNodes(workflow.nodes);
+    //                 setEdges(workflow.edges);
+    //             }
+    //         });
+    //     }
+    // }, [workflowQuery.data]);
 
     return workflowQuery.isLoading || workflowQuery.isFetching ? (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">

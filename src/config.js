@@ -2,7 +2,10 @@
 
 const config = {
     defaultPath: '/',
-    fontFamily: `'Public Sans', sans-serif`,
+    fontFamily: `'quicksand', sans-serif`,
+    fontWeight: 500,
+    fontSize: '0.85rem',
+    lineHeight: 1,
     i18n: 'en',
     miniDrawer: false,
     container: true,

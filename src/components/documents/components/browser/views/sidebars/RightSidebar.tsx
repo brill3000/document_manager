@@ -13,6 +13,7 @@ import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import { SiAuth0 } from 'react-icons/si';
+import { TbHierarchy3 } from 'react-icons/tb';
 
 export default function RightSidebar() {
     const { browserHeight } = useViewStore();
@@ -73,7 +74,6 @@ export default function RightSidebar() {
                         }}
                         subheader={<li />}
                     >
-                        {/* {[{ title: 'General Infomation' }, { title: 'Permissions & Access' }, { title: 'tags' }].map((sectionId, i) => ( */}
                         <li>
                             <ul
                                 style={{
@@ -105,9 +105,9 @@ export default function RightSidebar() {
                                 </ListItem>
                                 <Divider variant="middle" />
                                 <ListItem>
-                                    <ListItemText secondary={<span>{folderInfo.hasChildren}</span>} sx={{ width: '90%' }} />
+                                    <ListItemText secondary={<span>{String(folderInfo.hasChildren)}</span>} sx={{ width: '90%' }} />
                                     <ListItemIcon>
-                                        <BsCalendar2Check />
+                                        <TbHierarchy3 size={20} />
                                     </ListItemIcon>
                                 </ListItem>
                                 {/* <Divider /> */}

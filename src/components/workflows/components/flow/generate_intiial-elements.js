@@ -3,17 +3,6 @@ import { MarkerType } from 'react-flow-renderer';
 
 export const nodes = [
     {
-        id: '2',
-        data: {
-            label: (
-                <>
-                    <strong>Stake holder consultation</strong>
-                </>
-            )
-        },
-        position: { x: 100, y: 100 }
-    },
-    {
         id: '3',
         data: {
             label: (
@@ -22,11 +11,10 @@ export const nodes = [
                 </>
             )
         },
-        position: { x: 400, y: 100 },
+        position: { x: 250, y: 100 },
         style: {
-            background: '#D6D5E6',
             color: '#333',
-            border: '1px solid #222138',
+            border: '.8px solid #222138',
             width: 180
         }
     },
@@ -35,6 +23,11 @@ export const nodes = [
         position: { x: 250, y: 200 },
         data: {
             label: 'Assignment of Approval Document'
+        },
+        style: {
+            color: '#333',
+            border: '.8px solid #222138',
+            width: 180
         }
     },
     {
@@ -42,7 +35,12 @@ export const nodes = [
         data: {
             label: 'Signing and approval of document'
         },
-        position: { x: 250, y: 325 }
+        position: { x: 250, y: 325 },
+        style: {
+            color: '#333',
+            border: '.8px solid #222138',
+            width: 180
+        }
     },
     {
         id: '6',
@@ -54,49 +52,60 @@ export const nodes = [
                 </>
             )
         },
-        position: { x: 100, y: 480 }
+        position: { x: 100, y: 480 },
+        style: {
+            color: '#333',
+            border: '.8px solid #222138',
+            width: 180
+        }
     },
     {
         id: '7',
         type: 'output',
         data: { label: 'Report Generation and Feedback' },
-        position: { x: 400, y: 450 }
+        position: { x: 400, y: 450 },
+        style: {
+            background: '#f6ab6c',
+            color: '#333',
+            border: '.8px solid #222138',
+            width: 180
+        }
     }
 ];
 
 export const edges = [
-    { id: 'e1-2', source: '1', target: '2', label: 'this is an edge label' },
-    { id: 'e1-3', source: '1', target: '3' },
     {
         id: 'e3-4',
         source: '3',
         target: '4',
         animated: true,
-        label: 'animated edge'
+        type: 'smoothstep',
+        style: { stroke: 'red' },
+        label: 'being reviewed'
     },
     {
         id: 'e4-5',
         source: '4',
         target: '5',
-        label: 'edge with arrow head',
-        markerEnd: {
-            type: MarkerType.ArrowClosed
-        }
+        type: 'smoothstep',
+        style: { stroke: 'green' },
+        label: 'completed'
     },
     {
         id: 'e5-6',
         source: '5',
         target: '6',
         type: 'smoothstep',
-        label: 'smooth step edge'
+        style: { stroke: 'green' },
+        label: 'completed'
     },
     {
         id: 'e5-7',
         source: '5',
         target: '7',
-        type: 'step',
+        type: 'smoothstep',
         style: { stroke: '#f6ab6c' },
-        label: 'a step edge',
+        label: 'In progress',
         animated: true,
         labelStyle: { fill: '#f6ab6c', fontWeight: 700 }
     }
