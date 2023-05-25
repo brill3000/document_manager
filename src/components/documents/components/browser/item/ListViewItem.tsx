@@ -28,7 +28,7 @@ export function ListViewItem({
     closeContext: boolean;
 }): React.ReactElement {
     const { browserHeight } = useViewStore();
-    const { author, created, doc_name, path, permissions, subscribed, is_dir, size, mimeType } = document;
+    const { author, created, doc_name, path, permissions, subscribed, is_dir, size, mimeType, locked } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);
@@ -313,7 +313,13 @@ export function ListViewItem({
                             {permissions}
                         </Typography>
                     </Grid>
-                    <ActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />
+                    <ActionMenu
+                        contextMenu={contextMenu}
+                        handleMenuClose={handleMenuClose}
+                        handleMenuClick={handleMenuClick}
+                        is_dir={is_dir}
+                        locked={locked ?? false}
+                    />
                 </Grid>
             ) : (
                 <></>

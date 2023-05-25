@@ -25,7 +25,7 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
     const { clipboard, addToClipBoard } = useStore();
     const [move] = useMoveFolderMutation();
     const [copy] = useCopyFoldersMutation();
-    const { selected: dstFld } = useBrowserStore();
+    const { selected: dstFldArray } = useBrowserStore();
 
     React.useEffect(() => {
         return () => {
@@ -66,11 +66,11 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 onClick={(e) => {
                     setSelected('paste');
                     handleMenuClick(e, 'paste');
-                    if (clipboard.size > 0 && Array.isArray(dstFld) && dstFld.length > 0) {
+                    if (clipboard.size > 0 && Array.isArray(dstFldArray) && dstFldArray.length > 0) {
                         const keysArray = [...clipboard.keys()];
                         const fldId = keysArray[keysArray.length - 1];
                         const type = clipboard.get(fldId);
-                        const dstId = dstFld[dstFld.length - 1];
+                        const dstId = dstFldArray[dstFldArray.length - 1].id;
                         if (type === 'copy') {
                             copy({ fldId, dstId });
                         } else if (type === 'cut') {
