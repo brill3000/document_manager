@@ -63,14 +63,17 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
                 '& .MuiCardContent-root': {
                     p: 0,
                     height: '100%',
-                    width: '100%'
+                    width: '100%',
+                    '&:last-child': {
+                        p: '0 !important'
+                    }
                 }
             }}
         >
-            <Box height="20%">
+            <Box height="17%">
                 <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} />
             </Box>
-            <Box height="72%">
+            <Box height="75%">
                 <Content gridRef={ref} />
             </Box>
             <Divider />
