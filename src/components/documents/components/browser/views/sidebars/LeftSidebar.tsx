@@ -15,7 +15,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import _, { uniqueId } from 'lodash';
+import _, { isEmpty, uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
@@ -270,10 +270,7 @@ export default function LeftSidebar() {
     } = useGetFoldersChildrenQuery(
         { fldId: currentExpanded !== null ? currentExpanded : '' },
         {
-            skip:
-                currentExpanded === null ||
-                currentExpanded === undefined ||
-                (typeof currentExpanded === 'string' && currentExpanded.length < 1)
+            skip: currentExpanded === null || currentExpanded === undefined || isEmpty(currentExpanded)
         }
     );
 
@@ -289,10 +286,7 @@ export default function LeftSidebar() {
     } = useGetFolderChildrenFilesQuery(
         { fldId: currentExpanded !== null ? currentExpanded : '' },
         {
-            skip:
-                currentExpanded === null ||
-                currentExpanded === undefined ||
-                (typeof currentExpanded === 'string' && currentExpanded.length < 1)
+            skip: currentExpanded === null || currentExpanded === undefined || isEmpty(currentExpanded)
         }
     );
     /**

@@ -5,7 +5,6 @@ import { Handle, Position } from 'react-flow-renderer';
 import { FormsCard } from './CreateFlow';
 
 export default memo(({ data }) => {
-    console.log(data, 'DATA');
     return (
         <>
             <Stack direction="column" spacing={1} sx={{ bgcolor: 'white', borderRadius: 3, p: 1 }}>

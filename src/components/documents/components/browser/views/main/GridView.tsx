@@ -7,6 +7,7 @@ import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { Error, FolderEmpty, GoogleLoader } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
+import { isEmpty } from 'lodash';
 
 export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     const { selected } = useBrowserStore();
@@ -22,7 +23,9 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
             skip:
                 selected === null ||
                 selected === undefined ||
-                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
         }
     );
     const {
@@ -37,7 +40,9 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
             skip:
                 selected === null ||
                 selected === undefined ||
-                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
         }
     );
     return (
@@ -54,10 +59,10 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />
                 </Box>
-            ) : folderChildrenIsSuccess &&
-              Array.isArray(folderChildren.folder) &&
-              childrenDocumentsIsSuccess &&
-              Array.isArray(childrenDocuments.document) &&
+            ) : folderChildren !== undefined &&
+              childrenDocuments !== undefined &&
+              Array.isArray(folderChildren?.folder) &&
+              Array.isArray(childrenDocuments?.document) &&
               [...folderChildren.folder, ...childrenDocuments.document].length > 0 ? (
                 [...folderChildren.folder, ...childrenDocuments.document].map((document: GenericDocument) => (
                     <GridViewItem closeContext={closeContext} document={document} key={document.path} />

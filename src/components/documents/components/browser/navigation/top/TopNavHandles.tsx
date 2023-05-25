@@ -7,13 +7,13 @@ import { IoReturnUpForwardOutline } from 'react-icons/io5';
 import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
+import { isArray, isEmpty, isNull } from 'lodash';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 
 export default function TopNavHandles() {
     const tooltipDelay = 200;
     const { selected, actions } = useBrowserStore();
-
     const handleBack = () => {
         if (Array.isArray(selected) && selected.length > 0) {
             const currentPath = selected[selected.length - 1].id;
@@ -34,12 +34,20 @@ export default function TopNavHandles() {
         isLoading: folderInfoIsLoading,
         isSuccess: folderInfoIsSuccess
     } = useGetFoldersPropertiesQuery(
-        { fldId: selected !== null && Array.isArray(selected) && selected.length > 1 ? selected[selected.length - 1].id : '' },
+        {
+            fldId:
+                isArray(selected) && !isEmpty(selected) && !isEmpty(selected[selected?.length - 1].id)
+                    ? selected[selected.length - 1].id
+                    : ''
+        },
         {
             skip:
                 selected === null ||
                 selected === undefined ||
-                (selected.length < 1 && Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+                !isArray(selected) ||
+                isEmpty(selected) ||
+                isEmpty(selected[selected?.length - 1].id) ||
+                isNull(selected[selected?.length - 1].id)
         }
     );
     return (
@@ -169,7 +177,6 @@ export default function TopNavHandles() {
                             bgcolor: (theme) => theme.palette.secondary.main
                         }
                     }}
-                    onClick={() => console.log('')}
                 >
                     <CiSearch size={18} />
                 </IconButton>

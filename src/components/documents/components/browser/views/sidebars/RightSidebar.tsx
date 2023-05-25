@@ -8,11 +8,11 @@ import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
 import { FolderDetailsList } from './DetailsList/FolderDetailsList';
 import { FileDetailsList } from './DetailsList/FileDetailsList';
+import { isEmpty } from 'lodash';
 
 export default function RightSidebar() {
     const { browserHeight } = useViewStore();
     const { focused, splitScreen } = useBrowserStore();
-
     const {
         data: folderInfo,
         error: folderInfoError,
@@ -22,7 +22,7 @@ export default function RightSidebar() {
     } = useGetFoldersPropertiesQuery(
         { fldId: focused.id !== null ? focused.id : '' },
         {
-            skip: !focused.is_dir || focused.id === null || focused.id === undefined || focused.id.length < 1
+            skip: !focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id)
         }
     );
     const {
@@ -34,7 +34,7 @@ export default function RightSidebar() {
     } = useGetFilePropertiesQuery(
         { docId: focused.id !== null ? focused.id : '' },
         {
-            skip: focused.is_dir || focused.id === null || focused.id === undefined || focused.id.length < 1
+            skip: focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id)
         }
     );
     return (

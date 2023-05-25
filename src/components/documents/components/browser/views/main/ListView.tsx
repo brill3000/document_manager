@@ -25,7 +25,9 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
             skip:
                 selected === null ||
                 selected === undefined ||
-                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+                selected?.length < 1 ||
+                selected[selected.length - 1]?.id?.length < 1 ||
+                !selected[selected.length - 1]?.is_dir
         }
     );
     const {
@@ -40,7 +42,9 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
             skip:
                 selected === null ||
                 selected === undefined ||
-                (Array.isArray(selected) && (selected.length < 1 || !selected[selected.length - 1].is_dir))
+                selected?.length < 1 ||
+                selected[selected.length - 1]?.id?.length < 1 ||
+                selected[selected.length - 1]?.is_dir
         }
     );
 
