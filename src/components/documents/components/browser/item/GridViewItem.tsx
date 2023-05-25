@@ -17,6 +17,9 @@ import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { BsLockFill } from 'react-icons/bs';
+import { useGetFileContentQuery } from 'store/async/dms/files/filesApi';
+import { isArray, isEmpty } from 'lodash';
+import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
@@ -39,6 +42,8 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
     const { pathParam } = useParams();
     const { pathname } = useLocation();
 
+    // ================================= | Dialog function | ========================== //
+    const setViewFile = useViewStore((state) => state.setViewFile);
     // ================================= | Mutations | ============================= //
     const [renameFolder] = useRenameFolderMutation();
 
@@ -143,6 +148,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
             handleChangeRoute(path, is_dir);
+            !is_dir && setViewFile(true, 'paper');
         }
     };
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -452,6 +458,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                 handleMenuClose={handleMenuClose}
                 handleMenuClick={handleMenuClick}
             />
+            <FileViewerDialog />
         </Grid>
     );
 }
