@@ -3,7 +3,6 @@ import React from 'react';
 import Content from './browser/Container';
 import FileBrowserNavigation from './browser/navigation/bottom/Footer';
 import { FileBrowserProps } from '../Interface/FileBrowser';
-import { useHistory } from '../data/History';
 import { useStore } from '../data/global_state';
 import FileBrowserTopNav from './browser/navigation/top/TopNav';
 import { useViewStore } from '../data/global_state/slices/view';

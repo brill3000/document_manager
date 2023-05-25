@@ -33,14 +33,14 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
 
     // ========================= | Fetch data | =========================== //
 
-    React.useEffect(() => {
-        if (Array.isArray(selected) && selected.length > 0) {
-            const childrenArray = actions.getChildren(selected[selected.length - 1]);
-            if (childrenArray !== null) {
-                setChildren(childrenArray);
-            }
-        }
-    }, [fileMap]);
+    // React.useEffect(() => {
+    //     if (Array.isArray(selected) && selected.length > 0) {
+    //         const childrenArray = actions.getChildren(selected[selected.length - 1]);
+    //         if (childrenArray !== null) {
+    //             setChildren(childrenArray);
+    //         }
+    //     }
+    // }, [fileMap]);
 
     React.useEffect(() => {
         if (open === true)
@@ -131,7 +131,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             container
             sm={12}
             md={splitScreen ? 6 : 9}
-            bgcolor={alpha(brown[100], 0.2)}
+            bgcolor={(theme) => alpha(theme.palette.secondary.main, 0.1)}
             sx={{
                 overflowY: 'auto',
                 height: '100%',
@@ -141,7 +141,8 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                 m: 0,
                 userSelect: 'none',
                 transition: '0.3s all',
-                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                backdropFilter: 'blur(5px)'
             }}
             rowSpacing={1}
             onClick={handleClick}
@@ -158,7 +159,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                     width={gridRef.current ? gridRef.current.clientWidth : '100vw'}
                 />
             ) : (
-                <GridView setCloseContext={setCloseContext} closeContext={closeContext} />
+                <GridView setCloseContext={setCloseContext} closeContext={closeContext} splitScreen={splitScreen} />
             )}
             <CustomDragDocument />
             <FolderActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />

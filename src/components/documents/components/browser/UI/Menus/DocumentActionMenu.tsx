@@ -9,11 +9,13 @@ import { theme } from '../../../../Themes/theme';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
+    locked: boolean;
+    is_dir: boolean;
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete') => void;
 }
 
-export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: ActionMenuProps) => {
+export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | null>(null);
     React.useEffect(() => {
         return () => {
@@ -57,6 +59,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: Ac
                     setSelected('copy');
                     handleMenuClick(e, 'copy');
                 }}
+                disabled={locked}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                     <IoMdCopy size={20} />
@@ -71,6 +74,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: Ac
                     setSelected('cut');
                     handleMenuClick(e, 'cut');
                 }}
+                disabled={locked}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                     <IoCutOutline size={20} />
@@ -86,6 +90,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: Ac
                     setSelected('rename');
                     handleMenuClick(e, 'rename');
                 }}
+                disabled={locked}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                     <CiEdit size={21} />
@@ -100,6 +105,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: Ac
                     setSelected('edit');
                     handleMenuClick(e, 'edit');
                 }}
+                disabled={locked}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                     <CiEraser size={20} />
@@ -115,6 +121,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: Ac
                     setSelected('delete');
                     handleMenuClick(e, 'delete');
                 }}
+                disabled={locked}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                     <IoMdTrash size={20} color={theme.palette.error.main} />

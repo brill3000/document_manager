@@ -56,7 +56,7 @@ const StyledTreeItemRoot = styled(
         borderRadius: theme.spacing(0.5),
         paddingLeft: theme.spacing(1.5),
         backgroundColor: 'transparent',
-        ...(isLoader && { padding: '0 !important', height: '1.5rem !important' }),
+        ...(isLoader && { padding: '0 !important', height: '1.4rem !important' }),
         fontWeight: theme.typography.fontWeightMedium,
         '&.Mui-expanded': {
             fontWeight: theme.typography.fontWeightRegular
@@ -93,7 +93,7 @@ function StyledTreeItem(props: TreeItemProps) {
                     label
                 ) : (
                     <Box width="100%" height="100%">
-                        <Skeleton width="100%" height="2.3rem" animation="wave" />
+                        <Skeleton width="100%" height="2.1rem" animation="wave" />
                     </Box>
                 )
             }

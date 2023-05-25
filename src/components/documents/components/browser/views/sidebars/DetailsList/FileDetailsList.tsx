@@ -3,13 +3,14 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Box, Divider, ListItemIcon, Stack, Typography } from '@mui/material';
+import { Badge, Box, Divider, ListItemIcon, Stack, Typography } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
-import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
+import { BsCalendar2Check, BsFilePerson, BsLockFill } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { FileResponseInterface } from 'global/interfaces';
+import { orange } from '@mui/material/colors';
 
 export function FileDetailsList({
     splitScreen,
@@ -32,7 +33,13 @@ export function FileDetailsList({
             }}
         >
             <Box display="flex" justifyContent="center" pt={1}>
-                {fileIcon(fileInfo.mimeType, browserHeight * 0.1, 0)}
+                <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={fileInfo.locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
+                >
+                    {fileIcon(fileInfo.mimeType, browserHeight * 0.1, 0)}
+                </Badge>
             </Box>
             <List
                 sx={{
@@ -111,6 +118,17 @@ export function FileDetailsList({
                         <ListSubheader color="primary">Permissions & Access</ListSubheader>
                         <Divider variant="middle">
                             <Typography fontSize={10} color="text.secondary">
+                                locked
+                            </Typography>
+                        </Divider>
+                        <ListItem>
+                            <ListItemIcon>
+                                <BsLockFill />
+                            </ListItemIcon>
+                            <ListItemText secondary={<span>{fileInfo.locked ? 'Yes' : 'No'}</span>} sx={{ width: '90%' }} />
+                        </ListItem>
+                        <Divider variant="middle">
+                            <Typography fontSize={10} color="text.secondary">
                                 permission group
                             </Typography>
                         </Divider>
@@ -150,7 +168,7 @@ export function FileDetailsList({
                             <ListItemIcon>
                                 <SiAuth0 />
                             </ListItemIcon>
-                            <ListItemText secondary={<span>{fileInfo.subscribed}</span>} sx={{ width: '90%' }} />
+                            <ListItemText secondary={<span>{fileInfo.subscribed ? 'Yes' : 'No'}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                     </ul>
                 </li>

@@ -100,6 +100,7 @@ export interface GenericDocument {
     is_dir: boolean;
     mimeType?: string;
     size?: number;
+    locked?: boolean;
 }
 
 export interface GetFetchedFoldersProps extends GenericDocument {

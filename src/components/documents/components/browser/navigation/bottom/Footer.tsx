@@ -1,19 +1,34 @@
 import { emphasize, styled } from '@mui/material/styles';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
+// import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Chip, { ChipProps } from '@mui/material/Chip';
 // icons
-import { MenuItem, Stack, Typography, IconButton, Tooltip, Badge, Grid } from '@mui/material';
+import {
+    MenuItem,
+    Stack,
+    Typography,
+    IconButton,
+    Tooltip,
+    Badge,
+    Grid,
+    List,
+    ListItem,
+    ListItemButton,
+    Box,
+    ListItemText,
+    ListItemIcon
+} from '@mui/material';
 import React from 'react';
 import { DocumentType, FileBrowerClickEvent, FileBrowserNaviagationProps } from '../../../../Interface/FileBrowser';
-import { FcOpenedFolder, FcRefresh } from 'react-icons/fc';
+// import { FcOpenedFolder, FcRefresh } from 'react-icons/fc';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from 'components/documents/Interface/Constants';
-import { StyledMenu } from 'components/documents/components/browser/UI/Menus/StyledMenu';
+// import { StyledMenu } from 'components/documents/components/browser/UI/Menus/StyledMenu';
 import { BsClipboard } from 'react-icons/bs';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
 import { useHistory } from 'components/documents/data/History';
+import { green, red } from '@mui/material/colors';
 
 interface CustomChipProps extends ChipProps {
     doc?: DocumentType | undefined;
@@ -120,7 +135,7 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
             justifyContent="space-between"
         >
             <Grid item xs={11}>
-                <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose} aria-labelledby="with-menu-demo-breadcrumbs">
+                {/* <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose} aria-labelledby="with-menu-demo-breadcrumbs">
                     {Array.isArray(navHistory) &&
                         navHistory
                             .filter((_: string, i: number) => i !== navHistory.length - 1 && i > 0)
@@ -215,7 +230,30 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
                     </Breadcrumbs>
                 ) : (
                     <></>
-                )}
+                )} */}
+                <Stack direction="row" width="80%" spacing={4}>
+                    {[
+                        { id: 'Read', status: true },
+                        { id: 'Write', status: true },
+                        { id: 'Edit', status: true },
+                        { id: 'Delete', status: true },
+                        { id: 'Security', status: true }
+                    ].map((access) => (
+                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                            <Box
+                                sx={{
+                                    width: '10px',
+                                    height: '10px',
+                                    borderRadius: '50%',
+                                    bgcolor: access.status ? green[500] : red[500]
+                                }}
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                                {access.id}
+                            </Typography>
+                        </Stack>
+                    ))}
+                </Stack>
             </Grid>
             <Grid item xs={1} display="flex" justifyContent="end">
                 <Tooltip title="Clipboard" arrow>

@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, Box, ButtonBase, Stack } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { alpha, Badge, Box, ButtonBase, Stack } from '@mui/material';
+import { grey, orange } from '@mui/material/colors';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
@@ -16,12 +16,13 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { BsLockFill } from 'react-icons/bs';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
 function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, size } = document;
+    const { doc_name, path, is_dir, mimeType, size, locked } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -346,7 +347,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                             {...(isFocused ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
                             width="max-content"
                             height="max-content"
-                            pt={2}
+                            pt={browserHeight * 0.0023}
                             pb={0.5}
                             px={0.5}
                             onClick={handleClick}
@@ -367,7 +368,15 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                             }}
                             component={ButtonBase}
                         >
-                            {fileIcon(mimeType, browserHeight * 0.1, browserHeight * 0.005)}
+                            {
+                                <Badge
+                                    overlap="circular"
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
+                                >
+                                    {fileIcon(mimeType, browserHeight * 0.1, browserHeight * 0.006)}
+                                </Badge>
+                            }
                         </Box>
                         <Box
                             borderRadius={1}
@@ -436,7 +445,13 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
             ) : (
                 <></>
             )}
-            <ActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />
+            <ActionMenu
+                is_dir={is_dir}
+                locked={locked ?? false}
+                contextMenu={contextMenu}
+                handleMenuClose={handleMenuClose}
+                handleMenuClick={handleMenuClick}
+            />
         </Grid>
     );
 }

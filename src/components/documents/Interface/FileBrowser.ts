@@ -58,6 +58,7 @@ export interface OkmDocumentType {
 export interface ViewsProps {
     setCloseContext: React.Dispatch<React.SetStateAction<boolean>>;
     closeContext: boolean;
+    splitScreen?: boolean;
 }
 
 export enum Units {

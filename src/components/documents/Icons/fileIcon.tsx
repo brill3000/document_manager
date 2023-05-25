@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { BsFileEarmarkPdfFill, BsFillFileEarmarkTextFill, BsFillImageFill } from 'react-icons/bs';
+import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill } from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
 
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
-const MemorizedBsFillImageFill = React.memo(BsFillImageFill);
+const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
 const MemorizedRiFileExcel2Fill = React.memo(RiFileExcel2Fill);
 const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Filll = React.memo(RiFileWord2Fill);
@@ -31,7 +31,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                     style={{
                         color: contrast !== null ? contrast : '#257a7ade',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
-                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '8px'
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
                 />
             );
@@ -44,7 +44,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                     style={{
                         color: contrast !== null ? contrast : '#bb1a1acc',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
-                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '8px'
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
                 />
             );
@@ -57,7 +57,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                     style={{
                         color: '#144497d9',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
-                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '8px'
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
                 />
             );
@@ -76,8 +76,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                     style={{
                         color: '#21822ed9',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
-                        marginBottom: file_icon_margin ? 0 : '9px',
-                        marginLeft: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '5px'
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
                     }}
                 />
             );

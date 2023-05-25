@@ -4,7 +4,7 @@ import { GridViewItem } from 'components/documents/components/browser/item/GridV
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error, FolderEmpty, GoogleLoader } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
 
@@ -42,7 +42,11 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     );
     return (
         <>
-            {folderChildrenIsLoading || folderChildrenIsFetching || childrenDocumentsIsFetching || childrenDocumentsnIsLoading ? (
+            {folderChildrenIsLoading ||
+            folderChildrenIsFetching ||
+            childrenDocumentsIsFetching ||
+            childrenDocumentsnIsLoading ||
+            selected.length === 0 ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <GoogleLoader height={100} width={100} loop={true} />
                 </Box>
@@ -53,13 +57,15 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
             ) : folderChildrenIsSuccess &&
               Array.isArray(folderChildren.folder) &&
               childrenDocumentsIsSuccess &&
-              Array.isArray(childrenDocuments.document) ? (
+              Array.isArray(childrenDocuments.document) &&
+              [...folderChildren.folder, ...childrenDocuments.document].length > 0 ? (
                 [...folderChildren.folder, ...childrenDocuments.document].map((document: GenericDocument) => (
                     <GridViewItem closeContext={closeContext} document={document} key={document.path} />
                 ))
             ) : (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <Typography>No Folders</Typography>
+                <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <FolderEmpty height={100} width={100} />
+                    <Typography>Empty Folders</Typography>
                 </Box>
             )}
         </>
