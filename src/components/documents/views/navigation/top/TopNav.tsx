@@ -1,8 +1,8 @@
 import { Divider, Grid, IconButton, Stack } from '@mui/material';
 import React from 'react';
-import TopNavActions from 'components/documents/components/browser/navigation/top/TopNavActions';
-import TopNavHandles from 'components/documents/components/browser/navigation/top/TopNavHandles';
-import TopWindowActions from 'components/documents/components/browser/navigation/top/TopWindowActions';
+import TopNavActions from 'components/documents/views/navigation/top/TopNavActions';
+import TopNavHandles from 'components/documents/views/navigation/top/TopNavHandles';
+import TopWindowActions from 'components/documents/views/navigation/top/TopWindowActions';
 import { BsWindowSplit } from 'react-icons/bs';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha } from '@mui/material';
-import { CustomDragDocument } from 'components/documents/components/browser/drag&drop/CustomDragDocument';
+import { CustomDragDocument } from 'components/documents/views/drag&drop/CustomDragDocument';
 import { MainGridProps } from 'components/documents/Interface/FileBrowser';
-import FolderActionMenu from 'components/documents/components/browser/UI/Menus/FolderActionMenu';
+import FolderActionMenu from 'components/documents/views/UI/Menus/FolderActionMenu';
 import { useStore } from 'components/documents/data/global_state';
 import { useSnackbar } from 'notistack';
-import { ListView } from 'components/documents/components/browser/views/main/ListView';
+import { ListView } from 'components/documents/views/views/main/ListView';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { brown } from '@mui/material/colors';

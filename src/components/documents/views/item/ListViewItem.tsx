@@ -1,15 +1,15 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Divider, ListItemButton, Stack, Typography, lighten } from '@mui/material';
-import { theme } from '../../../Themes/theme';
+import { theme } from '../../Themes/theme';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { DragSourceMonitor, useDrop, useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useStore } from 'components/documents/data/global_state/';
-import ActionMenu from 'components/documents/components/browser/UI/Menus/DocumentActionMenu';
+import ActionMenu from 'components/documents/views/UI/Menus/DocumentActionMenu';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
+import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';

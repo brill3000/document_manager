@@ -4,7 +4,7 @@ import React from 'react';
 import { CiSearch } from 'react-icons/ci';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { IoReturnUpForwardOutline } from 'react-icons/io5';
-import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
+import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { isArray, isEmpty, isNull } from 'lodash';

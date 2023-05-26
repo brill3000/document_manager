@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { GridViewItem } from 'components/documents/components/browser/item/GridViewItem';
+import { GridViewItem } from 'components/documents/views/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';

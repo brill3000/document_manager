@@ -6,7 +6,7 @@ import { useDragLayer } from 'react-dnd';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
-import { theme } from '../../../Themes/theme';
+import { theme } from '../../Themes/theme';
 import { MemorizedFcFolder } from '../item/GridViewItem';
 
 export const CustomDragDocument = () => {

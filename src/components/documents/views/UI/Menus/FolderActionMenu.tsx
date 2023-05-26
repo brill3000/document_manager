@@ -5,7 +5,7 @@ import { CiEraser } from 'react-icons/ci';
 import { StyledMenu } from './StyledMenu';
 import { BiPaste, BiBrush } from 'react-icons/bi';
 import { IoMdTrash } from 'react-icons/io';
-import { theme } from '../../../../Themes/theme';
+import { theme } from '../../../Themes/theme';
 import { useCopyFoldersMutation, useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';

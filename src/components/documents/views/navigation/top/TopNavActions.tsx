@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from 'react-icons/bs';
 import { alpha, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dropzone from 'react-dropzone';
-import { HtmlTooltip } from 'components/documents/components/browser/UI/Poppers/CustomPoppers';
+import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { Units } from 'components/documents/Interface/FileBrowser';

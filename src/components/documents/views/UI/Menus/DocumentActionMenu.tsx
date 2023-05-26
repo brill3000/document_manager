@@ -5,7 +5,7 @@ import { IoMdCopy, IoMdTrash } from 'react-icons/io';
 import { IoCutOutline } from 'react-icons/io5';
 import { StyledMenu } from './StyledMenu';
 import { CiEdit, CiEraser } from 'react-icons/ci';
-import { theme } from '../../../../Themes/theme';
+import { theme } from '../../../Themes/theme';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;

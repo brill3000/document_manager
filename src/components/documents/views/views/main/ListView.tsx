@@ -4,7 +4,7 @@ import { Box, Typography, darken, lighten } from '@mui/material';
 import { ListViewsProps } from 'components/documents/Interface/FileBrowser';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { ListViewItem } from 'components/documents/components/browser/item/ListViewItem';
+import { ListViewItem } from 'components/documents/views/item/ListViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';

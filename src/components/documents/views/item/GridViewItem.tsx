@@ -5,7 +5,7 @@ import { grey, orange } from '@mui/material/colors';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
-import { theme } from '../../../Themes/theme';
+import { theme } from '../../Themes/theme';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import ActionMenu from '../UI/Menus/DocumentActionMenu';

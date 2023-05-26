@@ -18,7 +18,7 @@ import {
     ListItemIcon
 } from '@mui/material';
 import React from 'react';
-import { DocumentType, FileBrowerClickEvent, FileBrowserNaviagationProps } from '../../../../Interface/FileBrowser';
+import { DocumentType, FileBrowerClickEvent, FileBrowserNaviagationProps } from '../../../Interface/FileBrowser';
 // import { FcOpenedFolder, FcRefresh } from 'react-icons/fc';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from 'components/documents/Interface/Constants';
@@ -26,7 +26,7 @@ import { ItemTypes } from 'components/documents/Interface/Constants';
 import { BsClipboard } from 'react-icons/bs';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { MemorizedFcFolder } from 'components/documents/components/browser/item/GridViewItem';
+import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem';
 import { useHistory } from 'components/documents/data/History';
 import { green, red } from '@mui/material/colors';
 
