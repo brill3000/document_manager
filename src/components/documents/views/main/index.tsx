@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha } from '@mui/material';
+import { alpha, useMediaQuery, useTheme } from '@mui/material';
 import { CustomDragDocument } from 'components/documents/views/drag&drop/CustomDragDocument';
 import { MainGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/views/UI/Menus/FolderActionMenu';
@@ -30,6 +30,9 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
     }, [view]);
+
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     // ========================= | Fetch data | =========================== //
 
@@ -130,7 +133,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
         <Grid
             container
             sm={12}
-            md={splitScreen ? 6 : 9}
+            md={matches ? 12 : splitScreen ? 6 : 9}
             bgcolor={(theme) => alpha(theme.palette.secondary.main, 0.1)}
             sx={{
                 overflowY: 'auto',

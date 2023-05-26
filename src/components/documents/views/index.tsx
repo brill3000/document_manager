@@ -8,7 +8,7 @@ import { theme } from 'components/styles/themes';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
 const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
-    const matches = useMediaQuery(theme.breakpoints.between('xs', 'lg'));
+    const matches = useMediaQuery(theme.breakpoints.down('md'));
     const { splitScreen } = useBrowserStore();
     return (
         <Grid container width="100%" height="100%" overflow="hidden">

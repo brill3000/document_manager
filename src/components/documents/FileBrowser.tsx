@@ -19,6 +19,7 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
     // const [heightContent, setHeightContent] = React.useState<number | null>(null);
     const { setBrowserHeight, setBrowserWidth, browserHeight, browserWidth } = useViewStore();
     const ref = React.useRef<HTMLInputElement | null>(null);
+
     React.useEffect(() => {
         const handleWindowResize = () => {
             setBrowserHeight(window.innerHeight);
