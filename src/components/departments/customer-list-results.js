@@ -89,7 +89,7 @@ export const CustomerListResults = ({ customers, ...rest }) => {
                                                 display: 'flex'
                                             }}
                                         >
-                                            <Avatar src={customer.avatarUrl} sx={{ mr: 2 }}>
+                                            <Avatar src={customer.avatarUrl} sx={{ mr: 2, bgcolor: (theme) => theme.palette.primary.main }}>
                                                 {getInitials(customer.name)}
                                             </Avatar>
                                             <Typography color="textPrimary" variant="body1">

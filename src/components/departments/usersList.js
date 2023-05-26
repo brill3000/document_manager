@@ -190,7 +190,7 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
                                                     display: 'flex'
                                                 }}
                                             >
-                                                <Avatar src={user.avatarUrl} sx={{ mr: 2 }}>
+                                                <Avatar src={user.avatarUrl} sx={{ mr: 2, bgcolor: (theme) => theme.palette.primary.main }}>
                                                     {getInitials(user.name)}
                                                 </Avatar>
                                                 <Typography color="textPrimary" variant="body1">
