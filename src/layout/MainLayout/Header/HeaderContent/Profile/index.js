@@ -112,7 +112,11 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={user.providerData.photorURL} sx={{ width: 32, height: 32 }}>
+                    <Avatar
+                        alt="profile user"
+                        src={user.providerData.photorURL}
+                        sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
+                    >
                         {getInitials(user.displayName)}
                     </Avatar>
                     <Typography variant="subtitle1">{user.displayName}</Typography>
@@ -156,7 +160,10 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        <Avatar src={user.providerData.photorURL} sx={{ width: 32, height: 32 }}>
+                                                        <Avatar
+                                                            src={user.providerData.photorURL}
+                                                            sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
+                                                        >
                                                             {getInitials(user.displayName)}
                                                         </Avatar>
                                                         <Stack>

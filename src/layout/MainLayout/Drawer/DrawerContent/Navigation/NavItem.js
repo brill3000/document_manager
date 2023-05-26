@@ -153,7 +153,9 @@ const NavItem = ({ item, level, children }) => {
                         variant={item.chip.variant}
                         size={item.chip.size}
                         label={item.chip.label}
-                        avatar={item.chip.avatar && <Avatar>{item.chip.avatar}</Avatar>}
+                        avatar={
+                            item.chip.avatar && <Avatar sx={{ bgcolor: (theme) => theme.palette.primary.main }}>{item.chip.avatar}</Avatar>
+                        }
                     />
                 )}
                 {children &&

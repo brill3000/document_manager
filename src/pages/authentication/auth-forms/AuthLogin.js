@@ -190,7 +190,7 @@ const AuthLogin = () => {
                             </Grid>
                             <Grid item xs={12}>
                                 <Divider>
-                                    <Typography variant="caption"> Login with</Typography>
+                                    <Typography variant="caption"> Follow us</Typography>
                                 </Divider>
                             </Grid>
                             <Grid item xs={12}>
