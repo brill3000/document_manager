@@ -1,19 +1,33 @@
 import React from 'react';
-import { Box, Chip, FormControl, Grid, InputAdornment, OutlinedInput, Stack, Typography, alpha, useTheme } from '@mui/material';
+import {
+    Chip,
+    FormControl,
+    Grid,
+    InputAdornment,
+    OutlinedInput,
+    Stack,
+    Theme,
+    Typography,
+    alpha,
+    useMediaQuery,
+    useTheme
+} from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
 import { SearchOutlined } from '@ant-design/icons';
 import { RxCaretDown } from 'react-icons/rx';
 import MailsList from './lists/MailsList';
 
-export function InnerRightSidebar() {
+export function InnerSidebar() {
     const theme = useTheme();
     const outerRef = React.useRef(null);
     const innerRef = React.useRef(null);
+    const matchDownMD = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     return (
         <Grid
             item
             md={3.5}
+            xs={0}
             height="100%"
             width="100%"
             flexDirection="column"
@@ -21,6 +35,7 @@ export function InnerRightSidebar() {
             justifyContent="start"
             alignItems="start"
             ref={outerRef}
+            display={matchDownMD ? 'none' : 'flex'}
         >
             <Stack direction="column" spacing={1} ref={innerRef} py={2} px={3}>
                 <Stack direction="row" mb={1} spacing={2} alignItems="center">
@@ -60,24 +75,6 @@ export function InnerRightSidebar() {
                 <Chip label="current" deleteIcon={<RxCaretDown />} onDelete={() => console.log('')} sx={{ maxWidth: 'max-content' }} />
             </Stack>
             <MailsList innerRef={innerRef} outerRef={outerRef} />
-            <Typography
-                fontSize={10}
-                color="text.secondary"
-                position="absolute"
-                bottom={10}
-                sx={{
-                    '& .test': {
-                        color: 'primary.dark'
-                    }
-                }}
-                py={2}
-                px={3}
-            >
-                Emails:{' '}
-                <Box component="span" className="test">
-                    {new Date().toDateString()}
-                </Box>
-            </Typography>
         </Grid>
     );
 }

@@ -10,7 +10,7 @@ import { FolderDetailsList } from './DetailsList/FolderDetailsList';
 import { FileDetailsList } from './DetailsList/FileDetailsList';
 import { isEmpty } from 'lodash';
 
-export default function RightSidebar() {
+export function RightSidebar() {
     const { browserHeight } = useViewStore();
     const { focused, splitScreen } = useBrowserStore();
     const {

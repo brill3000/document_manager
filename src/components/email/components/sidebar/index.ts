@@ -1,2 +1,2 @@
-export { RightSidebar } from 'components/email/components/sidebar/RightSidebar';
-export { InnerRightSidebar } from 'components/email/components/sidebar/InnerRightSidebar';
+export { OuterSidebar } from 'components/email/components/sidebar/OuterSidebar';
+export { InnerSidebar } from 'components/email/components/sidebar/InnerSidebar';

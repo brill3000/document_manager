@@ -130,6 +130,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         e.stopPropagation();
         e.preventDefault();
         if (e.nativeEvent.button === 0 && path !== undefined && path !== null) {
+            actions.setFocused(path, is_dir);
         } else if (e.nativeEvent.button === 2 && path !== undefined) {
             setContextMenu(
                 contextMenu === null
@@ -147,6 +148,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
     const handleDoubleClick = (is_dir: boolean) => {
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
+            actions.setFocused(path, is_dir);
             handleChangeRoute(path, is_dir);
             !is_dir && setViewFile(true, 'paper');
         }

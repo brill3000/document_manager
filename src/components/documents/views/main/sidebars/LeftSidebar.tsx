@@ -110,7 +110,7 @@ StyledTreeItem.propTypes = {
     labelText: PropTypes.string.isRequired
 };
 
-export default function LeftSidebar() {
+export function LeftSidebar() {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);

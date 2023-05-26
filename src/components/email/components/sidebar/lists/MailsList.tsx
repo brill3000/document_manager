@@ -61,7 +61,7 @@ export default function MailsList({
 
     React.useEffect(() => {
         if (innerRef.current !== null && innerRef !== undefined && outerRef.current !== null && outerRef.current !== undefined) {
-            setHeight(outerRef.current.clientHeight * 0.8);
+            setHeight(outerRef.current.clientHeight - innerRef.current.clientHeight);
             setWidth(outerRef.current.clientWidth);
         }
     }, []);

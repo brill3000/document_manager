@@ -1,29 +1,32 @@
 import React from 'react';
-import { Avatar, Box, Grid, Stack, Typography, alpha, hexToRgb, useTheme } from '@mui/material';
+import { Avatar, Box, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
 import { MdEmail, MdOutbox, MdOutgoingMail } from 'react-icons/md';
 
-export function RightSidebar() {
+export function OuterSidebar() {
     const theme = useTheme();
     const [selected, setSelected] = React.useState<string | null>('Inbox');
     const handleClick = (nav: any): void => {
         setSelected(nav);
     };
+    const matchDownMD = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     return (
         <Grid
             item
-            xs={2.5}
+            md={2.5}
+            xs={0}
             height="100%"
             width="100%"
             flexDirection="column"
             position="relative"
-            bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.04)}
+            bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             justifyContent="start"
             alignItems="start"
             py={2}
             px={3}
             sx={{
+                display: matchDownMD ? 'none' : 'flex',
                 backdropFilter: 'blur(5px)'
             }}
         >

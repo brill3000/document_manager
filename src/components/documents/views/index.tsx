@@ -2,9 +2,8 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Stack, useMediaQuery } from '@mui/material';
 import { FileBrowserContentProps } from 'components/documents/Interface/FileBrowser';
-import RightSidebar from 'components/documents/views/views/sidebars/RightSidebar';
-import MainGrid from 'components/documents/views/views';
-import LeftSidebar from 'components/documents/views/views/sidebars/LeftSidebar';
+import { RightSidebar, LeftSidebar } from 'components/documents/views/main/sidebars';
+import MainGrid from 'components/documents/views/main';
 import { theme } from 'components/styles/themes';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 
