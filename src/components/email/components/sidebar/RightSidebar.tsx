@@ -1,7 +1,6 @@
 import React from 'react';
 import { Avatar, Box, Grid, Stack, Typography, alpha, hexToRgb, useTheme } from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
-import { BsEnvelopePlus } from 'react-icons/bs';
 import { MdEmail, MdOutbox, MdOutgoingMail } from 'react-icons/md';
 
 export function RightSidebar() {
