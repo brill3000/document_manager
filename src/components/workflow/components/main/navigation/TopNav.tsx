@@ -2,7 +2,7 @@ import React from 'react';
 import { IconButton, Stack, Typography, useTheme } from '@mui/material';
 import { BsArrowLeftShort, BsTrashFill } from 'react-icons/bs';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-import { SiApacheairflow } from 'react-icons/si';
+import { TbSettingsAutomation } from 'react-icons/tb';
 
 export function TopNav() {
     const theme = useTheme();
@@ -22,7 +22,8 @@ export function TopNav() {
             </Stack>
             <Stack direction="row" justifySelf="end">
                 <IconButton size="small">
-                    <SiApacheairflow size={15} color={theme.palette.primary.main} />
+                    {/* <AirRounded fontSize="small" sx={{ color: theme.palette.primary.main }} /> */}
+                    <TbSettingsAutomation size={17} color={theme.palette.primary.main} />
                 </IconButton>
                 <IconButton size="small">
                     <BsTrashFill size={15} color={theme.palette.error.main} />

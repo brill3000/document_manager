@@ -17,7 +17,7 @@ import { BsCheck, BsPlayFill, BsStopFill } from 'react-icons/bs';
 import ThemeCustomization from 'themes';
 import ViewFile from 'components/workflow/components/flow/ViewFile';
 import CreateFlow from 'components/workflow/components/flow/CreateFlow';
-import { SiApacheairflow } from 'react-icons/si';
+import { TbSettingsAutomation } from 'react-icons/tb';
 export function OuterSidebar() {
     const theme = useTheme();
     const [selected, setSelected] = React.useState<string | null>('Inbox');
@@ -59,7 +59,8 @@ export function OuterSidebar() {
                 </Stack>
                 <CustomButton mainColor="primary.main" hoverColor="primary.dark" onClick={() => setOpenView(true)}>
                     <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
-                        <SiApacheairflow size={17} color={theme.palette.primary.contrastText} />
+                        {/* <AirRounded fontSize="small" sx={{ color: theme.palette.primary.contrastText }} /> */}
+                        <TbSettingsAutomation size={17} color={theme.palette.primary.contrastText} />
                         <Typography variant="body2" color={theme.palette.primary.contrastText}>
                             Create Workflow
                         </Typography>
