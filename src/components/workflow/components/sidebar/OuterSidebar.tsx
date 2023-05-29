@@ -59,7 +59,6 @@ export function OuterSidebar() {
                 </Stack>
                 <CustomButton mainColor="primary.main" hoverColor="primary.dark" onClick={() => setOpenView(true)}>
                     <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
-                        {/* <AirRounded fontSize="small" sx={{ color: theme.palette.primary.contrastText }} /> */}
                         <TbSettingsAutomation size={17} color={theme.palette.primary.contrastText} />
                         <Typography variant="body2" color={theme.palette.primary.contrastText}>
                             Create Workflow

@@ -32,16 +32,18 @@ function renderRow(props: any) {
                     <Typography variant="body1" color="text.primary">
                         Loan Application workflow
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Brilliant Kaboi
-                    </Typography>
-                    <Chip
-                        icon={<BsCheck />}
-                        label="complete"
-                        variant="outlined"
-                        color="success"
-                        sx={{ width: 'max-content', height: 20 }}
-                    />
+                    <Stack direction="row" spacing={0.5} justifyContent="space-between">
+                        <Typography variant="body2" color="text.secondary">
+                            Brilliant Kaboi
+                        </Typography>
+                        <Chip
+                            icon={<BsCheck />}
+                            label="complete"
+                            variant="outlined"
+                            color="success"
+                            sx={{ width: 'max-content', height: 20 }}
+                        />
+                    </Stack>
                 </Stack>
             </ListItemContent>
         </ListItemButton>
@@ -67,7 +69,7 @@ export function WorkflowList({
     return (
         <>
             {height !== null && width !== null ? (
-                <FixedSizeList itemSize={110} itemCount={200} overscanCount={5} height={height} width={width}>
+                <FixedSizeList itemSize={80} itemCount={1} overscanCount={5} height={height} width={width}>
                     {renderRow}
                 </FixedSizeList>
             ) : (

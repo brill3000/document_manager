@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Box, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Box, Divider, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
 import { MdEmail, MdOutbox, MdOutgoingMail } from 'react-icons/md';
 
@@ -30,7 +30,7 @@ export function OuterSidebar() {
                 backdropFilter: 'blur(5px)'
             }}
         >
-            <Stack direction="column" spacing={1} width="100%">
+            <Stack direction="column" spacing={1.5} width="100%">
                 <Stack direction="row" mb={2} spacing={1} alignItems="center">
                     <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" sx={{ bgcolor: theme.palette.primary.main }} />
                     <Stack direction="column">
@@ -48,6 +48,11 @@ export function OuterSidebar() {
                         </Typography>
                     </Stack>
                 </CustomButton>
+                <Divider variant="middle">
+                    <Typography fontSize={10} color={theme.palette.text.secondary}>
+                        States
+                    </Typography>{' '}
+                </Divider>
                 {[
                     { nav: 'Inbox', icon: <MdEmail size={17} color={theme.palette.text.primary} />, count: 0 },
                     { nav: 'Sent mails', icon: <MdOutgoingMail size={17} color={theme.palette.text.primary} />, count: 0 },
