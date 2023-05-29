@@ -34,7 +34,7 @@ const Dot = ({ color, size }) => {
                 width: size || 8,
                 height: size || 8,
                 borderRadius: '50%',
-                bgcolor: main
+                bgcolor: color ?? main
             }}
         />
     );

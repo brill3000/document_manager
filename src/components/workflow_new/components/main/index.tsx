@@ -4,6 +4,7 @@ import { TopNav } from './navigation';
 import { Content } from './content';
 
 export function MainContent() {
+    const ref = React.useRef<HTMLInputElement | null>(null);
     return (
         <Grid
             item
@@ -17,6 +18,7 @@ export function MainContent() {
             alignItems="start"
             px={3}
             py={2}
+            ref={ref}
         >
             <Stack direction="column" height="100%" width="100%">
                 <Stack
@@ -29,7 +31,13 @@ export function MainContent() {
                 >
                     <TopNav />
                 </Stack>
-                <Stack height="93%" spacing={3}>
+                <Stack
+                    height={ref.current !== null ? ref.current.clientWidth * 0.93 : '93%'}
+                    spacing={3}
+                    minWidth={ref.current?.clientWidth ?? '90%'}
+                    maxWidth={ref.current?.clientWidth ?? '100%'}
+                    bgcolor="background.paper"
+                >
                     <Content />
                 </Stack>
             </Stack>

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList } from 'react-window';
-import { ListItemAvatar, ListItemButton, Typography, useTheme } from '@mui/material';
+import { Chip, ListItemAvatar, ListItemButton, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
+import { BsCheck } from 'react-icons/bs';
+import ListItemContent from '@mui/joy/ListItemContent/ListItemContent';
 // ListChildComponentProps
 
 function renderRow(props: any) {
@@ -26,22 +27,28 @@ function renderRow(props: any) {
             <ListItemAvatar>
                 <Dot size={4} color={theme.palette.secondary.main} />
             </ListItemAvatar>
-            <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                    <React.Fragment>
-                        <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                            Brilliant Kaboi
-                        </Typography>
-                        {" — I'll be in your neighborhood doing errands this…"}
-                    </React.Fragment>
-                }
-            />
+            <ListItemContent>
+                <Stack direction="column" spacing={0.5}>
+                    <Typography variant="body1" color="text.primary">
+                        Loan Application workflow
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Brilliant Kaboi
+                    </Typography>
+                    <Chip
+                        icon={<BsCheck />}
+                        label="complete"
+                        variant="outlined"
+                        color="success"
+                        sx={{ width: 'max-content', height: 20 }}
+                    />
+                </Stack>
+            </ListItemContent>
         </ListItemButton>
     );
 }
 
-export default function MailsList({
+export function WorkflowList({
     innerRef,
     outerRef
 }: {

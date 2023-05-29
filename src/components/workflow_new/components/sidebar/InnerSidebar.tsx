@@ -15,7 +15,7 @@ import {
 import { CustomButton } from '../UI/CustomButton';
 import { SearchOutlined } from '@ant-design/icons';
 import { RxCaretDown } from 'react-icons/rx';
-import MailsList from './lists/MailsList';
+import { WorkflowList } from '../main/lists';
 
 export function InnerSidebar() {
     const theme = useTheme();
@@ -40,10 +40,10 @@ export function InnerSidebar() {
             <Stack direction="column" spacing={1} ref={innerRef} py={2} px={3}>
                 <Stack direction="column" mb={2}>
                     <Typography variant="body1">
-                        <b>Inbox</b>
+                        <b>My Workflow</b>
                     </Typography>
                     <Typography fontSize={11} fontWeight={500} color="text.secondary">
-                        0 messages: 120 Unread
+                        0 complete: 1 New
                     </Typography>
                 </Stack>
                 <Stack direction="row" spacing={1}>
@@ -74,7 +74,7 @@ export function InnerSidebar() {
                 </Stack>
                 <Chip label="current" deleteIcon={<RxCaretDown />} onDelete={() => console.log('')} sx={{ maxWidth: 'max-content' }} />
             </Stack>
-            <MailsList innerRef={innerRef} outerRef={outerRef} />
+            <WorkflowList innerRef={innerRef} outerRef={outerRef} />
         </Grid>
     );
 }
