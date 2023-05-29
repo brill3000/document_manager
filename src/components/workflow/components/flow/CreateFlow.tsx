@@ -35,7 +35,6 @@ export function FormsCard({
     title,
     type,
     description,
-    height,
     width
 }: {
     title: string;
@@ -443,7 +442,7 @@ function WorkflowPanel(
                                     }
                                     return errors;
                                 }}
-                                onSubmit={(values, { setSubmitting }) => {
+                                onSubmit={(values) => {
                                     setIsSending(true);
                                     createFlow({
                                         title: values.title,
@@ -469,7 +468,7 @@ function WorkflowPanel(
                                         });
                                 }}
                             >
-                                {({ values, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+                                {({ values, handleChange, handleBlur, handleSubmit }) => (
                                     <form onSubmit={handleSubmit}>
                                         <Grid container direction="row" spacing={1}>
                                             <Grid item xs={10}>
