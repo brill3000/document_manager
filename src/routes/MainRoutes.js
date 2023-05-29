@@ -9,7 +9,7 @@ import IndexTable from 'components/indexes/IndexTable';
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 // const Roles = Loadable(lazy(() => import( 'components/approvals')));
-const Workflow = Loadable(lazy(() => import('components/workflow_new')));
+const Workflow = Loadable(lazy(() => import('components/workflow')));
 const Email = Loadable(lazy(() => import('components/email')));
 
 // render - sample page
