@@ -1,6 +1,7 @@
+import { Box } from '@mui/material';
 import React from 'react';
-
-const PdfViewer = ({ content, title, mimeType }: { content: ArrayBuffer; title: string; mimeType: string }) => {
+// import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
+function MsFileViewer({ content, mimeType }: { content: ArrayBuffer; title: string; mimeType: string }) {
     // Convert array buffer to base64-encoded string
     const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
         let binary = '';
@@ -22,12 +23,8 @@ const PdfViewer = ({ content, title, mimeType }: { content: ArrayBuffer; title: 
 
     // Create data URL from base64 string
     const dataUrl = createDataUrl(base64String);
+    return <Box></Box>;
+    // return <DocViewer documents={[{ uri: dataUrl }]} pluginRenderers={DocViewerRenderers} />;
+}
 
-    return (
-        <>
-            <iframe src={dataUrl} width="100%" height="600px" title={title} />
-        </>
-    );
-};
-
-export default PdfViewer;
+export default MsFileViewer;

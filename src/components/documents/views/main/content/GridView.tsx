@@ -15,8 +15,7 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
         data: folderChildren,
         error: folderChildrenError,
         isFetching: folderChildrenIsFetching,
-        isLoading: folderChildrenIsLoading,
-        isSuccess: folderChildrenIsSuccess
+        isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -32,8 +31,7 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
         data: childrenDocuments,
         error: childrenDocumentsError,
         isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsnIsLoading,
-        isSuccess: childrenDocumentsIsSuccess
+        isLoading: childrenDocumentsnIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {

@@ -9,7 +9,7 @@ import { setOpenFileView } from 'store/reducers/documents';
 import { setCurrentFolder } from 'store/reducers/documents';
 import { setModalType } from 'store/reducers/documents';
 import { useDispatch } from 'react-redux';
-import ViewFile from './ViewFile';
+import ViewFile from './Signature';
 import { useSelector } from 'react-redux';
 import EditDocuments from './EditDocument';
 import { useSnackbar } from 'notistack';

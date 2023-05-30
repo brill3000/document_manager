@@ -13,7 +13,8 @@ import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem'
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { RenameDocument } from './Rename';
 
 export function ListViewItem({
     document,
@@ -35,6 +36,8 @@ export function ListViewItem({
     const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const { actions, selected, focused } = useBrowserStore();
+    const [renameFolder] = useRenameFolderMutation();
+
     const isFocused = React.useMemo(() => {
         return path === focused.id;
     }, [path, focused]);
@@ -46,6 +49,9 @@ export function ListViewItem({
         }),
         item: { path, doc_name, is_dir, parent }
     }));
+    const disableDoubleClickFn = (disabled: boolean) => {
+        setDisableDoubleClick(disabled);
+    };
     // ================================= | Routes | ============================= //
     const navigate = useNavigate();
     const { pathParam } = useParams();
@@ -190,9 +196,36 @@ export function ListViewItem({
         path,
         renameTarget
     ]);
-    // const closeRename = () => {
-    //   setRenameTarget(null);
-    // };
+    const closeRename = () => {
+        setRenameTarget(null);
+    };
+    const renameFn = (value: string) => {
+        if (value && renameTarget && renameTarget.id !== value) {
+            try {
+                // eslint-disable-next-line no-restricted-globals
+                const res = confirm('Rename document ? ');
+                if (res === true) {
+                    const fldId = renameTarget.id;
+                    const newName = value;
+                    const newPath = renameTarget.id.split('/');
+                    newPath.pop();
+                    newPath.push(newName);
+                    actions.setFocused(newPath.join('/'), is_dir);
+                    renameFolder({ fldId, newName });
+
+                    closeRename();
+                } else {
+                    closeRename();
+                }
+            } catch (e) {
+                if (e instanceof Error) {
+                    console.error(e.message);
+                } else console.log(e);
+            }
+        } else {
+            closeRename();
+        }
+    };
     return (
         <ListItemButton
             ref={document !== undefined && is_dir ? drop : null}
@@ -283,9 +316,22 @@ export function ListViewItem({
                             {is_dir ? <MemorizedFcFolder size={25} /> : fileIcon(mimeType, browserHeight * 0.025, 0)}
                         </Grid>
                         <Grid xs={11} maxWidth="80%" alignItems="center">
-                            <Typography noWrap fontSize=".85rem">
-                                {doc_name}
-                            </Typography>
+                            {isRenaming ? (
+                                <RenameDocument
+                                    renameFn={renameFn}
+                                    renameTarget={renameTarget}
+                                    name={
+                                        renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
+                                            ? document.doc_name
+                                            : ''
+                                    }
+                                    disableDoubleClick={disableDoubleClickFn}
+                                />
+                            ) : (
+                                <Typography noWrap fontSize=".85rem">
+                                    {doc_name}
+                                </Typography>
+                            )}
                         </Grid>
                         <Divider orientation="vertical" />
                     </Grid>

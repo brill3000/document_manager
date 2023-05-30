@@ -74,7 +74,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillImageFill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: '#21822ed9',
+                        color: '#2563a2cc',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
                     }}

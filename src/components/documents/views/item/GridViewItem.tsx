@@ -17,15 +17,13 @@ import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { BsLockFill } from 'react-icons/bs';
-import { useGetFileContentQuery } from 'store/async/dms/files/filesApi';
-import { isArray, isEmpty } from 'lodash';
 import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
 function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, size, locked } = document;
+    const { doc_name, path, is_dir, mimeType, locked } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -201,7 +199,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                     case 'delete':
                         try {
                             // eslint-disable-next-line no-restricted-globals
-                            const res = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
                         } catch (e) {
                             if (e instanceof Error) {
                                 console.log(e.message);

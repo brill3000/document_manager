@@ -10,7 +10,8 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 import { isArray, isEmpty } from 'lodash';
 import PdfViewer from './PDFViewer';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import MsFileViewer from './MsFileViewer';
 
 export default function FileViewerDialog() {
     const { open, scrollType } = useViewStore((state) => state.viewFile);
@@ -77,17 +78,27 @@ export default function FileViewerDialog() {
                 fullWidth
                 sx={{
                     '& .MuiDialogContent-root': {
-                        p: 0,
-                        minHeight: '80vh'
+                        minHeight: '70vh',
+                        p: 0
+                    },
+                    '& .MuiBackdrop-root': {
+                        backdropFilter: 'blur(3px)', // This be the blur
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        opacity: 1,
+                        transition: 'opacity blur 125ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+                    },
+                    '& .MuiDialog-paper': {
+                        minHeight: '70vh',
+                        transition: 'box-shadow 30ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
                     }
                 }}
             >
                 {fileContentIsFetching || fileContentIsLoading || fileInfoIsFetching || fileInfoIsLoading ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
+                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
                         <GoogleLoader height={100} width={100} loop={true} />
                     </Box>
                 ) : fileContentError || fileInfoError ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
+                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
                         <Error height={50} width={50} />
                     </Box>
                 ) : fileContent !== null && fileContent !== undefined && fileInfo !== null && fileInfo !== undefined ? (
@@ -107,9 +118,9 @@ export default function FileViewerDialog() {
                                 fileInfo.mimeType.includes('application/vnd.ms-powerpoint') ||
                                 fileInfo.mimeType.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation')
                             ) ? (
-                                <PdfViewer content={fileContent} title={fileInfo.doc_name} />
+                                <PdfViewer content={fileContent} title={fileInfo.doc_name} mimeType={fileInfo.mimeType} />
                             ) : (
-                                <Typography>Cannot View Ms Suite files</Typography>
+                                <MsFileViewer content={fileContent} title={fileInfo.doc_name} mimeType={fileInfo.mimeType} />
                             )}
                         </DialogContent>
                     </>

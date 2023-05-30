@@ -7,18 +7,19 @@ import ListItem from '@mui/material/ListItem';
 import { ListViewItem } from 'components/documents/views/item/ListViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error, FolderEmpty, GoogleLoader } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
+import { GenericDocument } from 'global/interfaces';
+import { isEmpty } from 'lodash';
 // import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
-export function ListView({ closeContext, setCloseContext, scrollPosition, width, height }: ListViewsProps): React.ReactElement {
+export function ListView({ closeContext, width, height }: ListViewsProps): React.ReactElement {
     const { selected } = useBrowserStore();
     const {
         data: folderChildren,
         error: folderChildrenError,
         isFetching: folderChildrenIsFetching,
-        isLoading: folderChildrenIsLoading,
-        isSuccess: folderChildrenIsSuccess
+        isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -26,7 +27,7 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
                 selected === null ||
                 selected === undefined ||
                 selected?.length < 1 ||
-                selected[selected.length - 1]?.id?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
                 !selected[selected.length - 1]?.is_dir
         }
     );
@@ -34,8 +35,7 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
         data: childrenDocuments,
         error: childrenDocumentsError,
         isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsnIsLoading,
-        isSuccess: childrenDocumentsIsSuccess
+        isLoading: childrenDocumentsnIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -43,11 +43,10 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
                 selected === null ||
                 selected === undefined ||
                 selected?.length < 1 ||
-                selected[selected.length - 1]?.id?.length < 1 ||
-                selected[selected.length - 1]?.is_dir
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
         }
     );
-
     return (
         <List
             sx={{
@@ -127,7 +126,7 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
                 </Grid>
             </ListItem>
             <>
-                {folderChildrenIsLoading || folderChildrenIsFetching || childrenDocumentsIsFetching || childrenDocumentsnIsLoading ? (
+                {/* {folderChildrenIsLoading || folderChildrenIsFetching || childrenDocumentsIsFetching || childrenDocumentsnIsLoading ? (
                     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                         <GoogleLoader height={150} width={150} loop={true} />
                     </Box>
@@ -153,7 +152,49 @@ export function ListView({ closeContext, setCloseContext, scrollPosition, width,
                     <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                         <Typography>No Folders</Typography>
                     </Box>
-                )}
+                )} */}
+                <>
+                    {folderChildrenIsLoading ||
+                    folderChildrenIsFetching ||
+                    childrenDocumentsIsFetching ||
+                    childrenDocumentsnIsLoading ||
+                    selected.length === 0 ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                            <GoogleLoader height={100} width={100} loop={true} />
+                        </Box>
+                    ) : folderChildrenError || childrenDocumentsError ? (
+                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                            <Error height={50} width={50} />
+                        </Box>
+                    ) : folderChildren !== undefined &&
+                      childrenDocuments !== undefined &&
+                      Array.isArray(folderChildren?.folder) &&
+                      Array.isArray(childrenDocuments?.document) &&
+                      [...folderChildren.folder, ...childrenDocuments.document].length > 0 ? (
+                        [...folderChildren.folder, ...childrenDocuments.document].map((document: GenericDocument, i: number) => (
+                            <ListViewItem
+                                isColored={i % 2 === 0}
+                                closeContext={closeContext}
+                                document={document}
+                                width={width}
+                                height={height}
+                                key={document.path}
+                            />
+                        ))
+                    ) : (
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100%"
+                            minWidth="100%"
+                        >
+                            <FolderEmpty height={100} width={100} />
+                            <Typography>Empty Folders</Typography>
+                        </Box>
+                    )}
+                </>
             </>
         </List>
         // <VirtualizedList />
