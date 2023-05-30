@@ -8,3 +8,5 @@ declare module 'react-scroll';
 declare module 'react-beautiful-dnd';
 declare module 'react-signature-canvas';
 declare module '@faker-js/faker';
+declare module 'pdfjs-dist/build/pdf';
+declare module 'pdfjs-dist/webpack';

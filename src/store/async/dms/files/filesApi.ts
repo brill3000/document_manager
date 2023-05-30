@@ -50,9 +50,9 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
-        getFileContent: build.query<any, GetDocumentContentProps>({
+        getFileContent: build.query<ArrayBuffer, GetDocumentContentProps>({
             query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_CONTENT}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            transformResponse: (response: { data: ArrayBuffer }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];

@@ -4,7 +4,7 @@ import Content from 'components/documents/views';
 import Footer from 'components/documents/views/navigation/bottom/Footer';
 import { FileBrowserProps } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state/index';
-import FileBrowserTopNav from 'components/documents/views/navigation/top/TopNav';
+import TopNav from 'components/documents/views/navigation/top/TopNav';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import MainCard from 'components/MainCard';
 
@@ -72,7 +72,7 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
             }}
         >
             <Box height="17%">
-                <FileBrowserTopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} />
+                <TopNav ref={topRef} bgColor={bgColor} borderRadius={borderRadius} />
             </Box>
             <Box height="75%">
                 <Content gridRef={ref} />

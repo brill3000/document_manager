@@ -47,7 +47,8 @@ export default function TopNavHandles() {
                 !isArray(selected) ||
                 isEmpty(selected) ||
                 isEmpty(selected[selected?.length - 1].id) ||
-                isNull(selected[selected?.length - 1].id)
+                isNull(selected[selected?.length - 1].id) ||
+                !selected[selected?.length - 1].is_dir
         }
     );
     return (

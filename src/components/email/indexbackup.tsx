@@ -28,7 +28,7 @@ import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
 import randomColor from 'randomcolor';
 import { Sending } from 'ui-component/LoadHandlers';
-import CustomTreeView from 'components/FolderStructure/Treeview';
+// import CustomTreeView from 'components/FolderStructure/Treeview';
 import ViewFile from './components_backup/ViewFile';
 import ThemeCustomization from 'themes';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -323,7 +323,7 @@ export default function Email() {
             <Experimental_CssVarsProvider>
                 <ThemeCustomization>
                     <ViewFile modalType="folder view" viewUrl={null} isFullScreen={true} openView={openView} setOpenView={setOpenView}>
-                        <CustomTreeView />
+                        {/* <CustomTreeView /> */}
                     </ViewFile>
                 </ThemeCustomization>
             </Experimental_CssVarsProvider>

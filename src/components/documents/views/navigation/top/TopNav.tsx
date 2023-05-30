@@ -12,7 +12,7 @@ export interface FileBrowserTopNavProps {
 }
 // ({ bgColor, borderRadius, title, handleBack, handleForward }: FileBrowserTopNavProps)
 
-const FileBrowserTopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(function FileBrowserTopNav(props, ref) {
+const TopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(function FileBrowserTopNav(props, ref) {
     const { bgColor, borderRadius } = props;
     const { actions, splitScreen } = useBrowserStore();
     return (
@@ -64,4 +64,4 @@ const FileBrowserTopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavPr
     );
 });
 
-export default FileBrowserTopNav;
+export default TopNav;
