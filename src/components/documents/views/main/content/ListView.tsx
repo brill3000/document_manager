@@ -168,10 +168,10 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                         </Box>
                     ) : folderChildren !== undefined &&
                       childrenDocuments !== undefined &&
-                      Array.isArray(folderChildren?.folder) &&
-                      Array.isArray(childrenDocuments?.document) &&
-                      [...folderChildren.folder, ...childrenDocuments.document].length > 0 ? (
-                        [...folderChildren.folder, ...childrenDocuments.document].map((document: GenericDocument, i: number) => (
+                      Array.isArray(folderChildren?.folders) &&
+                      Array.isArray(childrenDocuments?.documents) &&
+                      [...folderChildren.folders, ...childrenDocuments.documents].length > 0 ? (
+                        [...folderChildren.folders, ...childrenDocuments.documents].map((document: GenericDocument, i: number) => (
                             <ListViewItem
                                 isColored={i % 2 === 0}
                                 closeContext={closeContext}

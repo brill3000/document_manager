@@ -1,5 +1,6 @@
+import { useTheme } from '@mui/material';
 import * as React from 'react';
-import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill } from 'react-icons/bs';
+import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill, BsFillFileEarmarkZipFill } from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
 
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
@@ -7,9 +8,11 @@ const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill)
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
 const MemorizedRiFileExcel2Fill = React.memo(RiFileExcel2Fill);
 const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
-const MemorizedRiFileWord2Filll = React.memo(RiFileWord2Fill);
+const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
+const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
 
 export function fileIcon(mimeType: string | undefined, size: number, file_icon_margin: number, contrast: string | null = null) {
+    const theme = useTheme();
     switch (mimeType) {
         case 'application/pdf':
             return (
@@ -17,6 +20,18 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                     size={size !== undefined ? size : 50}
                     style={{
                         color: contrast !== null ? contrast : '#643936c9',
+                        marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
+                    }}
+                />
+            );
+        case 'application/zip':
+        case 'application/x-rar-compressed':
+            return (
+                <MemorizedBsFillFileEarmarkZipFill
+                    size={size !== undefined ? size : 50}
+                    style={{
+                        color: contrast !== null ? contrast : theme.palette.secondary.main,
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -52,7 +67,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
         case 'application/msword':
         case 'application/vnd.oasis.opendocument.text':
             return (
-                <MemorizedRiFileWord2Filll
+                <MemorizedRiFileWord2Fill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
                         color: '#144497d9',

@@ -11,6 +11,7 @@ import { TbHierarchy3 } from 'react-icons/tb';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { FileResponseInterface } from 'global/interfaces';
 import { orange } from '@mui/material/colors';
+import { getDateFromObject } from 'utils/constants/UriHelper';
 
 export function FileDetailsList({
     splitScreen,
@@ -92,7 +93,10 @@ export function FileDetailsList({
                             <ListItemIcon>
                                 <BsCalendar2Check />
                             </ListItemIcon>
-                            <ListItemText secondary={<span>{new Date(fileInfo.created).toDateString()}</span>} sx={{ width: '90%' }} />
+                            <ListItemText
+                                secondary={<span>{getDateFromObject(fileInfo.created).toLocaleString()}</span>}
+                                sx={{ width: '90%' }}
+                            />
                         </ListItem>
                         <Divider variant="middle">
                             <Typography fontSize={10} color="text.secondary">

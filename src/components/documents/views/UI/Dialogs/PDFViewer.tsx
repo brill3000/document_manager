@@ -1,31 +1,27 @@
 import React from 'react';
 
-const PdfViewer = ({ content, title, mimeType }: { content: ArrayBuffer; title: string; mimeType: string }) => {
-    // Convert array buffer to base64-encoded string
-    const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
-        let binary = '';
-        const bytes = new Uint8Array(buffer);
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-    };
+const PdfViewer = ({ content, title, mimeType }: { content: string; title: string; mimeType: string }) => {
+    const [base64Data, setBase64Data] = React.useState<string>('');
 
-    // Create data URL from base64 string
-    const createDataUrl = (base64String: string) => {
-        return `data:${mimeType};base64,${base64String}`;
-    };
+    // const convertToBase64 = (binaryData: string) => {
+    //     const blob = new Blob([binaryData], { type: mimeType });
 
-    // Convert array buffer to base64-encoded string
-    const base64String = arrayBufferToBase64(content);
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => {
+    //         const base64Data = reader.result;
+    //         if (typeof base64Data === 'string') setBase64Data(base64Data);
+    //     };
+    //     reader.readAsDataURL(blob);
+    // };
 
-    // Create data URL from base64 string
-    const dataUrl = createDataUrl(base64String);
-
+    // React.useEffect(() => {
+    //     convertToBase64(content);
+    // }, [content]);
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
     return (
         <>
-            <iframe src={dataUrl} width="100%" height="600px" title={title} />
+            <iframe src={url} width="100%" height="600px" title={title} />
         </>
     );
 };

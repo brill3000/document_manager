@@ -6,7 +6,7 @@ import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 
 // hero icons
-import { MemorizedFcFolder } from '../../item/GridViewItem';
+import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
 import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
 import { ButtonBase, Collapse, Skeleton, Stack, alpha } from '@mui/material';
@@ -15,13 +15,12 @@ import { useSpring, animated } from '@react-spring/web';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import _, { isEmpty, uniqueId } from 'lodash';
+import _, { isArray, isEmpty, uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
-import { BsCaretRight, BsFillCaretRightFill } from 'react-icons/bs';
 // import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -166,7 +165,7 @@ export function LeftSidebar() {
                                     }}
                                 />
                             </ButtonBase>
-                            <MemorizedFcFolder size={16} />
+                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={16} /> : <MemorizedFcFolder size={16} />}
                         </Stack>
                     ) : nodes.is_dir ? (
                         <MemorizedFcFolder size={16} />
@@ -263,7 +262,6 @@ export function LeftSidebar() {
      */
     const {
         data: folderChildren,
-        error: folderChildrenError,
         isFetching: folderChildrenIsFetching,
         isFetching: folderChildrenIsLoading,
         isSuccess: folderChildrenIsSuccess
@@ -279,7 +277,6 @@ export function LeftSidebar() {
      */
     const {
         data: childrenFiles,
-        error: childrenFilesError,
         isFetching: childrenFilesIsFetching,
         isLoading: childrenFilesIsLoading,
         isSuccess: childrenFilesIsSuccess
@@ -295,18 +292,16 @@ export function LeftSidebar() {
     React.useEffect(() => {
         if (
             folderChildrenIsSuccess &&
-            folderChildren &&
             !folderChildrenIsFetching &&
             !folderChildrenIsLoading &&
-            Array.isArray(folderChildren.folder) &&
+            isArray(folderChildren.folders) &&
             childrenFilesIsSuccess &&
-            folderChildren &&
             !childrenFilesIsFetching &&
             !childrenFilesIsLoading &&
-            Array.isArray(childrenFiles.document) &&
+            isArray(childrenFiles.documents) &&
             currentExpanded !== null
         ) {
-            const newChildren: RenderTree[] = folderChildren.folder.map((child, i: number) => {
+            const newChildren: RenderTree[] = folderChildren.folders.map((child, i: number) => {
                 // @ts-expect-error is set below
                 const treeItem: RenderTree = {
                     id: child.path,
@@ -318,7 +313,7 @@ export function LeftSidebar() {
                 treeItem['index'] = i;
                 return treeItem;
             });
-            const newFilesChildren: RenderTree[] = childrenFiles.document.map((child, i: number) => {
+            const newFilesChildren: RenderTree[] = childrenFiles.documents.map((child, i: number) => {
                 // @ts-expect-error is set below
                 const treeItem: RenderTree = {
                     id: child.path,
@@ -331,6 +326,7 @@ export function LeftSidebar() {
                 treeItem['index'] = i;
                 return treeItem;
             });
+            console.log([...newChildren, ...newFilesChildren]);
             setData((data) => {
                 let dataCopy = data !== null ? { ...data } : null;
                 dataCopy = expanded.includes(currentExpanded)

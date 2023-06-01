@@ -1,10 +1,12 @@
+import { JavaCalendar } from 'global/interfaces';
+
 /**
  * UriHelper
  *
  * @author brilliant
  */
 export const UriHelper = {
-    HOST: 'http://localhost:3456/',
+    HOST: 'http://localhost:8080/OpenKM/services/rest/',
     /**
      * Auth
      */
@@ -243,4 +245,8 @@ export const extractAuthToken = (authHeader: string): string => {
     if (typeof authHeader === 'string' && authHeader.toLowerCase().includes('bearer')) {
         return authHeader;
     } else return 'Bearer ';
+};
+
+export const getDateFromObject = ({ year, month, dayOfMonth, hourOfDay, minute, second }: JavaCalendar): Date => {
+    return new Date(year, month - 1, dayOfMonth, hourOfDay, minute, second);
 };

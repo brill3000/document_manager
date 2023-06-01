@@ -15,6 +15,7 @@ import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RenameDocument } from './Rename';
+import { getDateFromObject } from 'utils/constants/UriHelper';
 
 export function ListViewItem({
     document,
@@ -344,7 +345,7 @@ export function ListViewItem({
                     </Grid>
                     <Grid xs={3} alignItems="center" pl={2} py={0} component={Stack} direction="row" justifyContent="space-between">
                         <Typography noWrap fontSize=".85rem" fontWeight={isFocused || isOver ? 500 : 400}>
-                            {created}
+                            {getDateFromObject(created).toLocaleString()}
                         </Typography>
                         <Divider orientation="vertical" />
                     </Grid>

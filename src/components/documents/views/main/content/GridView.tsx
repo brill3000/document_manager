@@ -59,10 +59,10 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
                 </Box>
             ) : folderChildren !== undefined &&
               childrenDocuments !== undefined &&
-              Array.isArray(folderChildren?.folder) &&
-              Array.isArray(childrenDocuments?.document) &&
-              [...folderChildren.folder, ...childrenDocuments.document].length > 0 ? (
-                [...folderChildren.folder, ...childrenDocuments.document].map((document: GenericDocument) => (
+              Array.isArray(folderChildren?.folders) &&
+              Array.isArray(childrenDocuments?.documents) &&
+              [...folderChildren.folders, ...childrenDocuments.documents].length > 0 ? (
+                [...folderChildren.folders, ...childrenDocuments.documents].map((document: GenericDocument) => (
                     <GridViewItem closeContext={closeContext} document={document} key={document.path} />
                 ))
             ) : (

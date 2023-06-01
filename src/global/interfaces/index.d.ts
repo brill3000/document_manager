@@ -54,10 +54,12 @@ export interface FolderRequestType {
 export interface CreateDocumentProps {
     doc: string;
     content: string;
+    fileName: string;
 }
 export interface CreateDocumentSimpleProps {
     docPath: string;
-    content: string;
+    file: File;
+    fileName: string;
 }
 
 export interface CheckInProps extends GetDocumentContentProps {
@@ -86,12 +88,20 @@ export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
 export interface GetFoldersContentProps {
     fldId: string;
 }
+export interface JavaCalendar {
+    year: number;
+    month: number;
+    dayOfMonth: number;
+    hourOfDay: number;
+    minute: number;
+    second: number;
+}
 
 // ================================= | Create Generic Document type | =============================== //
 
 export interface GenericDocument {
     author: string;
-    created: string;
+    created: JavaCalendar;
     doc_name: string;
     path: string;
     permissions: number;
@@ -176,7 +186,7 @@ export interface FileResponseInterface {
     checkedOut: boolean;
     convertibleToPdf: boolean;
     convertibleToSwf: boolean;
-    created: string;
+    created: JavaCalendar;
     lastModified: string;
     lockInfo: LockInfoType;
     locked: boolean;

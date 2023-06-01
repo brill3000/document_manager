@@ -6,7 +6,8 @@ import Dropzone from 'react-dropzone';
 import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { Units } from 'components/documents/Interface/FileBrowser';
+import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
+import { isArray, isEmpty } from 'lodash';
 
 export default function TopNavActions() {
     const { toogleView, view } = useViewStore();
@@ -15,26 +16,33 @@ export default function TopNavActions() {
     const tooltipDelay = 200;
     const theme = useTheme();
     const { actions, selected } = useBrowserStore();
+    const [createSimple] = useCreateSimpleFileMutation();
     const changeHandler = (files: File[]) => {
         try {
-            const parent = Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : null;
+            const parent =
+                isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir ? selected[selected.length - 1].id : null;
             if (parent !== null) {
-                const uploadedFiles = files.map((file: File, i: number) => ({
-                    id: `${i} ${file.name}`,
-                    doc_name: file.name,
-                    is_dir: false,
-                    size: file.size,
-                    size_units: Units.Kb,
-                    is_archived: false,
-                    custom_attributes: {},
-                    parent: parent,
-                    children: null,
-                    type: file.type
-                }));
-                const uploaded = actions.uploadFiles(parent, uploadedFiles);
-                if (uploaded !== true) {
-                    throw uploaded;
-                }
+                files.forEach((file) => {
+                    const docPath = `${parent}/${file.name}`;
+                    const fileName = file.name;
+                    createSimple({ docPath, fileName, file });
+                });
+                // const uploadedFiles = files.map((file: File, i: number) => ({
+                //     id: `${i} ${file.name}`,
+                //     doc_name: file.name,
+                //     is_dir: false,
+                //     size: file.size,
+                //     size_units: Units.Kb,
+                //     is_archived: false,
+                //     custom_attributes: {},
+                //     parent: parent,
+                //     children: null,
+                //     type: file.type
+                // }));
+                // const uploaded = actions.uploadFiles(parent, uploadedFiles);
+                // if (uploaded !== true) {
+                //     throw uploaded;
+                // }
             }
         } catch (e) {
             if (e instanceof Error) {

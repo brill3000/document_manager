@@ -1,5 +1,5 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import {
     CheckInProps,
     CreateDocumentProps,
@@ -12,28 +12,52 @@ import {
     MoveDocumentProps,
     RenameDocumentsProps
 } from 'global/interfaces';
-import { isEmpty, isObject } from 'lodash';
+import { isEmpty, isObject, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
+import axios from 'axios';
+import type { AxiosRequestConfig, AxiosError } from 'axios';
+import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR';
+
+export const axiosBaseQuery = (
+    { baseUrl }: { baseUrl: string } = { baseUrl: '' }
+): BaseQueryFn<
+    {
+        url: string;
+        method: AxiosRequestConfig['method'];
+        data?: AxiosRequestConfig['data'];
+        params?: AxiosRequestConfig['params'];
+        onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
+    },
+    unknown,
+    unknown
+> => async ({ url, method, data, params, onUploadProgress }) => {
+    try {
+        const result = await axios({ url: baseUrl + url, method, data, params, onUploadProgress, withCredentials: true });
+        return { data: result.data };
+    } catch (axiosError) {
+        const err = axiosError as AxiosError;
+        return {
+            error: {
+                status: err.response?.status,
+                data: err.response?.data || err.message
+            }
+        };
+    }
+};
 
 export const filesApi = createApi({
     reducerPath: 'files_api',
-    baseQuery: fetchBaseQuery({
-        baseUrl: UriHelper.HOST,
-        prepareHeaders: (headers) => {
-            const cookies = document.cookie;
-            headers.set('Cookie', cookies);
-            return headers;
-        },
-        credentials: 'include'
+    baseQuery: axiosBaseQuery({
+        baseUrl: UriHelper.HOST
     }),
     tagTypes: ['DMS_FILES', 'DMS_FILES_SUCCESS', 'DMS_FILES_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
         getFileProperties: build.query<FileResponseInterface | null, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_PROPERTIES}`, params: { docId } }),
-            transformResponse: (response: { data: FileResponseInterface }) => {
-                const fileCopy = { ...response.data };
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_PROPERTIES}`, method: 'GET', params: { docId } }),
+            transformResponse: (response: FileResponseInterface) => {
+                const fileCopy = { ...response };
                 if (isObject(fileCopy) && !isEmpty(fileCopy)) {
                     const pathArray = fileCopy.path.split('/');
                     fileCopy['doc_name'] = pathArray[pathArray.length - 1];
@@ -50,9 +74,12 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
-        getFileContent: build.query<ArrayBuffer, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_CONTENT}`, params: { docId } }),
-            transformResponse: (response: { data: ArrayBuffer }) => response.data,
+        getFileContent: build.query<string, GetDocumentContentProps>({
+            query: ({ docId }) => ({
+                url: `${UriHelper.DOCUMENT_GET_CONTENT}`,
+                method: 'GET',
+                params: { docId }
+            }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -61,8 +88,15 @@ export const filesApi = createApi({
             }
         }),
         getFileContentByVersion: build.query<any, GetDocumentContentByVersionProps>({
-            query: ({ docId, versionId }) => ({ url: `${UriHelper.DOCUMENT_GET_CONTENT_BY_VERSION}`, params: { docId, versionId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId, versionId }) => ({
+                url: `${UriHelper.DOCUMENT_GET_CONTENT_BY_VERSION}`,
+                method: 'GET',
+                params: { docId, versionId },
+                resonseType: 'arraybuffer'
+            }),
+            // transformResponse: (response: string) => {
+
+            // },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -70,12 +104,12 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
-        getFolderChildrenFiles: build.query<{ document: FileResponseInterface[] | FileResponseInterface }, FolderRequestType>({
-            query: ({ fldId }) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, params: { fldId } }),
-            transformResponse: (response: { data: { document: FileResponseInterface[] | FileResponseInterface } }) => {
-                const dataCopy = { ...response.data };
-                if (Array.isArray(dataCopy.document)) {
-                    dataCopy.document = dataCopy.document.map((doc) => {
+        getFolderChildrenFiles: build.query<{ documents: FileResponseInterface[] | FileResponseInterface }, FolderRequestType>({
+            query: ({ fldId }) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
+            transformResponse: (response: { documents: FileResponseInterface[] | FileResponseInterface }) => {
+                const dataCopy = { ...response };
+                if (Array.isArray(dataCopy.documents)) {
+                    dataCopy.documents = dataCopy.documents.map((doc) => {
                         const documentCopy = { ...doc };
                         const pathArray = doc.path.split('/');
                         documentCopy['doc_name'] = pathArray[pathArray.length - 1];
@@ -84,14 +118,14 @@ export const filesApi = createApi({
                         return documentCopy;
                     });
                     return dataCopy;
-                } else if (isObject(dataCopy.document) && !isEmpty(dataCopy.document)) {
-                    const pathArray = dataCopy.document.path.split('/');
-                    dataCopy.document['doc_name'] = pathArray[pathArray.length - 1];
-                    dataCopy.document['is_dir'] = false;
-                    dataCopy.document = [dataCopy.document];
+                } else if (isObject(dataCopy.documents) && !isEmpty(dataCopy.documents)) {
+                    const pathArray = dataCopy.documents.path.split('/');
+                    dataCopy.documents['doc_name'] = pathArray[pathArray.length - 1];
+                    dataCopy.documents['is_dir'] = false;
+                    dataCopy.documents = [dataCopy.documents];
                     return dataCopy;
                 } else {
-                    dataCopy.document = [];
+                    dataCopy.documents = [];
                     return dataCopy;
                 }
             },
@@ -103,8 +137,7 @@ export const filesApi = createApi({
             }
         }),
         checkout: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_CHECKOUT}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_CHECKOUT}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -113,8 +146,7 @@ export const filesApi = createApi({
             }
         }),
         isCheckedOut: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_IS_CHECKOUT}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_IS_CHECKOUT}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -123,8 +155,7 @@ export const filesApi = createApi({
             }
         }),
         getFileVersionHistory: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -133,8 +164,7 @@ export const filesApi = createApi({
             }
         }),
         isLocked: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_IS_LOCKED}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_IS_LOCKED}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -143,8 +173,7 @@ export const filesApi = createApi({
             }
         }),
         getLockInfo: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_LOCKINFO}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_LOCKINFO}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -153,8 +182,7 @@ export const filesApi = createApi({
             }
         }),
         getFileVersionHistorySize: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY_SIZE}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_VERSION_HISTORY_SIZE}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -163,8 +191,7 @@ export const filesApi = createApi({
             }
         }),
         getFilePath: build.query<any, GetDocumentContentProps>({
-            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_PATH}`, params: { docId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_PATH}`, method: 'GET', params: { docId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
                 if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
@@ -174,30 +201,45 @@ export const filesApi = createApi({
         }),
         // ===========================| MUTATIIONS: POST |===================== //
         createFile: build.mutation<any, CreateDocumentProps>({
-            query: ({ doc, content }) => ({
-                url: UriHelper.DOCUMENT_CREATE,
-                method: 'POST',
-                body: { doc, content }
-            }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ doc, content, fileName }) => {
+                const formData = new FormData();
+                formData.set('content', doc, fileName);
+                formData.set('doc', doc);
+                return {
+                    url: UriHelper.DOCUMENT_CREATE,
+                    method: 'POST',
+                    data: { doc, content }
+                };
+            },
             invalidatesTags: ['DMS_FILES']
         }),
         createSimpleFile: build.mutation<any, CreateDocumentSimpleProps>({
-            query: ({ docPath, content }) => ({
-                url: UriHelper.DOCUMENT_CREATE,
-                method: 'POST',
-                body: { docPath, content }
-            }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ docPath, file, fileName }) => {
+                const formData = new FormData();
+                formData.set('content', file, fileName);
+                formData.set('docPath', docPath);
+                return {
+                    url: UriHelper.DOCUMENT_CREATE_SIMPLE,
+                    method: 'POST',
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    onUploadProgress: (progressEvent) => {
+                        const progress = !isUndefined(progressEvent.total)
+                            ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+                            : 0;
+                        // Dispatch the progress update or update the state as needed
+                        console.log(`Download Progress: ${progress}%`);
+                    },
+                    data: formData
+                };
+            },
             invalidatesTags: ['DMS_FILES']
         }),
         checking: build.mutation<any, CheckInProps>({
             query: ({ docId, content, comment, increment }) => ({
                 url: UriHelper.DOCUMENT_CREATE,
                 method: 'POST',
-                body: { docId, content, comment, increment }
+                data: { docId, content, comment, increment }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
@@ -206,18 +248,16 @@ export const filesApi = createApi({
             query: ({ docId, newName }) => ({
                 url: UriHelper.DOCUMENT_RENAME,
                 method: 'PUT',
-                body: { docId, newName }
+                data: { docId, newName }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         setFileProperties: build.mutation<any, { doc: string }>({
             query: ({ doc }) => ({
                 url: UriHelper.DOCUMENT_SET_PROPERTIES,
                 method: 'PUT',
-                body: { doc }
+                data: { doc }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         cancelCheckout: build.mutation<any, GetDocumentContentProps>({
@@ -226,7 +266,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         forceCancelCheckout: build.mutation<any, GetDocumentContentProps>({
@@ -235,7 +274,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         lock: build.mutation<any, GetDocumentContentProps>({
@@ -244,7 +282,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         unlock: build.mutation<any, GetDocumentContentProps>({
@@ -253,7 +290,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         forceUnlock: build.mutation<any, GetDocumentContentProps>({
@@ -262,7 +298,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         purgeFile: build.mutation<any, GetDocumentContentProps>({
@@ -271,7 +306,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         moveFile: build.mutation<any, MoveDocumentProps>({
@@ -280,7 +314,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, dstId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         restoreVersion: build.mutation<any, GetDocumentContentByVersionProps>({
@@ -289,7 +322,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, versionId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         purgeVersionHistory: build.mutation<any, GetDocumentContentByVersionProps>({
@@ -298,7 +330,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, versionId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         extendedFileCopy: build.mutation<any, ExtendeCopyDocumentsProps>({
@@ -307,7 +338,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, dstId, name, categories, keywords, notes, propertyGroups, wiki }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         createFromTemplate: build.mutation<any, ExtendeCopyDocumentsProps>({
@@ -316,7 +346,6 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, dstId, name, categories, keywords, notes, propertyGroups, wiki }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
@@ -326,7 +355,6 @@ export const filesApi = createApi({
                 method: 'DELETE',
                 params: { docId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FILES']
         })
     })

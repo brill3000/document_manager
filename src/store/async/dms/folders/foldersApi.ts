@@ -1,5 +1,5 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import {
     CreateFoldersProps,
     CreateFoldersSimpleProps,
@@ -13,24 +13,19 @@ import {
 } from 'global/interfaces';
 import _ from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
+import { axiosBaseQuery } from '../files/filesApi';
 type UserTags = 'DMS_FOLDERS' | 'DMS_FOLDERS_SUCCESS' | 'DMS_FOLDERS_ERROR';
 
 export const foldersApi = createApi({
     reducerPath: 'folders_api',
-    baseQuery: fetchBaseQuery({
-        baseUrl: UriHelper.HOST,
-        prepareHeaders: (headers) => {
-            const cookies = document.cookie;
-            headers.set('Cookie', cookies);
-            return headers;
-        },
-        credentials: 'include'
+    baseQuery: axiosBaseQuery({
+        baseUrl: UriHelper.HOST
     }),
     tagTypes: ['DMS_FOLDERS', 'DMS_FOLDERS_SUCCESS', 'DMS_FOLDERS_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
         getFoldersProperties: build.query<GetFetchedFoldersProps | null, GetFoldersContentProps>({
-            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, params: { fldId } }),
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, method: 'GET', params: { fldId } }),
             transformResponse: (response: { data: GetFetchedFoldersProps }) => {
                 const folderCopy = { ...response.data };
                 if (_.isObject(folderCopy) && !_.isEmpty(folderCopy)) {
@@ -50,8 +45,7 @@ export const foldersApi = createApi({
             }
         }),
         getFoldersContentPropsInfo: build.query<any, GetFoldersContentProps>({
-            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CONTENT_INFO}`, params: { fldId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CONTENT_INFO}`, method: 'GET', params: { fldId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
                 if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
@@ -59,12 +53,12 @@ export const foldersApi = createApi({
                 return tags;
             }
         }),
-        getFoldersChildren: build.query<{ folder: GetFetchedFoldersProps[] | GetFetchedFoldersProps }, GetFoldersContentProps>({
-            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, params: { fldId } }),
-            transformResponse: (response: { data: { folder: GetFetchedFoldersProps[] | GetFetchedFoldersProps } }) => {
-                const dataCopy = { ...response.data };
-                if (Array.isArray(dataCopy.folder)) {
-                    dataCopy.folder = dataCopy.folder.map((fld) => {
+        getFoldersChildren: build.query<{ folders: GetFetchedFoldersProps[] | GetFetchedFoldersProps }, GetFoldersContentProps>({
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
+            transformResponse: (response: { folders: GetFetchedFoldersProps[] | GetFetchedFoldersProps }) => {
+                const dataCopy = { ...response };
+                if (Array.isArray(dataCopy.folders)) {
+                    dataCopy.folders = dataCopy.folders.map((fld) => {
                         const folderCopy = { ...fld };
                         const pathArray = fld.path.split('/');
                         folderCopy['doc_name'] = pathArray[pathArray.length - 1];
@@ -73,14 +67,14 @@ export const foldersApi = createApi({
                         return folderCopy;
                     });
                     return dataCopy;
-                } else if (_.isObject(dataCopy.folder) && !_.isEmpty(dataCopy.folder)) {
-                    const pathArray = dataCopy.folder.path.split('/');
-                    dataCopy.folder['doc_name'] = pathArray[pathArray.length - 1];
-                    dataCopy.folder['is_dir'] = true;
-                    dataCopy.folder = [dataCopy.folder];
+                } else if (_.isObject(dataCopy.folders) && !_.isEmpty(dataCopy.folders)) {
+                    const pathArray = dataCopy.folders.path.split('/');
+                    dataCopy.folders['doc_name'] = pathArray[pathArray.length - 1];
+                    dataCopy.folders['is_dir'] = true;
+                    dataCopy.folders = [dataCopy.folders];
                     return dataCopy;
                 } else {
-                    dataCopy.folder = [];
+                    dataCopy.folders = [];
                     return dataCopy;
                 }
             },
@@ -92,8 +86,7 @@ export const foldersApi = createApi({
             }
         }),
         isFolderValid: build.query<any, GetFoldersContentProps>({
-            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_IS_VALID}`, params: { fldId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_IS_VALID}`, method: 'GET', params: { fldId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
                 if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
@@ -102,8 +95,7 @@ export const foldersApi = createApi({
             }
         }),
         getFolderPath: build.query<any, GetFoldersContentProps>({
-            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PATH}`, params: { fldId } }),
-            transformResponse: (response: { data: any }) => response.data,
+            query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PATH}/${fldId}`, method: 'GET' }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
                 if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
@@ -118,7 +110,6 @@ export const foldersApi = createApi({
                 method: 'POST',
                 body: { fld }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         createSimpleFolder: build.mutation<any, CreateFoldersSimpleProps>({
@@ -127,7 +118,6 @@ export const foldersApi = createApi({
                 method: 'POST',
                 body: { docPath, content }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
@@ -137,7 +127,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         renameFolder: build.mutation<any, RenameFoldersProps>({
@@ -151,7 +140,6 @@ export const foldersApi = createApi({
                     body: { fldId, newName }
                 };
             },
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         setFolderProperties: build.mutation<any, SetFoldersPropertiesProps>({
@@ -160,7 +148,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 body: { doc }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         moveFolder: build.mutation<any, MoveFoldersProps>({
@@ -169,7 +156,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldId, dstId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         copyFolders: build.mutation<any, MoveFoldersProps>({
@@ -178,7 +164,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldId, dstId }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         extendedFolderCopy: build.mutation<any, ExtendeCopyFoldersProps>({
@@ -187,7 +172,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldId, dstId, name, categories, keywords, notes, propertyGroups, wiki }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         createMissingFolders: build.mutation<any, CreateMissingFoldersProps>({
@@ -196,7 +180,6 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldPath }
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_FOLDERS']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //

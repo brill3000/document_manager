@@ -10,24 +10,20 @@ import {
     UserResponse
 } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
+import { axiosBaseQuery } from '../files/filesApi';
+import qs from 'qs';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
 export const authApi = createApi({
     reducerPath: 'auth_api',
-    baseQuery: fetchBaseQuery({
-        baseUrl: UriHelper.HOST,
-        prepareHeaders: (headers) => {
-            const cookies = document.cookie;
-            headers.set('Cookie', cookies);
-            return headers;
-        },
-        credentials: 'include'
+    baseQuery: axiosBaseQuery({
+        baseUrl: UriHelper.HOST
     }),
     tagTypes: ['DMS_USER', 'DMS_USER_SUCCESS', 'DMS_USER_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
         getUsers: build.query({
-            query: () => ({ url: `${UriHelper.AUTH_GET_USERS}` }),
+            query: () => ({ url: `${UriHelper.AUTH_GET_USERS}`, method: 'GET' }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -37,7 +33,7 @@ export const authApi = createApi({
             }
         }),
         getRoles: build.query({
-            query: () => ({ url: `${UriHelper.AUTH_GET_ROLES}` }),
+            query: () => ({ url: `${UriHelper.AUTH_GET_ROLES}`, method: 'GET' }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -47,7 +43,7 @@ export const authApi = createApi({
             }
         }),
         getGrantedRoles: build.query({
-            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, params: { id: id } }),
+            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, method: 'GET', params: { id: id } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -57,7 +53,7 @@ export const authApi = createApi({
             }
         }),
         getGrantedUsers: build.query({
-            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_USERS}`, params: { id: id } }),
+            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_USERS}`, method: 'GET', params: { id: id } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -67,7 +63,7 @@ export const authApi = createApi({
             }
         }),
         getUsersByRole: build.query({
-            query: (role) => ({ url: `${UriHelper.AUTH_GET_USERS_BY_ROLE}`, params: { role: role } }),
+            query: (role) => ({ url: `${UriHelper.AUTH_GET_USERS_BY_ROLE}`, method: 'GET', params: { role: role } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -77,7 +73,7 @@ export const authApi = createApi({
             }
         }),
         getRolesByUser: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, params: { user: user } }),
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, method: 'GET', params: { user: user } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -87,7 +83,7 @@ export const authApi = createApi({
             }
         }),
         getMail: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, params: { user: user } }),
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, method: 'GET', params: { user: user } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -97,7 +93,7 @@ export const authApi = createApi({
             }
         }),
         getName: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_NAME}`, params: { user: user } }),
+            query: (user) => ({ url: `${UriHelper.AUTH_GET_NAME}`, method: 'GET', params: { user: user } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -107,7 +103,7 @@ export const authApi = createApi({
             }
         }),
         isAuthenticated: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, params: { user: user } }),
+            query: (user) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, method: 'GET', params: { user: user } }),
             transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
@@ -118,11 +114,14 @@ export const authApi = createApi({
         }),
         // ===========================| MUTATIIONS: POST |===================== //
         login: build.mutation<UserResponse, LoginRequest>({
-            query: ({ username, password }) => ({
-                url: UriHelper.AUTH_LOGIN_WITH_PASSWORD,
-                method: 'POST',
-                headers: { Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}` }
-            }),
+            query: ({ username, password }) => {
+                return {
+                    url: UriHelper.AUTH_LOGIN,
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    data: qs.stringify({ user: username, pass: password })
+                };
+            },
             transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
@@ -138,7 +137,7 @@ export const authApi = createApi({
             query: ({ username, password, email, active }) => ({
                 url: UriHelper.AUTH_CREATE_USER,
                 method: 'POST',
-                body: { username, password, email, active }
+                data: { username, password, email, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
@@ -147,7 +146,7 @@ export const authApi = createApi({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_CREATE_ROLE,
                 method: 'POST',
-                body: { role, active }
+                data: { role, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
@@ -155,7 +154,7 @@ export const authApi = createApi({
             query: ({ username, password, email, active }) => ({
                 url: UriHelper.AUTH_UPDATE_USER,
                 method: 'PUT',
-                body: { username, password, email, active }
+                data: { username, password, email, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
@@ -164,7 +163,7 @@ export const authApi = createApi({
             query: ({ nodeId, role, permissions, recursive }) => ({
                 url: UriHelper.AUTH_GRANT_ROLE,
                 method: 'PUT',
-                body: { nodeId, role, permissions, recursive }
+                data: { nodeId, role, permissions, recursive }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
@@ -173,7 +172,7 @@ export const authApi = createApi({
             query: ({ nodeId, role, permissions, recursive }) => ({
                 url: UriHelper.AUTH_GRANT_USER,
                 method: 'PUT',
-                body: { nodeId, role, permissions, recursive }
+                data: { nodeId, role, permissions, recursive }
             }),
             invalidatesTags: ['DMS_USER']
         }),
@@ -181,7 +180,7 @@ export const authApi = createApi({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_UPDATE_ROLE,
                 method: 'PUT',
-                body: { role, active }
+                data: { role, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
@@ -189,7 +188,7 @@ export const authApi = createApi({
             query: ({ user, active }) => ({
                 url: UriHelper.AUTH_ASSIGN_ROLE,
                 method: 'PUT',
-                body: { user, active }
+                data: { user, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
@@ -197,7 +196,7 @@ export const authApi = createApi({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_REMOVE_ROLE,
                 method: 'PUT',
-                body: { role, active }
+                data: { role, active }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
@@ -205,7 +204,7 @@ export const authApi = createApi({
             query: ({ nodeId, role, permissions, recursive }) => ({
                 url: UriHelper.AUTH_REVOKE_ROLE,
                 method: 'PUT',
-                body: { nodeId, role, permissions, recursive }
+                data: { nodeId, role, permissions, recursive }
             }),
             transformResponse: (response: { data: UserResponse }) => response.data
         }),
