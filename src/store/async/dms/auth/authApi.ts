@@ -1,5 +1,5 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import {
     AssignRoleRequest,
     CreateRoleRequest,
@@ -24,7 +24,6 @@ export const authApi = createApi({
         // ===========================| GETTERS |===================== //
         getUsers: build.query({
             query: () => ({ url: `${UriHelper.AUTH_GET_USERS}`, method: 'GET' }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -34,7 +33,6 @@ export const authApi = createApi({
         }),
         getRoles: build.query({
             query: () => ({ url: `${UriHelper.AUTH_GET_ROLES}`, method: 'GET' }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -44,7 +42,6 @@ export const authApi = createApi({
         }),
         getGrantedRoles: build.query({
             query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, method: 'GET', params: { id: id } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -54,7 +51,6 @@ export const authApi = createApi({
         }),
         getGrantedUsers: build.query({
             query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_USERS}`, method: 'GET', params: { id: id } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -64,7 +60,6 @@ export const authApi = createApi({
         }),
         getUsersByRole: build.query({
             query: (role) => ({ url: `${UriHelper.AUTH_GET_USERS_BY_ROLE}`, method: 'GET', params: { role: role } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -74,7 +69,6 @@ export const authApi = createApi({
         }),
         getRolesByUser: build.query({
             query: (user) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, method: 'GET', params: { user: user } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -84,7 +78,6 @@ export const authApi = createApi({
         }),
         getMail: build.query({
             query: (user) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, method: 'GET', params: { user: user } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -94,7 +87,6 @@ export const authApi = createApi({
         }),
         getName: build.query({
             query: (user) => ({ url: `${UriHelper.AUTH_GET_NAME}`, method: 'GET', params: { user: user } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -104,7 +96,6 @@ export const authApi = createApi({
         }),
         isAuthenticated: build.query({
             query: (user) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, method: 'GET', params: { user: user } }),
-            transformResponse: (response: { data: any }) => response.data,
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -130,7 +121,6 @@ export const authApi = createApi({
                 url: UriHelper.AUTH_LOGOUT,
                 method: 'PUT'
             }),
-            transformResponse: (response: { data: any }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
         createUser: build.mutation<any, CreateUserRequest>({
@@ -240,6 +230,7 @@ export const {
     useGetRolesByUserQuery,
     useGetRolesQuery,
     useGetNameQuery,
+    useIsAuthenticatedQuery,
     /**
      * Mutations: POST
      */

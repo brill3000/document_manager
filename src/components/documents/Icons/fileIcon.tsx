@@ -17,7 +17,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFileEarmarkPdfFill
                     size={size !== undefined ? size : 50}
                     style={{
-                        color: contrast !== null ? contrast : '#643936c9',
+                        color: contrast !== null ? contrast : '#c50606',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -29,7 +29,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillFileEarmarkZipFill
                     size={size !== undefined ? size : 50}
                     style={{
-                        color: contrast !== null ? contrast : 'gray',
+                        color: contrast !== null ? contrast : 'rgb(255, 202, 40)',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}

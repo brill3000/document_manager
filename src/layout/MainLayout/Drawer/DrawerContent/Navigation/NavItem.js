@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, Collapse, List, IconButton } from '@mui/material';
+import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, Collapse, List, IconButton, alpha } from '@mui/material';
 
 // project import
 import { activeItem } from 'store/reducers/menu';
@@ -123,7 +123,7 @@ const NavItem = ({ item, level, children }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 '&:hover': {
-                                    bgcolor: 'secondary.lighter'
+                                    bgcolor: 'primary.lighter'
                                 }
                             }),
                             ...(!drawerOpen &&
@@ -184,7 +184,7 @@ const NavItem = ({ item, level, children }) => {
             </ListItemButton>
             {children && (
                 <Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" sx={{ bgcolor: '#eeeeef' }} disablePadding>
+                    <List component="div" sx={{ bgcolor: alpha(theme.palette.primary.light, 0.1) }} disablePadding>
                         {children.map((child) => (
                             <ListItemButton
                                 key={child.id}
@@ -199,13 +199,14 @@ const NavItem = ({ item, level, children }) => {
                                     pl: 4,
                                     ...(drawerOpen && {
                                         '&:hover': {
-                                            bgcolor: '#8c8c8c6b'
+                                            bgcolor: 'primary.lighter',
+                                            borderRight: `2px solid ${theme.palette.primary.light}`
                                         },
                                         '&.Mui-selected': {
-                                            bgcolor: '#8c8c8c6b',
+                                            borderRight: `2px solid ${theme.palette.primary.light}`,
                                             '&:hover': {
                                                 // color: iconSelectedColor,
-                                                bgcolor: '#8c8c8c6b'
+                                                borderRight: `2px solid ${theme.palette.primary.main}`
                                             }
                                         }
                                     })

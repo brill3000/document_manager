@@ -22,10 +22,9 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     const { view } = useViewStore();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [scrollPosition, setScrollPosition] = React.useState<number>(0);
-    const [children, setChildren] = React.useState<Array<string | null>>([]);
     const { nav } = useHistory();
 
-    const { actions, selected, fileMap, splitScreen } = useBrowserStore();
+    const { actions, splitScreen } = useBrowserStore();
 
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
@@ -134,7 +133,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             container
             sm={12}
             md={matches ? 12 : splitScreen ? 6 : 9}
-            bgcolor={(theme) => alpha(theme.palette.secondary.main, 0.1)}
+            bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             sx={{
                 overflowY: 'auto',
                 height: '100%',
@@ -147,7 +146,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                 transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                 backdropFilter: 'blur(5px)'
             }}
-            rowSpacing={1}
             onClick={handleClick}
             onContextMenu={handleClick}
             onScroll={() => gridRef.current !== null && gridRef.current !== undefined && setScrollPosition(gridRef.current.scrollLeft)}
