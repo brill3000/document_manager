@@ -9,7 +9,7 @@ import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
 import { isEmpty } from 'lodash';
 
-export function GridView({ closeContext }: ViewsProps): React.ReactElement {
+export function GridView({ closeContext, splitScreen }: ViewsProps): React.ReactElement {
     const { selected } = useBrowserStore();
     const {
         data: folderChildren,
@@ -63,12 +63,12 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
               Array.isArray(childrenDocuments?.documents) &&
               [...folderChildren.folders, ...childrenDocuments.documents].length > 0 ? (
                 [...folderChildren.folders, ...childrenDocuments.documents].map((document: GenericDocument) => (
-                    <GridViewItem closeContext={closeContext} document={document} key={document.path} />
+                    <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
                 ))
             ) : (
                 <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <FolderEmpty height={100} width={100} />
-                    <Typography>Empty Folders</Typography>
+                    <Typography variant="caption">Empty Folders</Typography>
                 </Box>
             )}
         </>

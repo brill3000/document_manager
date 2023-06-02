@@ -14,8 +14,11 @@ export const repositoryApi = createApi({
     tagTypes: ['DMS_REPOSITORY', 'DMS_REPOSITORY_SUCCESS', 'DMS_REPOSITORY_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        getRootFolder: build.query<GetFetchedFoldersProps, Record<string, never>>({
-            query: () => ({ url: `${UriHelper.REPOSITORY_GET_ROOT_FOLDER}`, method: 'GET' }),
+        getRootFolder: build.query<GetFetchedFoldersProps, { url: string | null }>({
+            query: ({ url }: { url: string | null }) => ({
+                url: `${url !== null ? url : UriHelper.REPOSITORY_GET_ROOT_FOLDER}`,
+                method: 'GET'
+            }),
             transformResponse: (response: GetFetchedFoldersProps) => {
                 const dataCopy = { ...response };
                 if (_.isObject(dataCopy) && !_.isEmpty(dataCopy)) {

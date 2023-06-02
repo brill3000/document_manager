@@ -66,6 +66,7 @@ export interface CheckInProps extends GetDocumentContentProps {
     content: string;
     comment: string;
     increment: string;
+    fileName: string;
 }
 
 export interface RenameDocumentsProps extends GetDocumentContentProps {

@@ -86,7 +86,7 @@ const dashboard = {
             id: 'documents',
             title: 'Documents',
             type: 'item',
-            url: '/documents',
+            url: 'documents/system-documents',
             icon: icons.HddOutlined,
             breadcrumbs: false,
             children: [

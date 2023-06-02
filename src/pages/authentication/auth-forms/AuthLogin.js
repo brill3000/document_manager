@@ -66,7 +66,7 @@ const AuthLogin = () => {
                     try {
                         if (navigator.onLine) throw new Error('No Internet connection');
                         try {
-                            await loginWithPassword({ username: 'okmAdmin', password: 'admin' }).unwrap();
+                            await loginWithPassword({ username: 'brilliant', password: 'password' }).unwrap();
                             const message = `Login to openkm succeded`;
                             enqueueSnackbar(message, { variant: 'success' });
                         } catch (err) {

@@ -26,8 +26,8 @@ export const foldersApi = createApi({
         // ===========================| GETTERS |===================== //
         getFoldersProperties: build.query<GetFetchedFoldersProps | null, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_PROPERTIES}`, method: 'GET', params: { fldId } }),
-            transformResponse: (response: { data: GetFetchedFoldersProps }) => {
-                const folderCopy = { ...response.data };
+            transformResponse: (response: GetFetchedFoldersProps) => {
+                const folderCopy = { ...response };
                 if (_.isObject(folderCopy) && !_.isEmpty(folderCopy)) {
                     const pathArray = folderCopy.path.split('/');
                     folderCopy['doc_name'] = pathArray[pathArray.length - 1];
@@ -152,7 +152,7 @@ export const foldersApi = createApi({
         }),
         moveFolder: build.mutation<any, MoveFoldersProps>({
             query: ({ fldId, dstId }) => ({
-                url: UriHelper.DOCUMENT_SET_PROPERTIES,
+                url: UriHelper.FOLDER_MOVE,
                 method: 'PUT',
                 params: { fldId, dstId }
             }),

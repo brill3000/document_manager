@@ -15,12 +15,13 @@ import { useSpring, animated } from '@react-spring/web';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import _, { isArray, isEmpty, uniqueId } from 'lodash';
+import { isArray, isEmpty, isNull, isString, isUndefined, nth, omit, uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { UriHelper } from 'utils/constants/UriHelper';
 // import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -83,13 +84,15 @@ const StyledTreeItemRoot = styled(
 
 function StyledTreeItem(props: TreeItemProps) {
     const { label, nodeId, ...other } = props;
-    const otherOmitted = _.omit(other, ['label', 'focused']);
+    const otherOmitted = omit(other, ['label', 'focused']);
     return (
         <StyledTreeItemRoot
             nodeId={nodeId}
             label={
                 !nodeId.includes('loader') ? (
-                    label
+                    <Typography variant="body2" color="text.primary" noWrap>
+                        {label}
+                    </Typography>
                 ) : (
                     <Box width="100%" height="100%">
                         <Skeleton width="100%" height="2.1rem" animation="wave" />
@@ -114,11 +117,61 @@ export function LeftSidebar() {
 
     const [data, setData] = React.useState<RenderTree | null>(null);
     const { actions, selected } = useBrowserStore();
-
+    const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
     // =========================== | Controlled treeview Function | ================================//
     const [expanded, setExpanded] = React.useState<string[]>([]);
     const [currentExpanded, setCurrentExpanded] = React.useState<string | null>(null);
-    const handleExpandClick = React.useCallback((path: string) => {
+    // =========================== | Route Functions | ================================//
+    const navigate = useNavigate();
+    const { pathParam } = useParams();
+    const { pathname } = useLocation();
+
+    // =========================== | Set Root Function | ================================//
+    /**
+     * Function that extracts the root folder from the route
+     * This is critical for reload purposes
+     * @returns void
+     */
+    // const handleChangeRoute = () => {
+    //     // if (path !== null || path !== undefined) {
+    //     //     const encodedPathParam = decodeURIComponent(path);
+    //     // }
+    // };
+
+    React.useEffect(() => {
+        if (isString(pathname) && !isEmpty(pathname)) {
+            const pathArray = pathname.split('/');
+            if (nth(pathArray, 1) === 'documents') {
+                const base = nth(pathArray, 2);
+
+                if (!isEmpty(base)) {
+                    switch (base) {
+                        case 'system-documents':
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
+                            break;
+                        case 'my-documents':
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_PERSONAL);
+                            break;
+                        case 'templates':
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_TEMPLATES);
+                            break;
+                        case 'email-attachments':
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_MAIL_FOLDER);
+                            break;
+                        case 'trash':
+                            setRootUrl(UriHelper.REPOSITORY_GET_TRASH_ROOT_FOLDER);
+                            break;
+                        default:
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
+                            break;
+                    }
+                }
+            }
+            // }
+        }
+    }, [pathParam, pathname]);
+
+    const handleExpandClick = (path: string) => {
         setCurrentExpanded(path);
         setExpanded((oldExpanded) => {
             return oldExpanded.length > 0
@@ -127,7 +180,7 @@ export function LeftSidebar() {
                     : [...oldExpanded, path]
                 : [path];
         });
-    }, []);
+    };
     // =========================== | Render Function | ================================//
 
     const renderTree = (nodes: RenderTree | null) => {
@@ -211,16 +264,6 @@ export function LeftSidebar() {
             // For example, you can set a flag or modify properties within the tree
             tree.children = children;
         }
-
-        // Recursive case: Check if the current child index matches the childIndexToCompare
-        // if (tree.index !== undefined) {
-        //     const childIndex = tree.index;
-        //     if (tree.children && childIndex >= 0 && childIndex < tree.children.length) {
-        //         const child = tree.children[childIndex];
-        //         tree.children[childIndex] = recursiveUpdate(child, pathToCompare, children);
-        //     }
-        // } else {
-        // If childIndexToCompare is not defined, recursively call for all children
         if (tree.children) {
             tree.children = tree.children.map((child) => recursiveUpdate(child, pathToCompare, children));
         }
@@ -238,13 +281,17 @@ export function LeftSidebar() {
         isFetching: rootFolderIsFetching,
         isLoading: rootFolderIsLoading,
         isSuccess: rootFolderIsSuccess
-    } = useGetRootFolderQuery({});
+    } = useGetRootFolderQuery(
+        { url: rootUrl },
+        {
+            skip: rootUrl === null
+        }
+    );
 
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
             handleExpandClick(rootFolder.path);
-            setCurrentExpanded(rootFolder.path);
-            actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
+            handleDocumentClick(rootFolder.path, true);
             const data: RenderTree = {
                 id: rootFolder.path,
                 doc_name: rootFolder.doc_name,
@@ -255,7 +302,7 @@ export function LeftSidebar() {
             };
             setData(data);
         }
-    }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading]);
+    }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, rootUrl]);
     // ================================== | FETCH: CHILDREN  | ================================== //
     /**
      * Fetch children folders
@@ -268,7 +315,7 @@ export function LeftSidebar() {
     } = useGetFoldersChildrenQuery(
         { fldId: currentExpanded !== null ? currentExpanded : '' },
         {
-            skip: currentExpanded === null || currentExpanded === undefined || isEmpty(currentExpanded)
+            skip: isUndefined(currentExpanded) || isNull(currentExpanded) || isEmpty(currentExpanded)
         }
     );
 
@@ -283,7 +330,7 @@ export function LeftSidebar() {
     } = useGetFolderChildrenFilesQuery(
         { fldId: currentExpanded !== null ? currentExpanded : '' },
         {
-            skip: currentExpanded === null || currentExpanded === undefined || isEmpty(currentExpanded)
+            skip: isUndefined(currentExpanded) || isNull(currentExpanded) || isEmpty(currentExpanded)
         }
     );
     /**
@@ -326,7 +373,6 @@ export function LeftSidebar() {
                 treeItem['index'] = i;
                 return treeItem;
             });
-            console.log([...newChildren, ...newFilesChildren]);
             setData((data) => {
                 let dataCopy = data !== null ? { ...data } : null;
                 dataCopy = expanded.includes(currentExpanded)
@@ -336,6 +382,8 @@ export function LeftSidebar() {
             });
         }
     }, [
+        rootUrl,
+        rootFolder,
         folderChildrenIsSuccess,
         folderChildrenIsFetching,
         folderChildrenIsLoading,
@@ -345,10 +393,6 @@ export function LeftSidebar() {
         currentExpanded
     ]);
 
-    // =========================== | Route Functions | ================================//
-    const navigate = useNavigate();
-    const { pathParam } = useParams();
-    const { pathname } = useLocation();
     // =========================== | Event Handles | ================================//
 
     /**

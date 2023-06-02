@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 // import { FiHardDrive } from 'react-icons/fi';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
@@ -9,10 +9,12 @@ import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
 import { FolderDetailsList } from './DetailsList/FolderDetailsList';
 import { FileDetailsList } from './DetailsList/FileDetailsList';
 import { isEmpty } from 'lodash';
+import { BsCursorFill } from 'react-icons/bs';
 
 export function RightSidebar() {
     const { browserHeight } = useViewStore();
     const { focused, splitScreen } = useBrowserStore();
+    const theme = useTheme();
     const {
         data: folderInfo,
         error: folderInfoError,
@@ -25,6 +27,9 @@ export function RightSidebar() {
             skip: !focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id)
         }
     );
+    React.useEffect(() => {
+        console.log(!focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id), 'FOCUSED');
+    }, [focused]);
     const {
         data: fileInfo,
         error: fileInfoError,
@@ -63,7 +68,7 @@ export function RightSidebar() {
                             transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                         }}
                     >
-                        <Typography>Nothing Selected</Typography>
+                        <Typography variant="body2">Nothing Selected</Typography>
                     </Box>
                 )
             ) : fileInfoIsSuccess && fileInfo !== null ? (
@@ -81,7 +86,10 @@ export function RightSidebar() {
                         transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                     }}
                 >
-                    <Typography>Nothing Selected</Typography>
+                    <BsCursorFill color={theme.palette.text.secondary} size={20} />
+                    <Typography variant="body2" color="text.secondary" ml={1}>
+                        Nothing Selected
+                    </Typography>
                 </Box>
             )}
         </>

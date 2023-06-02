@@ -15,14 +15,24 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { BsLockFill } from 'react-icons/bs';
 import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
+import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
+import { isNull, isUndefined } from 'lodash';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean }): JSX.Element {
+function GridViewItem({
+    document,
+    closeContext,
+    splitScreen
+}: {
+    document: GenericDocument;
+    closeContext: boolean;
+    splitScreen: boolean;
+}): JSX.Element {
     const { doc_name, path, is_dir, mimeType, locked } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
@@ -44,6 +54,11 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
     const setViewFile = useViewStore((state) => state.setViewFile);
     // ================================= | Mutations | ============================= //
     const [renameFolder] = useRenameFolderMutation();
+    const [renameFile] = useRenameFileMutation();
+    const [moveFolder] = useMoveFolderMutation();
+    const [deleteFolder] = useDeleteFolderDocMutation();
+    const [moveFile] = useMoveFileMutation();
+    const [deleteFile] = useDeleteFileMutation();
 
     const isFocused = React.useMemo(() => {
         return path === focused.id;
@@ -56,19 +71,29 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         }),
         item: { path, doc_name, is_dir }
     }));
-    const renameFn = (value: string) => {
+    const renameFn = (value: string, is_dir: boolean) => {
         if (value && renameTarget && renameTarget.id !== value) {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const res = confirm('Rename document ? ');
                 if (res === true) {
-                    const fldId = renameTarget.id;
-                    const newName = value;
-                    const newPath = renameTarget.id.split('/');
-                    newPath.pop();
-                    newPath.push(newName);
-                    actions.setFocused(newPath.join('/'), is_dir);
-                    renameFolder({ fldId, newName });
+                    if (is_dir) {
+                        const fldId = renameTarget.id;
+                        const newName = value;
+                        const newPath = renameTarget.id.split('/');
+                        newPath.pop();
+                        newPath.push(newName);
+                        actions.setFocused(newPath.join('/'), is_dir);
+                        renameFolder({ fldId, newName });
+                    } else {
+                        const docId = renameTarget.id;
+                        const newName = value;
+                        const newPath = renameTarget.id.split('/');
+                        newPath.pop();
+                        newPath.push(newName);
+                        actions.setFocused(newPath.join('/'), is_dir);
+                        renameFile({ docId, newName });
+                    }
 
                     closeRename();
                 } else {
@@ -83,8 +108,6 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
             closeRename();
         }
     };
-    // ================================= | RTK MUTATIONS | ============================ //
-    const [move] = useMoveFolderMutation();
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
@@ -92,8 +115,8 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
-                if (moveDoc === true && item.path !== undefined && item.path !== null && path !== undefined && path !== null) {
-                    move({ fldId: item.path, dstId: path });
+                if (moveDoc === true && !isUndefined(item.path) && !isNull(item.path) && path !== undefined && path !== null) {
+                    item.is_dir ? moveFolder({ fldId: item.path, dstId: path }) : moveFile({ docId: item.path, dstId: path });
                 }
             } catch (e) {
                 if (e instanceof Error) {
@@ -193,13 +216,19 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                         break;
                     case 'copy':
                     case 'cut':
-                        addToClipBoard({ id: path, action: type });
+                        addToClipBoard({ id: path, action: type, is_dir });
                         setContextMenu(null);
                         break;
                     case 'delete':
                         try {
                             // eslint-disable-next-line no-restricted-globals
-                            confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            const deleteDoc = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            if (deleteDoc && !isUndefined(path) && !isNull(path)) {
+                                is_dir ? deleteFolder({ fldId: path }) : deleteFile({ docId: path });
+                                setContextMenu(null);
+                            } else {
+                                setContextMenu(null);
+                            }
                         } catch (e) {
                             if (e instanceof Error) {
                                 console.log(e.message);
@@ -240,8 +269,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
             display="flex"
             xs={12}
             sm={6}
-            md={4}
-            lg={4}
+            md={splitScreen ? 4 : 3}
             xl={3}
         >
             {path !== undefined ? (
@@ -280,7 +308,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 }}
                                 component={ButtonBase}
                             >
-                                <MemorizedFcFolder size={browserHeight * 0.14} />
+                                <MemorizedFcFolder size={browserHeight * 0.105} />
                             </Box>
                             <Box
                                 borderRadius={1}
@@ -316,7 +344,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                             >
                                 {isRenaming ? (
                                     <RenameDocument
-                                        renameFn={renameFn}
+                                        renameFn={(val) => renameFn(val, true)}
                                         renameTarget={renameTarget}
                                         name={
                                             renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
@@ -332,7 +360,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                             color: theme.palette.text.primary,
                                             fontWeight: isFocused || isOver ? 500 : 400,
                                             textOverflow: 'ellipsis',
-                                            fontSize: '.84rem',
+                                            fontSize: theme.typography.caption,
                                             display: '-webkit-box',
                                             WebkitLineClamp: '3',
                                             WebkitBoxOrient: 'vertical',
@@ -380,7 +408,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                     badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
                                 >
-                                    {fileIcon(mimeType, browserHeight * 0.1, browserHeight * 0.006)}
+                                    {fileIcon(mimeType, browserHeight * 0.07, browserHeight * 0.006)}
                                 </Badge>
                             }
                         </Box>
@@ -393,7 +421,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     ? alpha(theme.palette.primary.main, 0.3)
                                     : isHovered && !isRenaming
                                     ? alpha(theme.palette.primary.main, 0.1)
-                                    : 'transparent'
+                                    : '#f9f7f6'
                             }
                             width={isRenaming ? '100%' : 115}
                             height="max-content"
@@ -418,7 +446,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                         >
                             {isRenaming ? (
                                 <RenameDocument
-                                    renameFn={renameFn}
+                                    renameFn={(val) => renameFn(val, false)}
                                     renameTarget={renameTarget}
                                     name={
                                         renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
@@ -434,7 +462,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                         color: theme.palette.text.primary,
                                         fontWeight: isFocused || isOver ? 500 : 400,
                                         textOverflow: 'ellipsis',
-                                        fontSize: '.84rem',
+                                        fontSize: theme.typography.caption,
                                         display: '-webkit-box',
                                         WebkitLineClamp: '3',
                                         WebkitBoxOrient: 'vertical',

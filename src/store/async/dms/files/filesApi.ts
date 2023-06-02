@@ -227,19 +227,26 @@ export const filesApi = createApi({
                             ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
                             : 0;
                         // Dispatch the progress update or update the state as needed
-                        console.log(`Download Progress: ${progress}%`);
+                        console.log(`Upload Progress: ${progress}%`);
                     },
                     data: formData
                 };
             },
             invalidatesTags: ['DMS_FILES']
         }),
-        checking: build.mutation<any, CheckInProps>({
-            query: ({ docId, content, comment, increment }) => ({
-                url: UriHelper.DOCUMENT_CREATE,
-                method: 'POST',
-                data: { docId, content, comment, increment }
-            }),
+        checkin: build.mutation<any, CheckInProps>({
+            query: ({ docId, content, comment, increment, fileName }) => {
+                const formData = new FormData();
+                formData.set('content', content, fileName);
+                formData.set('docId', docId);
+                formData.set('comment', comment);
+                formData.set('comment', increment);
+                return {
+                    url: UriHelper.DOCUMENT_CHECKIN,
+                    method: 'POST',
+                    data: { docId, content, comment, increment }
+                };
+            },
             invalidatesTags: ['DMS_FILES']
         }),
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
@@ -248,7 +255,7 @@ export const filesApi = createApi({
             query: ({ docId, newName }) => ({
                 url: UriHelper.DOCUMENT_RENAME,
                 method: 'PUT',
-                data: { docId, newName }
+                params: { docId, newName }
             }),
             invalidatesTags: ['DMS_FILES']
         }),
@@ -311,6 +318,14 @@ export const filesApi = createApi({
         moveFile: build.mutation<any, MoveDocumentProps>({
             query: ({ docId, dstId }) => ({
                 url: UriHelper.DOCUMENT_MOVE,
+                method: 'PUT',
+                params: { docId, dstId }
+            }),
+            invalidatesTags: ['DMS_FILES']
+        }),
+        copyFile: build.mutation<any, MoveDocumentProps>({
+            query: ({ docId, dstId }) => ({
+                url: UriHelper.DOCUMENT_COPY,
                 method: 'PUT',
                 params: { docId, dstId }
             }),
@@ -381,7 +396,7 @@ export const {
      */
     useCreateFileMutation,
     useCreateSimpleFileMutation,
-    useCheckingMutation,
+    useCheckinMutation,
     /**
      * Mutations: PUT
      */
@@ -398,6 +413,7 @@ export const {
     usePurgeVersionHistoryMutation,
     useExtendedFileCopyMutation,
     useCreateFromTemplateMutation,
+    useCopyFileMutation,
     /**
      * Mutations: DELETE
      */

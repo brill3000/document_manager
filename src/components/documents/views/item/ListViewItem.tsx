@@ -166,7 +166,7 @@ export function ListViewItem({
                         break;
                     case 'copy':
                     case 'cut':
-                        addToClipBoard({ id: selected[selected.length - 1].id, action: type });
+                        addToClipBoard({ id: selected[selected.length - 1].id, action: type, is_dir });
                         setContextMenu(null);
                         break;
                     case 'delete':
@@ -329,7 +329,7 @@ export function ListViewItem({
                                     disableDoubleClick={disableDoubleClickFn}
                                 />
                             ) : (
-                                <Typography noWrap fontSize=".85rem">
+                                <Typography noWrap variant="body2" color="text.primary">
                                     {doc_name}
                                 </Typography>
                             )}
@@ -337,26 +337,26 @@ export function ListViewItem({
                         <Divider orientation="vertical" />
                     </Grid>
                     <Grid xs={2} alignItems="center" pl={2} py={0} component={Stack} justifyContent="space-between" direction="row">
-                        <Typography noWrap fontSize=".85rem" fontWeight={isFocused || isOver ? 500 : 400}>
+                        <Typography noWrap variant="body2" color="text.primary" fontWeight={isFocused || isOver ? 500 : 400}>
                             {' '}
                             {author}
                         </Typography>
                         <Divider orientation="vertical" />
                     </Grid>
                     <Grid xs={3} alignItems="center" pl={2} py={0} component={Stack} direction="row" justifyContent="space-between">
-                        <Typography noWrap fontSize=".85rem" fontWeight={isFocused || isOver ? 500 : 400}>
+                        <Typography noWrap variant="body2" color="text.primary" fontWeight={isFocused || isOver ? 500 : 400}>
                             {getDateFromObject(created).toLocaleString()}
                         </Typography>
                         <Divider orientation="vertical" />
                     </Grid>
                     <Grid xs={2} alignItems="center" pl={2} py={0} component={Stack} direction="row" justifyContent="space-between">
-                        <Typography noWrap fontSize=".85rem" fontWeight={isFocused || isOver ? 500 : 400}>
+                        <Typography noWrap variant="body2" color="text.primary" fontWeight={isFocused || isOver ? 500 : 400}>
                             {subscribed ? 'Yes' : 'No'}
                         </Typography>
                         <Divider orientation="vertical" />
                     </Grid>
                     <Grid xs={2} alignItems="center" pr={1} pl={2}>
-                        <Typography noWrap fontSize=".85rem" fontWeight={isFocused || isOver ? 500 : 400}>
+                        <Typography noWrap variant="body2" color="text.primary" fontWeight={isFocused || isOver ? 500 : 400}>
                             {permissions}
                         </Typography>
                     </Grid>

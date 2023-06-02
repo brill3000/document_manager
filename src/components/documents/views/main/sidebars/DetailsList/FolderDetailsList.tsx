@@ -10,6 +10,7 @@ import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
 import { GetFetchedFoldersProps } from 'global/interfaces';
+import { getDateFromObject } from 'utils/constants/UriHelper';
 
 export function FolderDetailsList({
     splitScreen,
@@ -86,7 +87,10 @@ export function FolderDetailsList({
                             <ListItemIcon>
                                 <BsCalendar2Check />
                             </ListItemIcon>
-                            <ListItemText secondary={<span>{new Date(folderInfo.created).toDateString()}</span>} sx={{ width: '90%' }} />
+                            <ListItemText
+                                secondary={<span>{getDateFromObject(folderInfo.created).toLocaleString()}</span>}
+                                sx={{ width: '90%' }}
+                            />
                         </ListItem>
                         <Divider variant="middle">
                             <Typography fontSize={10} color="text.secondary">

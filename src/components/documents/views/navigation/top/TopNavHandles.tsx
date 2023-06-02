@@ -76,7 +76,7 @@ export default function TopNavHandles() {
                     transition: 'all .2s',
                     transitionTimingFunction: 'ease-in-out',
                     justifyContent: 'space-between',
-                    p: 0.5,
+                    p: 0.3,
                     '&:hover': {
                         px: 1,
                         bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.1)
@@ -145,7 +145,6 @@ export default function TopNavHandles() {
                 sx={{
                     transition: 'all .2s',
                     transitionTimingFunction: 'ease-in-out',
-                    py: 0.4,
                     pr: 0.4,
                     pl: 0.7,
                     '&:hover': {
@@ -158,7 +157,7 @@ export default function TopNavHandles() {
                 rowGap={1}
                 alignItems="center"
             >
-                <Typography variant="body1" width={250} noWrap>
+                <Typography variant="body2" width={250} noWrap>
                     {folderInfoIsLoading && folderInfoIsFetching ? (
                         <Skeleton />
                     ) : folderInfoIsSuccess && folderInfo ? (

@@ -5,8 +5,8 @@ import { useModel, UseModelActions } from '../Model';
 interface State {
     dragging: boolean;
     setDragging: (val: boolean) => void;
-    clipboard: Map<string, 'cut' | 'copy'>;
-    addToClipBoard: (node: { id: string; action: 'cut' | 'copy' }) => void;
+    clipboard: Map<string, { action: 'cut' | 'copy'; is_dir: boolean }>;
+    addToClipBoard: (node: { id: string; action: 'cut' | 'copy'; is_dir: boolean }) => void;
     root: string | null | undefined;
     fileMap: Map<string, DocumentType | undefined>;
     actions: UseModelActions | null;
@@ -48,13 +48,13 @@ export const useStore = create<State>((set) => {
          * Clipboard
          */
         clipboard: new Map(),
-        addToClipBoard: (node: { id: string; action: 'cut' | 'copy' }) =>
+        addToClipBoard: (node: { id: string; action: 'cut' | 'copy'; is_dir: boolean }) =>
             set((state) => {
                 const { clipboard } = state;
                 if (clipboard.has(node.id)) {
                     clipboard.delete(node.id);
                 }
-                clipboard.set(node.id, node.action);
+                clipboard.set(node.id, { action: node.action, is_dir: node.is_dir });
                 return { clipboard: clipboard };
             })
     };

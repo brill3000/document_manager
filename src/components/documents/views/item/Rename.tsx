@@ -9,13 +9,12 @@ interface RenameDocumentProps {
     disableDoubleClick: (disabled: boolean) => void;
 }
 
-const ValidationTextField = styled(TextField)({
+const ValidationTextField = styled(TextField)(({ theme }) => ({
     '& .MuiOutlinedInput-root': {
-        fontSize: '.84rem !important',
-        padding: '.8em'
+        fontSize: theme.typography.caption
     },
     '& .MuiInputLabel-root': {
-        fontSize: '.84rem !important'
+        fontSize: theme.typography.caption
     },
     '& input:valid + fieldset': {
         borderColor: 'green',
@@ -29,9 +28,9 @@ const ValidationTextField = styled(TextField)({
         borderLeftWidth: 6,
         padding: '0px !important' // override inline-style
     }
-});
+}));
 
-export const RenameDocument = ({ renameFn, renameTarget, disableDoubleClick, name }: RenameDocumentProps): ReactElement => {
+export const RenameDocument = ({ renameFn, disableDoubleClick, name }: RenameDocumentProps): ReactElement => {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const [value, setValue] = React.useState<string>('');
     const [error, setError] = React.useState<Error | null>(null);

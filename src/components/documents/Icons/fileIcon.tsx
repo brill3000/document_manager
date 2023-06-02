@@ -1,4 +1,3 @@
-import { useTheme } from '@mui/material';
 import * as React from 'react';
 import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill, BsFillFileEarmarkZipFill } from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
@@ -12,7 +11,6 @@ const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
 const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
 
 export function fileIcon(mimeType: string | undefined, size: number, file_icon_margin: number, contrast: string | null = null) {
-    const theme = useTheme();
     switch (mimeType) {
         case 'application/pdf':
             return (
@@ -31,7 +29,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillFileEarmarkZipFill
                     size={size !== undefined ? size : 50}
                     style={{
-                        color: contrast !== null ? contrast : theme.palette.secondary.main,
+                        color: contrast !== null ? contrast : 'gray',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}

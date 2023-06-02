@@ -191,7 +191,7 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                             minWidth="100%"
                         >
                             <FolderEmpty height={100} width={100} />
-                            <Typography>Empty Folders</Typography>
+                            <Typography variant="caption">Empty Folders</Typography>
                         </Box>
                     )}
                 </>

@@ -144,10 +144,12 @@ export const UriHelper = {
      */
     REPOSITORY_GET_ROOT_FOLDER: 'repository/getRootFolder',
     REPOSITORY_GET_TRASH_FOLDER: 'repository/getTrashFolder',
+    REPOSITORY_GET_TRASH_ROOT_FOLDER: 'repository/getTrashFolderBase',
     REPOSITORY_GET_ROOT_TRASH: 'repository/getTrashFolderBase',
     REPOSITORY_GET_ROOT_TEMPLATES: 'repository/getTemplatesFolder',
     REPOSITORY_GET_ROOT_PERSONAL: 'repository/getPersonalFolderBase',
-    REPOSITORY_GET_MAIL_FOLDER: 'repository/getPersonalFolderBase',
+    REPOSITORY_GET_MAIL_FOLDER: 'repository/getMailFolder',
+    REPOSITORY_GET_ROOT_MAIL_FOLDER: 'repository/getMailFolderBase',
     REPOSITORY_GET_PERSONAL_FOLDER: 'repository/getPersonalFolder',
     REPOSITORY_GET_ROOT_MAIL: 'repository/getMailFolder',
     REPOSITORY_GET_ROOT_THESAURUS: 'repository/getThesaurusFolder',

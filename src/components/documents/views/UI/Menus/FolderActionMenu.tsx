@@ -9,6 +9,7 @@ import { theme } from '../../../Themes/theme';
 import { useCopyFoldersMutation, useMoveFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { useCopyFileMutation, useMoveFileMutation } from 'store/async/dms/files/filesApi';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -22,9 +23,11 @@ interface ActionMenuProps {
 export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<'new_folder' | 'paste' | 'paste_all' | 'edit' | 'delete' | null>(null);
     // ================================= | Mutations | ============================= //
-    const { clipboard, addToClipBoard } = useStore();
-    const [move] = useMoveFolderMutation();
-    const [copy] = useCopyFoldersMutation();
+    const { clipboard } = useStore();
+    const [moveFolder] = useMoveFolderMutation();
+    const [copyFolder] = useCopyFoldersMutation();
+    const [moveFile] = useMoveFileMutation();
+    const [copyFile] = useCopyFileMutation();
     const { selected: dstFldArray } = useBrowserStore();
 
     React.useEffect(() => {
@@ -48,7 +51,6 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
             disableAutoFocusItem={true}
         >
             <MenuItem
-                selected={selected === 'new_folder'}
                 onClick={(e) => {
                     setSelected('new_folder');
                     handleMenuClick(e, 'new_folder');
@@ -62,19 +64,26 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 </Stack>
             </MenuItem>
             <MenuItem
-                selected={selected === 'paste'}
                 onClick={(e) => {
                     setSelected('paste');
                     handleMenuClick(e, 'paste');
                     if (clipboard.size > 0 && Array.isArray(dstFldArray) && dstFldArray.length > 0) {
                         const keysArray = [...clipboard.keys()];
-                        const fldId = keysArray[keysArray.length - 1];
-                        const type = clipboard.get(fldId);
+                        const id = keysArray[keysArray.length - 1];
+                        const type = clipboard.get(id);
                         const dstId = dstFldArray[dstFldArray.length - 1].id;
-                        if (type === 'copy') {
-                            copy({ fldId, dstId });
-                        } else if (type === 'cut') {
-                            move({ fldId, dstId });
+                        if (type?.is_dir) {
+                            if (type?.action === 'copy') {
+                                copyFolder({ fldId: id, dstId });
+                            } else if (type?.action === 'cut') {
+                                moveFolder({ fldId: id, dstId });
+                            }
+                        } else {
+                            if (type?.action === 'copy') {
+                                copyFile({ docId: id, dstId });
+                            } else if (type?.action === 'cut') {
+                                moveFile({ docId: id, dstId });
+                            }
                         }
                     }
                 }}
@@ -87,7 +96,6 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 </Stack>
             </MenuItem>
             <MenuItem
-                selected={selected === 'paste_all'}
                 onClick={(e) => {
                     setSelected('paste_all');
                     handleMenuClick(e, 'paste_all');
@@ -102,7 +110,6 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
             </MenuItem>
             <Divider sx={{ my: 0.2 }} variant="middle" />
             <MenuItem
-                selected={selected === 'edit'}
                 onClick={(e) => {
                     setSelected('edit');
                     handleMenuClick(e, 'edit');
