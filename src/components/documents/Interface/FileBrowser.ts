@@ -1,3 +1,4 @@
+import { GenericDocument } from 'global/interfaces';
 import React, { RefObject, SetStateAction } from 'react';
 
 export interface FileBrowserProps {
@@ -116,6 +117,9 @@ export interface UseModelActions {
     getDocument: (key: string) => DocumentType | undefined;
     documentExists: (key: string) => boolean;
     setSplitScreen: (splitScreen: boolean) => void;
+    addUploadingFile: (file: GenericDocument) => void;
+    updateFileUploadingProgress: (fileId: string, progress: number) => void;
+    removeUploadingFile: (fileId: string) => boolean;
 }
 
 export interface StoreState {
@@ -127,6 +131,7 @@ export interface StoreState {
     splitScreen: boolean;
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
     actions: UseModelActions;
+    uploadFiles: Map<string, GenericDocument>;
 }
 
 export type key = string;

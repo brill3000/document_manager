@@ -199,7 +199,7 @@ const NavItem = ({ item, level, children }) => {
                                     pl: 4,
                                     ...(drawerOpen && {
                                         '&:hover': {
-                                            bgcolor: 'primary.lighter',
+                                            bgcolor: alpha(theme.palette.primary.main, 0.1),
                                             borderRight: `2px solid ${theme.palette.primary.light}`
                                         },
                                         '&.Mui-selected': {

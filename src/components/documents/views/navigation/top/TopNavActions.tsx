@@ -6,8 +6,52 @@ import Dropzone from 'react-dropzone';
 import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
-import { isArray, isEmpty } from 'lodash';
+// import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
+import { isArray, isEmpty, isNaN, isNull, isUndefined } from 'lodash';
+import { UseModelActions } from 'components/documents/Interface/FileBrowser';
+import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
+import { UriHelper } from 'utils/constants/UriHelper';
+import { GenericDocument, JavaCalendar } from 'global/interfaces';
+import { useSnackbar } from 'notistack';
+import { filesApi } from 'store/async/dms/files/filesApi';
+import { useDispatch } from 'react-redux';
+
+const instance = axios.create({
+    baseURL: UriHelper.HOST,
+    withCredentials: true // Enable CORS with credentials
+});
+const uploadFile = async ({
+    docPath,
+    fileName,
+    file,
+    actions
+}: {
+    docPath: string;
+    fileName: string;
+    file: File;
+    actions: UseModelActions;
+}) => {
+    const formData = new FormData();
+    formData.set('content', file, fileName);
+    formData.set('docPath', docPath);
+    const config: AxiosRequestConfig = {
+        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+            const progress =
+                !isNull(progressEvent.total) && !isUndefined(progressEvent.total)
+                    ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+                    : null;
+            // dispatch(updateUploadProgress(progress));
+            console.log(`Upload progress for ${fileName}: ${progress}`);
+            if (!isNaN(progress) && !isNull(progress)) {
+                actions.updateFileUploadingProgress(docPath, progress);
+                console.log(`Upload progress for ${fileName}: ${progress}`);
+            }
+        },
+        headers: { 'Content-Type': 'multipart/form-data', Cookie: 'token=d0ce7166-59bc-455f-8fc8-dcf56e6c036d' }
+    };
+
+    return instance.post(`/${UriHelper.DOCUMENT_CREATE_SIMPLE}`, formData, config);
+};
 
 export default function TopNavActions() {
     const { toogleView, view } = useViewStore();
@@ -15,19 +59,71 @@ export default function TopNavActions() {
     const minWidth = 'max-content';
     const tooltipDelay = 200;
     const theme = useTheme();
-    const { selected } = useBrowserStore();
-    const [createSimple] = useCreateSimpleFileMutation();
+    const { selected, actions } = useBrowserStore();
+    // const [createSimple] = useCreateSimpleFileMutation({});
+    const { enqueueSnackbar } = useSnackbar();
+    const dispatch = useDispatch();
+    const timoutRef = React.useRef<any>(null);
+
     const changeHandler = (files: File[]) => {
         try {
-            const parent =
-                isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir ? selected[selected.length - 1].id : null;
-            console.log(parent, 'PARENT');
-            if (parent !== null) {
-                files.forEach((file) => {
-                    const docPath = `${parent}/${file.name}`;
-                    const fileName = file.name;
-                    createSimple({ docPath, fileName, file });
-                });
+            if (isArray(selected) && !isEmpty(selected)) {
+                const parent =
+                    isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir
+                        ? selected[selected.length - 1].id
+                        : null;
+                const axiosArray: Array<Promise<any>> = [];
+                if (parent !== null) {
+                    files.forEach((file) => {
+                        const docPath = `${parent}/${file.name}`;
+                        const fileName = file.name;
+                        const newDate = new Date();
+                        const javaDate: JavaCalendar = {
+                            year: newDate.getFullYear(),
+                            month: newDate.getMonth(),
+                            dayOfMonth: newDate.getUTCDay(),
+                            hourOfDay: newDate.getHours(),
+                            minute: newDate.getMinutes(),
+                            second: newDate.getSeconds()
+                        };
+                        const newFile: GenericDocument = {
+                            author: 'undefined',
+                            created: javaDate,
+                            doc_name: fileName,
+                            path: docPath,
+                            permissions: 0,
+                            subscribed: false,
+                            uuid: 'null',
+                            is_dir: false,
+                            mimeType: file.type,
+                            size: file.size,
+                            locked: false,
+                            isLoading: true,
+                            progress: 0,
+                            error: false
+                        };
+                        actions.addUploadingFile(newFile);
+                        uploadFile({ docPath, fileName, file, actions })
+                            .then((res) => {
+                                if (res.status === 200) {
+                                    const message = `File ${file.name} uploaded`;
+                                    actions.removeUploadingFile(`${parent}/${file.name}`);
+                                    dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
+                                    enqueueSnackbar(message, { variant: 'success' });
+                                } else {
+                                    const message = `File ${file.name} upload failed`;
+                                    actions.removeUploadingFile(`${parent}/${file.name}`);
+                                    enqueueSnackbar(message, { variant: 'error' });
+                                }
+                            })
+                            .catch(() => {
+                                const message = `File ${file.name} upload failed`;
+                                actions.removeUploadingFile(`${parent}/${file.name}`);
+                                enqueueSnackbar(message, { variant: 'error' });
+                            });
+                        // createSimple({ docPath, fileName, file });
+                    });
+                }
             }
         } catch (e) {
             if (e instanceof Error) {
@@ -37,6 +133,12 @@ export default function TopNavActions() {
             }
         }
     };
+
+    React.useEffect(() => {
+        return () => {
+            clearTimeout(timoutRef.current);
+        };
+    }, []);
 
     const md = useMediaQuery(theme.breakpoints.down('md'));
     return (

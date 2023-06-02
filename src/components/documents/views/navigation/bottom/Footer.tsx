@@ -180,7 +180,6 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
             setStatuses({ read: null, write: null, delete: null, security: null });
         }
     }, [folderInfo, folderInfoIsFetching, folderInfoIsLoading]);
-    console.log(statuses, 'STATUSES');
     return (
         <Grid
             container

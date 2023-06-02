@@ -68,7 +68,7 @@ export const authApi = createApi({
             }
         }),
         getRolesByUser: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, method: 'GET', params: { user: user } }),
+            query: ({ user }) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, method: 'GET', params: { user: user } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -77,7 +77,7 @@ export const authApi = createApi({
             }
         }),
         getMail: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, method: 'GET', params: { user: user } }),
+            query: ({ user }) => ({ url: `${UriHelper.AUTH_GET_MAIL}`, method: 'GET', params: { user: user } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -86,7 +86,7 @@ export const authApi = createApi({
             }
         }),
         getName: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_GET_NAME}`, method: 'GET', params: { user: user } }),
+            query: ({ user }) => ({ url: `${UriHelper.AUTH_GET_NAME}/${user}`, method: 'GET' }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -95,7 +95,7 @@ export const authApi = createApi({
             }
         }),
         isAuthenticated: build.query({
-            query: (user) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, method: 'GET', params: { user: user } }),
+            query: ({ user }) => ({ url: `${UriHelper.AUTH_IS_AUTHENTICATED}`, method: 'GET', params: { user: user } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];

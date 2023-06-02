@@ -4,7 +4,7 @@ import { isNull, isUndefined } from 'lodash';
 import { useIsAuthenticatedQuery } from 'store/async/dms/auth/authApi';
 
 function ProtectedRoutes({ children }) {
-    const { data, error } = useIsAuthenticatedQuery({});
+    const { data, error, isSuccess } = useIsAuthenticatedQuery({});
     const [isAuthenticated, setIsAuthenticated] = React.useState(null);
     React.useEffect(() => {
         console.log(error, 'error');
@@ -14,7 +14,7 @@ function ProtectedRoutes({ children }) {
             setIsAuthenticated(false);
         }
     }, [data, error]);
-    return !isNull(isAuthenticated) && isAuthenticated === false ? <Navigate to="/login" /> : children;
+    return !isNull(isAuthenticated) && isAuthenticated === false && !isUndefined(error) && isSuccess ? <Navigate to="/login" /> : children;
 }
 
 export default ProtectedRoutes;

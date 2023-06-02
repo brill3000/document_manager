@@ -131,7 +131,7 @@ const EmailContent: React.FC<any> = ({
                     )}
                     <List>
                         {mails.map((mail, i) =>
-                            mail.sender === user.displayName ? (
+                            mail.sender === user?.displayName ? (
                                 <ListItem
                                     sx={{
                                         mt: 2,

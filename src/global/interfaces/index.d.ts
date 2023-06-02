@@ -112,6 +112,9 @@ export interface GenericDocument {
     mimeType?: string;
     size?: number;
     locked?: boolean;
+    isLoading?: boolean;
+    progress?: number;
+    error?: boolean;
 }
 
 export interface GetFetchedFoldersProps extends GenericDocument {

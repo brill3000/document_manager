@@ -10,7 +10,8 @@ import { GenericDocument } from 'global/interfaces';
 import { isEmpty } from 'lodash';
 
 export function GridView({ closeContext, splitScreen }: ViewsProps): React.ReactElement {
-    const { selected } = useBrowserStore();
+    const { selected, uploadFiles } = useBrowserStore();
+    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
     const {
         data: folderChildren,
         error: folderChildrenError,
@@ -43,13 +44,14 @@ export function GridView({ closeContext, splitScreen }: ViewsProps): React.React
                 !selected[selected.length - 1]?.is_dir
         }
     );
+
+    React.useEffect(() => {
+        const filesArray = Array.from(uploadFiles, ([key, value]) => value);
+        setNewFiles(filesArray);
+    }, [uploadFiles]);
     return (
         <>
-            {folderChildrenIsLoading ||
-            folderChildrenIsFetching ||
-            childrenDocumentsIsFetching ||
-            childrenDocumentsnIsLoading ||
-            selected.length === 0 ? (
+            {folderChildrenIsLoading || childrenDocumentsIsFetching || selected.length === 0 ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <GoogleLoader height={100} width={100} loop={true} />
                 </Box>
@@ -61,8 +63,8 @@ export function GridView({ closeContext, splitScreen }: ViewsProps): React.React
               childrenDocuments !== undefined &&
               Array.isArray(folderChildren?.folders) &&
               Array.isArray(childrenDocuments?.documents) &&
-              [...folderChildren.folders, ...childrenDocuments.documents].length > 0 ? (
-                [...folderChildren.folders, ...childrenDocuments.documents].map((document: GenericDocument) => (
+              [...folderChildren.folders, ...childrenDocuments.documents, ...newFiles].length > 0 ? (
+                [...folderChildren.folders, ...childrenDocuments.documents, ...newFiles].map((document: GenericDocument) => (
                     <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
                 ))
             ) : (

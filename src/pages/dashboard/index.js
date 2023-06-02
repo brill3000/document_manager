@@ -37,6 +37,7 @@ import { RecentActivity } from './RecentActivity';
 import { useGetUsersSummaryQuery } from 'store/async/usersQuery';
 import AnalyticCard from 'components/cards/statistics/AnalyticsCard';
 import { useGetUsersQuery } from 'store/async/dms/auth/authApi';
+import { isNull, isUndefined } from 'lodash';
 // avatar style
 export const avatarSX = {
     width: 36,
@@ -83,9 +84,18 @@ const DashboardDefault = () => {
 
     const { user } = useUserAuth();
 
-    const recentActivity = useGetAllRecentLogsQuery({ user: user.uid });
-    const recentlyModified = useGetAllRecentlyModifiedDocumentsQuery({ user: user.uid });
-    const userSummary = useGetUsersSummaryQuery(user.uid);
+    const recentActivity = useGetAllRecentLogsQuery(
+        { user: !isNull(user) && !isUndefined(user) ? user.uid : null },
+        { skip: isNull(user) && isUndefined(user) }
+    );
+    const recentlyModified = useGetAllRecentlyModifiedDocumentsQuery(
+        { user: !isNull(user) && !isUndefined(user) ? user.uid : null },
+        { skip: isNull(user) && isUndefined(user) }
+    );
+    const userSummary = useGetUsersSummaryQuery(
+        { user: !isNull(user) && !isUndefined(user) ? user.uid : null },
+        { skip: isNull(user) && isUndefined(user) }
+    );
 
     const documentCount = React.useMemo(() => {
         return userSummary.data ? (userSummary.data.document_count ? userSummary.data.document_count.toString() : '0') : '0';

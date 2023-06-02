@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CircularProgress, { circularProgressClasses } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { Typography } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 export const BorderLinearProgress = (props) => {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -33,6 +33,7 @@ export const StyledLinearProgress = styled(LinearProgress, {
 
 // Inspired by the former Facebook spinners.
 export function FacebookCircularProgress(props) {
+    const theme = useTheme();
     return (
         <Box sx={{ position: 'relative' }}>
             <CircularProgress
@@ -40,13 +41,13 @@ export function FacebookCircularProgress(props) {
                 sx={{
                     color: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800]
                 }}
-                size={20}
-                thickness={4}
+                size={30}
+                thickness={5}
                 {...props}
-                value={100}
+                value={props.value}
             />
             <CircularProgress
-                variant="indeterminate"
+                variant="determinate"
                 disableShrink
                 sx={{
                     color: (theme) => (theme.palette.mode === 'light' ? '#fffff' : '#308fe8'),
@@ -57,10 +58,72 @@ export function FacebookCircularProgress(props) {
                         strokeLinecap: 'round'
                     }
                 }}
-                size={20}
-                thickness={4}
+                size={30}
+                thickness={5}
                 {...props}
             />
+            <Box
+                sx={{
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Typography variant="caption" component="div" fontSize={10} color={theme.palette.primary.contrastText}>{`${Math.round(
+                    props.value
+                )}%`}</Typography>
+            </Box>
         </Box>
     );
+}
+
+export function CircularProgressWithLabel(props) {
+    const theme = useTheme();
+    return (
+        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <CircularProgress
+                color={!isNaN(props.value) ? (props.value < 50 ? 'info' : 'success') : 'success'}
+                size={35}
+                thickness={4}
+                variant="determinate"
+                {...props}
+            />
+            <Box
+                sx={{
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Typography variant="caption" component="div" fontSize={10} color={theme.palette.text.primary}>{`${Math.round(
+                    props.value
+                )}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
+
+export default function CircularStatic() {
+    const [progress, setProgress] = React.useState(10);
+
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+        }, 800);
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
+
+    return <CircularProgressWithLabel value={progress} />;
 }

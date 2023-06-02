@@ -20,6 +20,7 @@ import { BsLockFill } from 'react-icons/bs';
 import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import { isNull, isUndefined } from 'lodash';
+import { CircularProgressWithLabel, FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
@@ -33,7 +34,7 @@ function GridViewItem({
     closeContext: boolean;
     splitScreen: boolean;
 }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, locked } = document;
+    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -401,16 +402,47 @@ function GridViewItem({
                                 }
                             }}
                             component={ButtonBase}
+                            position="relative"
                         >
-                            {
-                                <Badge
-                                    overlap="circular"
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                                    badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
-                                >
-                                    {fileIcon(mimeType, browserHeight * 0.07, browserHeight * 0.006)}
-                                </Badge>
-                            }
+                            <Badge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
+                            >
+                                {fileIcon(mimeType, browserHeight * 0.07, browserHeight * 0.006)}
+                            </Badge>
+                            {!isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress) && (
+                                <>
+                                    <Box
+                                        position="absolute"
+                                        top={0}
+                                        left={0}
+                                        height="100%"
+                                        width="100%"
+                                        bgcolor={alpha('rgb(0,0,0,1)', 0.015)}
+                                        sx={{
+                                            backdropFilter: 'blur(0.8px)',
+                                            borderRadius: 2,
+                                            zIndex: 10
+                                        }}
+                                    ></Box>
+                                    <Box
+                                        sx={{
+                                            top: 10,
+                                            left: 0,
+                                            bottom: 0,
+                                            right: 0,
+                                            position: 'absolute',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                        zIndex={20}
+                                    >
+                                        <FacebookCircularProgress value={progress} />
+                                    </Box>
+                                </>
+                            )}
                         </Box>
                         <Box
                             borderRadius={1}

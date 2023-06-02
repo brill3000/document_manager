@@ -27,11 +27,11 @@ import SettingTab from './SettingTab';
 
 // assets
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { useUserAuth } from 'context/authContext';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { getInitials } from 'components/departments/utils/get-initials';
-import { useLogoutUserMutation } from 'store/async/dms/auth/authApi';
+import { useGetNameQuery, useLogoutUserMutation } from 'store/async/dms/auth/authApi';
+import { isNull } from 'lodash';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -61,13 +61,11 @@ const Profile = () => {
     const theme = useTheme();
     const navigator = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
-    const { logout, user } = useUserAuth();
-    const [logoutUser, { isLoading }] = useLogoutUserMutation();
+    const [logoutUser] = useLogoutUserMutation();
 
     const handleLogout = async () => {
         try {
             await logoutUser().unwrap();
-            await logout();
             navigator('/login');
         } catch (err) {
             const message = `User Logout Failed`;
@@ -96,6 +94,8 @@ const Profile = () => {
 
     const iconBackColorOpen = 'grey.300';
 
+    const { data: user, isError } = useGetNameQuery({ user: 'okmAdmin' });
+
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
             <ButtonBase
@@ -112,14 +112,10 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar
-                        alt="profile user"
-                        src={user.providerData.photorURL}
-                        sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
-                    >
-                        {getInitials(user.displayName)}
+                    <Avatar alt="profile user" sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}>
+                        {getInitials(!isError && !isNull(user) ? user : 'User')}
                     </Avatar>
-                    <Typography variant="subtitle1">{user.displayName}</Typography>
+                    <Typography variant="subtitle1">{!isError && !isNull(user) ? user : 'User'}</Typography>
                 </Stack>
             </ButtonBase>
             <Popper
@@ -161,15 +157,16 @@ const Profile = () => {
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
                                                         <Avatar
-                                                            src={user.providerData.photorURL}
                                                             sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
                                                         >
-                                                            {getInitials(user.displayName)}
+                                                            {getInitials(!isError && !isNull(user) ? user : 'User')}
                                                         </Avatar>
                                                         <Stack>
-                                                            <Typography variant="h6">{user.displayName}</Typography>
+                                                            <Typography variant="h6">
+                                                                {!isError && !isNull(user) ? user : 'User'}
+                                                            </Typography>
                                                             <Typography variant="body2" color="textSecondary">
-                                                                UI/UX Designer
+                                                                User
                                                             </Typography>
                                                         </Stack>
                                                     </Stack>

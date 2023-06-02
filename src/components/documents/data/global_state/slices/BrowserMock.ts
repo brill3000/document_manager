@@ -1,5 +1,7 @@
+import { GenericDocument } from 'global/interfaces';
 import { DocumentType, EditDocumentType, key, StoreState } from '../../../Interface/FileBrowser';
 import { create } from '../../../__mocks__/zustand';
+import { has, isEmpty, isNull } from 'lodash';
 
 export const useBrowserStore = create<StoreState>((set, get) => ({
     fileMap: new Map<string, DocumentType>(),
@@ -8,6 +10,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     farthestPath: null,
     focused: { id: null, is_dir: false },
     splitScreen: true,
+    uploadFiles: new Map(),
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -57,6 +60,42 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
                 };
             });
             return !get().fileMap.has(key);
+        },
+        addUploadingFile: (file: GenericDocument) => {
+            set((state) => {
+                const mapCopy = new Map(state.uploadFiles);
+                mapCopy.set(file.path, file);
+                return {
+                    uploadFiles: mapCopy
+                };
+            });
+        },
+        removeUploadingFile: (fileId: string) => {
+            let has = false;
+            set((state) => {
+                const mapCopy = new Map(state.uploadFiles);
+                console.log(mapCopy.has(fileId));
+                mapCopy.delete(fileId);
+                has = mapCopy.has(fileId);
+                return {
+                    uploadFiles: mapCopy
+                };
+            });
+            return has;
+        },
+        updateFileUploadingProgress: (fileId: string, progress: number) => {
+            set((state) => {
+                const mapCopy = new Map(state.uploadFiles);
+                // @ts-expect-error weired error
+                const file: GenericDocument | null | undefined = { ...mapCopy.get(fileId) };
+                if (!isNull(file) && !isEmpty(file) && has(file, 'progress')) {
+                    file.progress = progress;
+                    mapCopy.set(fileId, file);
+                }
+                return {
+                    uploadFiles: mapCopy
+                };
+            });
         },
         getChildren: (parent: string | null) => {
             if (parent && get().fileMap.has(parent)) {
