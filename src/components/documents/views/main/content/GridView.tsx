@@ -46,7 +46,8 @@ export function GridView({ closeContext, splitScreen }: ViewsProps): React.React
     );
 
     React.useEffect(() => {
-        const filesArray = Array.from(uploadFiles, ([key, value]) => value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
         setNewFiles(filesArray);
     }, [uploadFiles]);
     return (

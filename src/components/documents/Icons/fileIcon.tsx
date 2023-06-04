@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill, BsFillFileEarmarkZipFill } from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
-
+import { green } from '@mui/material/colors';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -87,7 +87,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillImageFill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: '#2563a2cc',
+                        color: green[600],
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
                     }}

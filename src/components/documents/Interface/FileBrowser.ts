@@ -98,8 +98,8 @@ export interface DocumentProps {
 export interface ListViewsProps extends ViewsProps {
     closeContext: boolean;
     scrollPosition: number;
-    width?: string | number;
-    height?: string | number;
+    width: number;
+    height: number;
 }
 
 export interface UseModelActions {

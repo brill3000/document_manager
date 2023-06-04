@@ -9,13 +9,11 @@ import { useSnackbar } from 'notistack';
 import { ListView } from 'components/documents/views/main/content/ListView';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { brown } from '@mui/material/colors';
 import { useHistory } from 'components/documents/data/History';
 import { GridView } from './content/GridView';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
-    const [isOverDoc, setIsOverDoc] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [closeContext, setCloseContext] = React.useState<boolean>(false);
     const { clipboard } = useStore();
@@ -65,7 +63,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
         e.preventDefault();
         if (e.nativeEvent.button === 0) return;
         else if (e.nativeEvent.button === 2) {
-            setIsOverDoc(false);
             setCloseContext(true);
             setContextMenu(
                 contextMenu === null
@@ -82,7 +79,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     };
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, close: () => void) => {
         e.preventDefault();
-        setIsOverDoc(false);
         close();
         setContextMenu(null);
     };
@@ -104,7 +100,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                     }
                     if (clipboardStack.length > 0 && Array.isArray(nav) && nav.length > 0) {
                         const response = actions.move(clipboardStack[clipboardStack.length - 1], nav[nav.length - 1]);
-                        setIsOverDoc(false);
                         setContextMenu(null);
                         if (response === true) {
                             setOpen(true);
@@ -135,7 +130,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             md={matches ? 12 : splitScreen ? 6 : 9}
             bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             sx={{
-                overflowY: 'auto',
+                overflow: 'clip',
                 height: '100%',
                 width: '100%',
                 pb: 5,
@@ -156,8 +151,8 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                     setCloseContext={setCloseContext}
                     closeContext={closeContext}
                     scrollPosition={scrollPosition}
-                    height={gridRef.current ? gridRef.current.clientHeight : '100vh'}
-                    width={gridRef.current ? gridRef.current.clientWidth : '100vw'}
+                    height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight}
+                    width={gridRef.current ? gridRef.current.clientWidth : window.innerWidth}
                 />
             ) : (
                 <GridView setCloseContext={setCloseContext} closeContext={closeContext} splitScreen={splitScreen} />
