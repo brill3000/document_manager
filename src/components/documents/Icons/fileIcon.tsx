@@ -17,7 +17,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFileEarmarkPdfFill
                     size={size !== undefined ? size : 50}
                     style={{
-                        color: contrast !== null ? contrast : '#c50606',
+                        color: contrast ?? '#c50606',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -29,7 +29,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillFileEarmarkZipFill
                     size={size !== undefined ? size : 50}
                     style={{
-                        color: contrast !== null ? contrast : 'rgb(255, 202, 40)',
+                        color: contrast ?? 'rgb(255, 202, 40)',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -42,7 +42,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedRiFileExcel2Fill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: contrast !== null ? contrast : '#257a7ade',
+                        color: contrast ?? '#257a7ade',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -55,7 +55,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedRiFilePpt2Fill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: contrast !== null ? contrast : '#bb1a1acc',
+                        color: contrast ?? '#bb1a1acc',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -68,7 +68,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedRiFileWord2Fill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: '#144497d9',
+                        color: contrast ?? '#144497d9',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -87,7 +87,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillImageFill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: green[600],
+                        color: contrast ?? green[600],
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
                     }}
@@ -99,7 +99,7 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 <MemorizedBsFillFileEarmarkTextFill
                     size={size !== undefined ? size + 3 : 53}
                     style={{
-                        color: '#2563a2cc',
+                        color: contrast ?? '#2563a2cc',
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '8px'
                     }}

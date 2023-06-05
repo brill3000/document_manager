@@ -130,7 +130,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             md={matches ? 12 : splitScreen ? 6 : 9}
             bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             sx={{
-                overflow: 'clip',
+                overflow: 'auto',
                 height: '100%',
                 width: '100%',
                 pb: 5,
@@ -157,7 +157,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             ) : (
                 <GridView setCloseContext={setCloseContext} closeContext={closeContext} splitScreen={splitScreen} />
             )}
-            <CustomDragDocument />
+            <CustomDragDocument parentRef={gridRef} />
             <FolderActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />
         </Grid>
     );

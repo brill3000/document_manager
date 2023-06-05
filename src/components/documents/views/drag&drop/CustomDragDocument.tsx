@@ -1,19 +1,19 @@
-import { Box, Grid, Typography } from '@mui/material';
-import { blue } from '@mui/material/colors';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import type { XYCoord } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
-import { theme } from '../../Themes/theme';
 import { MemorizedFcFolder } from '../item/GridViewItem';
+import { isNull, isUndefined } from 'lodash';
 
-export const CustomDragDocument = () => {
+export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<HTMLDivElement> }) => {
+    const theme = useTheme();
     const { itemType, isDragging, item, currentOffset } = useDragLayer((monitor) => ({
         item: monitor.getItem(),
         itemType: monitor.getItemType(),
-        currentOffset: monitor.getSourceClientOffset(),
+        currentOffset: monitor.getClientOffset(),
         isDragging: monitor.isDragging()
     }));
     const { browserHeight } = useViewStore();
@@ -23,7 +23,7 @@ export const CustomDragDocument = () => {
                 return (
                     <Grid
                         container
-                        bgcolor={blue[500]}
+                        bgcolor={theme.palette.primary.main}
                         height="max-content"
                         width={200}
                         direction="row"
@@ -33,7 +33,11 @@ export const CustomDragDocument = () => {
                         sx={{ cursor: 'grabbing !important' }}
                     >
                         <Grid item xs={1.5} p={0}>
-                            {item.is_dir ? <MemorizedFcFolder size={18} /> : fileIcon(item.type, browserHeight * 0.02, 0)}
+                            {item.is_dir ? (
+                                <MemorizedFcFolder size={18} />
+                            ) : (
+                                fileIcon(item.type, browserHeight * 0.02, 0, theme.palette.primary.contrastText)
+                            )}
                         </Grid>
                         <Grid item xs={10.5} p={0}>
                             <Typography variant="body2" fontSize={12} color={theme.palette.primary.contrastText} noWrap>
@@ -50,7 +54,9 @@ export const CustomDragDocument = () => {
     const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
     function handleMouseMove(event: MouseEvent) {
-        setMousePosition({ x: event.clientX, y: event.clientY });
+        const localX = !isNull(parentRef.current) ? event.clientX - parentRef.current.offsetLeft : event.clientX;
+        const localY = !isNull(parentRef.current) ? event.clientY - parentRef.current.offsetTop : event.clientY;
+        setMousePosition({ x: localX, y: localY });
     }
 
     React.useEffect(() => {
@@ -64,8 +70,12 @@ export const CustomDragDocument = () => {
     const getItemStyles = React.useCallback(
         (currentOffset: XYCoord | null) => {
             if (!currentOffset) return { display: 'none' };
+            // console.log(currentOffset.y, 'CURRENT OFFSET');
+            // console.log(mousePosition.y, 'MOUSE POSITION');
+            // console.log(parentRef.current?.offsetTop, 'PARENT OFFSET');
+
             const { x, y } = mousePosition;
-            const transform = `translate(${x - 50}px, ${y - 10}px)`;
+            const transform = `translate(${x}px, ${y}px)`;
             return {
                 transform,
                 WebkitTransform: transform,

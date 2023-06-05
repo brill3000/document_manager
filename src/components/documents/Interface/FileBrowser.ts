@@ -145,3 +145,14 @@ export interface RenderTree {
     is_dir: boolean;
     mimeType?: string;
 }
+
+export interface User {
+    id: string;
+    name: string;
+}
+export interface UserPermission extends User {
+    read: boolean;
+    write: boolean;
+    delete: boolean;
+    security: boolean;
+}

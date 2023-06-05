@@ -71,17 +71,17 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
             >
                 <Grid container direction="row" minWidth={'100vw'} position="relative" ml={1}>
                     <Grid
-                        xs={3}
+                        xs={2.5}
                         zIndex={2}
                         top="1%"
                         left={0}
                         position="sticky"
                         bgcolor={(theme) => lighten(theme.palette.primary.light, 0.9)}
                         borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={1}
+                        py={0.5}
                         pl={1}
                     >
-                        <Typography noWrap color={(theme) => theme.palette.primary.main} fontSize=".85rem">
+                        <Typography variant="caption" noWrap color={(theme) => theme.palette.primary.main}>
                             Name
                         </Typography>
                     </Grid>
@@ -90,9 +90,9 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                         pl={2}
                         bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
                         borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={1}
+                        py={0.5}
                     >
-                        <Typography noWrap fontSize=".85rem">
+                        <Typography noWrap variant="caption">
                             Author
                         </Typography>
                     </Grid>
@@ -101,9 +101,9 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                         pl={2}
                         bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
                         borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={1}
+                        py={0.5}
                     >
-                        <Typography noWrap fontSize=".85rem">
+                        <Typography noWrap variant="caption">
                             Date Created
                         </Typography>
                     </Grid>
@@ -112,47 +112,20 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                         pl={2}
                         bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
                         borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={1}
+                        py={0.5}
                     >
-                        <Typography noWrap fontSize=".85rem">
+                        <Typography noWrap variant="caption">
                             Subscribed
                         </Typography>
                     </Grid>
-                    <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={1}>
-                        <Typography noWrap fontSize=".85rem">
+                    <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={0.5}>
+                        <Typography noWrap variant="caption">
                             Permission
                         </Typography>
                     </Grid>
                 </Grid>
             </ListItem>
             <>
-                {/* {folderChildrenIsLoading || folderChildrenIsFetching || childrenDocumentsIsFetching || childrenDocumentsnIsLoading ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                        <GoogleLoader height={150} width={150} loop={true} />
-                    </Box>
-                ) : folderChildrenIsSuccess &&
-                  Array.isArray(folderChildren.folder) &&
-                  childrenDocumentsIsSuccess &&
-                  Array.isArray(childrenDocuments.document) ? (
-                    folderChildren.folder.map((document, i: number) => (
-                        <ListViewItem
-                            isColored={i % 2 === 0}
-                            closeContext={closeContext}
-                            document={document}
-                            width={width}
-                            height={height}
-                            key={document.path}
-                        />
-                    ))
-                ) : folderChildrenError ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                        <Error height={150} width={150} />
-                    </Box>
-                ) : (
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                        <Typography>No Folders</Typography>
-                    </Box>
-                )} */}
                 <>
                     {folderChildrenIsLoading ||
                     folderChildrenIsFetching ||

@@ -149,7 +149,7 @@ export function ListViewItem({
     };
     const handleMenuClick = (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete'
+        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions'
     ) => {
         e.preventDefault();
         try {
@@ -244,7 +244,7 @@ export function ListViewItem({
             onFocus={() => {
                 actions.setFocused(path, is_dir);
             }}
-            onBlur={() => focused.id === path && actions.setFocused(null, false)}
+            // onBlur={() => focused.id === path && actions.setFocused(null, false)}
         >
             {document !== undefined ? (
                 <Grid
@@ -287,7 +287,7 @@ export function ListViewItem({
                 >
                     <Grid
                         container
-                        xs={3}
+                        xs={2.5}
                         direction="row"
                         alignItems="center"
                         zIndex={1}
@@ -314,7 +314,7 @@ export function ListViewItem({
                         justifyContent="space-between"
                     >
                         <Grid xs={1} display="flex" padding={0} alignItems="center">
-                            {is_dir ? <MemorizedFcFolder size={25} /> : fileIcon(mimeType, browserHeight * 0.025, 0)}
+                            {is_dir ? <MemorizedFcFolder size={15} /> : fileIcon(mimeType, browserHeight * 0.02, 0)}
                         </Grid>
                         <Grid xs={11} maxWidth="80%" alignItems="center">
                             {isRenaming ? (

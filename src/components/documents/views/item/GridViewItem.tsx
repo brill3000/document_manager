@@ -21,6 +21,7 @@ import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import { isNull, isUndefined } from 'lodash';
 import { CircularProgressWithLabel, FacebookCircularProgress } from 'ui-component/CustomProgressBars';
+import PermissionsDialog from '../UI/Dialogs/PermissionsDialog';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
@@ -41,6 +42,7 @@ function GridViewItem({
     const { setDragging, addToClipBoard } = useStore((state) => state);
     const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
+    const { setOpenPermissionDialog } = useViewStore();
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
@@ -200,7 +202,7 @@ function GridViewItem({
 
     const handleMenuClick = (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete'
+        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions'
     ) => {
         e.preventDefault();
         try {
@@ -218,6 +220,10 @@ function GridViewItem({
                     case 'copy':
                     case 'cut':
                         addToClipBoard({ id: path, action: type, is_dir });
+                        setContextMenu(null);
+                        break;
+                    case 'permissions':
+                        setOpenPermissionDialog(true, 'paper');
                         setContextMenu(null);
                         break;
                     case 'delete':
@@ -295,7 +301,7 @@ function GridViewItem({
                                 onContextMenu={handleClick}
                                 onDoubleClick={() => handleDoubleClick(is_dir)}
                                 onFocus={() => actions.setFocused(path, is_dir)}
-                                onBlur={() => focused.id === path && actions.setFocused(null, false)}
+                                // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                                 onMouseOver={() => {
                                     setIsHovered(true);
                                 }}
@@ -389,7 +395,7 @@ function GridViewItem({
                             onContextMenu={handleClick}
                             onDoubleClick={() => handleDoubleClick(is_dir)}
                             onFocus={() => actions.setFocused(path, is_dir)}
-                            onBlur={() => focused.id === path && actions.setFocused(null, false)}
+                            // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}
@@ -519,6 +525,7 @@ function GridViewItem({
                 handleMenuClick={handleMenuClick}
             />
             <FileViewerDialog />
+            <PermissionsDialog />
         </Grid>
     );
 }
