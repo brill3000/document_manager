@@ -416,7 +416,7 @@ export function LeftSidebar() {
         <>
             {/* Initial Loader */}
             {rootFolderIsFetching ? (
-                <LazyLoader align="flex-start" width="80%" />
+                <LazyLoader align="flex-start" width="80%" justify="flex-start" height={20} />
             ) : rootFolderError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />
