@@ -5,11 +5,11 @@ import { FileBrowserProps } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state/index';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import MainCard from 'components/MainCard';
+import TopNav from './views/navigation/top/TopNav';
 
 /**
  * Lazy load all components to improve performance
  */
-const TopNav = React.lazy(() => import('components/documents/views/navigation/top/TopNav'));
 const Footer = React.lazy(() => import('components/documents/views/navigation/bottom/Footer'));
 
 /**

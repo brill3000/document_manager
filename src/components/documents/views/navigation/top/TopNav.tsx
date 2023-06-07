@@ -2,6 +2,7 @@ import { Divider, Grid, IconButton, Skeleton, Stack } from '@mui/material';
 import React, { Suspense } from 'react';
 import { BsWindowSplit } from 'react-icons/bs';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { LazyLoader } from '../..';
 const TopNavActions = React.lazy(() => import('components/documents/views/navigation/top/TopNavActions'));
 const TopNavHandles = React.lazy(() => import('components/documents/views/navigation/top/TopNavHandles'));
 const TopWindowActions = React.lazy(() => import('components/documents/views/navigation/top/TopWindowActions'));
@@ -32,21 +33,22 @@ const TopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(functi
             rowSpacing={0.2}
         >
             <Grid item md={5} xs={6} justifyContent="start" display="flex">
-                <Stack direction="row" justifyContent="space-between" width="max-content" alignItems="center" spacing={2}>
-                    <Suspense fallback={<Skeleton />}>
+                <Suspense fallback={<LazyLoader align="flex-start" width="30%" justify="flex-start" height={25} />}>
+                    <Stack direction="row" justifyContent="space-between" width="max-content" alignItems="center" spacing={2}>
                         <TopNavHandles />
-                    </Suspense>
-                </Stack>
+                    </Stack>
+                </Suspense>
+
                 <Divider absolute />
             </Grid>
 
             <Grid item md={3} xs={6} justifyContent="end" display="flex">
-                <Suspense fallback={<Skeleton />}>
+                <Suspense fallback={<LazyLoader align="flex-start" width="30%" justify="flex-start" height={25} />}>
                     <TopWindowActions />
                 </Suspense>
             </Grid>
             <Grid item xs={10} justifyContent="start" display="flex">
-                <Suspense fallback={<Skeleton />}>
+                <Suspense fallback={<LazyLoader align="flex-start" width="30%" justify="flex-start" height={25} />}>
                     <TopNavActions />
                 </Suspense>
             </Grid>
