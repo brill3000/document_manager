@@ -13,7 +13,6 @@ import {
     // List,
     // ListItem,
     // ListItemButton,
-    Box,
     useTheme
     // ListItemText,
     // ListItemIcon
@@ -34,8 +33,9 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 // import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem';
 // import { useHistory } from 'components/documents/data/History';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
-import { isArray, isEmpty, isNull, isObject } from 'lodash';
-import { Permissions } from 'utils/constants/Permissions';
+import { isArray, isEmpty, isNull } from 'lodash';
+import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 
 // interface CustomChipProps extends ChipProps {
 //     doc?: DocumentType | undefined;
@@ -109,16 +109,12 @@ import { Permissions } from 'utils/constants/Permissions';
 
 const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<HTMLInputElement> }>((_, ref) => {
     // const { nav: navHistory, select } = useHistory();
-    const [statuses, setStatuses] = React.useState<{
-        read: boolean | null;
-        write: boolean | null;
-        delete: boolean | null;
-        security: boolean | null;
-    }>({ read: null, write: null, delete: null, security: null });
     const theme = useTheme();
     // const [anchorEl, setAnchorEl] = React.useState(null);
     const { clipboard } = useStore();
     const { selected } = useBrowserStore();
+    const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
+
     // const open = Boolean(anchorEl);
     // const { fileMap } = useBrowserStore();
 
@@ -153,51 +149,6 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
                 !selected[selected?.length - 1].is_dir
         }
     );
-
-    React.useEffect(() => {
-        if (!isNull(folderInfo) && isObject(folderInfo) && !isEmpty(folderInfo)) {
-            switch (folderInfo.permissions) {
-                case Permissions.ALL_GRANTS:
-                    setStatuses({ read: true, write: true, delete: true, security: true });
-                    break;
-                case Permissions.READ:
-                    setStatuses({ read: true, write: false, delete: false, security: false });
-                    break;
-                case Permissions.WRITE:
-                    setStatuses({ read: false, write: true, delete: false, security: false });
-                    break;
-                case Permissions.DELETE:
-                    setStatuses({ read: true, write: true, delete: true, security: false });
-                    break;
-                case Permissions.SECURITY:
-                    setStatuses({ read: true, write: true, delete: true, security: true });
-                    break;
-                case Permissions.READ + Permissions.WRITE:
-                    setStatuses({ read: true, write: true, delete: false, security: false });
-                    break;
-                case Permissions.READ + Permissions.DELETE:
-                    setStatuses({ read: true, write: false, delete: true, security: false });
-                    break;
-                case Permissions.READ + Permissions.SECURITY:
-                    setStatuses({ read: true, write: false, delete: true, security: false });
-                    break;
-                case Permissions.WRITE + Permissions.DELETE:
-                    setStatuses({ read: true, write: false, delete: true, security: false });
-                    break;
-                case Permissions.WRITE + Permissions.SECURITY:
-                    setStatuses({ read: true, write: false, delete: true, security: false });
-                    break;
-                case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
-                    setStatuses({ read: true, write: true, delete: true, security: false });
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (folderInfoIsFetching || folderInfoIsLoading) {
-            setStatuses({ read: null, write: null, delete: null, security: null });
-        }
-    }, [folderInfo, folderInfoIsFetching, folderInfoIsLoading]);
     return (
         <Grid
             container
@@ -310,25 +261,20 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
                 )} */}
                 <Stack direction="row" width="80%" spacing={4}>
                     {[
-                        { id: 'Read', status: statuses.read },
-                        { id: 'Write', status: statuses.write },
-                        { id: 'Delete', status: statuses.delete },
-                        { id: 'Security', status: statuses.security }
+                        { id: 'Read', status: folderInfo?.permissions.read },
+                        { id: 'Write', status: folderInfo?.permissions.write },
+                        { id: 'Delete', status: folderInfo?.permissions.delete },
+                        { id: 'Security', status: folderInfo?.permissions.security }
                     ].map((access) => (
                         <Stack direction="row" spacing={2} justifyContent="center" alignItems="center" key={access.id}>
-                            <Box
-                                sx={{
-                                    width: '10px',
-                                    height: '10px',
-                                    borderRadius: '50%',
-                                    bgcolor:
-                                        access.status === true
-                                            ? theme.palette.success.main
-                                            : access.status == false
-                                            ? theme.palette.error.main
-                                            : theme.palette.grey[500]
-                                }}
-                            />
+                            {memorizedPermissionsIcon({
+                                type: access.id.toLowerCase() as keyof PermissionTypes,
+                                size: 15,
+                                permission: folderInfo?.permissions[access.id.toLowerCase() as keyof PermissionTypes] ?? false,
+                                file_icon_margin: 0,
+                                theme,
+                                contrast: folderInfoIsFetching || folderInfoIsLoading ? theme.palette.divider : undefined
+                            })}
                             <Typography variant="body2" color="text.secondary">
                                 {access.id}
                             </Typography>

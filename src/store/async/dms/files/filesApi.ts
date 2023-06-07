@@ -10,14 +10,17 @@ import {
     GetDocumentContentByVersionProps,
     GetDocumentContentProps,
     MoveDocumentProps,
-    RenameDocumentsProps
+    RenameDocumentsProps,
+    FileInterface
 } from 'global/interfaces';
 import { isEmpty, isObject, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
-type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
+import { Permissions } from 'utils/constants/Permissions';
+type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR' | 'DMS_FILE_INFO' | 'DMS_FILE_INFO_SUCCESS' | 'DMS_FILE_INFO_ERROR';
 
 export const axiosBaseQuery = (
     { baseUrl }: { baseUrl: string } = { baseUrl: '' }
@@ -51,26 +54,108 @@ export const filesApi = createApi({
     baseQuery: axiosBaseQuery({
         baseUrl: UriHelper.HOST
     }),
-    tagTypes: ['DMS_FILES', 'DMS_FILES_SUCCESS', 'DMS_FILES_ERROR'],
+    tagTypes: ['DMS_FILES', 'DMS_FILES_SUCCESS', 'DMS_FILES_ERROR', 'DMS_FILE_INFO', 'DMS_FILE_INFO_SUCCESS', 'DMS_FILE_INFO_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        getFileProperties: build.query<FileResponseInterface | null, GetDocumentContentProps>({
+        getFileProperties: build.query<FileInterface | null, GetDocumentContentProps>({
             query: ({ docId }) => ({ url: `${UriHelper.DOCUMENT_GET_PROPERTIES}`, method: 'GET', params: { docId } }),
             transformResponse: (response: FileResponseInterface) => {
                 const fileCopy = { ...response };
+                let doc_name = '';
+                let is_dir = false;
                 if (isObject(fileCopy) && !isEmpty(fileCopy)) {
                     const pathArray = fileCopy.path.split('/');
-                    fileCopy['doc_name'] = pathArray[pathArray.length - 1];
-                    fileCopy['is_dir'] = true;
-                    return fileCopy;
+                    doc_name = pathArray[pathArray.length - 1];
+                    is_dir = true;
+                    const filePermission: PermissionTypes = {
+                        read: false,
+                        write: false,
+                        delete: false,
+                        security: false
+                    };
+                    if (!isUndefined(fileCopy.permissions)) {
+                        const { permissions: permissionId } = fileCopy;
+
+                        switch (permissionId) {
+                            case Permissions.ALL_GRANTS:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.WRITE:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.DELETE:
+                                filePermission.read = false;
+                                filePermission.write = false;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.SECURITY:
+                                filePermission.read = false;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.DELETE:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.SECURITY:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.WRITE + Permissions.DELETE:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.WRITE + Permissions.SECURITY:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return { ...fileCopy, permissions: filePermission, doc_name, is_dir } as FileInterface;
                 } else {
                     return null;
                 }
             },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
-                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
-                if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
-                if (error) return [...tags, { type: 'DMS_FILES_ERROR', id: 'error' }];
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILE_INFO' }];
+                if (result) return [...tags, { type: 'DMS_FILE_INFO_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_FILE_INFO_ERROR', id: 'error' }];
                 return tags;
             }
         }),
@@ -104,29 +189,190 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
-        getFolderChildrenFiles: build.query<{ documents: FileResponseInterface[] | FileResponseInterface }, FolderRequestType>({
+        getFolderChildrenFiles: build.query<{ documents: FileInterface[] | FileInterface }, FolderRequestType>({
             query: ({ fldId }) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
             transformResponse: (response: { documents: FileResponseInterface[] | FileResponseInterface }) => {
                 const dataCopy = { ...response };
                 if (Array.isArray(dataCopy.documents)) {
-                    dataCopy.documents = dataCopy.documents.map((doc) => {
-                        const documentCopy = { ...doc };
-                        const pathArray = doc.path.split('/');
-                        documentCopy['doc_name'] = pathArray[pathArray.length - 1];
-                        documentCopy['is_dir'] = false;
+                    return {
+                        documents: dataCopy.documents.map((doc) => {
+                            const fileCopy = { ...doc };
+                            let doc_name = '';
+                            let is_dir = false;
+                            const pathArray = doc.path.split('/');
+                            doc_name = pathArray[pathArray.length - 1];
+                            is_dir = false;
+                            const filePermission: PermissionTypes = {
+                                read: false,
+                                write: false,
+                                delete: false,
+                                security: false
+                            };
+                            if (!isUndefined(fileCopy.permissions)) {
+                                const { permissions: permissionId } = fileCopy;
 
-                        return documentCopy;
-                    });
-                    return dataCopy;
+                                switch (permissionId) {
+                                    case Permissions.ALL_GRANTS:
+                                        filePermission.read = true;
+                                        filePermission.write = true;
+                                        filePermission.delete = true;
+                                        filePermission.security = true;
+                                        break;
+                                    case Permissions.READ:
+                                        filePermission.read = true;
+                                        filePermission.write = false;
+                                        filePermission.delete = false;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.WRITE:
+                                        filePermission.read = false;
+                                        filePermission.write = true;
+                                        filePermission.delete = false;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.DELETE:
+                                        filePermission.read = false;
+                                        filePermission.write = false;
+                                        filePermission.delete = true;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.SECURITY:
+                                        filePermission.read = false;
+                                        filePermission.write = false;
+                                        filePermission.delete = false;
+                                        filePermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE:
+                                        filePermission.read = true;
+                                        filePermission.write = true;
+                                        filePermission.delete = false;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.DELETE:
+                                        filePermission.read = true;
+                                        filePermission.write = false;
+                                        filePermission.delete = true;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.SECURITY:
+                                        filePermission.read = true;
+                                        filePermission.write = false;
+                                        filePermission.delete = false;
+                                        filePermission.security = true;
+                                        break;
+                                    case Permissions.WRITE + Permissions.DELETE:
+                                        filePermission.read = false;
+                                        filePermission.write = true;
+                                        filePermission.delete = true;
+                                        filePermission.security = false;
+                                        break;
+                                    case Permissions.WRITE + Permissions.SECURITY:
+                                        filePermission.read = false;
+                                        filePermission.write = true;
+                                        filePermission.delete = false;
+                                        filePermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                        filePermission.read = true;
+                                        filePermission.write = true;
+                                        filePermission.delete = true;
+                                        filePermission.security = false;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            return { doc_name, is_dir, ...fileCopy, permissions: filePermission } as FileInterface;
+                        })
+                    };
                 } else if (isObject(dataCopy.documents) && !isEmpty(dataCopy.documents)) {
                     const pathArray = dataCopy.documents.path.split('/');
-                    dataCopy.documents['doc_name'] = pathArray[pathArray.length - 1];
-                    dataCopy.documents['is_dir'] = false;
-                    dataCopy.documents = [dataCopy.documents];
-                    return dataCopy;
+                    const doc_name = pathArray[pathArray.length - 1];
+                    const is_dir = false;
+                    const { permissions: permissionId } = dataCopy.documents;
+                    const filePermission: PermissionTypes = {
+                        read: false,
+                        write: false,
+                        delete: false,
+                        security: false
+                    };
+                    if (!isUndefined(permissionId)) {
+                        switch (permissionId) {
+                            case Permissions.ALL_GRANTS:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.WRITE:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.DELETE:
+                                filePermission.read = false;
+                                filePermission.write = false;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.SECURITY:
+                                filePermission.read = false;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.DELETE:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.SECURITY:
+                                filePermission.read = true;
+                                filePermission.write = false;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.WRITE + Permissions.DELETE:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            case Permissions.WRITE + Permissions.SECURITY:
+                                filePermission.read = false;
+                                filePermission.write = true;
+                                filePermission.delete = false;
+                                filePermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                filePermission.read = true;
+                                filePermission.write = true;
+                                filePermission.delete = true;
+                                filePermission.security = false;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    return { documents: [{ doc_name, is_dir, ...dataCopy.documents, permissions: filePermission } as FileInterface] };
                 } else {
-                    dataCopy.documents = [];
-                    return dataCopy;
+                    return { documents: [] as FileInterface[] };
                 }
             },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {

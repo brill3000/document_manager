@@ -1,4 +1,4 @@
-import { RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
+import { PermissionTypes, RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
 
 export interface User {
     first_name: string;
@@ -113,7 +113,7 @@ export interface GenericDocument {
     created: JavaCalendar;
     doc_name: string;
     path: string;
-    permissions: number;
+    permissions: PermissionTypes;
     subscribed: boolean;
     uuid: string;
     is_dir: boolean;
@@ -125,15 +125,17 @@ export interface GenericDocument {
     error?: boolean;
 }
 
-export interface GetFetchedFoldersProps extends GenericDocument {
+export interface FolderInterface extends Omit<GenericDocument, 'permissions'> {
     hasChildren: boolean;
+    permissions: PermissionTypes;
 }
-export interface FileResponseInterface extends GenericDocument {
+export interface FileInterface extends Omit<GenericDocument, 'permissions'> {
     actualVersion: ActualVersionType;
     checkedOut: boolean;
     convertibleToPdf: boolean;
     convertibleToSwf: boolean;
     lastModified: string;
+    permissions: PermissionTypes;
     lockInfo: LockInfoType;
     locked: boolean;
     mimeType: string;
@@ -192,23 +194,33 @@ export type ActualVersionType = {
     name: number;
     size: numeber;
 };
-export interface FileResponseInterface {
-    actualVersion: ActualVersionType;
+export interface GenericDocumentResponse {
     author: string;
-    checkedOut: boolean;
-    convertibleToPdf: boolean;
-    convertibleToSwf: boolean;
-    created: JavaCalendar;
-    lastModified: string;
-    lockInfo: LockInfoType;
-    locked: boolean;
-    mimeType: string;
     path: string;
     permissions: number;
     signed: boolean;
     subscribed: boolean;
     title: string;
     uuid: string;
-    doc_name: string;
-    is_dir: boolean;
+    created: JavaCalendar;
+}
+export interface FileResponseInterface extends GenericDocumentResponse {
+    actualVersion: ActualVersionType;
+    checkedOut: boolean;
+    convertibleToPdf: boolean;
+    convertibleToSwf: boolean;
+    lastModified: string;
+    lockInfo: LockInfoType;
+    locked: boolean;
+    mimeType: string;
+    permissions: number;
+    signed: boolean;
+    title: string;
+}
+export interface FolderReponseInterface extends GenericDocumentResponse {
+    hasChildren: boolean;
+    subscriptors: Array<any>;
+    keywords: Array<any>;
+    categories: Array<any>;
+    notes: Array<any>;
 }

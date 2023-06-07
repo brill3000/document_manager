@@ -3,13 +3,14 @@ import React from 'react';
 import type { XYCoord } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { MemorizedFcFolder } from '../item/GridViewItem';
-import { isNull, isUndefined } from 'lodash';
+import { isNull } from 'lodash';
 
 export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<HTMLDivElement> }) => {
     const theme = useTheme();
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const { itemType, isDragging, item, currentOffset } = useDragLayer((monitor) => ({
         item: monitor.getItem(),
         itemType: monitor.getItemType(),
@@ -36,7 +37,12 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
                             {item.is_dir ? (
                                 <MemorizedFcFolder size={18} />
                             ) : (
-                                fileIcon(item.type, browserHeight * 0.02, 0, theme.palette.primary.contrastText)
+                                memorizedFileIcon({
+                                    mimeType: item.type,
+                                    size: browserHeight * 0.02,
+                                    file_icon_margin: 0,
+                                    contrast: theme.palette.primary.contrastText
+                                })
                             )}
                         </Grid>
                         <Grid item xs={10.5} p={0}>

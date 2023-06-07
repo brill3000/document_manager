@@ -3,14 +3,17 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Box, Divider, ListItemIcon, Stack, Typography } from '@mui/material';
+import { Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
 import { MemorizedFcFolder } from '../../../item/GridViewItem';
 import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
-import { GetFetchedFoldersProps } from 'global/interfaces';
 import { getDateFromObject } from 'utils/constants/UriHelper';
+import { FolderInterface } from 'global/interfaces';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
+import { isObject, isUndefined } from 'lodash';
+import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 
 export function FolderDetailsList({
     splitScreen,
@@ -19,8 +22,10 @@ export function FolderDetailsList({
 }: {
     splitScreen: boolean;
     browserHeight: number;
-    folderInfo: GetFetchedFoldersProps;
+    folderInfo: FolderInterface;
 }) {
+    const theme = useTheme();
+    const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
     return (
         <Stack
             spacing={2}
@@ -119,12 +124,25 @@ export function FolderDetailsList({
                                 permission group
                             </Typography>
                         </Divider>
-                        <ListItem>
-                            <ListItemIcon>
-                                <SiAuth0 />
-                            </ListItemIcon>
-                            <ListItemText secondary={<span>{folderInfo.permissions}</span>} sx={{ width: '90%' }} />
-                        </ListItem>
+                        {isObject(folderInfo.permissions) &&
+                            !isUndefined(folderInfo.permissions) &&
+                            Object.entries(folderInfo.permissions).map((p: [string, boolean]) => {
+                                const perm = p[0] as keyof PermissionTypes;
+                                return (
+                                    <ListItem key={p[0]}>
+                                        <ListItemIcon>
+                                            {memorizedPermissionsIcon({
+                                                type: perm,
+                                                permission: p[1],
+                                                theme: theme,
+                                                size: 15,
+                                                file_icon_margin: 0
+                                            })}
+                                        </ListItemIcon>
+                                        <ListItemText secondary={<span>{String(p[0])}</span>} sx={{ width: '90%' }} />
+                                    </ListItem>
+                                );
+                            })}
                     </ul>
                 </li>
                 <li>

@@ -10,7 +10,14 @@ const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
 const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
 
-export function fileIcon(mimeType: string | undefined, size: number, file_icon_margin: number, contrast: string | null = null) {
+export interface FileIconProps {
+    mimeType: string | undefined;
+    size?: number;
+    file_icon_margin?: number;
+    contrast?: string | null;
+}
+
+export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIconProps) => {
     switch (mimeType) {
         case 'application/pdf':
             return (
@@ -106,4 +113,4 @@ export function fileIcon(mimeType: string | undefined, size: number, file_icon_m
                 />
             );
     }
-}
+};

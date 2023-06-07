@@ -119,11 +119,11 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                             Subscribed
                         </Typography>
                     </Grid>
-                    <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={0.5}>
+                    {/* <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={0.5}>
                         <Typography noWrap variant="caption">
                             Permission
                         </Typography>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </ListItem>
             <>

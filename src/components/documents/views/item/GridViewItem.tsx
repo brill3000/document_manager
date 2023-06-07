@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Badge, Box, ButtonBase, Stack } from '@mui/material';
 import { grey, orange } from '@mui/material/colors';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { fileIcon, FileIconProps } from 'components/documents/Icons/fileIcon';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { theme } from '../../Themes/theme';
@@ -43,6 +43,7 @@ function GridViewItem({
     const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const { setOpenPermissionDialog } = useViewStore();
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
@@ -416,7 +417,7 @@ function GridViewItem({
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
                             >
-                                {fileIcon(mimeType, browserHeight * 0.07, browserHeight * 0.006)}
+                                {memorizedFileIcon({ mimeType, size: browserHeight * 0.07, file_icon_margin: browserHeight * 0.006 })}
                             </Badge>
                             {!isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress) && (
                                 <>

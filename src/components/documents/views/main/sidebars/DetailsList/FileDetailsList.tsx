@@ -3,15 +3,18 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Badge, Box, Divider, ListItemIcon, Stack, Typography } from '@mui/material';
+import { Badge, Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
 import { BsCalendar2Check, BsFilePerson, BsLockFill } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
-import { FileResponseInterface } from 'global/interfaces';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
+import { FileInterface } from 'global/interfaces';
 import { orange } from '@mui/material/colors';
 import { getDateFromObject } from 'utils/constants/UriHelper';
+import { isObject, isUndefined } from 'lodash';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
+import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 
 export function FileDetailsList({
     splitScreen,
@@ -20,8 +23,12 @@ export function FileDetailsList({
 }: {
     splitScreen: boolean;
     browserHeight: number;
-    fileInfo: FileResponseInterface;
+    fileInfo: FileInterface;
 }) {
+    const theme = useTheme();
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+    const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
+
     return (
         <Stack
             spacing={2}
@@ -39,7 +46,7 @@ export function FileDetailsList({
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     badgeContent={fileInfo.locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
                 >
-                    {fileIcon(fileInfo.mimeType, browserHeight * 0.1, 0)}
+                    {memorizedFileIcon({ mimeType: fileInfo.mimeType, size: browserHeight * 0.1, file_icon_margin: 0 })}
                 </Badge>
             </Box>
             <List
@@ -136,12 +143,26 @@ export function FileDetailsList({
                                 permission group
                             </Typography>
                         </Divider>
-                        <ListItem>
-                            <ListItemIcon>
-                                <SiAuth0 />
-                            </ListItemIcon>
-                            <ListItemText secondary={<span>{fileInfo.permissions}</span>} sx={{ width: '90%' }} />
-                        </ListItem>
+
+                        {isObject(fileInfo.permissions) &&
+                            !isUndefined(fileInfo.permissions) &&
+                            Object.entries(fileInfo.permissions).map((p: [string, boolean]) => {
+                                const perm = p[0] as keyof PermissionTypes;
+                                return (
+                                    <ListItem key={p[0]}>
+                                        <ListItemIcon>
+                                            {memorizedPermissionsIcon({
+                                                type: perm,
+                                                permission: p[1],
+                                                theme: theme,
+                                                size: 15,
+                                                file_icon_margin: 0
+                                            })}
+                                        </ListItemIcon>
+                                        <ListItemText secondary={<span>{String(p[0])}</span>} sx={{ width: '90%' }} />
+                                    </ListItem>
+                                );
+                            })}
                         <Divider variant="middle">
                             <Typography fontSize={10} color="text.secondary">
                                 signed

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Avatar, IconButton, List, ListItem, ListItemAvatar, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import ListItemContent from '@mui/joy/ListItemContent/ListItemContent';
 
 export function Content() {
     const theme = useTheme();
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     return (
         <>
             <Stack
@@ -58,7 +59,9 @@ export function Content() {
                 <Stack direction="row" justifyContent="space-between">
                     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                         <ListItem alignItems="flex-start" sx={{ flexDirection: 'row' }}>
-                            <ListItemAvatar>{fileIcon('application/pdf', 30, 0)}</ListItemAvatar>
+                            <ListItemAvatar>
+                                {memorizedFileIcon({ mimeType: 'application/pdf', size: 30, file_icon_margin: 0 })}
+                            </ListItemAvatar>
                             <ListItemContent>
                                 <Stack direction="column">
                                     <Typography variant="body2" fontWeight={800} color="text.primary">

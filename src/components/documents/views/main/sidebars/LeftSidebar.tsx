@@ -20,10 +20,9 @@ import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { LazyLoader } from '../..';
-// import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -119,9 +118,12 @@ export function LeftSidebar() {
     const [data, setData] = React.useState<RenderTree | null>(null);
     const { actions, selected } = useBrowserStore();
     const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+
     // =========================== | Controlled treeview Function | ================================//
     const [expanded, setExpanded] = React.useState<string[]>([]);
     const [currentExpanded, setCurrentExpanded] = React.useState<string | null>(null);
+
     // =========================== | Route Functions | ================================//
     const navigate = useNavigate();
     const { pathParam } = useParams();
@@ -224,7 +226,7 @@ export function LeftSidebar() {
                     ) : nodes.is_dir ? (
                         <MemorizedFcFolder size={16} />
                     ) : (
-                        fileIcon(nodes.mimeType, 16, 0)
+                        memorizedFileIcon({ mimeType: nodes.mimeType, size: 16, file_icon_margin: 0 })
                     )
                 }
                 bgColor={undefined}

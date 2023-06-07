@@ -11,11 +11,12 @@ import {
     UserResponse
 } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { axiosBaseQuery } from '../files/filesApi';
+import { axiosBaseQuery, filesApi } from '../files/filesApi';
 import qs from 'qs';
 import { isArray, isNull, isUndefined } from 'lodash';
 import { Permissions } from 'utils/constants/Permissions';
 import { RolePermission, User, UserPermission } from 'components/documents/Interface/FileBrowser';
+import { foldersApi } from '../folders/foldersApi';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
 export const authApi = createApi({
@@ -101,7 +102,6 @@ export const authApi = createApi({
                             delete: false,
                             security: false
                         };
-                        console.log(rolesPermissionArray, 'Permissions');
                         if (!isUndefined(getRolePermission)) {
                             const { permissions: permissionId } = getRolePermission;
 
@@ -498,6 +498,9 @@ export const authApi = createApi({
                         Object.assign(draft, draftCopy);
                     })
                 );
+                foldersApi.util.invalidateTags(['DMS_FOLDER_INFO']);
+                filesApi.util.invalidateTags(['DMS_FILE_INFO']);
+
                 try {
                     await queryFulfilled;
                 } catch {

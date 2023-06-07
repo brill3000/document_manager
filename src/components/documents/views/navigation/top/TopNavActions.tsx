@@ -72,7 +72,6 @@ export default function TopNavActions() {
                     isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir
                         ? selected[selected.length - 1].id
                         : null;
-                const axiosArray: Array<Promise<any>> = [];
                 if (parent !== null) {
                     files.forEach((file) => {
                         const docPath = `${parent}/${file.name}`;

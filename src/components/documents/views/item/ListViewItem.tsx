@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Divider, ListItemButton, Stack, Typography, lighten } from '@mui/material';
 import { theme } from '../../Themes/theme';
-import { fileIcon } from 'components/documents/Icons/fileIcon';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { DragSourceMonitor, useDrop, useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -11,7 +11,7 @@ import ActionMenu from 'components/documents/views/UI/Menus/DocumentActionMenu';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
+import { FolderInterface, GenericDocument } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RenameDocument } from './Rename';
@@ -42,6 +42,7 @@ export function ListViewItem({
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const { actions, focused } = useBrowserStore();
     const { setOpenPermissionDialog } = useViewStore();
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
 
     const isFocused = React.useMemo(() => {
         return path === focused.id;
@@ -63,7 +64,6 @@ export function ListViewItem({
     const { pathname } = useLocation();
 
     // ================================= | RTK MUTATIONS | ============================ //
-    const [move] = useMoveFolderMutation();
     const [renameFolder] = useRenameFolderMutation();
     const [renameFile] = useRenameFileMutation();
     const [moveFolder] = useMoveFolderMutation();
@@ -135,7 +135,7 @@ export function ListViewItem({
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: GetFetchedFoldersProps) => {
+        drop: (item: FolderInterface) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
@@ -372,7 +372,11 @@ export function ListViewItem({
                         justifyContent="space-between"
                     >
                         <Grid xs={1} display="flex" padding={0} alignItems="center">
-                            {is_dir ? <MemorizedFcFolder size={18} /> : fileIcon(mimeType, browserHeight * 0.02, 0)}
+                            {is_dir ? (
+                                <MemorizedFcFolder size={18} />
+                            ) : (
+                                memorizedFileIcon({ mimeType, size: browserHeight * 0.02, file_icon_margin: 0 })
+                            )}
                         </Grid>
                         <Grid xs={11} maxWidth="80%" alignItems="center">
                             {isRenaming ? (
@@ -413,11 +417,11 @@ export function ListViewItem({
                         </Typography>
                         <Divider orientation="vertical" />
                     </Grid>
-                    <Grid xs={2} alignItems="center" pr={1} pl={2}>
+                    {/* <Grid xs={2} alignItems="center" pr={1} pl={2}>
                         <Typography noWrap variant="body2" color="text.primary" fontWeight={isFocused || isOver ? 500 : 400}>
                             {permissions}
                         </Typography>
-                    </Grid>
+                    </Grid> */}
                     <ActionMenu
                         contextMenu={contextMenu}
                         handleMenuClose={handleMenuClose}

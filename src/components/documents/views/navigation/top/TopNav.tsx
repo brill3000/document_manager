@@ -1,4 +1,4 @@
-import { Divider, Grid, IconButton, Skeleton, Stack } from '@mui/material';
+import { Divider, Grid, IconButton, Stack } from '@mui/material';
 import React, { Suspense } from 'react';
 import { BsWindowSplit } from 'react-icons/bs';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
