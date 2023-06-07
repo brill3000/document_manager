@@ -6,6 +6,7 @@ import {
     CreateUserRequest,
     DeleteUserRequest,
     GrantRoleRequest,
+    GrantUserRequest,
     LoginRequest,
     UserResponse
 } from 'global/interfaces';
@@ -14,7 +15,7 @@ import { axiosBaseQuery } from '../files/filesApi';
 import qs from 'qs';
 import { isArray, isNull, isUndefined } from 'lodash';
 import { Permissions } from 'utils/constants/Permissions';
-import { User, UserPermission } from 'components/documents/Interface/FileBrowser';
+import { RolePermission, User, UserPermission } from 'components/documents/Interface/FileBrowser';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
 export const authApi = createApi({
@@ -71,8 +72,121 @@ export const authApi = createApi({
                 return tags;
             }
         }),
-        getGrantedRoles: build.query({
-            query: (id) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, method: 'GET', params: { id: id } }),
+        getGrantedRoles: build.query<RolePermission[], { nodeId: string }>({
+            // query: ({ nodeId }) => ({ url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`, method: 'GET', params: { nodeId: nodeId } }),
+            queryFn: async (args, _api, _extraOptions, baseQuery: any) => {
+                try {
+                    const { nodeId } = args;
+                    // Execute the getRoles query
+                    const { data: rolesData }: { data: { roles: string[] } } = await baseQuery({
+                        url: `${UriHelper.AUTH_GET_ROLES}`,
+                        method: 'GET'
+                    });
+
+                    const { data: rolesPemissionsData } = await baseQuery({
+                        url: `${UriHelper.AUTH_GET_GRANTED_ROLES}`,
+                        method: 'GET',
+                        params: { nodeId }
+                    });
+
+                    // Assert the shape of the response
+                    const rolesPermissionArray = rolesPemissionsData.grantedRoles as { role: string; permissions: number }[];
+                    const grantedRoles = rolesData.roles as string[];
+                    const rolesAccess = grantedRoles.map((role) => {
+                        const getRolePermission = rolesPermissionArray.find((x) => x.role === role);
+                        const rolePermission: RolePermission = {
+                            name: role,
+                            read: false,
+                            write: false,
+                            delete: false,
+                            security: false
+                        };
+                        console.log(rolesPermissionArray, 'Permissions');
+                        if (!isUndefined(getRolePermission)) {
+                            const { permissions: permissionId } = getRolePermission;
+
+                            switch (permissionId) {
+                                case Permissions.ALL_GRANTS:
+                                    rolePermission.read = true;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = true;
+                                    rolePermission.security = true;
+                                    break;
+                                case Permissions.READ:
+                                    rolePermission.read = true;
+                                    rolePermission.write = false;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.WRITE:
+                                    rolePermission.read = false;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.DELETE:
+                                    rolePermission.read = false;
+                                    rolePermission.write = false;
+                                    rolePermission.delete = true;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.SECURITY:
+                                    rolePermission.read = false;
+                                    rolePermission.write = false;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = true;
+                                    break;
+                                case Permissions.READ + Permissions.WRITE:
+                                    rolePermission.read = true;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.READ + Permissions.DELETE:
+                                    rolePermission.read = true;
+                                    rolePermission.write = false;
+                                    rolePermission.delete = true;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.READ + Permissions.SECURITY:
+                                    rolePermission.read = true;
+                                    rolePermission.write = false;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = true;
+                                    break;
+                                case Permissions.WRITE + Permissions.DELETE:
+                                    rolePermission.read = false;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = true;
+                                    rolePermission.security = false;
+                                    break;
+                                case Permissions.WRITE + Permissions.SECURITY:
+                                    rolePermission.read = false;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = false;
+                                    rolePermission.security = true;
+                                    break;
+                                case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                    rolePermission.read = true;
+                                    rolePermission.write = true;
+                                    rolePermission.delete = true;
+                                    rolePermission.security = false;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        return rolePermission;
+                    });
+                    return { data: rolesAccess };
+                } catch (e) {
+                    if (e instanceof Error) {
+                        return { error: e.message };
+                    } else {
+                        return { error: e };
+                    }
+                }
+            },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];
@@ -97,7 +211,7 @@ export const authApi = createApi({
                     });
 
                     // Assert the shape of the response
-                    const usersPermissionArray = userPemissionsData.grantedUsers as { user: string; permission: number }[];
+                    const usersPermissionArray = userPemissionsData.grantedUsers as { user: string; permissions: number }[];
                     const users = usersData.users as string[];
 
                     if (!isUndefined(usersPermissionArray) && !isArray(usersPermissionArray)) {
@@ -116,8 +230,7 @@ export const authApi = createApi({
                                 security: false
                             };
                             if (!isUndefined(getUserPermission) && !isNull(getUserPermission)) {
-                                const { permission: permissionId } = getUserPermission;
-
+                                const { permissions: permissionId } = getUserPermission;
                                 switch (permissionId) {
                                     case Permissions.ALL_GRANTS:
                                         userPermission.read = true;
@@ -125,40 +238,71 @@ export const authApi = createApi({
                                         userPermission.delete = true;
                                         userPermission.security = true;
                                         break;
-                                    case Permissions.SECURITY:
-                                        userPermission.read = true;
-                                        userPermission.write = true;
-                                        userPermission.delete = true;
-                                        userPermission.security = true;
-                                        break;
-                                    case Permissions.DELETE:
-                                        userPermission.read = true;
-                                        userPermission.write = true;
-                                        userPermission.delete = true;
-                                        userPermission.security = false;
-                                        break;
-                                    case Permissions.WRITE:
-                                        userPermission.read = true;
-                                        userPermission.write = true;
-                                        userPermission.delete = false;
-                                        userPermission.security = false;
-                                        break;
                                     case Permissions.READ:
                                         userPermission.read = true;
                                         userPermission.write = false;
                                         userPermission.delete = false;
                                         userPermission.security = false;
                                         break;
-                                    default:
+                                    case Permissions.WRITE:
                                         userPermission.read = false;
-                                        userPermission.write = false;
+                                        userPermission.write = true;
                                         userPermission.delete = false;
                                         userPermission.security = false;
                                         break;
+                                    case Permissions.DELETE:
+                                        userPermission.read = false;
+                                        userPermission.write = false;
+                                        userPermission.delete = true;
+                                        userPermission.security = false;
+                                        break;
+                                    case Permissions.SECURITY:
+                                        userPermission.read = false;
+                                        userPermission.write = false;
+                                        userPermission.delete = false;
+                                        userPermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE:
+                                        userPermission.read = true;
+                                        userPermission.write = true;
+                                        userPermission.delete = false;
+                                        userPermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.DELETE:
+                                        userPermission.read = true;
+                                        userPermission.write = false;
+                                        userPermission.delete = true;
+                                        userPermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.SECURITY:
+                                        userPermission.read = true;
+                                        userPermission.write = false;
+                                        userPermission.delete = false;
+                                        userPermission.security = true;
+                                        break;
+                                    case Permissions.WRITE + Permissions.DELETE:
+                                        userPermission.read = false;
+                                        userPermission.write = true;
+                                        userPermission.delete = true;
+                                        userPermission.security = false;
+                                        break;
+                                    case Permissions.WRITE + Permissions.SECURITY:
+                                        userPermission.read = false;
+                                        userPermission.write = true;
+                                        userPermission.delete = false;
+                                        userPermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                        userPermission.read = true;
+                                        userPermission.write = true;
+                                        userPermission.delete = true;
+                                        userPermission.security = false;
+                                        break;
+                                    default:
+                                        break;
                                 }
                             }
-
-                            return { id: name, name: name, ...userPermission }; // Replace 'nameResult.name' with the actual property containing the user name in the response
+                            return { id: user, name: name, ...userPermission }; // Replace 'nameResult.name' with the actual property containing the user name in the response
                         })
                     );
 
@@ -233,7 +377,6 @@ export const authApi = createApi({
                     data: qs.stringify({ user: username, pass: password })
                 };
             },
-            transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
         logoutUser: build.mutation<void, LoginRequest>({
@@ -247,76 +390,183 @@ export const authApi = createApi({
             query: ({ username, password, email, active }) => ({
                 url: UriHelper.AUTH_CREATE_USER,
                 method: 'POST',
-                data: { username, password, email, active }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ username, password, email, active })
             }),
-            transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
         createRole: build.mutation<any, CreateRoleRequest>({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_CREATE_ROLE,
                 method: 'POST',
-                data: { role, active }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ role, active })
+            })
         }),
         updateUser: build.mutation<any, CreateUserRequest>({
             query: ({ username, password, email, active }) => ({
                 url: UriHelper.AUTH_UPDATE_USER,
                 method: 'PUT',
-                data: { username, password, email, active }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ username, password, email, active })
             }),
-            transformResponse: (response: { data: UserResponse }) => response.data,
             invalidatesTags: ['DMS_USER']
         }),
         grantRole: build.mutation<any, GrantRoleRequest>({
             query: ({ nodeId, role, permissions, recursive }) => ({
                 url: UriHelper.AUTH_GRANT_ROLE,
                 method: 'PUT',
-                data: { nodeId, role, permissions, recursive }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ nodeId, role, permissions, recursive })
             }),
-            transformResponse: (response: { data: UserResponse }) => response.data,
-            invalidatesTags: ['DMS_USER']
+            async onQueryStarted({ nodeId, role, type }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    authApi.util.updateQueryData('getGrantedRoles', { nodeId }, (draft) => {
+                        const draftCopy = draft.map((cachedRole) => {
+                            if (cachedRole.name === role) {
+                                (cachedRole[type] as RolePermission[typeof type]) = true;
+                            }
+                            return cachedRole;
+                        });
+
+                        Object.assign(draft, draftCopy);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
-        grantUser: build.mutation<any, GrantRoleRequest>({
-            query: ({ nodeId, role, permissions, recursive }) => ({
+        grantUser: build.mutation<any, GrantUserRequest>({
+            query: ({ nodeId, user, permissions, recursive, type }) => ({
                 url: UriHelper.AUTH_GRANT_USER,
                 method: 'PUT',
-                data: { nodeId, role, permissions, recursive }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ nodeId, user, permissions, type, recursive })
             }),
-            invalidatesTags: ['DMS_USER']
+            async onQueryStarted({ nodeId, user, type }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    authApi.util.updateQueryData('getGrantedUsers', { nodeId }, (draft) => {
+                        const draftCopy = draft.map((cachedUser) => {
+                            if (cachedUser.id === user) {
+                                (cachedUser[type] as UserPermission[typeof type]) = true;
+                            }
+                            return cachedUser;
+                        });
+
+                        Object.assign(draft, draftCopy);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
+        }),
+        revokeUser: build.mutation<any, GrantUserRequest>({
+            query: ({ nodeId, user, permissions, recursive, type }) => ({
+                url: UriHelper.AUTH_REVOKE_USER,
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ nodeId, user, permissions, type, recursive })
+            }),
+            async onQueryStarted({ nodeId, user, type }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    authApi.util.updateQueryData('getGrantedUsers', { nodeId }, (draft) => {
+                        const draftCopy = draft.map((cachedUser) => {
+                            if (cachedUser.id === user) {
+                                (cachedUser[type] as UserPermission[typeof type]) = false;
+                            }
+                            return cachedUser;
+                        });
+
+                        Object.assign(draft, draftCopy);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         updateRole: build.mutation<any, CreateRoleRequest>({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_UPDATE_ROLE,
                 method: 'PUT',
                 data: { role, active }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+            })
         }),
         assignRole: build.mutation<any, AssignRoleRequest>({
             query: ({ user, active }) => ({
                 url: UriHelper.AUTH_ASSIGN_ROLE,
                 method: 'PUT',
-                data: { user, active }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ user, active })
+            })
         }),
         removeRole: build.mutation<any, CreateRoleRequest>({
             query: ({ role, active }) => ({
                 url: UriHelper.AUTH_REMOVE_ROLE,
                 method: 'PUT',
-                data: { role, active }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ role, active })
+            })
         }),
         revokeRole: build.mutation<any, GrantRoleRequest>({
             query: ({ nodeId, role, permissions, recursive }) => ({
                 url: UriHelper.AUTH_REVOKE_ROLE,
                 method: 'PUT',
-                data: { nodeId, role, permissions, recursive }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: qs.stringify({ nodeId, role, permissions, recursive })
             }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+            async onQueryStarted({ nodeId, role, type }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    authApi.util.updateQueryData('getGrantedRoles', { nodeId }, (draft) => {
+                        const draftCopy = draft.map((cachedRole) => {
+                            console.log(cachedRole, 'CACHE ROLE');
+                            if (cachedRole.name === role) {
+                                (cachedRole[type] as RolePermission[typeof type]) = false;
+                            }
+                            return cachedRole;
+                        });
+
+                        Object.assign(draft, draftCopy);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
         deleteUser: build.mutation<any, DeleteUserRequest>({
@@ -324,16 +574,14 @@ export const authApi = createApi({
                 url: UriHelper.AUTH_DELETE_USER,
                 method: 'DELETE',
                 params: { user }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+            })
         }),
         deleteRole: build.mutation<any, DeleteUserRequest>({
             query: ({ user }) => ({
                 url: UriHelper.AUTH_DELETE_ROLE,
                 method: 'DELETe',
                 params: { user }
-            }),
-            transformResponse: (response: { data: UserResponse }) => response.data
+            })
         })
     })
 });
@@ -343,34 +591,43 @@ export const {
     /**
      * Getters
      */
+    // ============= | USERS | =========== //
     useGetUsersQuery,
-    useGetGrantedRolesQuery,
-    useGetGrantedUsersQuery,
-    useGetMailQuery,
-    useGetRolesByUserQuery,
-    useGetRolesQuery,
     useGetNameQuery,
     useIsAuthenticatedQuery,
+    useGetGrantedUsersQuery,
+    // ============= | MAILS | =========== //
+    useGetMailQuery,
+    // ============= | ROLES | =========== //
+    useGetRolesByUserQuery,
+    useGetGrantedRolesQuery,
+    useGetRolesQuery,
     /**
      * Mutations: POST
      */
     useLoginMutation,
     useLogoutUserMutation,
+    // ============= | USERS | =========== //
     useCreateRoleMutation,
     useCreateUserMutation,
     /**
      * Mutations: PUT
      */
+    // ============= | USERS | =========== //
     useUpdateUserMutation,
+    useGrantUserMutation,
+    useRevokeUserMutation,
+    // ============= | ROLES | =========== //
     useUpdateRoleMutation,
     useGrantRoleMutation,
-    useGrantUserMutation,
     useAssignRoleMutation,
     useRemoveRoleMutation,
     useRevokeRoleMutation,
     /**
      * Mutations: DELETE
      */
-    useDeleteRoleMutation,
-    useDeleteUserMutation
+    // ============= | USERS | =========== //
+    useDeleteUserMutation,
+    // ============= | ROLES | =========== //
+    useDeleteRoleMutation
 } = authApi;

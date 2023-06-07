@@ -7,18 +7,22 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { isArray, isEmpty, isNull } from 'lodash';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
-import { Box } from '@mui/material';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
+import { Error } from 'ui-component/LoadHandlers';
+import { Box, ButtonBase, Slide, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
-import PermissionsTable from '../../tables/PermissionsTable';
-import { useGetGrantedUsersQuery, useGetNameQuery, useGetUsersQuery } from 'store/async/dms/auth/authApi';
+import { PermissionsUsersTable, PermissionsRolesTable } from '../../tables';
+import { useGetGrantedRolesQuery, useGetGrantedUsersQuery } from 'store/async/dms/auth/authApi';
+import { Close } from '@mui/icons-material';
+import { LazyLoader } from '../..';
 
 export default function PermissionsDialog() {
     const { open, scrollType } = useViewStore((state) => state.openPermissionDialog);
     const setOpenPermissionDialog = useViewStore((state) => state.setOpenPermissionDialog);
     const { focused } = useBrowserStore();
-    const [userList, setUsersList] = React.useState<{ id: string; name: string | null }[] | null>(null);
+    const contentRef = React.useRef<HTMLDivElement>(null);
+    const theme = useTheme();
+    const [tab, setTab] = React.useState<'users' | 'roles'>('users');
 
     const handleClose = () => {
         setOpenPermissionDialog(false, 'paper');
@@ -34,23 +38,13 @@ export default function PermissionsDialog() {
         }
     }, [open]);
     // ================================= | Getters | ============================= //
-    const {
-        data: fileInfo,
-        error: fileInfoError,
-        isFetching: fileInfoIsFetching,
-        isLoading: fileInfoIsLoading
-    } = useGetFilePropertiesQuery(
+    const { data: fileInfo } = useGetFilePropertiesQuery(
         { docId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || focused.is_dir
         }
     );
-    const {
-        data: folderInfo,
-        error: folderInfoError,
-        isFetching: folderInfoIsFetching,
-        isLoading: folderInfoIsLoading
-    } = useGetFoldersPropertiesQuery(
+    const { data: folderInfo } = useGetFoldersPropertiesQuery(
         { fldId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || !focused.is_dir
@@ -59,10 +53,15 @@ export default function PermissionsDialog() {
     const { data: users, isError: usersIsError, isFetching: usersIsFetching, isLoading: usersIsLoading } = useGetGrantedUsersQuery(
         { nodeId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
-            skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || !focused.is_dir
+            skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || tab === 'roles'
         }
     );
-
+    const { data: roles, isError: rolesIsError, isFetching: rolesIsFetching, isLoading: rolesIsLoading } = useGetGrantedRolesQuery(
+        { nodeId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
+        {
+            skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || tab === 'users'
+        }
+    );
     return (
         <div>
             <Dialog
@@ -78,45 +77,88 @@ export default function PermissionsDialog() {
                         p: 0
                     },
                     '& .MuiBackdrop-root': {
-                        backdropFilter: 'blur(3px)', // This be the blur
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.15)',
                         opacity: 1,
-                        transition: 'opacity blur 125ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+                        transition: 'opacity backgroundColor 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
                     },
                     '& .MuiDialog-paper': {
                         minHeight: '70vh',
-                        transition: 'box-shadow 30ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+                        boxShadow:
+                            '0px 11px 15px -7px rgba(0, 0, 0, 0.02),0px 24px 38px 3px rgba(0, 0, 0, 0.03),0px 9px 46px 8px rgba(0, 0, 0, 0.05)'
                     }
                 }}
             >
-                {usersIsFetching || usersIsLoading ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
-                        <GoogleLoader height={100} width={100} loop={true} />
-                    </Box>
-                ) : usersIsError ? (
+                <DialogTitle
+                    id="scroll-dialog-title"
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        position: 'relative'
+                    }}
+                >
+                    <Typography>
+                        Permissions for{' '}
+                        {!isUndefined(fileInfo) && !isNull(fileInfo)
+                            ? fileInfo.doc_name + ' file'
+                            : !isUndefined(folderInfo) && !isNull(folderInfo)
+                            ? folderInfo.doc_name + ' folder'
+                            : ''}
+                    </Typography>
+                    <Stack position="absolute" bottom={-0.8} right={5} width="10%" direction="row" justifyContent="flex-end" spacing={1}>
+                        {['users', 'roles'].map((t) => (
+                            <ButtonBase
+                                key={t}
+                                sx={{
+                                    py: 1,
+                                    px: 2,
+                                    color: tab === t ? theme.palette.primary.main : theme.palette.text.primary,
+                                    bgcolor: tab === t ? 'background.paper' : lighten(theme.palette.secondary.light, 0.8),
+                                    fontSize: theme.typography.body2.fontSize,
+                                    borderTopLeftRadius: 4,
+                                    borderTopRightRadius: 4,
+                                    borderTop: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
+                                    borderLeft: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
+                                    borderRight: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`
+                                }}
+                                onClick={() => setTab(t as 'users' | 'roles')}
+                            >
+                                {t}
+                            </ButtonBase>
+                        ))}
+                    </Stack>
+                </DialogTitle>
+                {usersIsFetching || usersIsLoading || rolesIsFetching || rolesIsLoading ? (
+                    <LazyLoader />
+                ) : usersIsError || rolesIsError ? (
                     <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
                         <Error height={50} width={50} />
                     </Box>
-                ) : isArray(users) ? (
-                    <>
-                        <DialogTitle id="scroll-dialog-title">Permissions</DialogTitle>
-                        <DialogContent
-                            dividers={scrollType === 'paper'}
-                            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                        >
-                            <PermissionsTable users={users} />
-                        </DialogContent>
-                    </>
+                ) : !isNull(focused.id) ? (
+                    <DialogContent
+                        dividers={scrollType === 'paper'}
+                        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                        ref={contentRef}
+                    >
+                        {isArray(users) && (
+                            <Slide direction="right" in={tab === 'users'} container={contentRef.current}>
+                                <PermissionsUsersTable users={users} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'users'} />
+                            </Slide>
+                        )}
+                        {isArray(roles) && (
+                            <Slide direction="left" in={tab === 'roles'} container={contentRef.current}>
+                                <PermissionsRolesTable roles={roles} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'roles'} />
+                            </Slide>
+                        )}
+                    </DialogContent>
                 ) : (
                     <></>
                 )}
 
                 <DialogActions>
-                    <Button onClick={handleClose} color="error" variant="outlined">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleClose} color="success" variant="contained">
-                        Save
+                    <Button onClick={handleClose} color="error" variant="outlined" startIcon={<Close />}>
+                        Close
                     </Button>
                 </DialogActions>
             </Dialog>

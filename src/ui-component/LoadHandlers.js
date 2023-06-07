@@ -7,6 +7,7 @@ import mail from './lottie/mail.json';
 import googleLoader from './lottie/googleLoader.json';
 import sending from './lottie/sending.json';
 import conversation from './lottie/conversation.json';
+import notfoundjson from './lottie/404.json';
 
 const FolderLoader = ({ height, width }) => {
     const defaultOptions = {
@@ -125,5 +126,21 @@ const Conversation = ({ height, width, loop }) => {
         </div>
     );
 };
+const NotFoundLoader = ({ height, width, loop }) => {
+    const defaultOptions = {
+        loop: loop ?? false,
+        autoplay: true,
+        animationData: notfoundjson,
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice'
+        }
+    };
 
-export { FolderLoader, FolderEmpty, Error, MailLoader, GoogleLoader, Sending, Conversation };
+    return (
+        <div>
+            <Lottie options={defaultOptions} height={height ?? 400} width={width ?? 400} />
+        </div>
+    );
+};
+
+export { FolderLoader, FolderEmpty, Error, MailLoader, GoogleLoader, Sending, Conversation, NotFoundLoader };

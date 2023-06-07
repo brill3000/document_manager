@@ -14,8 +14,8 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 // import { format } from 'date-fns';
 import { getInitials } from './utils/get-initials';
-import { CircularProgress } from '../../../node_modules/@mui/material/index';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error } from 'ui-component/LoadHandlers';
+import { LazyLoader } from 'components/documents/views';
 
 const columns = [
     { id: 'id', label: 'ID', minWidth: 30 },
@@ -120,18 +120,7 @@ export default function UserTable({ users, usersIsLoading, usersIsError, usersEr
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ minHeight: 440, maxHeight: 440 }}>
                 {usersIsLoading || usersIsFetching ? (
-                    <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        minHeight="100%"
-                        minWidth="100%"
-                        sx={{
-                            mt: 25
-                        }}
-                    >
-                        <GoogleLoader height={150} width={150} loop={true} />
-                    </Box>
+                    <LazyLoader />
                 ) : usersIsError ? (
                     <Box
                         display="flex"

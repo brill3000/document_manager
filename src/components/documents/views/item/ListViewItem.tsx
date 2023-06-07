@@ -13,9 +13,13 @@ import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem'
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RenameDocument } from './Rename';
 import { getDateFromObject } from 'utils/constants/UriHelper';
+import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
+import PermissionsDialog from '../UI/Dialogs/PermissionsDialog';
+import { isNull, isUndefined } from 'lodash';
+import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 
 export function ListViewItem({
     document,
@@ -30,14 +34,14 @@ export function ListViewItem({
     closeContext: boolean;
 }): React.ReactElement {
     const { browserHeight } = useViewStore();
-    const { author, created, doc_name, path, permissions, subscribed, is_dir, size, mimeType, locked } = document;
+    const { author, created, doc_name, path, permissions, subscribed, is_dir, mimeType, locked } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);
     const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
-    const { actions, selected, focused } = useBrowserStore();
-    const [renameFolder] = useRenameFolderMutation();
+    const { actions, focused } = useBrowserStore();
+    const { setOpenPermissionDialog } = useViewStore();
 
     const isFocused = React.useMemo(() => {
         return path === focused.id;
@@ -60,6 +64,74 @@ export function ListViewItem({
 
     // ================================= | RTK MUTATIONS | ============================ //
     const [move] = useMoveFolderMutation();
+    const [renameFolder] = useRenameFolderMutation();
+    const [renameFile] = useRenameFileMutation();
+    const [moveFolder] = useMoveFolderMutation();
+    const [deleteFolder] = useDeleteFolderDocMutation();
+    const [moveFile] = useMoveFileMutation();
+    const [deleteFile] = useDeleteFileMutation();
+
+    // const [{ isOver }, drop] = useDrop(() => ({
+    //     accept: [ItemTypes.Folder, ItemTypes.File],
+    //     drop: (item: GetFetchedFoldersProps) => {
+    //         try {
+    //             // eslint-disable-next-line no-restricted-globals
+    //             const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
+    //             if (moveDoc === true && item.path !== undefined && item.path !== null && path !== undefined && path !== null) {
+    //                 move({ fldId: item.path, dstId: path });
+    //             }
+    //         } catch (e) {
+    //             if (e instanceof Error) {
+    //                 console.log(e.message);
+    //             } else {
+    //                 console.log(e);
+    //             }
+    //         }
+    //     },
+    //     collect: (monitor) => ({
+    //         isOver: monitor.isOver()
+    //     }),
+    //     canDrop: (item) => {
+    //         return item.path !== path && is_dir ? true : false;
+    //     }
+    // }));
+    const renameFn = (value: string, is_dir: boolean) => {
+        if (value && renameTarget && renameTarget.id !== value) {
+            try {
+                // eslint-disable-next-line no-restricted-globals
+                const res = confirm('Rename document ? ');
+                if (res === true) {
+                    if (is_dir) {
+                        const fldId = renameTarget.id;
+                        const newName = value;
+                        const newPath = renameTarget.id.split('/');
+                        newPath.pop();
+                        newPath.push(newName);
+                        actions.setFocused(newPath.join('/'), is_dir);
+                        renameFolder({ fldId, newName });
+                    } else {
+                        const docId = renameTarget.id;
+                        const newName = value;
+                        const newPath = renameTarget.id.split('/');
+                        newPath.pop();
+                        newPath.push(newName);
+                        actions.setFocused(newPath.join('/'), is_dir);
+                        renameFile({ docId, newName });
+                    }
+
+                    closeRename();
+                } else {
+                    closeRename();
+                }
+            } catch (e) {
+                if (e instanceof Error) {
+                    console.error(e.message);
+                } else console.log(e);
+            }
+        } else {
+            closeRename();
+        }
+    };
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
@@ -67,8 +139,8 @@ export function ListViewItem({
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
-                if (moveDoc === true && item.path !== undefined && item.path !== null && path !== undefined && path !== null) {
-                    move({ fldId: item.path, dstId: path });
+                if (moveDoc === true && !isUndefined(item.path) && !isNull(item.path) && path !== undefined && path !== null) {
+                    item.is_dir ? moveFolder({ fldId: item.path, dstId: path }) : moveFile({ docId: item.path, dstId: path });
                 }
             } catch (e) {
                 if (e instanceof Error) {
@@ -104,7 +176,9 @@ export function ListViewItem({
         e.stopPropagation();
         e.preventDefault();
         if (e.nativeEvent.button === 0) {
+            actions.setFocused(path, is_dir);
         } else if (e.nativeEvent.button === 2) {
+            actions.setFocused(path, is_dir);
             setContextMenu(
                 contextMenu === null
                     ? {
@@ -153,7 +227,7 @@ export function ListViewItem({
     ) => {
         e.preventDefault();
         try {
-            if (selected.length > 0) {
+            if (!isUndefined(focused.id) && !isNull(focused.id)) {
                 switch (type) {
                     case 'open':
                         if (path !== undefined) {
@@ -166,12 +240,23 @@ export function ListViewItem({
                         break;
                     case 'copy':
                     case 'cut':
-                        addToClipBoard({ id: selected[selected.length - 1].id, action: type, is_dir });
+                        addToClipBoard({ id: path, action: type, is_dir });
+                        setContextMenu(null);
+                        break;
+                    case 'permissions':
+                        setOpenPermissionDialog(true, 'paper');
                         setContextMenu(null);
                         break;
                     case 'delete':
                         try {
-                            // const res = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            // eslint-disable-next-line no-restricted-globals
+                            const deleteDoc = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
+                            if (deleteDoc && !isUndefined(path) && !isNull(path)) {
+                                is_dir ? deleteFolder({ fldId: path }) : deleteFile({ docId: path });
+                                setContextMenu(null);
+                            } else {
+                                setContextMenu(null);
+                            }
                         } catch (e) {
                             if (e instanceof Error) {
                                 console.log(e.message);
@@ -199,33 +284,6 @@ export function ListViewItem({
     ]);
     const closeRename = () => {
         setRenameTarget(null);
-    };
-    const renameFn = (value: string) => {
-        if (value && renameTarget && renameTarget.id !== value) {
-            try {
-                // eslint-disable-next-line no-restricted-globals
-                const res = confirm('Rename document ? ');
-                if (res === true) {
-                    const fldId = renameTarget.id;
-                    const newName = value;
-                    const newPath = renameTarget.id.split('/');
-                    newPath.pop();
-                    newPath.push(newName);
-                    actions.setFocused(newPath.join('/'), is_dir);
-                    renameFolder({ fldId, newName });
-
-                    closeRename();
-                } else {
-                    closeRename();
-                }
-            } catch (e) {
-                if (e instanceof Error) {
-                    console.error(e.message);
-                } else console.log(e);
-            }
-        } else {
-            closeRename();
-        }
     };
     return (
         <ListItemButton
@@ -314,12 +372,12 @@ export function ListViewItem({
                         justifyContent="space-between"
                     >
                         <Grid xs={1} display="flex" padding={0} alignItems="center">
-                            {is_dir ? <MemorizedFcFolder size={15} /> : fileIcon(mimeType, browserHeight * 0.02, 0)}
+                            {is_dir ? <MemorizedFcFolder size={18} /> : fileIcon(mimeType, browserHeight * 0.02, 0)}
                         </Grid>
                         <Grid xs={11} maxWidth="80%" alignItems="center">
                             {isRenaming ? (
                                 <RenameDocument
-                                    renameFn={renameFn}
+                                    renameFn={(val) => renameFn(val, is_dir)}
                                     renameTarget={renameTarget}
                                     name={
                                         renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
@@ -367,6 +425,8 @@ export function ListViewItem({
                         is_dir={is_dir}
                         locked={locked ?? false}
                     />
+                    <FileViewerDialog />
+                    <PermissionsDialog />
                 </Grid>
             ) : (
                 <></>

@@ -150,7 +150,14 @@ export interface User {
     id: string;
     name: string;
 }
-export interface UserPermission extends User {
+export interface Role {
+    name: string;
+}
+export interface UserPermission extends User, PermissionTypes {}
+
+export interface RolePermission extends Role, PermissionTypes {}
+
+export interface PermissionTypes {
     read: boolean;
     write: boolean;
     delete: boolean;

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Box, darken } from '@mui/material';
 
 const Dot = ({ color, size }) => {
     const theme = useTheme();
@@ -34,7 +34,10 @@ const Dot = ({ color, size }) => {
                 width: size || 8,
                 height: size || 8,
                 borderRadius: '50%',
-                bgcolor: color ?? main
+                bgcolor: color ?? main,
+                '& :hover': {
+                    bgcolor: darken(color, 1) ?? darken(main, 1)
+                }
             }}
         />
     );

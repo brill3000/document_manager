@@ -20,7 +20,7 @@ import { BsLockFill } from 'react-icons/bs';
 import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import { isNull, isUndefined } from 'lodash';
-import { CircularProgressWithLabel, FacebookCircularProgress } from 'ui-component/CustomProgressBars';
+import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import PermissionsDialog from '../UI/Dialogs/PermissionsDialog';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
@@ -47,7 +47,7 @@ function GridViewItem({
         setDisableDoubleClick(disabled);
     };
 
-    const { actions, selected, focused } = useBrowserStore();
+    const { actions, focused } = useBrowserStore();
     // ================================= | Routes | ============================= //
     const navigate = useNavigate();
     const { pathParam } = useParams();
@@ -156,6 +156,7 @@ function GridViewItem({
         if (e.nativeEvent.button === 0 && path !== undefined && path !== null) {
             actions.setFocused(path, is_dir);
         } else if (e.nativeEvent.button === 2 && path !== undefined) {
+            actions.setFocused(path, is_dir);
             setContextMenu(
                 contextMenu === null
                     ? {
@@ -206,7 +207,7 @@ function GridViewItem({
     ) => {
         e.preventDefault();
         try {
-            if (selected.length > 0) {
+            if (!isUndefined(focused.id) && !isNull(focused.id)) {
                 switch (type) {
                     case 'open':
                         if (path !== undefined) {

@@ -30,7 +30,10 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 // import { useUserAuth } from 'context/authContext';
 import { useSnackbar } from 'notistack';
-import { useLoginMutation } from 'store/async/dms/auth/authApi';
+import { authApi, useLoginMutation } from 'store/async/dms/auth/authApi';
+import { foldersApi } from 'store/async/dms/folders/foldersApi';
+import { useDispatch } from 'react-redux';
+import { filesApi } from 'store/async/dms/files/filesApi';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -39,8 +42,8 @@ const AuthLogin = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
-    // const { login } = useUserAuth();
     const [loginWithPassword] = useLoginMutation();
+    const dispatch = useDispatch();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -68,6 +71,9 @@ const AuthLogin = () => {
                         try {
                             await loginWithPassword({ username: values.username, password: values.password }).unwrap();
                             const message = `Login to openkm succeded`;
+                            dispatch(foldersApi.util.resetApiState());
+                            dispatch(filesApi.util.resetApiState());
+                            dispatch(authApi.util.resetApiState());
                             enqueueSnackbar(message, { variant: 'success' });
                             navigator('/dashboard');
                         } catch (err) {

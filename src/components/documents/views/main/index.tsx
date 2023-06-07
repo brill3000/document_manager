@@ -126,8 +126,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     return (
         <Grid
             container
-            sm={12}
-            md={matches ? 12 : splitScreen ? 6 : 9}
             bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             sx={{
                 overflow: 'auto',

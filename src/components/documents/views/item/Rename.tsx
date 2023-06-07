@@ -11,18 +11,19 @@ interface RenameDocumentProps {
 
 const ValidationTextField = styled(TextField)(({ theme }) => ({
     '& .MuiOutlinedInput-root': {
-        fontSize: theme.typography.caption
+        fontSize: theme.typography.caption.fontSize,
+        padding: theme.spacing(0.5) // override inline-style
     },
     '& .MuiInputLabel-root': {
-        fontSize: theme.typography.caption
+        fontSize: theme.typography.caption.fontSize
     },
     '& input:valid + fieldset': {
         borderColor: 'green',
-        borderWidth: 2
+        borderWidth: 1
     },
     '& input:invalid + fieldset': {
         borderColor: 'red',
-        borderWidth: 2
+        borderWidth: 1
     },
     '& input:valid:focus + fieldset': {
         borderLeftWidth: 6,

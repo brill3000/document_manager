@@ -1,3 +1,5 @@
+import { RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
+
 export interface User {
     first_name: string;
     last_name: string;
@@ -23,13 +25,19 @@ export interface CreateRoleRequest {
     active: string;
 }
 
-export interface GrantRoleRequest {
+export interface GrantNodeRequest {
     nodeId: string;
-    role: string;
-    permissions: string;
-    recursive: string;
+    permissions: number;
+    recursive: boolean;
 }
-
+export interface GrantRoleRequest extends GrantNodeRequest {
+    role: string;
+    type: keyof RolePermission;
+}
+export interface GrantUserRequest extends GrantNodeRequest {
+    user: string;
+    type: keyof UserPermission;
+}
 export interface AssignRoleRequest {
     user: string;
     active: string;

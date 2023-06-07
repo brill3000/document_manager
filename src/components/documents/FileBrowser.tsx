@@ -1,12 +1,16 @@
 import { Box, Divider } from '@mui/material';
-import React from 'react';
-import Content from 'components/documents/views';
-import Footer from 'components/documents/views/navigation/bottom/Footer';
+import React, { Suspense } from 'react';
+import Content, { LazyLoader } from 'components/documents/views';
 import { FileBrowserProps } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state/index';
-import TopNav from 'components/documents/views/navigation/top/TopNav';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import MainCard from 'components/MainCard';
+
+/**
+ * Lazy load all components to improve performance
+ */
+const TopNav = React.lazy(() => import('components/documents/views/navigation/top/TopNav'));
+const Footer = React.lazy(() => import('components/documents/views/navigation/bottom/Footer'));
 
 /**
  * This is a main file browser component, it takes an array of documents and creates a virtual filebrowser using react
@@ -79,10 +83,12 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
             </Box>
             <Divider />
             <Box height="8%">
-                <Footer ref={bottomRef} />
+                <Suspense fallback={<LazyLoader />}>
+                    <Footer ref={bottomRef} />
+                </Suspense>
             </Box>
         </MainCard>
     );
 };
 
-export default FileBrowser;
+export default React.memo(FileBrowser);

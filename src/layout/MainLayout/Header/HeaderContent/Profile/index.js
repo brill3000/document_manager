@@ -30,8 +30,11 @@ import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { getInitials } from 'components/departments/utils/get-initials';
-import { useGetNameQuery, useLogoutUserMutation } from 'store/async/dms/auth/authApi';
+import { authApi, useGetNameQuery, useLogoutUserMutation } from 'store/async/dms/auth/authApi';
 import { isNull } from 'lodash';
+import { useDispatch } from 'react-redux';
+import { foldersApi } from 'store/async/dms/folders/foldersApi';
+import { filesApi } from 'store/async/dms/files/filesApi';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -62,10 +65,14 @@ const Profile = () => {
     const navigator = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const [logoutUser] = useLogoutUserMutation();
+    const dispatch = useDispatch();
 
     const handleLogout = async () => {
         try {
             await logoutUser().unwrap();
+            dispatch(foldersApi.util.resetApiState());
+            dispatch(filesApi.util.resetApiState());
+            dispatch(authApi.util.resetApiState());
             navigator('/login');
         } catch (err) {
             const message = `User Logout Failed`;
