@@ -4,12 +4,13 @@ import { GridViewItem } from 'components/documents/views/item/GridViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
-import { Error, FolderEmpty, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error, FolderEmpty } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
 import { isEmpty } from 'lodash';
+import { LazyLoader } from '../..';
 
-export function GridView({ closeContext, splitScreen }: ViewsProps): React.ReactElement {
+export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     const { selected, uploadFiles } = useBrowserStore();
     const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
     const {
@@ -31,8 +32,7 @@ export function GridView({ closeContext, splitScreen }: ViewsProps): React.React
     const {
         data: childrenDocuments,
         error: childrenDocumentsError,
-        isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsnIsLoading
+        isFetching: childrenDocumentsIsFetching
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -53,9 +53,7 @@ export function GridView({ closeContext, splitScreen }: ViewsProps): React.React
     return (
         <>
             {folderChildrenIsLoading || childrenDocumentsIsFetching || selected.length === 0 ? (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <GoogleLoader height={100} width={100} loop={true} />
-                </Box>
+                <LazyLoader />
             ) : folderChildrenError || childrenDocumentsError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />

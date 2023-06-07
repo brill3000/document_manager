@@ -14,7 +14,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import { useSpring, animated } from '@react-spring/web';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error } from 'ui-component/LoadHandlers';
 import { isArray, isEmpty, isNull, isString, isUndefined, nth, omit, uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
@@ -22,6 +22,7 @@ import { RxCaretRight } from 'react-icons/rx';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { fileIcon } from 'components/documents/Icons/fileIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
+import { LazyLoader } from '../..';
 // import { GetFetchedFoldersProps } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
@@ -415,9 +416,7 @@ export function LeftSidebar() {
         <>
             {/* Initial Loader */}
             {rootFolderIsFetching ? (
-                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
-                    <GoogleLoader height={100} width={100} loop={true} />
-                </Box>
+                <LazyLoader align="flex-start" width="80%" />
             ) : rootFolderError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />

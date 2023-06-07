@@ -4,12 +4,13 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
-import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error } from 'ui-component/LoadHandlers';
 import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
 import { FolderDetailsList } from './DetailsList/FolderDetailsList';
 import { FileDetailsList } from './DetailsList/FileDetailsList';
 import { isEmpty } from 'lodash';
 import { BsCursorFill } from 'react-icons/bs';
+import { LazyLoader } from '../..';
 
 export function RightSidebar() {
     const { browserHeight } = useViewStore();
@@ -45,9 +46,7 @@ export function RightSidebar() {
     return (
         <>
             {folderInfoIsFetching || folderInfoIsLoading || fileInfoIsFetching || fileInfoIsLoading ? (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <GoogleLoader height={100} width={100} loop={true} />
-                </Box>
+                <LazyLoader />
             ) : folderInfoError || fileInfoError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />

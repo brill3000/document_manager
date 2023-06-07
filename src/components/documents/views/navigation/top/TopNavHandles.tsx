@@ -158,13 +158,11 @@ export default function TopNavHandles() {
                 alignItems="center"
             >
                 <Typography variant="body2" width={250} noWrap>
-                    {folderInfoIsLoading && folderInfoIsFetching ? (
-                        <Skeleton />
-                    ) : folderInfoIsSuccess && folderInfo ? (
-                        folderInfo.doc_name
-                    ) : (
-                        'Current Folder'
-                    )}
+                    {folderInfoIsLoading && folderInfoIsFetching
+                        ? 'Loading...'
+                        : folderInfoIsSuccess && folderInfo
+                        ? folderInfo.doc_name
+                        : 'Current Folder'}
                 </Typography>
 
                 <IconButton

@@ -107,7 +107,7 @@ import { Permissions } from 'utils/constants/Permissions';
 
 // { navHistory, select, fileMap }: FileBrowserNaviagationProps)
 
-const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<HTMLInputElement> }>((props, ref) => {
+const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<HTMLInputElement> }>((_, ref) => {
     // const { nav: navHistory, select } = useHistory();
     const [statuses, setStatuses] = React.useState<{
         read: boolean | null;
@@ -164,13 +164,31 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
                     setStatuses({ read: true, write: false, delete: false, security: false });
                     break;
                 case Permissions.WRITE:
-                    setStatuses({ read: true, write: true, delete: false, security: false });
+                    setStatuses({ read: false, write: true, delete: false, security: false });
                     break;
                 case Permissions.DELETE:
                     setStatuses({ read: true, write: true, delete: true, security: false });
                     break;
                 case Permissions.SECURITY:
                     setStatuses({ read: true, write: true, delete: true, security: true });
+                    break;
+                case Permissions.READ + Permissions.WRITE:
+                    setStatuses({ read: true, write: true, delete: false, security: false });
+                    break;
+                case Permissions.READ + Permissions.DELETE:
+                    setStatuses({ read: true, write: false, delete: true, security: false });
+                    break;
+                case Permissions.READ + Permissions.SECURITY:
+                    setStatuses({ read: true, write: false, delete: true, security: false });
+                    break;
+                case Permissions.WRITE + Permissions.DELETE:
+                    setStatuses({ read: true, write: false, delete: true, security: false });
+                    break;
+                case Permissions.WRITE + Permissions.SECURITY:
+                    setStatuses({ read: true, write: false, delete: true, security: false });
+                    break;
+                case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                    setStatuses({ read: true, write: true, delete: true, security: false });
                     break;
                 default:
                     break;
@@ -297,7 +315,7 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
                         { id: 'Delete', status: statuses.delete },
                         { id: 'Security', status: statuses.security }
                     ].map((access) => (
-                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center" key={access.id}>
                             <Box
                                 sx={{
                                     width: '10px',
@@ -341,7 +359,7 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
     );
 });
 
-export default Footer;
+export default React.memo(Footer);
 
 // interface RefactoredMenuItemInterface {
 //     handleClose: () => void;

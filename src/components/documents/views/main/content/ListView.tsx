@@ -7,10 +7,11 @@ import ListItem from '@mui/material/ListItem';
 import { ListViewItem } from 'components/documents/views/item/ListViewItem';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
-import { Error, FolderEmpty, GoogleLoader } from 'ui-component/LoadHandlers';
+import { Error, FolderEmpty } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
 import { isEmpty } from 'lodash';
+import { LazyLoader } from '../..';
 // import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
 export function ListView({ closeContext, width, height }: ListViewsProps): React.ReactElement {
@@ -132,9 +133,7 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                     childrenDocumentsIsFetching ||
                     childrenDocumentsnIsLoading ||
                     selected.length === 0 ? (
-                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                            <GoogleLoader height={100} width={100} loop={true} />
-                        </Box>
+                        <LazyLoader />
                     ) : folderChildrenError || childrenDocumentsError ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                             <Error height={50} width={50} />

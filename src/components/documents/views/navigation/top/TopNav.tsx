@@ -1,10 +1,10 @@
-import { Divider, Grid, IconButton, Stack } from '@mui/material';
-import React from 'react';
-import TopNavActions from 'components/documents/views/navigation/top/TopNavActions';
-import TopNavHandles from 'components/documents/views/navigation/top/TopNavHandles';
-import TopWindowActions from 'components/documents/views/navigation/top/TopWindowActions';
+import { Divider, Grid, IconButton, Skeleton, Stack } from '@mui/material';
+import React, { Suspense } from 'react';
 import { BsWindowSplit } from 'react-icons/bs';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+const TopNavActions = React.lazy(() => import('components/documents/views/navigation/top/TopNavActions'));
+const TopNavHandles = React.lazy(() => import('components/documents/views/navigation/top/TopNavHandles'));
+const TopWindowActions = React.lazy(() => import('components/documents/views/navigation/top/TopWindowActions'));
 
 export interface FileBrowserTopNavProps {
     bgColor: string | undefined;
@@ -33,16 +33,22 @@ const TopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(functi
         >
             <Grid item md={5} xs={6} justifyContent="start" display="flex">
                 <Stack direction="row" justifyContent="space-between" width="max-content" alignItems="center" spacing={2}>
-                    <TopNavHandles />
+                    <Suspense fallback={<Skeleton />}>
+                        <TopNavHandles />
+                    </Suspense>
                 </Stack>
                 <Divider absolute />
             </Grid>
 
             <Grid item md={3} xs={6} justifyContent="end" display="flex">
-                <TopWindowActions />
+                <Suspense fallback={<Skeleton />}>
+                    <TopWindowActions />
+                </Suspense>
             </Grid>
             <Grid item xs={10} justifyContent="start" display="flex">
-                <TopNavActions />
+                <Suspense fallback={<Skeleton />}>
+                    <TopNavActions />
+                </Suspense>
             </Grid>
             <Grid item xs={1} justifyContent="end" display="flex">
                 <IconButton
@@ -64,4 +70,4 @@ const TopNav = React.forwardRef<HTMLInputElement, FileBrowserTopNavProps>(functi
     );
 });
 
-export default TopNav;
+export default React.memo(TopNav);
