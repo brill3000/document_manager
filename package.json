@@ -31,7 +31,6 @@
         "axios": "^1.4.0",
         "canvas": "^2.11.2",
         "date-fns": "^2.29.2",
-        "faker": "^6.6.6",
         "firebase": "^9.9.2",
         "firebase-admin": "^11.0.1",
         "formik": "^2.2.9",
@@ -141,6 +140,7 @@
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-react": "^7.26.1",
         "eslint-plugin-react-hooks": "4.0.8",
+        "faker": "^6.6.6",
         "file-loader": "^6.2.0",
         "prettier": "2.2.1",
         "react-app-rewired": "^2.2.1"

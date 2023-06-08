@@ -41,7 +41,7 @@ export function FacebookCircularProgress(props) {
                 sx={{
                     color: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800]
                 }}
-                size={30}
+                size={35}
                 thickness={5}
                 {...props}
                 value={props.value}
@@ -58,7 +58,7 @@ export function FacebookCircularProgress(props) {
                         strokeLinecap: 'round'
                     }
                 }}
-                size={30}
+                size={35}
                 thickness={5}
                 {...props}
             />
@@ -74,9 +74,13 @@ export function FacebookCircularProgress(props) {
                     justifyContent: 'center'
                 }}
             >
-                <Typography variant="caption" component="div" fontSize={10} color={theme.palette.primary.contrastText}>{`${Math.round(
-                    props.value
-                )}%`}</Typography>
+                <Typography
+                    variant="caption"
+                    component="div"
+                    fontSize={9}
+                    fontWeight={800}
+                    color={theme.palette.primary.dark}
+                >{`${Math.round(props.value)}%`}</Typography>
             </Box>
         </Box>
     );

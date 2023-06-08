@@ -1,9 +1,11 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { GetFetchedFoldersProps } from 'global/interfaces';
-import _ from 'lodash';
+import { FolderInterface, FolderReponseInterface } from 'global/interfaces';
+import { isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { axiosBaseQuery } from '../files/filesApi';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
+import { Permissions } from 'utils/constants/Permissions';
 type UserTags = 'DMS_REPOSITORY' | 'DMS_REPOSITORY_SUCCESS' | 'DMS_REPOSITORY_ERROR';
 
 export const repositoryApi = createApi({
@@ -14,23 +16,99 @@ export const repositoryApi = createApi({
     tagTypes: ['DMS_REPOSITORY', 'DMS_REPOSITORY_SUCCESS', 'DMS_REPOSITORY_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        getRootFolder: build.query<GetFetchedFoldersProps, { url: string | null }>({
+        getRootFolder: build.query<FolderInterface, { url: string | null }>({
             query: ({ url }: { url: string | null }) => ({
                 url: `${url !== null ? url : UriHelper.REPOSITORY_GET_ROOT_FOLDER}`,
                 method: 'GET'
             }),
-            transformResponse: (response: GetFetchedFoldersProps) => {
-                const dataCopy = { ...response };
-                if (_.isObject(dataCopy) && !_.isEmpty(dataCopy)) {
-                    const pathArray = dataCopy.path.split('/');
-                    const name = pathArray[pathArray.length - 1];
-                    if (name) {
-                        const nameArray = name.split(':');
-                        dataCopy['doc_name'] = nameArray[nameArray.length - 1];
+            transformResponse: (response: FolderReponseInterface) => {
+                const folderCopy = { ...response };
+                let doc_name = '';
+                let is_dir = false;
+                const pathArray = folderCopy.path.split('/');
+                doc_name = pathArray[pathArray.length - 1];
+                is_dir = true;
+                const folderPermission: PermissionTypes = {
+                    read: false,
+                    write: false,
+                    delete: false,
+                    security: false
+                };
+                if (!isUndefined(folderCopy.permissions)) {
+                    const { permissions: permissionId } = folderCopy;
+
+                    switch (permissionId) {
+                        case Permissions.ALL_GRANTS:
+                            folderPermission.read = true;
+                            folderPermission.write = true;
+                            folderPermission.delete = true;
+                            folderPermission.security = true;
+                            break;
+                        case Permissions.READ:
+                            folderPermission.read = true;
+                            folderPermission.write = false;
+                            folderPermission.delete = false;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.WRITE:
+                            folderPermission.read = false;
+                            folderPermission.write = true;
+                            folderPermission.delete = false;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.DELETE:
+                            folderPermission.read = false;
+                            folderPermission.write = false;
+                            folderPermission.delete = true;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.SECURITY:
+                            folderPermission.read = false;
+                            folderPermission.write = false;
+                            folderPermission.delete = false;
+                            folderPermission.security = true;
+                            break;
+                        case Permissions.READ + Permissions.WRITE:
+                            folderPermission.read = true;
+                            folderPermission.write = true;
+                            folderPermission.delete = false;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.READ + Permissions.DELETE:
+                            folderPermission.read = true;
+                            folderPermission.write = false;
+                            folderPermission.delete = true;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.READ + Permissions.SECURITY:
+                            folderPermission.read = true;
+                            folderPermission.write = false;
+                            folderPermission.delete = false;
+                            folderPermission.security = true;
+                            break;
+                        case Permissions.WRITE + Permissions.DELETE:
+                            folderPermission.read = false;
+                            folderPermission.write = true;
+                            folderPermission.delete = true;
+                            folderPermission.security = false;
+                            break;
+                        case Permissions.WRITE + Permissions.SECURITY:
+                            folderPermission.read = false;
+                            folderPermission.write = true;
+                            folderPermission.delete = false;
+                            folderPermission.security = true;
+                            break;
+                        case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                            folderPermission.read = true;
+                            folderPermission.write = true;
+                            folderPermission.delete = true;
+                            folderPermission.security = false;
+                            break;
+                        default:
+                            break;
                     }
-                    return dataCopy;
                 }
-                return dataCopy;
+                return { doc_name, is_dir, ...folderCopy, permissions: folderPermission } as FolderInterface;
             },
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_REPOSITORY' }];

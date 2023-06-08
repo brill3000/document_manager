@@ -13,12 +13,7 @@ import { LazyLoader } from '../..';
 export function GridView({ closeContext }: ViewsProps): React.ReactElement {
     const { selected, uploadFiles } = useBrowserStore();
     const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
-    const {
-        data: folderChildren,
-        error: folderChildrenError,
-        isFetching: folderChildrenIsFetching,
-        isLoading: folderChildrenIsLoading
-    } = useGetFoldersChildrenQuery(
+    const { data: folderChildren, error: folderChildrenError, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
             skip:

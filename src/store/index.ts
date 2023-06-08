@@ -26,7 +26,7 @@ import { logsQuery } from 'store/async/logsQuery';
 import { workflowQuery } from 'store/async/workflowQuery';
 import { authApi } from 'store/async/dms/auth/authApi';
 
-import logger from 'redux-logger';
+// import logger from 'redux-logger';
 import reducers from './reducers';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
@@ -36,7 +36,7 @@ export const store = configureStore({
     reducer: reducers,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
-            .concat(logger)
+            // .concat(logger)
             .concat(foldersQuery.middleware)
             .concat(filesQuery.middleware)
             .concat(usersQuery.middleware)

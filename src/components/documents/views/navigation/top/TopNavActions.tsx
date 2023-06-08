@@ -90,7 +90,7 @@ export default function TopNavActions() {
                             created: javaDate,
                             doc_name: fileName,
                             path: docPath,
-                            permissions: 0,
+                            permissions: { read: true, write: true, delete: true, security: true },
                             subscribed: false,
                             uuid: 'null',
                             is_dir: false,

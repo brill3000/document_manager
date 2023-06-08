@@ -70,14 +70,14 @@ const AuthLogin = () => {
                         if (navigator.onLine) throw new Error('No Internet connection');
                         try {
                             await loginWithPassword({ username: values.username, password: values.password }).unwrap();
-                            const message = `Login to openkm succeded`;
+                            const message = `Login successfully`;
                             dispatch(foldersApi.util.resetApiState());
                             dispatch(filesApi.util.resetApiState());
                             dispatch(authApi.util.resetApiState());
                             enqueueSnackbar(message, { variant: 'success' });
                             navigator('/dashboard');
                         } catch (err) {
-                            const message = `Loggin to openkm failed`;
+                            const message = `Login Failed`;
                             enqueueSnackbar(message, { variant: 'error' });
                         }
                     } catch (err) {

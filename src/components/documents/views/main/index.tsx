@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, useMediaQuery, useTheme } from '@mui/material';
+import { alpha } from '@mui/material';
 import { CustomDragDocument } from 'components/documents/views/drag&drop/CustomDragDocument';
 import { MainGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/views/UI/Menus/FolderActionMenu';
@@ -11,6 +11,7 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useHistory } from 'components/documents/data/History';
 import { GridView } from './content/GridView';
+import { VirtualizedList } from 'components/documents/experimental';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
@@ -27,9 +28,6 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
     }, [view]);
-
-    const theme = useTheme();
-    const matches = useMediaQuery(theme.breakpoints.down('md'));
 
     // ========================= | Fetch data | =========================== //
 
@@ -145,13 +143,14 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             ref={gridRef}
         >
             {view === 'list' ? (
-                <ListView
-                    setCloseContext={setCloseContext}
-                    closeContext={closeContext}
-                    scrollPosition={scrollPosition}
-                    height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight}
-                    width={gridRef.current ? gridRef.current.clientWidth : window.innerWidth}
-                />
+                // <ListView
+                //     setCloseContext={setCloseContext}
+                //     closeContext={closeContext}
+                //     scrollPosition={scrollPosition}
+                //     height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight}
+                //     width={gridRef.current ? gridRef.current.clientWidth : window.innerWidth}
+                // />
+                <VirtualizedList height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight} />
             ) : (
                 <GridView setCloseContext={setCloseContext} closeContext={closeContext} splitScreen={splitScreen} />
             )}

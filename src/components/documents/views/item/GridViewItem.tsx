@@ -13,7 +13,7 @@ import { RenameDocument } from './Rename';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
-import { GenericDocument, GetFetchedFoldersProps } from 'global/interfaces';
+import { FolderInterface, GenericDocument } from 'global/interfaces';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { BsLockFill } from 'react-icons/bs';
@@ -115,7 +115,7 @@ function GridViewItem({
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: [ItemTypes.Folder, ItemTypes.File],
-        drop: (item: GetFetchedFoldersProps) => {
+        drop: (item: FolderInterface) => {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
@@ -417,7 +417,15 @@ function GridViewItem({
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
                             >
-                                {memorizedFileIcon({ mimeType, size: browserHeight * 0.07, file_icon_margin: browserHeight * 0.006 })}
+                                {memorizedFileIcon({
+                                    mimeType,
+                                    size: browserHeight * 0.07,
+                                    file_icon_margin: browserHeight * 0.006,
+                                    contrast:
+                                        !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
+                                            ? theme.palette.divider
+                                            : undefined
+                                })}
                             </Badge>
                             {!isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress) && (
                                 <>
