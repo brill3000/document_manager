@@ -303,7 +303,10 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 '& :hover': {
                                     cursor: isRenaming ? 'text' : 'pointer'
                                 },
-                                fontFamily: 'inherit'
+                                fontFamily: 'inherit',
+                                display: 'flex',
+                                alignContent: 'center',
+                                justifyContent: 'center'
                             }}
                             component={Box}
                         >
@@ -330,7 +333,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                         WebkitLineClamp: '3',
                                         WebkitBoxOrient: 'vertical',
                                         textAlign: 'center',
-                                        lineHeight: 1.1
+                                        lineHeight: 1.2
                                     }}
                                 >
                                     {doc_name}
