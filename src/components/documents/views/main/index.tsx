@@ -6,24 +6,21 @@ import { MainGridProps } from 'components/documents/Interface/FileBrowser';
 import FolderActionMenu from 'components/documents/views/UI/Menus/FolderActionMenu';
 import { useStore } from 'components/documents/data/global_state';
 import { useSnackbar } from 'notistack';
-import { ListView } from 'components/documents/views/main/content/ListView';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useHistory } from 'components/documents/data/History';
-import { GridView } from './content/GridView';
-import { VirtualizedList } from 'components/documents/experimental';
+import { VirtualizedList, VirtualizedGrid } from 'components/documents/experimental';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [open, setOpen] = React.useState(false);
     const [closeContext, setCloseContext] = React.useState<boolean>(false);
     const { clipboard } = useStore();
-    const { view, browserHeight } = useViewStore();
+    const { view } = useViewStore();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const [scrollPosition, setScrollPosition] = React.useState<number>(0);
     const { nav } = useHistory();
 
-    const { actions, splitScreen } = useBrowserStore();
+    const { actions } = useBrowserStore();
 
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
@@ -130,7 +127,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                 height: '100%',
                 width: '100%',
                 pb: 5,
-                pt: view === 'list' ? 0 : 2,
+                pt: 0,
                 m: 0,
                 userSelect: 'none',
                 transition: '0.3s all',
@@ -139,20 +136,16 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             }}
             onClick={handleClick}
             onContextMenu={handleClick}
-            onScroll={() => gridRef.current !== null && gridRef.current !== undefined && setScrollPosition(gridRef.current.scrollLeft)}
             ref={gridRef}
         >
             {view === 'list' ? (
-                // <ListView
-                //     setCloseContext={setCloseContext}
-                //     closeContext={closeContext}
-                //     scrollPosition={scrollPosition}
-                //     height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight}
-                //     width={gridRef.current ? gridRef.current.clientWidth : window.innerWidth}
-                // />
                 <VirtualizedList height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight} />
             ) : (
-                <GridView setCloseContext={setCloseContext} closeContext={closeContext} splitScreen={splitScreen} />
+                <VirtualizedGrid
+                    closeContext={closeContext}
+                    setCloseContext={setCloseContext}
+                    height={gridRef.current ? gridRef.current.clientHeight : window.innerHeight}
+                />
             )}
             <CustomDragDocument parentRef={gridRef} />
             <FolderActionMenu contextMenu={contextMenu} handleMenuClose={handleMenuClose} handleMenuClick={handleMenuClick} />

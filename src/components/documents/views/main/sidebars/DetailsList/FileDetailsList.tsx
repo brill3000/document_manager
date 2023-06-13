@@ -70,9 +70,7 @@ export function FileDetailsList({
                     >
                         <ListSubheader color="primary">General Infomation</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                name
-                            </Typography>
+                            <Typography fontSize={10}>name</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -81,9 +79,7 @@ export function FileDetailsList({
                             <ListItemText secondary={<span>{fileInfo.doc_name}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                author
-                            </Typography>
+                            <Typography fontSize={10}>author</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -92,9 +88,7 @@ export function FileDetailsList({
                             <ListItemText secondary={<span>{fileInfo.author}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                date created
-                            </Typography>
+                            <Typography fontSize={10}>date created</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -106,9 +100,7 @@ export function FileDetailsList({
                             />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                mime type
-                            </Typography>
+                            <Typography fontSize={10}>mime type</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -128,9 +120,7 @@ export function FileDetailsList({
                     >
                         <ListSubheader color="primary">Permissions & Access</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                locked
-                            </Typography>
+                            <Typography fontSize={10}>locked</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -139,9 +129,7 @@ export function FileDetailsList({
                             <ListItemText secondary={<span>{fileInfo.locked ? 'Yes' : 'No'}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                permission group
-                            </Typography>
+                            <Typography fontSize={10}>permission group</Typography>
                         </Divider>
 
                         {isObject(fileInfo.permissions) &&
@@ -164,9 +152,7 @@ export function FileDetailsList({
                                 );
                             })}
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                signed
-                            </Typography>
+                            <Typography fontSize={10}>signed</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -185,9 +171,7 @@ export function FileDetailsList({
                     >
                         <ListSubheader color="primary">Subscriptions</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                is subscribed
-                            </Typography>
+                            <Typography fontSize={10}>is subscribed</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>

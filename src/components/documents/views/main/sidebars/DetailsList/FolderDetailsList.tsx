@@ -62,9 +62,7 @@ export function FolderDetailsList({
                     >
                         <ListSubheader color="primary">General Infomation</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                name
-                            </Typography>
+                            <Typography fontSize={10}>name</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -73,9 +71,7 @@ export function FolderDetailsList({
                             <ListItemText secondary={<span>{folderInfo.doc_name}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                author
-                            </Typography>
+                            <Typography fontSize={10}>author</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -84,9 +80,7 @@ export function FolderDetailsList({
                             <ListItemText secondary={<span>{folderInfo.author}</span>} sx={{ width: '90%' }} />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                date created
-                            </Typography>
+                            <Typography fontSize={10}>date created</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -98,9 +92,7 @@ export function FolderDetailsList({
                             />
                         </ListItem>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                has children
-                            </Typography>
+                            <Typography fontSize={10}>has children</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>
@@ -120,9 +112,7 @@ export function FolderDetailsList({
                     >
                         <ListSubheader color="primary">Permissions & Access</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                permission group
-                            </Typography>
+                            <Typography fontSize={10}>permission group</Typography>
                         </Divider>
                         {isObject(folderInfo.permissions) &&
                             !isUndefined(folderInfo.permissions) &&
@@ -154,9 +144,7 @@ export function FolderDetailsList({
                     >
                         <ListSubheader color="primary">Subscriptions</ListSubheader>
                         <Divider variant="middle">
-                            <Typography fontSize={10} color="text.secondary">
-                                is subscribed
-                            </Typography>
+                            <Typography fontSize={10}>is subscribed</Typography>
                         </Divider>
                         <ListItem>
                             <ListItemIcon>

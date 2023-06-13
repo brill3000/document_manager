@@ -16,7 +16,7 @@ import { useGetGrantedRolesQuery, useGetGrantedUsersQuery } from 'store/async/dm
 import { Close } from '@mui/icons-material';
 import { LazyLoader } from '../..';
 
-export default function PermissionsDialog() {
+export function PermissionsDialog() {
     const { open, scrollType } = useViewStore((state) => state.openPermissionDialog);
     const setOpenPermissionDialog = useViewStore((state) => state.setOpenPermissionDialog);
     const { focused } = useBrowserStore();
@@ -38,13 +38,13 @@ export default function PermissionsDialog() {
         }
     }, [open]);
     // ================================= | Getters | ============================= //
-    const { data: fileInfo } = useGetFilePropertiesQuery(
+    const { data: fileInfo, isFetching: fileInfoIsFetching } = useGetFilePropertiesQuery(
         { docId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || focused.is_dir
         }
     );
-    const { data: folderInfo } = useGetFoldersPropertiesQuery(
+    const { data: folderInfo, isFetching: folderInfoIsFetching } = useGetFoldersPropertiesQuery(
         { fldId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || !focused.is_dir
@@ -62,6 +62,7 @@ export default function PermissionsDialog() {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || tab === 'users'
         }
     );
+
     return (
         <div>
             <Dialog
@@ -100,11 +101,11 @@ export default function PermissionsDialog() {
                 >
                     <Typography>
                         Permissions for{' '}
-                        {!isUndefined(fileInfo) && !isNull(fileInfo)
+                        {!isUndefined(fileInfo) && !isNull(fileInfo) && !fileInfoIsFetching && focused.id === fileInfo.path
                             ? fileInfo.doc_name + ' file'
-                            : !isUndefined(folderInfo) && !isNull(folderInfo)
+                            : !isUndefined(folderInfo) && !isNull(folderInfo) && !folderInfoIsFetching && focused.id === folderInfo.path
                             ? folderInfo.doc_name + ' folder'
-                            : ''}
+                            : 'Loading...'}
                     </Typography>
                     <Stack position="absolute" bottom={-0.8} right={5} width="10%" direction="row" justifyContent="flex-end" spacing={1}>
                         {['users', 'roles'].map((t) => (
@@ -130,7 +131,9 @@ export default function PermissionsDialog() {
                     </Stack>
                 </DialogTitle>
                 {usersIsFetching || usersIsLoading || rolesIsFetching || rolesIsLoading ? (
-                    <LazyLoader />
+                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
+                        <LazyLoader />
+                    </Box>
                 ) : usersIsError || rolesIsError ? (
                     <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
                         <Error height={50} width={50} />

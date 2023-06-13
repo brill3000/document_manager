@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, Badge, Box, ButtonBase, Stack } from '@mui/material';
+import { alpha, Badge, Box, Stack } from '@mui/material';
 import { grey, orange } from '@mui/material/colors';
 import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
 import { theme } from '../../Themes/theme';
@@ -12,24 +12,14 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
 import { isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
-import PermissionsDialog from '../UI/Dialogs/PermissionsDialog';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 
 export const MemorizedFcFolder = React.memo(FcFolder);
 export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
 
-function GridViewItem({
-    document,
-    closeContext,
-    splitScreen
-}: {
-    document: GenericDocument;
-    closeContext: boolean;
-    splitScreen: boolean;
-}): JSX.Element {
+function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean; splitScreen: boolean }): JSX.Element {
     const { doc_name, path, is_dir, mimeType, locked, isLoading, progress } = document;
     const { browserHeight } = useViewStore();
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
@@ -84,17 +74,7 @@ function GridViewItem({
     }, [isRenaming, renameTarget]);
 
     return (
-        <Grid
-            key={path !== undefined ? path : 'key'}
-            height="max-content"
-            justifyContent="center"
-            alignItems="center"
-            display="flex"
-            xs={12}
-            sm={6}
-            md={splitScreen ? 4 : 3}
-            xl={3}
-        >
+        <Grid key={path !== undefined ? path : 'key'} height="max-content" justifyContent="center" alignItems="center" width="100%">
             {path !== undefined ? (
                 is_dir ? (
                     <Box
@@ -103,7 +83,14 @@ function GridViewItem({
                             cursor: isDragging ? 'grabbing !important' : isOver ? 'move' : 'pointer'
                         }}
                     >
-                        <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
+                        <Stack
+                            justifyContent="center"
+                            alignItems="center"
+                            spacing={1}
+                            ref={drag}
+                            display={isDragging ? 'none' : 'flex'}
+                            width="100%"
+                        >
                             <Box
                                 borderRadius={2}
                                 {...(isFocused || isOver
@@ -129,9 +116,11 @@ function GridViewItem({
                                         cursor: 'pointer'
                                     }
                                 }}
-                                component={ButtonBase}
+                                component={Box}
+                                p={0}
+                                m={0}
                             >
-                                <MemorizedFcFolder size={browserHeight * 0.105} />
+                                <MemorizedFcFolder size={browserHeight * (isRenaming ? 0.08 : 0.11)} />
                             </Box>
                             <Box
                                 borderRadius={1}
@@ -144,7 +133,7 @@ function GridViewItem({
                                         ? alpha(theme.palette.primary.main, 0.1)
                                         : '#f9f7f6'
                                 }
-                                width={isRenaming ? '100%' : 115}
+                                width={isRenaming ? '100%' : 120}
                                 height="max-content"
                                 border={isRenaming ? 0 : 0.3}
                                 borderColor={(theme) => theme.palette.secondary.light}
@@ -161,9 +150,12 @@ function GridViewItem({
                                     '& :hover': {
                                         cursor: isRenaming ? 'text' : 'pointer'
                                     },
-                                    fontFamily: 'inherit'
+                                    fontFamily: 'inherit',
+                                    display: 'flex',
+                                    alignContent: 'center',
+                                    justifyContent: 'center'
                                 }}
-                                component={ButtonBase}
+                                component={Box}
                             >
                                 {isRenaming ? (
                                     <RenameDocument
@@ -198,14 +190,20 @@ function GridViewItem({
                         </Stack>
                     </Box>
                 ) : (
-                    <Stack justifyContent="center" alignItems="center" spacing={1} ref={drag} display={isDragging ? 'none' : 'flex'}>
+                    <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={1}
+                        ref={drag}
+                        display={isDragging ? 'none' : 'flex'}
+                        width="100%"
+                    >
                         <Box
                             borderRadius={2}
                             {...(isFocused ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
                             width="max-content"
+                            minWidth="33%"
                             height="max-content"
-                            pt={browserHeight * 0.0023}
-                            pb={0.5}
                             px={0.5}
                             onClick={handleClick}
                             onContextMenu={handleClick}
@@ -221,9 +219,12 @@ function GridViewItem({
                             sx={{
                                 '& :hover': {
                                     cursor: 'pointer'
-                                }
+                                },
+                                display: 'flex',
+                                alignContent: 'center',
+                                justifyContent: 'center'
                             }}
-                            component={ButtonBase}
+                            component={Box}
                             position="relative"
                         >
                             <Badge
@@ -233,7 +234,7 @@ function GridViewItem({
                             >
                                 {memorizedFileIcon({
                                     mimeType,
-                                    size: browserHeight * 0.07,
+                                    size: browserHeight * (isRenaming ? 0.06 : 0.075),
                                     file_icon_margin: browserHeight * 0.006,
                                     contrast:
                                         !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
@@ -285,7 +286,7 @@ function GridViewItem({
                                     ? alpha(theme.palette.primary.main, 0.1)
                                     : '#f9f7f6'
                             }
-                            width={isRenaming ? '100%' : 115}
+                            width={isRenaming ? '100%' : 120}
                             height="max-content"
                             border={isRenaming ? 0 : 0.1}
                             borderColor={(theme) => theme.palette.secondary.light}
@@ -304,7 +305,7 @@ function GridViewItem({
                                 },
                                 fontFamily: 'inherit'
                             }}
-                            component={ButtonBase}
+                            component={Box}
                         >
                             {isRenaming ? (
                                 <RenameDocument
@@ -348,8 +349,6 @@ function GridViewItem({
                 handleMenuClose={handleMenuClose}
                 handleMenuClick={handleMenuClick}
             />
-            <FileViewerDialog />
-            <PermissionsDialog />
         </Grid>
     );
 }

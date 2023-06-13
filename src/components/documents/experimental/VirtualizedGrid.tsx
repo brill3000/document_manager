@@ -1,67 +1,78 @@
+import React from 'react';
 import { VirtuosoGrid } from 'react-virtuoso';
-import styled from '@emotion/styled';
-import { Box } from '@mui/material';
+import { GridVirtuosoContainer, GridVirtuosoItem, GridVirtuosoItemWrapper } from 'components/documents/views/UI/Grid';
+import { GenericDocument } from 'global/interfaces';
+import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
+import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
+import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
+import { isArray, isEmpty, isUndefined } from 'lodash';
+import { GridViewItem } from 'components/documents/views/item';
+import { ViewsProps } from 'components/documents/Interface/FileBrowser';
+import { useViewStore } from 'components/documents/data/global_state/slices/view';
+import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 
-const ItemContainer = styled.div`
-    padding: 0.5rem;
-    width: 33%;
-    display: flex;
-    flex: none;
-    align-content: stretch;
-    box-sizing: border-box;
+export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height: number }) {
+    const { selected, uploadFiles } = useBrowserStore();
+    const { browserHeight } = useViewStore();
+    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
+    const { data: folderChildren, error: folderChildrenError, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        {
+            skip:
+                selected === null ||
+                selected === undefined ||
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
+        }
+    );
+    const {
+        data: childrenDocuments,
+        error: childrenDocumentsError,
+        isFetching: childrenDocumentsIsFetching
+    } = useGetFolderChildrenFilesQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        {
+            skip:
+                selected === null ||
+                selected === undefined ||
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
+        }
+    );
 
-    @media (max-width: 1024px) {
-        width: 50%;
-    }
+    React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
+        setNewFiles(filesArray);
+    }, [uploadFiles]);
 
-    @media (max-width: 300px) {
-        width: 100%;
-    }
-`;
-
-const ItemWrapper = (
-    <Box
-        sx={{
-            flex: 1,
-            textAlign: 'center',
-            fontSize: '80%',
-            p: 1,
-            border: '1px solid var(gray)',
-            whiteSpace: 'nowrap'
-        }}
-    ></Box>
-);
-
-const ListContainer = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-`;
-
-
-export default function VirtualizedList() {
     return (
         <>
             <VirtuosoGrid
-                style={{ height: 400 }}
-                totalCount={10000}
-                overscan={200}
+                style={{ height: height ?? 400, width: '100%' }}
+                data={
+                    !isUndefined(folderChildren) && !isUndefined(childrenDocuments)
+                        ? [
+                              ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
+                              ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
+                              ...newFiles
+                          ]
+                        : []
+                }
                 components={{
-                    Item: ItemContainer,
-                    List: ListContainer,
-                    ScrollSeekPlaceholder: ({ height, width, index }) => (
-                        <ItemContainer>
-                            <ItemWrapper>{'--'}</ItemWrapper>
-                        </ItemContainer>
-                    )
+                    Item: GridVirtuosoItem,
+                    List: GridVirtuosoContainer
                 }}
-                itemContent={(index) => <ItemWrapper>Item {index}</ItemWrapper>}
-                scrollSeekConfiguration={{
-                    enter: (velocity) => Math.abs(velocity) > 200,
-                    exit: (velocity) => Math.abs(velocity) < 30,
-                    change: (_, range) => console.log({ range })
-                }}
+                itemContent={(index, document) => (
+                    <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.25}>
+                        <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                    </GridVirtuosoItemWrapper>
+                )}
             />
-            <style>{`html, body, #root { margin: 0; padding: 0 }`}</style>
+            <PermissionsDialog />
+            <FileViewerDialog />
         </>
     );
 }

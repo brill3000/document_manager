@@ -12,7 +12,6 @@ import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
 import { isEmpty } from 'lodash';
 import { LazyLoader } from '../..';
-// import VirtualizedList from './UI/Virtualizer/VirtualizedList';
 
 export function ListView({ closeContext, width, height }: ListViewsProps): React.ReactElement {
     const { selected } = useBrowserStore();

@@ -41,37 +41,45 @@ export const LazyLoader = React.memo(
 );
 
 const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
-    const matches = useMediaQuery(theme.breakpoints.down('md'));
+    const md = useMediaQuery(theme.breakpoints.down('md'));
     const { splitScreen } = useBrowserStore();
     return (
         <Grid container width="100%" height="100%" overflow="hidden">
-            <Grid
-                md={3}
+            <Box
                 height="100%"
-                width="100%"
+                width={md ? 0 : '25%'}
                 component={Stack}
                 direction="column"
                 borderRight={(theme) => `1px solid ${theme.palette.divider}`}
                 justifyContent="start"
                 alignItems="start"
-                {...(matches && { display: 'none' })}
                 px={1}
                 pt={1}
+                sx={{
+                    transition: '0.3s all',
+                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                }}
             >
                 <Suspense fallback={<LazyLoader align="flex-start" width="80%" justify="flex-start" height={20} />}>
                     <LeftSidebar />
                 </Suspense>
-            </Grid>
-            <Grid height="100%" sm={12} md={matches ? 12 : splitScreen ? 6 : 9}>
+            </Box>
+            <Box
+                height="100%"
+                width={md ? '100%' : splitScreen ? '50%' : '75%'}
+                sx={{
+                    transition: '0.3s all',
+                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                }}
+            >
                 <Suspense fallback={<LazyLoader />}>
                     <MainGrid gridRef={gridRef} />
                 </Suspense>
-            </Grid>
+            </Box>
 
-            <Grid
-                md={splitScreen ? 3 : 0}
+            <Box
                 height="100%"
-                width={splitScreen ? '100%' : 0}
+                width={md ? 0 : splitScreen ? '25%' : 0}
                 component={Stack}
                 direction="row"
                 borderLeft={(theme) => `1px solid ${theme.palette.divider}`}
@@ -81,12 +89,11 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                     transition: '0.3s all',
                     transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                 }}
-                {...(matches && { display: 'none' })}
             >
                 <Suspense fallback={<LazyLoader />}>
                     <RightSidebar />
                 </Suspense>
-            </Grid>
+            </Box>
         </Grid>
     );
 };

@@ -16,8 +16,8 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RenameDocument } from './Rename';
 import { getDateFromObject } from 'utils/constants/UriHelper';
-import FileViewerDialog from '../UI/Dialogs/FileViewerDialog';
-import PermissionsDialog from '../UI/Dialogs/PermissionsDialog';
+import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+
 import { isNull, isUndefined } from 'lodash';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 

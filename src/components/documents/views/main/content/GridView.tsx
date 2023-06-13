@@ -7,7 +7,7 @@ import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { Error, FolderEmpty } from 'ui-component/LoadHandlers';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { GenericDocument } from 'global/interfaces';
-import { isEmpty } from 'lodash';
+import { isArray, isEmpty, isUndefined } from 'lodash';
 import { LazyLoader } from '../..';
 
 export function GridView({ closeContext }: ViewsProps): React.ReactElement {
@@ -53,11 +53,11 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />
                 </Box>
-            ) : folderChildren !== undefined &&
-              childrenDocuments !== undefined &&
-              Array.isArray(folderChildren?.folders) &&
-              Array.isArray(childrenDocuments?.documents) &&
-              [...folderChildren.folders, ...childrenDocuments.documents, ...newFiles].length > 0 ? (
+            ) : !isUndefined(folderChildren) &&
+              !isUndefined(childrenDocuments) &&
+              isArray(folderChildren?.folders) &&
+              isArray(childrenDocuments?.documents) &&
+              isEmpty([...folderChildren.folders, ...childrenDocuments.documents, ...newFiles]) ? (
                 [...folderChildren.folders, ...childrenDocuments.documents, ...newFiles].map((document: GenericDocument) => (
                     <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
                 ))

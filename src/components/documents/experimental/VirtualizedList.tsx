@@ -5,15 +5,13 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { StyledTableCell, StyledTableRow } from '../views/UI/Tables';
+import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from '../views/item/GridViewItem';
 import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
-import { LazyLoader } from '../views';
-import { Error } from 'ui-component/LoadHandlers';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { useViewStore } from '../data/global_state/slices/view';
 import { FileIconProps, fileIcon } from '../Icons/fileIcon';
@@ -22,7 +20,7 @@ import { PermissionTypes } from '../Interface/FileBrowser';
 import DragDropTableRow from './DragDropTableRow';
 import { useHandleActionMenu } from 'utils/hooks';
 import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
-import PermissionsDialog from '../views/UI/Dialogs/PermissionsDialog';
+import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 
 export function VirtualizedList({ height }: { height: number }) {
     // ========================= | STATE | =========================== //
@@ -117,19 +115,6 @@ export function VirtualizedList({ height }: { height: number }) {
     );
     return (
         <>
-            {folderChildrenIsLoading ||
-            folderChildrenIsFetching ||
-            childrenDocumentsIsFetching ||
-            childrenDocumentsnIsLoading ||
-            selected.length === 0 ? (
-                <LazyLoader />
-            ) : folderChildrenError || childrenDocumentsError ? (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                    <Error height={50} width={50} />
-                </Box>
-            ) : (
-                <></>
-            )}
             <TableVirtuoso
                 style={{ height: height }}
                 data={

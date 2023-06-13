@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { styled, TextField } from '@mui/material';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { isString, isUndefined } from 'lodash';
 
 interface RenameDocumentProps {
     renameFn: (value: string) => void;
@@ -35,6 +36,7 @@ export const RenameDocument = ({ renameFn, disableDoubleClick, name }: RenameDoc
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const [value, setValue] = React.useState<string>('');
     const [error, setError] = React.useState<Error | null>(null);
+    const [extentsion, setExtension] = React.useState<string>('');
     const { focused } = useBrowserStore();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
@@ -52,7 +54,17 @@ export const RenameDocument = ({ renameFn, disableDoubleClick, name }: RenameDoc
     }, []);
 
     React.useEffect(() => {
-        setValue(name);
+        if (focused.is_dir) {
+            setValue(name);
+        } else {
+            if (isString(name)) {
+                const nameStringArray = name.split('.');
+                const ext = nameStringArray.pop();
+                !isUndefined(ext) && setExtension('.' + ext);
+                const joinedString = nameStringArray.join('.');
+                setValue(joinedString);
+            }
+        }
     }, [focused]);
 
     return (
@@ -66,8 +78,9 @@ export const RenameDocument = ({ renameFn, disableDoubleClick, name }: RenameDoc
             helperText={error && error.message ? error.message : ''}
             onChange={handleChange}
             multiline
+            rows={3}
             onBlur={handleBlur}
-            onKeyDown={(e) => e.key === 'Enter' && renameFn(value)}
+            onKeyDown={(e) => e.key === 'Enter' && renameFn(value + extentsion)}
             onMouseOver={() => disableDoubleClick(true)}
             onMouseLeave={() => disableDoubleClick(false)}
         />

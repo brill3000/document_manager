@@ -14,7 +14,7 @@ import { Box } from '@mui/material';
 import MsFileViewer from './MsFileViewer';
 import { LazyLoader } from '../..';
 
-export default function FileViewerDialog() {
+export function FileViewerDialog() {
     const { open, scrollType } = useViewStore((state) => state.viewFile);
     const setViewFile = useViewStore((state) => state.setViewFile);
     const { selected } = useBrowserStore();

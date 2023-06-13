@@ -28,8 +28,8 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
                         height="max-content"
                         width={200}
                         direction="row"
-                        px={0.4}
-                        pt={0.4}
+                        px={0.3}
+                        pt={0.3}
                         borderRadius={1}
                         sx={{ cursor: 'grabbing !important' }}
                     >
@@ -39,7 +39,7 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
                             ) : (
                                 memorizedFileIcon({
                                     mimeType: item.type,
-                                    size: browserHeight * 0.02,
+                                    size: browserHeight * 0.015,
                                     file_icon_margin: 0,
                                     contrast: theme.palette.primary.contrastText
                                 })
