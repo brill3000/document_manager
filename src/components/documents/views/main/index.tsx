@@ -18,7 +18,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     const [open, setOpen] = React.useState(false);
     const [closeContext, setCloseContext] = React.useState<boolean>(false);
     const { clipboard } = useStore();
-    const { view } = useViewStore();
+    const { view, browserHeight } = useViewStore();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [scrollPosition, setScrollPosition] = React.useState<number>(0);
     const { nav } = useHistory();
@@ -126,7 +126,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
             container
             bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
             sx={{
-                overflow: 'auto',
+                overflow: 'hidden',
                 height: '100%',
                 width: '100%',
                 pb: 5,

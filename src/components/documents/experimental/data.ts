@@ -32,7 +32,9 @@ export function user(index = 0) {
         initials: `${firstName.substr(0, 1)}${lastName.substr(0, 1)}`,
         jobTitle: faker.name.jobTitle(),
         description: faker.lorem.sentence(10),
-        longText: faker.lorem.paragraphs(1)
+        longText: faker.lorem.paragraphs(1),
+        created: new Date().toString(),
+        subscribed: 'true'
     };
 }
 

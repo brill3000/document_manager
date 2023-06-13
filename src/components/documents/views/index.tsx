@@ -51,7 +51,7 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 width="100%"
                 component={Stack}
                 direction="column"
-                borderLeft={(theme) => `1px solid ${theme.palette.divider}`}
+                borderRight={(theme) => `1px solid ${theme.palette.divider}`}
                 justifyContent="start"
                 alignItems="start"
                 {...(matches && { display: 'none' })}

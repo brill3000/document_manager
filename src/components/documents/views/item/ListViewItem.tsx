@@ -34,7 +34,7 @@ export function ListViewItem({
     closeContext: boolean;
 }): React.ReactElement {
     const { browserHeight } = useViewStore();
-    const { author, created, doc_name, path, permissions, subscribed, is_dir, mimeType, locked } = document;
+    const { author, created, doc_name, path, subscribed, is_dir, mimeType, locked } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);

@@ -1,116 +1,234 @@
-import { TableVirtuoso } from 'react-virtuoso';
-import { generateUsers } from './data';
+import { Components, TableVirtuoso } from 'react-virtuoso';
 import React from 'react';
 import Table, { TableProps } from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-// import { useDrag, useDrop } from 'react-dnd';
-
-const TableComponents = {
-    // @ts-expect-error ref
-    Scroller: React.forwardRef((props, ref) => <TableContainer component={Paper} {...props} ref={ref} />),
-    Table: (props: TableProps) => <Table {...props} sx={{ borderCollapse: 'separate', width: '100vw' }} />,
-    TableHead: TableHead,
-    TableRow: React.forwardRef((props: React.ComponentPropsWithoutRef<typeof TableRow>, ref: React.Ref<any>) => {
-        const rowRef = React.useRef<HTMLTableRowElement | null>(null);
-
-        const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
-            event.dataTransfer.setData('text/plain', 'dragging');
-        };
-
-        const handleDragOver = (event: React.DragEvent<HTMLTableRowElement>) => {
-            event.preventDefault();
-        };
-
-        const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
-            event.preventDefault();
-            console.log(event.target);
-            // Handle the drop event here
-        };
-        return (
-            <TableRow
-                {...props}
-                {...props}
-                ref={(node) => {
-                    if (ref && typeof ref === 'function') {
-                        ref(node);
-                    } else if (ref && typeof ref === 'object') {
-                        (ref as React.MutableRefObject<HTMLTableRowElement | null>).current = node;
-                    }
-                    rowRef.current = node;
-                }}
-                draggable
-                onDragStart={(e) => handleDragStart(e)}
-                onDragOver={(e) => handleDragOver(e)}
-                onDrop={(e) => handleDrop(e)}
-            />
-        );
-    }),
-    // @ts-expect-error ref
-    TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />)
-};
-
-// function DraggableItem({ id, children }: { id: string; children: React.ReactNode }) {
-//     const [{ isDragging }, drag] = useDrag({
-//         item: { id },
-//         collect: (monitor) => ({
-//             isDragging: monitor.isDragging()
-//         }),
-//         type: 'item'
-//     });
-
-//     return (
-//         <TableRow ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-//             {children}
-//         </TableRow>
-//     );
-// }
-
-// function DroppableArea({ children }: { children: React.ReactElement }) {
-//     const [{ canDrop, isOver }, drop] = useDrop({
-//         accept: 'item',
-//         drop: (item: { type: string; id: string }) => {
-//             // Handle the dropped item
-//         },
-//         collect: (monitor) => ({
-//             canDrop: monitor.canDrop(),
-//             isOver: monitor.isOver()
-//         })
-//     });
-
-//     return (
-//         <div ref={drop} style={{ backgroundColor: isOver && canDrop ? 'lightblue' : 'white' }}>
-//             {/* Your content */}
-//             {children}
-//         </div>
-//     );
-// }
+import { StyledTableCell, StyledTableRow } from '../views/UI/Tables';
+import { MemorizedFcFolder } from '../views/item/GridViewItem';
+import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
+import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
+import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
+import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
+import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
+import { LazyLoader } from '../views';
+import { Error } from 'ui-component/LoadHandlers';
+import { getDateFromObject } from 'utils/constants/UriHelper';
+import { useViewStore } from '../data/global_state/slices/view';
+import { FileIconProps, fileIcon } from '../Icons/fileIcon';
+import { PermissionIconProps, permissionsIcon } from '../Icons/permissionsIcon';
+import { PermissionTypes } from '../Interface/FileBrowser';
+import DragDropTableRow from './DragDropTableRow';
+import { useHandleActionMenu } from 'utils/hooks';
+import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
+import PermissionsDialog from '../views/UI/Dialogs/PermissionsDialog';
 
 export function VirtualizedList({ height }: { height: number }) {
+    // ========================= | STATE | =========================== //
+    const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
+
+    const [rowSelected, setRowSelected] = React.useState<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>({
+        path: '',
+        doc_name: '',
+        locked: false,
+        is_dir: false
+    });
+    const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
+    const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
+
+    // ========================= | THEME | =========================== //
+    const theme = useTheme();
+    // ========================= | ZUSTAND HOOKS | =========================== //
+    const { selected } = useBrowserStore();
+    const { browserHeight } = useViewStore();
+
+    // ========================= | ICONS | =========================== //
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+    const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
+    // ================================= | Action Menu | ============================= //
+    const { handleMenuClick, handleMenuClose, renameFn } = useHandleActionMenu({
+        is_dir: rowSelected.is_dir,
+        path: rowSelected.path,
+        doc_name: rowSelected.doc_name,
+        setContextMenu,
+        setRenameTarget
+    });
+
+    // ========================= | MUTATIONS | =========================== //
+    const {
+        data: folderChildren,
+        error: folderChildrenError,
+        isFetching: folderChildrenIsFetching,
+        isLoading: folderChildrenIsLoading
+    } = useGetFoldersChildrenQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        {
+            skip:
+                selected === null ||
+                selected === undefined ||
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
+        }
+    );
+    // ========================= | TABLE COMPONENTS | =========================== //
+
+    const TableComponents: Components = React.useMemo(
+        () => ({
+            Scroller: React.forwardRef((props, ref) => <TableContainer component={Box} {...props} ref={ref} />),
+            Table: (props: TableProps) => <Table {...props} sx={{ borderCollapse: 'separate', width: '80vw', borderRadius: 0 }} />,
+            TableHead: TableHead,
+            TableRow: React.forwardRef((props: React.ComponentPropsWithoutRef<typeof TableRow>, ref: React.Ref<HTMLTableRowElement>) => {
+                return (
+                    // @ts-expect-error expected
+                    <DragDropTableRow
+                        setRenameTarget={setRenameTarget}
+                        parentContextMenu={contextMenu}
+                        setContextParentMenu={setContextMenu}
+                        setRowSelected={setRowSelected}
+                        setDisableDoubleClick={setDisableDoubleClick}
+                        disableDoubleClick={disableDoubleClick}
+                        {...props}
+                        ref={ref}
+                    />
+                );
+            }),
+            // @ts-expect-error ref
+            TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />)
+        }),
+        []
+    );
+    const {
+        data: childrenDocuments,
+        error: childrenDocumentsError,
+        isFetching: childrenDocumentsIsFetching,
+        isLoading: childrenDocumentsnIsLoading
+    } = useGetFolderChildrenFilesQuery(
+        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        {
+            skip:
+                selected === null ||
+                selected === undefined ||
+                selected?.length < 1 ||
+                isEmpty(selected[selected.length - 1]?.id) ||
+                !selected[selected.length - 1]?.is_dir
+        }
+    );
     return (
-        <TableVirtuoso
-            style={{ height: height }}
-            data={generateUsers(100)}
-            // @ts-expect-error components
-            components={TableComponents}
-            fixedHeaderContent={() => (
-                <TableRow>
-                    <TableCell style={{ width: 150, background: 'white', position: 'sticky', left: 0 }}>Name</TableCell>
-                    <TableCell style={{ background: 'white' }}>Description</TableCell>
-                    <TableCell style={{ background: 'white' }}>Description</TableCell>
-                </TableRow>
+        <>
+            {folderChildrenIsLoading ||
+            folderChildrenIsFetching ||
+            childrenDocumentsIsFetching ||
+            childrenDocumentsnIsLoading ||
+            selected.length === 0 ? (
+                <LazyLoader />
+            ) : folderChildrenError || childrenDocumentsError ? (
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <Error height={50} width={50} />
+                </Box>
+            ) : (
+                <></>
             )}
-            itemContent={(index, user) => (
-                <>
-                    <TableCell style={{ width: 150, background: 'white', position: 'sticky', left: 0 }}>{user.name}</TableCell>
-                    <TableCell style={{ background: 'white' }}>{user.description}</TableCell>
-                    <TableCell style={{ background: 'white' }}>{user.description}</TableCell>
-                </>
-            )}
-        />
+            <TableVirtuoso
+                style={{ height: height }}
+                data={
+                    folderChildren !== undefined &&
+                    childrenDocuments !== undefined &&
+                    isArray(folderChildren?.folders) &&
+                    isArray(childrenDocuments?.documents)
+                        ? [...folderChildren.folders, ...childrenDocuments.documents]
+                        : []
+                }
+                components={TableComponents}
+                fixedHeaderContent={() => (
+                    <StyledTableRow>
+                        <StyledTableCell
+                            sx={{
+                                width: 350,
+                                position: 'sticky',
+                                left: 0,
+                                borderRight: `1px solid ${lighten(theme.palette.secondary.light, 0.2)}`
+                            }}
+                        >
+                            <Stack direction="row">
+                                <Checkbox
+                                    size="small"
+                                    inputProps={{
+                                        'aria-labelledby': 'select_all'
+                                    }}
+                                    sx={{ p: 0 }}
+                                />
+                                <Box pl={1}>Name</Box>
+                            </Stack>
+                        </StyledTableCell>
+                        <StyledTableCell>Date Created</StyledTableCell>
+                        <StyledTableCell>Read</StyledTableCell>
+                        <StyledTableCell>Write</StyledTableCell>
+                        <StyledTableCell>Delete</StyledTableCell>
+                        <StyledTableCell>Security</StyledTableCell>
+                        <StyledTableCell>Subscribed</StyledTableCell>
+                    </StyledTableRow>
+                )}
+                itemContent={(index, document) => (
+                    <>
+                        <StyledTableCell
+                            sx={{
+                                width: 350,
+                                position: 'sticky',
+                                left: 0,
+                                borderRight: `1px solid ${theme.palette.divider}`
+                            }}
+                        >
+                            <Stack direction="row" spacing={1}>
+                                <Checkbox
+                                    size="small"
+                                    checked={rowSelected.path === document.path}
+                                    inputProps={{
+                                        'aria-labelledby': document.path
+                                    }}
+                                    sx={{ p: 0 }}
+                                />
+                                {document.is_dir ? (
+                                    <MemorizedFcFolder size={18} />
+                                ) : (
+                                    memorizedFileIcon({ mimeType: document.mimeType, size: browserHeight * 0.02, file_icon_margin: 0 })
+                                )}
+                                <Typography variant="caption" noWrap maxWidth="80%">
+                                    {document.doc_name}
+                                </Typography>
+                            </Stack>
+                        </StyledTableCell>
+                        <StyledTableCell>{getDateFromObject(document.created).toString()}</StyledTableCell>
+
+                        {isObject(document.permissions) &&
+                            !isUndefined(document.permissions) &&
+                            Object.entries(document.permissions).map((p: [string, boolean]) => {
+                                const perm = p[0] as keyof PermissionTypes;
+                                return (
+                                    <StyledTableCell key={p[0]} sx={{ pl: 1.5 }}>
+                                        {memorizedPermissionsIcon({
+                                            type: perm,
+                                            permission: p[1],
+                                            theme: theme,
+                                            size: 10,
+                                            file_icon_margin: 0
+                                        })}
+                                    </StyledTableCell>
+                                );
+                            })}
+                        <StyledTableCell>{String(document.subscribed)}</StyledTableCell>
+                    </>
+                )}
+            />
+            <ActionMenu
+                is_dir={rowSelected.is_dir}
+                locked={rowSelected.locked ?? false}
+                contextMenu={contextMenu}
+                handleMenuClose={handleMenuClose}
+                handleMenuClick={handleMenuClick}
+            />
+            <PermissionsDialog />
+        </>
     );
 }

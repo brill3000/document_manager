@@ -53,7 +53,7 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
                     </Grid>
                 );
             default:
-                return null;
+                return <Box bgcolor={theme.palette.primary.main}>{JSON.stringify(item)}</Box>;
         }
     };
 
