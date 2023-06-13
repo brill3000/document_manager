@@ -162,15 +162,176 @@ export const foldersApi = createApi({
                             const pathArray = fld.path.split('/');
                             const doc_name = pathArray[pathArray.length - 1];
                             const is_dir = true;
+                            const folderPermission: PermissionTypes = {
+                                read: false,
+                                write: false,
+                                delete: false,
+                                security: false
+                            };
+                            if (!isUndefined(folderCopy.permissions)) {
+                                const { permissions: permissionId } = folderCopy;
+                                switch (permissionId) {
+                                    case Permissions.ALL_GRANTS:
+                                        folderPermission.read = true;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = true;
+                                        folderPermission.security = true;
+                                        break;
+                                    case Permissions.READ:
+                                        folderPermission.read = true;
+                                        folderPermission.write = false;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.WRITE:
+                                        folderPermission.read = false;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.DELETE:
+                                        folderPermission.read = false;
+                                        folderPermission.write = false;
+                                        folderPermission.delete = true;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.SECURITY:
+                                        folderPermission.read = false;
+                                        folderPermission.write = false;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE:
+                                        folderPermission.read = true;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.DELETE:
+                                        folderPermission.read = true;
+                                        folderPermission.write = false;
+                                        folderPermission.delete = true;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.SECURITY:
+                                        folderPermission.read = true;
+                                        folderPermission.write = false;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = true;
+                                        break;
+                                    case Permissions.WRITE + Permissions.DELETE:
+                                        folderPermission.read = false;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = true;
+                                        folderPermission.security = false;
+                                        break;
+                                    case Permissions.WRITE + Permissions.SECURITY:
+                                        folderPermission.read = false;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = false;
+                                        folderPermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                        folderPermission.read = true;
+                                        folderPermission.write = true;
+                                        folderPermission.delete = true;
+                                        folderPermission.security = false;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
 
-                            return { doc_name, is_dir, ...folderCopy };
+                            return { doc_name, is_dir, ...folderCopy, permissions: folderPermission };
                         }) as unknown) as FolderInterface[]
                     };
                 } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
                     const pathArray = dataCopy.folders.path.split('/');
                     const doc_name = pathArray[pathArray.length - 1];
                     const is_dir = true;
-                    return { folders: [({ doc_name, is_dir, ...dataCopy.folders } as unknown) as FolderInterface] };
+                    const folderPermission: PermissionTypes = {
+                        read: false,
+                        write: false,
+                        delete: false,
+                        security: false
+                    };
+                    if (!isUndefined(dataCopy.folders.permissions)) {
+                        const { permissions: permissionId } = dataCopy.folders;
+
+                        switch (permissionId) {
+                            case Permissions.ALL_GRANTS:
+                                folderPermission.read = true;
+                                folderPermission.write = true;
+                                folderPermission.delete = true;
+                                folderPermission.security = true;
+                                break;
+                            case Permissions.READ:
+                                folderPermission.read = true;
+                                folderPermission.write = false;
+                                folderPermission.delete = false;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.WRITE:
+                                folderPermission.read = false;
+                                folderPermission.write = true;
+                                folderPermission.delete = false;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.DELETE:
+                                folderPermission.read = false;
+                                folderPermission.write = false;
+                                folderPermission.delete = true;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.SECURITY:
+                                folderPermission.read = false;
+                                folderPermission.write = false;
+                                folderPermission.delete = false;
+                                folderPermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE:
+                                folderPermission.read = true;
+                                folderPermission.write = true;
+                                folderPermission.delete = false;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.DELETE:
+                                folderPermission.read = true;
+                                folderPermission.write = false;
+                                folderPermission.delete = true;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.READ + Permissions.SECURITY:
+                                folderPermission.read = true;
+                                folderPermission.write = false;
+                                folderPermission.delete = false;
+                                folderPermission.security = true;
+                                break;
+                            case Permissions.WRITE + Permissions.DELETE:
+                                folderPermission.read = false;
+                                folderPermission.write = true;
+                                folderPermission.delete = true;
+                                folderPermission.security = false;
+                                break;
+                            case Permissions.WRITE + Permissions.SECURITY:
+                                folderPermission.read = false;
+                                folderPermission.write = true;
+                                folderPermission.delete = false;
+                                folderPermission.security = true;
+                                break;
+                            case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                folderPermission.read = true;
+                                folderPermission.write = true;
+                                folderPermission.delete = true;
+                                folderPermission.security = false;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    return {
+                        folders: [({ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown) as FolderInterface]
+                    };
                 } else {
                     return { folders: [] as FolderInterface[] };
                 }
