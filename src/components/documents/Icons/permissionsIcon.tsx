@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { BsFillEyeFill, BsFillEyeSlashFill, BsShieldFillCheck, BsShieldFillX } from 'react-icons/bs';
+import { BsFillEyeFill, BsFillEyeSlashFill, BsShieldFillCheck, BsShieldFillX, BsTrashFill } from 'react-icons/bs';
 import { PermissionTypes } from '../Interface/FileBrowser';
-import { TbPencil, TbPencilOff, TbTrash, TbTrashOff } from 'react-icons/tb';
+import { TbPencilOff, TbTrashOff } from 'react-icons/tb';
 import { Theme } from '@mui/material';
+import { HiPencil } from 'react-icons/hi';
 const MemorizedRead = React.memo(BsFillEyeFill);
 export const MemorizedReadDenied = React.memo(BsFillEyeSlashFill);
-export const MemorizedWrite = React.memo(TbPencil);
+export const MemorizedWrite = React.memo(HiPencil);
 export const MemorizedWriteDenied = React.memo(TbPencilOff);
-export const MemorizedDelete = React.memo(TbTrash);
+export const MemorizedDelete = React.memo(BsTrashFill);
 export const MemorizedDeleteDenied = React.memo(TbTrashOff);
 export const MemorizedSecurity = React.memo(BsShieldFillCheck);
 export const MemorizedSecurityDenied = React.memo(BsShieldFillX);
@@ -26,7 +27,7 @@ export const permissionsIcon = ({ type, size, permission, theme, file_icon_margi
         case 'read':
             return permission ? (
                 <MemorizedRead
-                    size={size !== undefined ? size : 30}
+                    size={size !== undefined ? size * 1.3 : 35}
                     style={{
                         color: contrast ?? theme.palette.success.main,
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
@@ -35,7 +36,7 @@ export const permissionsIcon = ({ type, size, permission, theme, file_icon_margi
                 />
             ) : (
                 <MemorizedReadDenied
-                    size={size !== undefined ? size : 30}
+                    size={size !== undefined ? size * 1.2 : 33}
                     style={{
                         color: contrast ?? theme.palette.error.main,
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
@@ -66,7 +67,7 @@ export const permissionsIcon = ({ type, size, permission, theme, file_icon_margi
         case 'delete':
             return permission ? (
                 <MemorizedDelete
-                    size={size !== undefined ? size * 1.2 : 33}
+                    size={size !== undefined ? size * 1.1 : 30}
                     style={{
                         color: contrast ?? theme.palette.success.main,
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
