@@ -175,7 +175,7 @@ export function VirtualizedList({ height }: { height: number }) {
                                     sx={{ p: 0 }}
                                 />
                                 {document.is_dir ? (
-                                    <MemorizedFcFolder size={18} />
+                                    <MemorizedFcFolder size={15} />
                                 ) : (
                                     memorizedFileIcon({ mimeType: document.mimeType, size: browserHeight * 0.02, file_icon_margin: 0 })
                                 )}

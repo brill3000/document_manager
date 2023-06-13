@@ -221,7 +221,7 @@ export function LeftSidebar() {
                                     }}
                                 />
                             </ButtonBase>
-                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={16} /> : <MemorizedFcFolder size={16} />}
+                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={13} /> : <MemorizedFcFolder size={13} />}
                         </Stack>
                     ) : nodes.is_dir ? (
                         <MemorizedFcFolder size={16} />

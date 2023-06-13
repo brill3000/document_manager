@@ -15,9 +15,11 @@ import { BsLockFill } from 'react-icons/bs';
 import { isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
+import FolderIcon from 'assets/images/icons/FolderIcon';
+import FolderOpenIcon from 'assets/images/icons/FolderOpenIcon';
 
-export const MemorizedFcFolder = React.memo(FcFolder);
-export const MemorizedFcFolderOpen = React.memo(FcOpenedFolder);
+export const MemorizedFcFolder = React.memo(FolderIcon);
+export const MemorizedFcFolderOpen = React.memo(FolderOpenIcon);
 
 function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean; splitScreen: boolean }): JSX.Element {
     const { doc_name, path, is_dir, mimeType, locked, isLoading, progress } = document;
@@ -120,7 +122,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 p={0}
                                 m={0}
                             >
-                                <MemorizedFcFolder size={browserHeight * (isRenaming ? 0.08 : 0.11)} />
+                                <MemorizedFcFolder size={browserHeight * (isRenaming ? 0.07 : 0.095)} />
                             </Box>
                             <Box
                                 borderRadius={1}

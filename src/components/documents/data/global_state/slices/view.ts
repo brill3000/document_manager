@@ -17,8 +17,8 @@ export const useViewStore = create<State>((set) => {
     return {
         browserHeight: 0,
         browserWidth: 0,
-        setBrowserHeight: (height: number) => set(() => ({ browserHeight: height })),
-        setBrowserWidth: (width: number) => set(() => ({ browserWidth: width })),
+        setBrowserHeight: (height: number) => set(() => ({ browserHeight: height < 600 ? 600 : height })),
+        setBrowserWidth: (width: number) => set(() => ({ browserWidth: width < 300 ? 300 : width })),
         /**
          * View
          */

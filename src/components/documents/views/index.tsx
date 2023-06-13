@@ -56,8 +56,8 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 px={1}
                 pt={1}
                 sx={{
-                    transition: '0.3s all',
-                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                    transition: '0.2s width',
+                    transitionTimingFunction: 'ease-in-out'
                 }}
             >
                 <Suspense fallback={<LazyLoader align="flex-start" width="80%" justify="flex-start" height={20} />}>
@@ -68,8 +68,8 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 height="100%"
                 width={md ? '100%' : splitScreen ? '50%' : '75%'}
                 sx={{
-                    transition: '0.3s all',
-                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                    transition: '0.2s width',
+                    transitionTimingFunction: 'ease-in-out'
                 }}
             >
                 <Suspense fallback={<LazyLoader />}>
@@ -86,8 +86,8 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 justifyContent="center"
                 alignItems="center"
                 sx={{
-                    transition: '0.3s all',
-                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                    transition: '0.2s width',
+                    transitionTimingFunction: 'ease-in-out'
                 }}
             >
                 <Suspense fallback={<LazyLoader />}>

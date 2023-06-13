@@ -60,7 +60,7 @@ export interface FolderRequestType {
 }
 
 export interface CreateDocumentProps {
-    doc: string;
+    doc: Blob;
     content: string;
     fileName: string;
 }
@@ -71,7 +71,7 @@ export interface CreateDocumentSimpleProps {
 }
 
 export interface CheckInProps extends GetDocumentContentProps {
-    content: string;
+    content: Blob;
     comment: string;
     increment: string;
     fileName: string;

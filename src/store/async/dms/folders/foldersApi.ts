@@ -389,13 +389,10 @@ export const foldersApi = createApi({
         }),
         renameFolder: build.mutation<any, RenameFoldersProps>({
             query: ({ fldId, newName }) => {
-                console.log(fldId, 'FLDID');
-                console.log(newName, 'NEW NAME');
-
                 return {
                     url: UriHelper.FOLDER_RENAME,
                     method: 'PUT',
-                    body: { fldId, newName }
+                    params: { fldId, newName }
                 };
             },
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']

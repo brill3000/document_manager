@@ -37,8 +37,8 @@ export function FolderDetailsList({
                 transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
             }}
         >
-            <Box display="flex" justifyContent="center">
-                <MemorizedFcFolder size={browserHeight !== 0 && browserHeight !== undefined ? browserHeight * 0.7 * 0.2 : '30%'} />
+            <Box display="flex" justifyContent="center" py={1}>
+                <MemorizedFcFolder size={browserHeight * 0.12} />
             </Box>
 
             <List
