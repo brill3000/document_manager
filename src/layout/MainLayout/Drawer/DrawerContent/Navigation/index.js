@@ -2,7 +2,7 @@
 import { Box, Typography } from '@mui/material';
 
 // project import
-import NavGroup from './NavGroup';
+import NavGroup from './NavGroup.tsx';
 import menuItem from 'menu-items';
 
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
