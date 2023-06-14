@@ -234,7 +234,6 @@ export const useHandleClickEvents = ({
         }
     };
     const handleDoubleClick = (disableDoubleClick: boolean) => {
-        console.log(path, 'PATH');
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
             actions.setFocused(path, is_dir);

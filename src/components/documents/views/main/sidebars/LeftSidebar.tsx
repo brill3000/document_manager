@@ -129,12 +129,7 @@ export function LeftSidebar() {
     const { pathParam } = useParams();
     const { pathname } = useLocation();
 
-    // =========================== | Set Root Function | ================================//
-    /**
-     * Function that extracts the root folder from the route
-     * This is critical for reload purposes
-     * @returns void
-     */
+    // =========================== | HOOKS | ================================//
     // const handleChangeRoute = () => {
     //     // if (path !== null || path !== undefined) {
     //     //     const encodedPathParam = decodeURIComponent(path);
@@ -174,7 +169,7 @@ export function LeftSidebar() {
         }
     }, [pathParam, pathname]);
 
-    const handleExpandClick = (path: string) => {
+    const handleExpandClick = React.useCallback((path: string) => {
         setCurrentExpanded(path);
         setExpanded((oldExpanded) => {
             return oldExpanded.length > 0
@@ -183,7 +178,7 @@ export function LeftSidebar() {
                     : [...oldExpanded, path]
                 : [path];
         });
-    };
+    }, []);
     // =========================== | Render Function | ================================//
 
     const renderTree = (nodes: RenderTree | null) => {
