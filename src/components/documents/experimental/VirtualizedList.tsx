@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from '../views/item/GridViewItem';
-import { Box, Checkbox, Skeleton, Stack, Typography, lighten, useTheme } from '@mui/material';
+import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
@@ -46,7 +46,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
     // ================================= | Action Menu | ============================= //
-    const { handleMenuClick, handleMenuClose, renameFn } = useHandleActionMenu({
+    const { handleMenuClick, handleMenuClose } = useHandleActionMenu({
         is_dir: rowSelected.is_dir,
         path: rowSelected.path,
         doc_name: rowSelected.doc_name,
@@ -56,10 +56,10 @@ export function VirtualizedList({ height }: { height: number }) {
 
     // ========================= | MUTATIONS | =========================== //
     const {
-        data: folderChildren,
-        error: folderChildrenError,
-        isFetching: folderChildrenIsFetching,
-        isLoading: folderChildrenIsLoading
+        data: folderChildren
+        // error: folderChildrenError,
+        // isFetching: folderChildrenIsFetching,
+        // isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -80,7 +80,7 @@ export function VirtualizedList({ height }: { height: number }) {
             TableHead: TableHead,
             TableRow: React.forwardRef((props: React.ComponentPropsWithoutRef<typeof TableRow>, ref: React.Ref<HTMLTableRowElement>) => {
                 return (
-                    <Suspense fallback={<Skeleton ref={ref} />}>
+                    <Suspense fallback={<TableRow ref={ref} />}>
                         {
                             // @ts-expect-error expected
                             <DragDropTableRow
@@ -103,10 +103,10 @@ export function VirtualizedList({ height }: { height: number }) {
         []
     );
     const {
-        data: childrenDocuments,
-        error: childrenDocumentsError,
-        isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsnIsLoading
+        data: childrenDocuments
+        // error: childrenDocumentsError,
+        // isFetching: childrenDocumentsIsFetching,
+        // isLoading: childrenDocumentsnIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -170,7 +170,7 @@ export function VirtualizedList({ height }: { height: number }) {
                                 borderRight: `1px solid ${theme.palette.divider}`
                             }}
                         >
-                            <Stack direction="row" spacing={1}>
+                            <Stack direction="row" spacing={1} alignItems="center">
                                 <Checkbox
                                     size="small"
                                     checked={rowSelected.path === document.path}
@@ -180,9 +180,9 @@ export function VirtualizedList({ height }: { height: number }) {
                                     sx={{ p: 0 }}
                                 />
                                 {document.is_dir ? (
-                                    <MemorizedFcFolder size={15} />
+                                    <MemorizedFcFolder size={14} />
                                 ) : (
-                                    memorizedFileIcon({ mimeType: document.mimeType, size: browserHeight * 0.02, file_icon_margin: 0 })
+                                    memorizedFileIcon({ mimeType: document.mimeType, size: 16, file_icon_margin: 0 })
                                 )}
                                 <Typography variant="caption" noWrap maxWidth="80%">
                                     {document.doc_name}

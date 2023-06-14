@@ -12,7 +12,6 @@ import TreeView from '@mui/lab/TreeView/TreeView';
 import { ButtonBase, Collapse, Skeleton, Stack, alpha } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { useSpring, animated } from '@react-spring/web';
-import { useLocation, useNavigate, useParams } from 'react-router';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error } from 'ui-component/LoadHandlers';
 import { isArray, isEmpty, isNull, isString, isUndefined, nth, omit, uniqueId } from 'lodash';
@@ -23,6 +22,7 @@ import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { LazyLoader } from '../..';
+import { useHandleChangeRoute } from 'utils/hooks';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -116,7 +116,7 @@ export function LeftSidebar() {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
-    const { actions, selected } = useBrowserStore();
+    const { selected, actions } = useBrowserStore();
     const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
 
@@ -124,17 +124,13 @@ export function LeftSidebar() {
     const [expanded, setExpanded] = React.useState<string[]>([]);
     const [currentExpanded, setCurrentExpanded] = React.useState<string | null>(null);
 
-    // =========================== | Route Functions | ================================//
-    const navigate = useNavigate();
-    const { pathParam } = useParams();
-    const { pathname } = useLocation();
-
-    // =========================== | HOOKS | ================================//
+    // =========================== | CUSTOM HOOKS | ================================//
     // const handleChangeRoute = () => {
     //     // if (path !== null || path !== undefined) {
     //     //     const encodedPathParam = decodeURIComponent(path);
     //     // }
     // };
+    const { paramArray, pathParam, pathname, handleChangeRoute: handleDocumentClick } = useHandleChangeRoute();
 
     React.useEffect(() => {
         if (isString(pathname) && !isEmpty(pathname)) {
@@ -179,6 +175,7 @@ export function LeftSidebar() {
                 : [path];
         });
     }, []);
+
     // =========================== | Render Function | ================================//
 
     const renderTree = (nodes: RenderTree | null) => {
@@ -216,10 +213,10 @@ export function LeftSidebar() {
                                     }}
                                 />
                             </ButtonBase>
-                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={13} /> : <MemorizedFcFolder size={13} />}
+                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={14} /> : <MemorizedFcFolder size={14} />}
                         </Stack>
                     ) : nodes.is_dir ? (
-                        <MemorizedFcFolder size={16} />
+                        <MemorizedFcFolder size={14} />
                     ) : (
                         memorizedFileIcon({ mimeType: nodes.mimeType, size: 16, file_icon_margin: 0 })
                     )
@@ -289,7 +286,7 @@ export function LeftSidebar() {
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
             handleExpandClick(rootFolder.path);
-            handleDocumentClick(rootFolder.path, true);
+            actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
             const data: RenderTree = {
                 id: rootFolder.path,
                 doc_name: rootFolder.doc_name,
@@ -392,23 +389,6 @@ export function LeftSidebar() {
     ]);
 
     // =========================== | Event Handles | ================================//
-
-    /**
-     * Function that add the seleted folder path to the route
-     * This is critical for reload purposes
-     * @param documentId: string
-     * @returns void
-     */
-    const handleDocumentClick = (documentId: string, is_dir: boolean) => {
-        if (documentId !== null || documentId !== undefined) {
-            actions.setSelected([{ id: documentId, is_dir }]);
-            const encodedPathParam = encodeURIComponent(documentId);
-            const documentPath = pathParam
-                ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
-                : `${pathname}/${encodedPathParam}`;
-            navigate(documentPath);
-        }
-    };
     return (
         <>
             {/* Initial Loader */}

@@ -143,7 +143,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 borderColor={(theme) => theme.palette.secondary.light}
                                 onClick={handleClick}
                                 onContextMenu={handleClick}
-                                onDoubleClick={() => handleDoubleClick(is_dir)}
+                                onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                                 onMouseOver={() => {
                                     setIsHovered(true);
                                 }}
@@ -212,7 +212,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                             px={0.5}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(is_dir)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onFocus={() => actions.setFocused(path, is_dir)}
                             // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
@@ -298,7 +298,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(is_dir)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}

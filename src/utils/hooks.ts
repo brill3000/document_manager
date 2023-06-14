@@ -4,7 +4,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FolderInterface } from 'global/interfaces';
-import { isNull, isUndefined } from 'lodash';
+import { isArray, isNull, isUndefined } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -48,12 +48,18 @@ export const useHandleChangeRoute = () => {
             navigate(documentPath);
         }
     };
+    const paramArray: string[] | null = React.useMemo(() => {
+        const arr = !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null;
+        isArray(arr) && arr.shift();
+        return arr;
+    }, [pathParam]);
 
     return {
         handleChangeRoute,
         navigate,
         pathParam,
-        pathname
+        pathname,
+        paramArray
     };
 };
 
