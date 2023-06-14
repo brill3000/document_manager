@@ -68,6 +68,7 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
                 '& .MuiCardContent-root': {
                     p: 0,
                     height: '100%',
+                    minHeight: 500,
                     width: '100%',
                     '&:last-child': {
                         p: '0 !important'
