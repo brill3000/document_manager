@@ -91,7 +91,7 @@ const dashboard = {
             breadcrumbs: false,
             children: [
                 {
-                    id: 'system_documents',
+                    id: 'system-documents',
                     title: 'System Documents',
                     type: 'item',
                     url: 'documents/system-documents',
