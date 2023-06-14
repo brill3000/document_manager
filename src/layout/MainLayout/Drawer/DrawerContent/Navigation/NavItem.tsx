@@ -1,11 +1,23 @@
 import PropTypes from 'prop-types';
-import { forwardRef, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { ElementType, Ref, forwardRef, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Chip, ListItemButton, ListItemIcon, ListItemText, Typography, Collapse, List, IconButton, alpha } from '@mui/material';
+import {
+    Avatar,
+    Chip,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Typography,
+    Collapse,
+    List,
+    IconButton,
+    alpha,
+    ChipProps
+} from '@mui/material';
 
 // project import
 import { activeItem } from 'store/reducers/menu';
@@ -13,18 +25,65 @@ import { setCurrentDepartment } from 'store/reducers/departments';
 import { setUsers } from 'store/reducers/departments';
 import { customers } from 'components/departments/__mocks__/customers copy';
 
-import { ArrowDropDown, ArrowDropUp } from '../../../../../../node_modules/@mui/icons-material/index';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { first, isArray, isEmpty } from 'lodash';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
-const NavItem = ({ item, level, children }) => {
-    const theme = useTheme();
-    const dispatch = useDispatch();
-    const menu = useSelector((state) => state.menu);
-    const { drawerOpen, openItem } = menu;
+interface ItemProps {
+    id: string;
+    title: string;
+    type: string;
+    target: string;
+    external?: boolean;
+    url: string;
+    icon: ElementType;
+    breadcrumbs: boolean;
+    children: Array<ItemProps>;
+    disabled?: boolean;
+    chip: ChipProps;
+}
+interface NavItemProps {
+    item: ItemProps;
+    children: Array<ItemProps>;
+    level: number;
+}
+
+const NavItem = ({ item, level, children }: NavItemProps) => {
+    // ============================== | STATE | =========================== //
     const [open, setOpen] = useState(false);
     const [isDisabled, setIsDisabled] = useState(false);
+    // ============================== | THEME | =========================== //
+    const theme = useTheme();
+    // ============================== | STORE | =========================== //
+    const dispatch = useDispatch();
+    // @ts-expect-error expected
+    const menu = useSelector((state) => state.menu);
+    const { drawerOpen, openItem } = menu;
+    // ================================= | ROUTES | ============================= //
+    const { pathname } = useLocation();
 
+    // const handleChangeRoute = (path: string, is_dir: boolean) => {
+    //     if (path !== null || path !== undefined) {
+    //         actions.setSelected([{ id: path, is_dir }]);
+    //         const encodedPathParam = encodeURIComponent(path);
+    //         const documentPath = pathParam
+    //             ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
+    //             : `${pathname}/${encodedPathParam}`;
+    //         navigate(documentPath);
+    //     }
+    // };
+    useEffect(() => {
+        const pathArray = pathname.split('/');
+        if (isArray(pathArray) && !isEmpty(pathArray)) {
+            pathArray.includes('documents') && setOpen(true);
+            pathArray.shift();
+            pathArray.shift();
+            if (pathArray.length > 0) {
+                dispatch(activeItem({ openItem: [first(pathArray)] }));
+            }
+        }
+    }, [pathname]);
     const handleClick = () => {
         if (!isDisabled) setOpen(true);
     };
@@ -34,18 +93,25 @@ const NavItem = ({ item, level, children }) => {
         itemTarget = '_blank';
     }
 
-    let listItemProps = { component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />) };
+    let listItemProps = {
+        component: forwardRef((props, ref) => (
+            <Link ref={ref as Ref<HTMLAnchorElement> | undefined} {...props} to={item.url} target={itemTarget} />
+        ))
+    };
     if (item?.external) {
+        // @ts-expect-error expects
         listItemProps = { component: 'a', href: item.url, target: itemTarget };
     }
-    let listChildreItemProps = (child) => ({
-        component: forwardRef((props, ref) => <Link ref={ref} {...props} to={child.url} target={itemTarget} />)
+    const listChildreItemProps = (child: ItemProps) => ({
+        component: forwardRef((props, ref) => (
+            <Link ref={ref as Ref<HTMLAnchorElement> | undefined} {...props} to={child.url} target={itemTarget} />
+        ))
     });
-
-    const itemHandler = (id, parent) => {
+    // ============================== | EVENT HANDLER | =========================== //
+    const itemHandler = (id: string, parent: string) => {
         handleClick();
         const menuChildren = item.children ? item.children.map((child) => child.id) : [];
-        const isSelected = openItem.some((id) => menuChildren?.includes(id));
+        const isSelected = openItem.some((x: string) => menuChildren?.includes(x));
         if (!isSelected) dispatch(activeItem({ openItem: [id] }));
         if (parent.toLowerCase() === 'departments') {
             dispatch(setCurrentDepartment({ currentDepartment: 'All Departments' }));
@@ -56,7 +122,7 @@ const NavItem = ({ item, level, children }) => {
     const Icon = item.icon;
     const itemIcon = item.icon ? <Icon style={{ fontSize: drawerOpen ? '1rem' : '1.25rem' }} /> : false;
     const menuChildren = item.children ? item.children.map((child) => child.id) : [];
-    const isSelected = openItem.findIndex((id) => id === item.id || menuChildren?.includes(id)) > -1;
+    const isSelected = openItem.findIndex((id: string) => id === item.id || menuChildren?.includes(id)) > -1;
 
     // active menu item on page load
     useEffect(() => {
@@ -163,7 +229,6 @@ const NavItem = ({ item, level, children }) => {
                         <IconButton
                             size="small"
                             sx={{ color: 'warning' }}
-                            variant="outlined"
                             onMouseOver={() => setIsDisabled(true)}
                             onMouseOut={() => setIsDisabled(false)}
                             onClick={() => setOpen(false)}
@@ -174,7 +239,6 @@ const NavItem = ({ item, level, children }) => {
                         <IconButton
                             size="small"
                             sx={{ color: 'warning' }}
-                            variant="outlined"
                             onClick={() => setOpen(true)}
                             onMouseOver={() => setIsDisabled(false)}
                         >

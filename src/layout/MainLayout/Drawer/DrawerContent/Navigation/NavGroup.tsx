@@ -9,10 +9,11 @@ import NavItem from './NavItem';
 
 // ==============================|| NAVIGATION - LIST GROUP ||============================== //
 
-const NavGroup = ({ item }) => {
+const NavGroup = ({ item }: any) => {
+    // @ts-expect-error expected
     const menu = useSelector((state) => state.menu);
     const { drawerOpen } = menu;
-
+    // @ts-expect-error expected
     const navCollapse = item.children?.map((menuItem) => {
         switch (menuItem.type) {
             case 'collapse':
