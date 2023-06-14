@@ -94,7 +94,7 @@ const dashboard = {
                     id: 'system-documents',
                     title: 'System Documents',
                     type: 'item',
-                    url: 'documents/system-documents',
+                    url: '/documents/system-documents',
                     icon: icons.BsFolder,
                     breadcrumbs: false
                 },
@@ -102,7 +102,7 @@ const dashboard = {
                     id: 'my-documents',
                     title: 'My Documents',
                     type: 'item',
-                    url: 'documents/my-documents',
+                    url: '/documents/my-documents',
                     icon: icons.BsPersonRolodex,
                     breadcrumbs: false
                 },
@@ -115,7 +115,7 @@ const dashboard = {
                     breadcrumbs: false
                 },
                 {
-                    id: 'email',
+                    id: 'email-attachments',
                     title: 'Email Attachments',
                     type: 'item',
                     url: '/documents/email-attachments',
