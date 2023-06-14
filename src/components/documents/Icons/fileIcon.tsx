@@ -2,6 +2,8 @@ import * as React from 'react';
 import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill, BsFillFileEarmarkZipFill } from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
 import { green } from '@mui/material/colors';
+import { darken } from '@mui/material';
+import { isNull, isUndefined } from 'lodash';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -15,16 +17,25 @@ export interface FileIconProps {
     size?: number;
     file_icon_margin?: number;
     contrast?: string | null;
+    dark?: boolean;
 }
 
-export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIconProps) => {
+export const fileIcon = ({ mimeType, size, file_icon_margin, contrast, dark }: FileIconProps) => {
+    const dFactor = 0.3;
+    const resize = 4;
+    const transition = '0.15s';
     switch (mimeType) {
         case 'application/pdf':
             return (
                 <MemorizedBsFileEarmarkPdfFill
-                    size={size !== undefined ? size : 50}
+                    size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
                     style={{
-                        color: contrast ?? '#c50606',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('#c50606', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -34,9 +45,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         case 'application/x-rar-compressed':
             return (
                 <MemorizedBsFillFileEarmarkZipFill
-                    size={size !== undefined ? size : 50}
+                    size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
                     style={{
-                        color: contrast ?? 'rgb(255, 202, 40)',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('rgb(255, 202, 40)', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px'
                     }}
@@ -47,9 +63,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         case 'application/vnd.oasis.opendocument.spreadsheet':
             return (
                 <MemorizedRiFileExcel2Fill
-                    size={size !== undefined ? size + 3 : 53}
+                    size={size !== undefined ? (dark ? size + resize : size) : 53}
                     style={{
-                        color: contrast ?? '#257a7ade',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('#257a7ade', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -60,9 +81,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         case 'application/vnd.oasis.opendocument.presentation':
             return (
                 <MemorizedRiFilePpt2Fill
-                    size={size !== undefined ? size + 3 : 53}
+                    size={size !== undefined ? (dark ? size + resize : size) : 53}
                     style={{
-                        color: contrast ?? '#bb1a1acc',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('#bb1a1acc', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -73,9 +99,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         case 'application/vnd.oasis.opendocument.text':
             return (
                 <MemorizedRiFileWord2Fill
-                    size={size !== undefined ? size + 3 : 53}
+                    size={size !== undefined ? (dark ? size + resize : size) : 53}
                     style={{
-                        color: contrast ?? '#144497d9',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('#144497d9', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '8px'
                     }}
@@ -92,9 +123,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         case 'image/webp':
             return (
                 <MemorizedBsFillImageFill
-                    size={size !== undefined ? size + 3 : 53}
+                    size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
                     style={{
-                        color: contrast ?? green[600],
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken(green[600], dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
                     }}
@@ -104,9 +140,14 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast }: FileIco
         default:
             return (
                 <MemorizedBsFillFileEarmarkTextFill
-                    size={size !== undefined ? size + 3 : 53}
+                    size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
                     style={{
-                        color: contrast ?? '#2563a2cc',
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken('#2563a2cc', dark ? dFactor : 0),
                         marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
                         marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin - 1 : '8px'
                     }}
