@@ -1,8 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { alpha, Badge, Box, Stack } from '@mui/material';
-import { grey, orange } from '@mui/material/colors';
-import { FcFolder, FcOpenedFolder } from 'react-icons/fc';
+import { orange } from '@mui/material/colors';
 import { theme } from '../../Themes/theme';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import ActionMenu from '../UI/Menus/DocumentActionMenu';
@@ -95,11 +94,11 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                         >
                             <Box
                                 borderRadius={2}
-                                {...(isFocused || isOver
-                                    ? { bgcolor: alpha(grey[300], 0.5) }
-                                    : isHovered
-                                    ? { bgcolor: alpha(grey[300], 0.2) }
-                                    : {})}
+                                // {...(isFocused || isOver
+                                //     ? { bgcolor: alpha(grey[300], 0.5) }
+                                //     : isHovered
+                                //     ? { bgcolor: alpha(grey[300], 0.2) }
+                                //     : {})}
                                 width="max-content"
                                 height="max-content"
                                 onClick={handleClick}
@@ -122,7 +121,10 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 p={0}
                                 m={0}
                             >
-                                <MemorizedFcFolder size={browserHeight * (isRenaming ? 0.07 : 0.095)} />
+                                <MemorizedFcFolder
+                                    size={browserHeight * (isRenaming ? 0.07 : 0.095)}
+                                    selected={isFocused || isOver || isHovered}
+                                />
                             </Box>
                             <Box
                                 borderRadius={1}
@@ -202,7 +204,6 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                     >
                         <Box
                             borderRadius={2}
-                            {...(isFocused ? { bgcolor: alpha(grey[300], 0.5) } : isHovered ? { bgcolor: alpha(grey[300], 0.2) } : {})}
                             width="max-content"
                             minWidth="33%"
                             height="max-content"
@@ -238,6 +239,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     mimeType,
                                     size: browserHeight * (isRenaming ? 0.06 : 0.075),
                                     file_icon_margin: browserHeight * 0.006,
+                                    dark: isFocused || isOver || isHovered,
                                     contrast:
                                         !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
                                             ? theme.palette.divider
