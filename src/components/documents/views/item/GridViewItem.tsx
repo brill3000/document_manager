@@ -154,6 +154,8 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     '& :hover': {
                                         cursor: isRenaming ? 'text' : 'pointer'
                                     },
+                                    transition: '0.2s all',
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                     fontFamily: 'inherit',
                                     display: 'flex',
                                     alignContent: 'center',
@@ -307,6 +309,8 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 '& :hover': {
                                     cursor: isRenaming ? 'text' : 'pointer'
                                 },
+                                transition: '0.2s all',
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 fontFamily: 'inherit',
                                 display: 'flex',
                                 alignContent: 'center',
