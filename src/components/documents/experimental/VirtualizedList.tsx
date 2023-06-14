@@ -1,5 +1,5 @@
 import { Components, TableVirtuoso } from 'react-virtuoso';
-import React from 'react';
+import React, { Suspense } from 'react';
 import Table, { TableProps } from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from '../views/item/GridViewItem';
-import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
+import { Box, Checkbox, Skeleton, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
@@ -17,10 +17,11 @@ import { useViewStore } from '../data/global_state/slices/view';
 import { FileIconProps, fileIcon } from '../Icons/fileIcon';
 import { PermissionIconProps, permissionsIcon } from '../Icons/permissionsIcon';
 import { PermissionTypes } from '../Interface/FileBrowser';
-import DragDropTableRow from './DragDropTableRow';
 import { useHandleActionMenu } from 'utils/hooks';
 import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
 import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+
+const DragDropTableRow = React.lazy(() => import('./DragDropTableRow'));
 
 export function VirtualizedList({ height }: { height: number }) {
     // ========================= | STATE | =========================== //
@@ -79,17 +80,21 @@ export function VirtualizedList({ height }: { height: number }) {
             TableHead: TableHead,
             TableRow: React.forwardRef((props: React.ComponentPropsWithoutRef<typeof TableRow>, ref: React.Ref<HTMLTableRowElement>) => {
                 return (
-                    // @ts-expect-error expected
-                    <DragDropTableRow
-                        setRenameTarget={setRenameTarget}
-                        parentContextMenu={contextMenu}
-                        setContextParentMenu={setContextMenu}
-                        setRowSelected={setRowSelected}
-                        setDisableDoubleClick={setDisableDoubleClick}
-                        disableDoubleClick={disableDoubleClick}
-                        {...props}
-                        ref={ref}
-                    />
+                    <Suspense fallback={<Skeleton ref={ref} />}>
+                        {
+                            // @ts-expect-error expected
+                            <DragDropTableRow
+                                setRenameTarget={setRenameTarget}
+                                parentContextMenu={contextMenu}
+                                setContextParentMenu={setContextMenu}
+                                setRowSelected={setRowSelected}
+                                setDisableDoubleClick={setDisableDoubleClick}
+                                disableDoubleClick={disableDoubleClick}
+                                {...props}
+                                ref={ref}
+                            />
+                        }
+                    </Suspense>
                 );
             }),
             // @ts-expect-error ref

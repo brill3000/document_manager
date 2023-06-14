@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { VirtuosoGrid } from 'react-virtuoso';
 import { GridVirtuosoContainer, GridVirtuosoItem, GridVirtuosoItemWrapper } from 'components/documents/views/UI/Grid';
 import { GenericDocument } from 'global/interfaces';
@@ -6,11 +6,12 @@ import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { isArray, isEmpty, isUndefined } from 'lodash';
-import { GridViewItem } from 'components/documents/views/item';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+import { LazyLoader } from '../views';
 
+const GridViewItem = React.lazy(() => import('components/documents/views/item').then((module) => ({ default: module.GridViewItem })));
 export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height: number }) {
     const { selected, uploadFiles } = useBrowserStore();
     const { browserHeight } = useViewStore();
@@ -67,7 +68,9 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
                 }}
                 itemContent={(index, document) => (
                     <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.25}>
-                        <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                        <Suspense fallback={<LazyLoader />}>
+                            <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                        </Suspense>
                     </GridVirtuosoItemWrapper>
                 )}
             />
