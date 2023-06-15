@@ -23,6 +23,7 @@ import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { LazyLoader } from '../..';
 import { useHandleChangeRoute } from 'utils/hooks';
+import { FolderInterface } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -133,6 +134,10 @@ export function LeftSidebar() {
     const { paramArray, pathParam, pathname, handleChangeRoute: handleDocumentClick } = useHandleChangeRoute();
 
     React.useEffect(() => {
+        !isNull(paramArray) && setExpanded(paramArray);
+    }, []);
+
+    React.useEffect(() => {
         if (isString(pathname) && !isEmpty(pathname)) {
             const pathArray = pathname.split('/');
             if (nth(pathArray, 1) === 'documents') {
@@ -168,11 +173,13 @@ export function LeftSidebar() {
     const handleExpandClick = React.useCallback((path: string) => {
         setCurrentExpanded(path);
         setExpanded((oldExpanded) => {
-            return oldExpanded.length > 0
-                ? oldExpanded.includes(path)
-                    ? [...oldExpanded.filter((x) => x !== path)]
-                    : [...oldExpanded, path]
-                : [path];
+            if (!isEmpty(oldExpanded)) {
+                return oldExpanded.includes(path)
+                    ? [...new Set([...oldExpanded.filter((x) => x !== path)])]
+                    : [...new Set([...oldExpanded, path])];
+            } else {
+                return [path];
+            }
         });
     }, []);
 
@@ -285,7 +292,14 @@ export function LeftSidebar() {
 
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
-            handleExpandClick(rootFolder.path);
+            setCurrentExpanded(rootFolder.path);
+            setExpanded((oldExpanded) => {
+                if (!isEmpty(oldExpanded)) {
+                    return [...new Set([...oldExpanded, rootFolder.path])];
+                } else {
+                    return [rootFolder.path];
+                }
+            });
             actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
             const data: RenderTree = {
                 id: rootFolder.path,
@@ -328,6 +342,7 @@ export function LeftSidebar() {
             skip: isUndefined(currentExpanded) || isNull(currentExpanded) || isEmpty(currentExpanded)
         }
     );
+    console.log(childrenFiles, 'FILES');
     /**
      * add children folders to tree
      */
@@ -343,8 +358,7 @@ export function LeftSidebar() {
             isArray(childrenFiles.documents) &&
             currentExpanded !== null
         ) {
-            const newChildren: RenderTree[] = folderChildren.folders.map((child, i: number) => {
-                // @ts-expect-error is set below
+            const newChildren: RenderTree[] = folderChildren.folders.map((child: FolderInterface, i: number) => {
                 const treeItem: RenderTree = {
                     id: child.path,
                     doc_name: child.doc_name,
@@ -352,11 +366,20 @@ export function LeftSidebar() {
                     is_dir: true,
                     hasChildren: child.hasChildren
                 };
+                // if (isArray(expanded) && expanded.includes(child.path)) {
+                //     console.log(child.path, 'CHILD PATH');
+                //     setExpanded((oldExpanded) => {
+                //         if (!isEmpty(oldExpanded)) {
+                //             return [...new Set([...oldExpanded, child.path])];
+                //         } else {
+                //             return [child.path];
+                //         }
+                //     });
+                // }
                 treeItem['index'] = i;
                 return treeItem;
             });
             const newFilesChildren: RenderTree[] = childrenFiles.documents.map((child, i: number) => {
-                // @ts-expect-error is set below
                 const treeItem: RenderTree = {
                     id: child.path,
                     doc_name: child.doc_name,
@@ -385,10 +408,12 @@ export function LeftSidebar() {
         childrenFilesIsFetching,
         childrenFilesIsSuccess,
         childrenFilesIsLoading,
-        currentExpanded
+        childrenFiles,
+        folderChildren,
+        currentExpanded,
+        expanded
     ]);
 
-    // =========================== | Event Handles | ================================//
     return (
         <>
             {/* Initial Loader */}

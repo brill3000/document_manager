@@ -138,7 +138,7 @@ export type key = string;
 
 export interface RenderTree {
     id: string;
-    index: number;
+    index?: number;
     doc_name: string;
     children?: Array<RenderTree | null>;
     hasChildren: boolean;

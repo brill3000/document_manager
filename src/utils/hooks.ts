@@ -4,7 +4,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FolderInterface } from 'global/interfaces';
-import { isArray, isNull, isUndefined } from 'lodash';
+import { first, isArray, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -49,8 +49,20 @@ export const useHandleChangeRoute = () => {
         }
     };
     const paramArray: string[] | null = React.useMemo(() => {
-        const arr = !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null;
-        isArray(arr) && arr.shift();
+        let arr = !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null;
+        if (isArray(arr)) {
+            arr.shift();
+            arr = arr.map((x, i) => {
+                let pathString = '';
+                if (i === 0) {
+                    pathString = '/' + first(arr);
+                } else {
+                    pathString = '/' + slice(arr, 0, i + 1).join('/');
+                }
+                return pathString;
+            });
+        }
+
         return arr;
     }, [pathParam]);
 
@@ -77,7 +89,7 @@ export const useHandleActionMenu = ({
     doc_name: string;
 }) => {
     // ================================= | ZUSTAND | ============================= //
-    const { actions, focused } = useBrowserStore();
+    const { focused, selected } = useBrowserStore();
     const { addToClipBoard } = useStore();
     const { setOpenPermissionDialog } = useViewStore();
     // ================================= | HOOKS | ============================= //
@@ -164,16 +176,26 @@ export const useHandleActionMenu = ({
                         const newPath = renameTarget.id.split('/');
                         newPath.pop();
                         newPath.push(newName);
-                        actions.setFocused(newPath.join('/'), is_dir);
-                        renameFolder({ fldId, newName });
+                        renameFolder({
+                            fldId,
+                            newName,
+                            parent: selected[selected.length - 1].id,
+                            newPath: newPath.join('/'),
+                            oldPath: renameTarget.id
+                        });
                     } else {
                         const docId = renameTarget.id;
                         const newName = value;
                         const newPath = renameTarget.id.split('/');
                         newPath.pop();
                         newPath.push(newName);
-                        actions.setFocused(newPath.join('/'), is_dir);
-                        renameFile({ docId, newName });
+                        renameFile({
+                            docId,
+                            newName,
+                            parent: selected[selected.length - 1].id,
+                            newPath: newPath.join('/'),
+                            oldPath: renameTarget.id
+                        });
                     }
 
                     setRenameTarget(null);
