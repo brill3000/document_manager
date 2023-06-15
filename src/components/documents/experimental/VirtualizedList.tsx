@@ -13,13 +13,14 @@ import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { getDateFromObject } from 'utils/constants/UriHelper';
-import { useViewStore } from '../data/global_state/slices/view';
 import { FileIconProps, fileIcon } from '../Icons/fileIcon';
 import { PermissionIconProps, permissionsIcon } from '../Icons/permissionsIcon';
 import { PermissionTypes } from '../Interface/FileBrowser';
 import { useHandleActionMenu } from 'utils/hooks';
 import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
 import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+import { FolderEmpty } from 'ui-component/LoadHandlers';
+import { GenericDocument } from 'global/interfaces';
 
 const DragDropTableRow = React.lazy(() => import('./DragDropTableRow'));
 
@@ -40,7 +41,6 @@ export function VirtualizedList({ height }: { height: number }) {
     const theme = useTheme();
     // ========================= | ZUSTAND HOOKS | =========================== //
     const { selected } = useBrowserStore();
-    const { browserHeight } = useViewStore();
 
     // ========================= | ICONS | =========================== //
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
@@ -118,99 +118,117 @@ export function VirtualizedList({ height }: { height: number }) {
                 !selected[selected.length - 1]?.is_dir
         }
     );
+
+    const documents: GenericDocument[] = React.useMemo(() => {
+        if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            const doc = [
+                ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
+                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : [])
+            ];
+            return doc;
+        } else return [];
+    }, [childrenDocuments, folderChildren]);
     return (
         <>
-            <TableVirtuoso
-                style={{ height: height }}
-                data={
-                    folderChildren !== undefined &&
-                    childrenDocuments !== undefined &&
-                    isArray(folderChildren?.folders) &&
-                    isArray(childrenDocuments?.documents)
-                        ? [...folderChildren.folders, ...childrenDocuments.documents]
-                        : []
-                }
-                components={TableComponents}
-                fixedHeaderContent={() => (
-                    <StyledTableRow>
-                        <StyledTableCell
-                            sx={{
-                                width: 350,
-                                position: 'sticky',
-                                left: 0,
-                                borderRight: `1px solid ${lighten(theme.palette.secondary.light, 0.2)}`
-                            }}
-                        >
-                            <Stack direction="row">
-                                <Checkbox
-                                    size="small"
-                                    inputProps={{
-                                        'aria-labelledby': 'select_all'
-                                    }}
-                                    sx={{ p: 0 }}
-                                />
-                                <Box pl={1}>Name</Box>
-                            </Stack>
-                        </StyledTableCell>
-                        <StyledTableCell>Date Created</StyledTableCell>
-                        <StyledTableCell>Read</StyledTableCell>
-                        <StyledTableCell>Write</StyledTableCell>
-                        <StyledTableCell>Delete</StyledTableCell>
-                        <StyledTableCell>Security</StyledTableCell>
-                        <StyledTableCell>Subscribed</StyledTableCell>
-                    </StyledTableRow>
-                )}
-                itemContent={(index, document) => (
-                    <>
-                        <StyledTableCell
-                            sx={{
-                                width: 350,
-                                position: 'sticky',
-                                left: 0,
-                                borderRight: `1px solid ${theme.palette.divider}`
-                            }}
-                        >
-                            <Stack direction="row" spacing={1} alignItems="center">
-                                <Checkbox
-                                    size="small"
-                                    checked={rowSelected.path === document.path}
-                                    inputProps={{
-                                        'aria-labelledby': document.path
-                                    }}
-                                    sx={{ p: 0 }}
-                                />
-                                {document.is_dir ? (
-                                    <MemorizedFcFolder size={14} />
-                                ) : (
-                                    memorizedFileIcon({ mimeType: document.mimeType, size: 16, file_icon_margin: 0 })
-                                )}
-                                <Typography variant="caption" noWrap maxWidth="80%">
-                                    {document.doc_name}
-                                </Typography>
-                            </Stack>
-                        </StyledTableCell>
-                        <StyledTableCell>{getDateFromObject(document.created).toString()}</StyledTableCell>
+            {isEmpty(documents) ? (
+                <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <FolderEmpty height={100} width={100} />
+                    <Typography variant="caption">Empty Folders</Typography>
+                </Box>
+            ) : (
+                <TableVirtuoso
+                    style={{ height: height }}
+                    data={
+                        folderChildren !== undefined &&
+                        childrenDocuments !== undefined &&
+                        isArray(folderChildren?.folders) &&
+                        isArray(childrenDocuments?.documents)
+                            ? [...folderChildren.folders, ...childrenDocuments.documents]
+                            : []
+                    }
+                    components={TableComponents}
+                    fixedHeaderContent={() => (
+                        <StyledTableRow>
+                            <StyledTableCell
+                                sx={{
+                                    width: 350,
+                                    position: 'sticky',
+                                    left: 0,
+                                    borderRight: `1px solid ${lighten(theme.palette.secondary.light, 0.2)}`
+                                }}
+                            >
+                                <Stack direction="row">
+                                    <Checkbox
+                                        size="small"
+                                        inputProps={{
+                                            'aria-labelledby': 'select_all'
+                                        }}
+                                        sx={{ p: 0 }}
+                                    />
+                                    <Box pl={1}>Name</Box>
+                                </Stack>
+                            </StyledTableCell>
+                            <StyledTableCell>Date Created</StyledTableCell>
+                            <StyledTableCell>Read</StyledTableCell>
+                            <StyledTableCell>Write</StyledTableCell>
+                            <StyledTableCell>Delete</StyledTableCell>
+                            <StyledTableCell>Security</StyledTableCell>
+                            <StyledTableCell>Subscribed</StyledTableCell>
+                        </StyledTableRow>
+                    )}
+                    itemContent={(index, document) => (
+                        <>
+                            <StyledTableCell
+                                sx={{
+                                    width: 350,
+                                    position: 'sticky',
+                                    left: 0,
+                                    borderRight: `1px solid ${theme.palette.divider}`
+                                }}
+                            >
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <Checkbox
+                                        size="small"
+                                        checked={rowSelected.path === document.path}
+                                        inputProps={{
+                                            'aria-labelledby': document.path
+                                        }}
+                                        sx={{ p: 0 }}
+                                    />
+                                    {document.is_dir ? (
+                                        <MemorizedFcFolder size={16} />
+                                    ) : (
+                                        memorizedFileIcon({ mimeType: document.mimeType, size: 18, file_icon_margin: 0 })
+                                    )}
+                                    <Typography variant="caption" noWrap maxWidth="80%">
+                                        {document.doc_name}
+                                    </Typography>
+                                </Stack>
+                            </StyledTableCell>
+                            <StyledTableCell>{getDateFromObject(document.created).toString()}</StyledTableCell>
 
-                        {isObject(document.permissions) &&
-                            !isUndefined(document.permissions) &&
-                            Object.entries(document.permissions).map((p: [string, boolean]) => {
-                                const perm = p[0] as keyof PermissionTypes;
-                                return (
-                                    <StyledTableCell key={p[0]} sx={{ pl: 1.5 }}>
-                                        {memorizedPermissionsIcon({
-                                            type: perm,
-                                            permission: p[1],
-                                            theme: theme,
-                                            size: 10,
-                                            file_icon_margin: 0
-                                        })}
-                                    </StyledTableCell>
-                                );
-                            })}
-                        <StyledTableCell>{String(document.subscribed)}</StyledTableCell>
-                    </>
-                )}
-            />
+                            {isObject(document.permissions) &&
+                                !isUndefined(document.permissions) &&
+                                Object.entries(document.permissions).map((p: [string, boolean]) => {
+                                    const perm = p[0] as keyof PermissionTypes;
+                                    return (
+                                        <StyledTableCell key={p[0]} sx={{ pl: 1.5 }}>
+                                            {memorizedPermissionsIcon({
+                                                type: perm,
+                                                permission: p[1],
+                                                theme: theme,
+                                                size: 10,
+                                                file_icon_margin: 0
+                                            })}
+                                        </StyledTableCell>
+                                    );
+                                })}
+                            <StyledTableCell>{String(document.subscribed)}</StyledTableCell>
+                        </>
+                    )}
+                />
+            )}
+
             <ActionMenu
                 is_dir={rowSelected.is_dir}
                 locked={rowSelected.locked ?? false}

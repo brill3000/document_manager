@@ -10,6 +10,8 @@ import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 import { LazyLoader } from '../views';
+import { Box, Typography } from '@mui/material';
+import { FolderEmpty } from 'ui-component/LoadHandlers';
 
 const GridViewItem = React.lazy(() => import('components/documents/views/item').then((module) => ({ default: module.GridViewItem })));
 export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height: number }) {
@@ -30,7 +32,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const {
         data: childrenDocuments,
         error: childrenDocumentsError,
-        isFetching: childrenDocumentsIsFetching
+        isLoading: childrenDocumentsIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -49,31 +51,51 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         setNewFiles(filesArray);
     }, [uploadFiles]);
 
+    const documents: GenericDocument[] = React.useMemo(() => {
+        if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            const doc = [
+                ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
+                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
+                ...newFiles
+            ];
+            return doc;
+        } else return [];
+    }, [childrenDocuments, folderChildren, newFiles, folderChildrenIsLoading, childrenDocumentsIsLoading]);
+
     return (
         <>
-            <VirtuosoGrid
-                style={{ height: height ?? 400, width: '100%' }}
-                data={
-                    !isUndefined(folderChildren) && !isUndefined(childrenDocuments)
-                        ? [
-                              ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
-                              ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
-                              ...newFiles
-                          ]
-                        : []
-                }
-                components={{
-                    Item: GridVirtuosoItem,
-                    List: GridVirtuosoContainer
-                }}
-                itemContent={(index, document) => (
-                    <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.25}>
-                        <Suspense fallback={<LazyLoader />}>
-                            <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
-                        </Suspense>
-                    </GridVirtuosoItemWrapper>
-                )}
-            />
+            {isEmpty(documents) ? (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={browserHeight * 0.25}
+                    minWidth="100%"
+                >
+                    <FolderEmpty height={100} width={100} />
+                    <Typography variant="caption">Empty Folders</Typography>
+                </Box>
+            ) : (
+                <VirtuosoGrid
+                    style={{ height: height ?? 400, width: '100%' }}
+                    data={documents}
+                    components={{
+                        Item: GridVirtuosoItem,
+                        List: GridVirtuosoContainer
+                    }}
+                    itemContent={(index, document) => (
+                        <>
+                            <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.25}>
+                                <Suspense fallback={<LazyLoader />}>
+                                    <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                                </Suspense>
+                            </GridVirtuosoItemWrapper>
+                        </>
+                    )}
+                />
+            )}
+
             <PermissionsDialog />
             <FileViewerDialog />
         </>
