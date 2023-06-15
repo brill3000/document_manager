@@ -3,9 +3,9 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { FolderInterface, FolderReponseInterface } from 'global/interfaces';
 import { isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { axiosBaseQuery } from '../files/filesApi';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { Permissions } from 'utils/constants/Permissions';
+import { axiosBaseQuery } from 'utils/hooks';
 type UserTags = 'DMS_REPOSITORY' | 'DMS_REPOSITORY_SUCCESS' | 'DMS_REPOSITORY_ERROR';
 
 export const repositoryApi = createApi({

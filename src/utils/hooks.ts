@@ -1,15 +1,19 @@
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
+import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { FolderInterface } from 'global/interfaces';
+import { FolderInterface, GenericDocument, TreeMap } from 'global/interfaces';
 import { first, isArray, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { Permissions } from './constants/Permissions';
+import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 export const useForwardRef = <T>(ref: React.ForwardedRef<T>) => {
     // @ts-expect-error expect the error
@@ -73,6 +77,90 @@ export const useHandleChangeRoute = () => {
         pathname,
         paramArray
     };
+};
+
+// export const useTreeMap = ({ expanded, treeMap, setTreeMap }: TreeMap) => {};
+
+export const createPermissionObj = ({ permissionId }: { permissionId: number }): PermissionTypes => {
+    const folderPermission: PermissionTypes = {
+        read: false,
+        write: false,
+        delete: false,
+        security: false
+    };
+    if (!isUndefined(permissionId)) {
+        switch (permissionId) {
+            case Permissions.ALL_GRANTS:
+                folderPermission.read = true;
+                folderPermission.write = true;
+                folderPermission.delete = true;
+                folderPermission.security = true;
+                break;
+            case Permissions.READ:
+                folderPermission.read = true;
+                folderPermission.write = false;
+                folderPermission.delete = false;
+                folderPermission.security = false;
+                break;
+            case Permissions.WRITE:
+                folderPermission.read = false;
+                folderPermission.write = true;
+                folderPermission.delete = false;
+                folderPermission.security = false;
+                break;
+            case Permissions.DELETE:
+                folderPermission.read = false;
+                folderPermission.write = false;
+                folderPermission.delete = true;
+                folderPermission.security = false;
+                break;
+            case Permissions.SECURITY:
+                folderPermission.read = false;
+                folderPermission.write = false;
+                folderPermission.delete = false;
+                folderPermission.security = true;
+                break;
+            case Permissions.READ + Permissions.WRITE:
+                folderPermission.read = true;
+                folderPermission.write = true;
+                folderPermission.delete = false;
+                folderPermission.security = false;
+                break;
+            case Permissions.READ + Permissions.DELETE:
+                folderPermission.read = true;
+                folderPermission.write = false;
+                folderPermission.delete = true;
+                folderPermission.security = false;
+                break;
+            case Permissions.READ + Permissions.SECURITY:
+                folderPermission.read = true;
+                folderPermission.write = false;
+                folderPermission.delete = false;
+                folderPermission.security = true;
+                break;
+            case Permissions.WRITE + Permissions.DELETE:
+                folderPermission.read = false;
+                folderPermission.write = true;
+                folderPermission.delete = true;
+                folderPermission.security = false;
+                break;
+            case Permissions.WRITE + Permissions.SECURITY:
+                folderPermission.read = false;
+                folderPermission.write = true;
+                folderPermission.delete = false;
+                folderPermission.security = true;
+                break;
+            case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                folderPermission.read = true;
+                folderPermission.write = true;
+                folderPermission.delete = true;
+                folderPermission.security = false;
+                break;
+            default:
+                break;
+        }
+    }
+    return folderPermission;
 };
 
 export const useHandleActionMenu = ({
@@ -324,4 +412,33 @@ export const useDragAndDropHandlers = ({ is_dir, path, doc_name }: { is_dir: boo
 export const useMemorizedDocumemtIcon = () => {
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     return { memorizedFileIcon };
+};
+
+// ================================= | Axios Base Query | ============================= //
+
+export const axiosBaseQuery = (
+    { baseUrl }: { baseUrl: string } = { baseUrl: '' }
+): BaseQueryFn<
+    {
+        url: string;
+        method: AxiosRequestConfig['method'];
+        data?: AxiosRequestConfig['data'];
+        params?: AxiosRequestConfig['params'];
+        onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
+    },
+    unknown,
+    unknown
+> => async ({ url, method, data, params, onUploadProgress }) => {
+    try {
+        const result = await axios({ url: baseUrl + url, method, data, params, onUploadProgress, withCredentials: true });
+        return { data: result.data };
+    } catch (axiosError) {
+        const err = axiosError as AxiosError;
+        return {
+            error: {
+                status: err.response?.status,
+                data: err.response?.data || err.message
+            }
+        };
+    }
 };

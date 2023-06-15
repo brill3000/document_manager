@@ -11,12 +11,13 @@ import {
     UserResponse
 } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { axiosBaseQuery, filesApi } from '../files/filesApi';
+import { filesApi } from '../files/filesApi';
 import qs from 'qs';
 import { isArray, isNull, isUndefined } from 'lodash';
 import { Permissions } from 'utils/constants/Permissions';
 import { RolePermission, User, UserPermission } from 'components/documents/Interface/FileBrowser';
 import { foldersApi } from '../folders/foldersApi';
+import { axiosBaseQuery } from 'utils/hooks';
 type UserTags = 'DMS_USER' | 'DMS_USER_SUCCESS' | 'DMS_USER_ERROR';
 
 export const authApi = createApi({

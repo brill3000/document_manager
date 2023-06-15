@@ -1,4 +1,5 @@
 import { PermissionTypes, RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
+import { SetStateAction } from 'react';
 
 export interface User {
     first_name: string;
@@ -225,4 +226,12 @@ export interface FolderReponseInterface extends GenericDocumentResponse {
     keywords: Array<any>;
     categories: Array<any>;
     notes: Array<any>;
+}
+
+// =============================== | Treeview | ============================== //
+
+export interface TreeMap {
+    expanded: string[];
+    treeMap: Map<string, GenericDocument[]>;
+    setTreeMap: React.Dispatch<SetStateAction<Map<string, GenericDocument>>>;
 }
