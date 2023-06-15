@@ -13,7 +13,7 @@ import {
     RenameDocumentsProps,
     FileInterface
 } from 'global/interfaces';
-import { isEmpty, isObject, isUndefined } from 'lodash';
+import { isEmpty, isNull, isObject, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
@@ -189,7 +189,7 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
-        getFolderChildrenFiles: build.query<{ documents: FileInterface[] | FileInterface }, FolderRequestType>({
+        getFolderChildrenFiles: build.query<{ documents: FileInterface[] }, FolderRequestType>({
             query: ({ fldId }) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
             transformResponse: (response: { documents: FileResponseInterface[] | FileResponseInterface }) => {
                 const dataCopy = { ...response };
@@ -503,7 +503,43 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, newName }
             }),
-            invalidatesTags: ['DMS_FILES']
+            async onQueryStarted({ docId, newName, parent, newPath, oldPath }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = dispatch(
+                    filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+                        const draftCopy = draft.documents.map((cachedRole) => {
+                            if (cachedRole.path === oldPath) {
+                                cachedRole['doc_name'] = newName;
+                                cachedRole['path'] = newPath;
+                            }
+                            return cachedRole;
+                        });
+
+                        Object.assign(draft.documents, draftCopy);
+                    })
+                );
+                const patchInfoResult = dispatch(
+                    filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
+                        if (!isNull(draft) && draft.path === oldPath) {
+                            const draftCopy = { ...draft };
+                            draftCopy['doc_name'] = newName;
+                            draftCopy['path'] = newPath;
+
+                            Object.assign(draft, draftCopy);
+                        }
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchChildrenResult.undo();
+                    patchInfoResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         setFileProperties: build.mutation<any, { doc: string }>({
             query: ({ doc }) => ({

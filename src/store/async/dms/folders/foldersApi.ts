@@ -12,7 +12,7 @@ import {
     RenameFoldersProps,
     SetFoldersPropertiesProps
 } from 'global/interfaces';
-import { isObject, isEmpty, isUndefined } from 'lodash';
+import { isObject, isEmpty, isUndefined, isNull } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { axiosBaseQuery } from '../files/filesApi';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
@@ -395,7 +395,43 @@ export const foldersApi = createApi({
                     params: { fldId, newName }
                 };
             },
-            invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
+            async onQueryStarted({ fldId, newName, parent, newPath, oldPath }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = dispatch(
+                    foldersApi.util.updateQueryData('getFoldersChildren', { fldId: parent }, (draft) => {
+                        const draftCopy = draft.folders.map((cachedRole) => {
+                            if (cachedRole.path === fldId) {
+                                cachedRole['doc_name'] = newName;
+                                cachedRole['path'] = newPath;
+                            }
+                            return cachedRole;
+                        });
+
+                        Object.assign(draft.folders, draftCopy);
+                    })
+                );
+                const patchInfoResult = dispatch(
+                    foldersApi.util.updateQueryData('getFoldersProperties', { fldId }, (draft) => {
+                        if (!isNull(draft) && draft.path === oldPath) {
+                            const draftCopy = { ...draft };
+                            draftCopy['doc_name'] = newName;
+                            draftCopy['path'] = newPath;
+
+                            Object.assign(draft, draftCopy);
+                        }
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchChildrenResult.undo();
+                    patchInfoResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         setFolderProperties: build.mutation<any, SetFoldersPropertiesProps>({
             query: ({ doc }) => ({

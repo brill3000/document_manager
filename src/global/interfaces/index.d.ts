@@ -77,9 +77,7 @@ export interface CheckInProps extends GetDocumentContentProps {
     fileName: string;
 }
 
-export interface RenameDocumentsProps extends GetDocumentContentProps {
-    newName: string;
-}
+export interface RenameDocumentsProps extends GetDocumentContentProps, GenericRenameProps {}
 
 export interface MoveDocumentProps extends GetDocumentContentProps {
     dstId: string;
@@ -153,9 +151,13 @@ export interface CreateFoldersSimpleProps {
     content: string;
 }
 
-export interface RenameFoldersProps extends GetFoldersContentProps {
+interface GenericRenameProps {
     newName: string;
+    parent: string;
+    newPath: string;
+    oldPath: string;
 }
+export interface RenameFoldersProps extends GetFoldersContentProps, GenericRenameProps {}
 
 export interface SetFoldersPropertiesProps {
     doc: any;

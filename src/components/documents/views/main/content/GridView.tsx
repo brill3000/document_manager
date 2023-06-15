@@ -45,6 +45,7 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
         const filesArray = Array.from(uploadFiles, ([_, value]) => value);
         setNewFiles(filesArray);
     }, [uploadFiles]);
+
     return (
         <>
             {folderChildrenIsLoading || childrenDocumentsIsFetching || selected.length === 0 ? (

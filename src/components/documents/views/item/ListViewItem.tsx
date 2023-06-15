@@ -108,7 +108,7 @@ export function ListViewItem({
                         newPath.pop();
                         newPath.push(newName);
                         actions.setFocused(newPath.join('/'), is_dir);
-                        renameFolder({ fldId, newName });
+                        // renameFolder({ fldId, newName });
                     } else {
                         const docId = renameTarget.id;
                         const newName = value;
@@ -116,7 +116,7 @@ export function ListViewItem({
                         newPath.pop();
                         newPath.push(newName);
                         actions.setFocused(newPath.join('/'), is_dir);
-                        renameFile({ docId, newName });
+                        // renameFile({ docId, newName });
                     }
 
                     closeRename();
