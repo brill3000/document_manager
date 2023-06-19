@@ -12,13 +12,22 @@ import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/
 import { LazyLoader } from '../views';
 import { Box, Typography } from '@mui/material';
 import { FolderEmpty } from 'ui-component/LoadHandlers';
+import { useHandleChangeRoute } from 'utils/hooks';
 
 const GridViewItem = React.lazy(() => import('components/documents/views/item').then((module) => ({ default: module.GridViewItem })));
 export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height: number }) {
+    // ================================= | STATE | ================================ //
+    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
+
+    // ================================= | ZUSTAND | ================================ //
     const { selected, uploadFiles } = useBrowserStore();
     const { browserHeight } = useViewStore();
-    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
-    const { data: folderChildren, error: folderChildrenError, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
+
+    // ================================= | ROUTES | ================================ //
+    // const { pathParam } = useHandleChangeRoute();
+
+    // ================================= | RTK QUERY | ================================ //
+    const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
             skip:
@@ -29,11 +38,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
                 !selected[selected.length - 1]?.is_dir
         }
     );
-    const {
-        data: childrenDocuments,
-        error: childrenDocumentsError,
-        isLoading: childrenDocumentsIsLoading
-    } = useGetFolderChildrenFilesQuery(
+    const { data: childrenDocuments, isLoading: childrenDocumentsIsLoading } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
             skip:
@@ -45,11 +50,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         }
     );
 
-    React.useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
-        setNewFiles(filesArray);
-    }, [uploadFiles]);
+    // ================================= | DATA | ================================ //
 
     const documents: GenericDocument[] = React.useMemo(() => {
         if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
@@ -61,6 +62,14 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
             return doc;
         } else return [];
     }, [childrenDocuments, folderChildren, newFiles, folderChildrenIsLoading, childrenDocumentsIsLoading]);
+
+    // ================================= | EFFECTS | ================================ //
+
+    React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
+        setNewFiles(filesArray);
+    }, [uploadFiles]);
 
     return (
         <>
