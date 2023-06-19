@@ -136,6 +136,69 @@ export const foldersApi = createApi({
                 return tags;
             }
         }),
+        getFoldersExpandedChildren: build.query<{ folders: any[] }, { expanded: string[] }>({
+            queryFn: async (_args, _api, _extraOptions, baseQuery: any) => {
+                try {
+                    const { expanded } = _args;
+                    const someChildren: Array<FolderInterface & { children: string[] }> = [];
+                    const expandedChildren = await Promise.allSettled(
+                        expanded.map(async (fldId: string) => {
+                            const { data: parentData }: { data: FolderReponseInterface } = await baseQuery({
+                                url: `${UriHelper.FOLDER_GET_PROPERTIES}`,
+                                method: 'GET',
+                                params: { fldId }
+                            });
+                            const { data }: { data: { folders: FolderReponseInterface[] | FolderReponseInterface } } = await baseQuery({
+                                url: `${UriHelper.FOLDER_GET_CHILDREN}`,
+                                method: 'GET',
+                                params: { fldId }
+                            });
+                            const parentCopy = { ...parentData };
+                            const parentPathArray = parentData.path.split('/');
+                            const doc_name = parentPathArray[parentPathArray.length - 1];
+                            const is_dir = true;
+                            const permissions: PermissionTypes = createPermissionObj({ permissionId: parentCopy.permissions });
+                            let children: string[] = [];
+                            if (Array.isArray(data.folders)) {
+                                children = data.folders.map((child) => {
+                                    const childCopy = { ...child };
+                                    const childPathArray = childCopy.path.split('/');
+                                    const childDocName = childPathArray[childPathArray.length - 1];
+                                    const childIsDir = true;
+                                    const childPermissions: PermissionTypes = createPermissionObj({ permissionId: childCopy.permissions });
+                                    const childObj: FolderInterface & { children: string[] } = {
+                                        doc_name: childDocName,
+                                        is_dir: childIsDir,
+                                        ...childCopy,
+                                        permissions: childPermissions,
+                                        children: []
+                                    };
+                                    someChildren.push(childObj);
+                                    return child.path;
+                                });
+                            } else if (isObject(data.folders) && !isEmpty(data.folders)) {
+                                children = [data.folders.path];
+                            }
+                            return { doc_name, is_dir, ...parentCopy, permissions, children: children };
+                        })
+                    );
+
+                    return { data: { folders: [...expandedChildren, ...someChildren.filter((x) => !expanded.includes(x.path))] } };
+                } catch (e) {
+                    if (e instanceof Error) {
+                        return { error: e.message };
+                    } else {
+                        return { error: e };
+                    }
+                }
+            },
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
+                if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_FOLDERS_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
         isFolderValid: build.query<any, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_IS_VALID}`, method: 'GET', params: { fldId } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
@@ -286,6 +349,7 @@ export const {
     useGetFoldersPropertiesQuery,
     useGetFoldersContentPropsInfoQuery,
     useGetFoldersChildrenQuery,
+    useGetFoldersExpandedChildrenQuery,
     useIsFolderValidQuery,
     useGetFolderPathQuery,
     /**
