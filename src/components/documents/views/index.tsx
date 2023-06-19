@@ -1,9 +1,10 @@
 import React, { Suspense } from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Skeleton, Stack, useMediaQuery } from '@mui/material';
+import { Box, Skeleton, Stack, SxProps, Theme, useMediaQuery } from '@mui/material';
 import { FileBrowserContentProps } from 'components/documents/Interface/FileBrowser';
 import { theme } from 'components/styles/themes';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { UriHelper } from 'utils/constants/UriHelper';
 const RightSidebar = React.lazy(() =>
     import('components/documents/views/main/sidebars')
         .then((module) => ({ default: module.RightSidebar }))
@@ -27,15 +28,17 @@ export const LazyLoader = React.memo(
     ({
         align,
         height,
-        width
+        width,
+        sx
     }: {
         align?: 'normal' | 'stretch' | 'start' | 'end' | 'center' | 'flex-start' | 'flex-end' | 'baseline' | 'initial' | 'inherit';
         justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly' | 'initial' | 'inherit';
         height?: number | string;
         width?: number | string;
+        sx?: SxProps<Theme>;
     }) => (
         <Box display="flex" justifyContent="center" alignItems={align ?? 'center'} minHeight="100%" minWidth="100%">
-            <Skeleton sx={{ minWidth: 20, minHeight: 15, width: width ?? '20%', height: height ?? 15 }} />
+            <Skeleton sx={{ minWidth: 20, minHeight: 15, width: width ?? '20%', height: height ?? 15, ...sx }} />
         </Box>
     )
 );
@@ -56,7 +59,7 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 px={1}
                 pt={1}
                 sx={{
-                    transition: '0.2s width',
+                    transition: `${UriHelper.TRANSITION} width'`,
                     transitionTimingFunction: 'ease-in-out'
                 }}
             >
@@ -68,7 +71,7 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 height="100%"
                 width={md ? '100%' : splitScreen ? '50%' : '75%'}
                 sx={{
-                    transition: '0.2s width',
+                    transition: `${UriHelper.TRANSITION} width`,
                     transitionTimingFunction: 'ease-in-out'
                 }}
             >
@@ -86,7 +89,7 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
                 justifyContent="center"
                 alignItems="center"
                 sx={{
-                    transition: '0.2s width',
+                    transition: `${UriHelper.TRANSITION} width'`,
                     transitionTimingFunction: 'ease-in-out'
                 }}
             >
