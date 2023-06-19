@@ -14,7 +14,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import { useSpring, animated } from '@react-spring/web';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error } from 'ui-component/LoadHandlers';
-import { isArray, isEmpty, isNull, isString, isUndefined, nth, omit, uniqueId } from 'lodash';
+import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, omit, uniqueId } from 'lodash';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
@@ -22,8 +22,8 @@ import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { LazyLoader } from '../..';
-import { useHandleChangeRoute } from 'utils/hooks';
-import { FolderInterface } from 'global/interfaces';
+import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
+import { FolderInterface, GenericDocument } from 'global/interfaces';
 function TransitionComponent(props: TransitionProps) {
     const style = useSpring({
         from: {
@@ -90,7 +90,7 @@ function StyledTreeItem(props: TreeItemProps) {
         <StyledTreeItemRoot
             nodeId={nodeId}
             label={
-                !nodeId.includes('loader') ? (
+                !nodeId?.includes('loader') ? (
                     <Typography variant="body2" color="text.primary" noWrap>
                         {label}
                     </Typography>
@@ -101,7 +101,7 @@ function StyledTreeItem(props: TreeItemProps) {
                 )
             }
             {...otherOmitted}
-            isLoader={nodeId.includes('loader')}
+            isLoader={nodeId?.includes('loader')}
         />
     );
 }
@@ -120,21 +120,20 @@ export function LeftSidebar() {
     const { selected, actions } = useBrowserStore();
     const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+    const [treeMap, setTreeMap] = React.useState<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>(new Map());
 
     // =========================== | Controlled treeview Function | ================================//
     const [expanded, setExpanded] = React.useState<string[]>([]);
     const [currentExpanded, setCurrentExpanded] = React.useState<string | null>(null);
 
     // =========================== | CUSTOM HOOKS | ================================//
-    // const handleChangeRoute = () => {
-    //     // if (path !== null || path !== undefined) {
-    //     //     const encodedPathParam = decodeURIComponent(path);
-    //     // }
-    // };
+
     const { paramArray, pathParam, pathname, handleChangeRoute: handleDocumentClick } = useHandleChangeRoute();
 
     React.useEffect(() => {
-        !isNull(paramArray) && setExpanded(paramArray);
+        if (!isNull(paramArray)) {
+            setExpanded(paramArray);
+        }
     }, []);
 
     React.useEffect(() => {
@@ -273,6 +272,31 @@ export function LeftSidebar() {
 
         return tree;
     }
+
+    const recursiveMapUpdate = (
+        obj: GenericDocument & { children: Array<string | null> | null; hasChildren: boolean },
+        pathToCompare: string,
+        children?: string[]
+    ): (GenericDocument & { children: Array<GenericDocument | null> | null }) | null => {
+        const objCopy = { ...obj };
+        if (expanded.includes(pathToCompare) && treeMap.has(pathToCompare)) {
+            const doc = treeMap.get(pathToCompare);
+            if (!isUndefined(doc)) {
+                const children = doc.children.map((child) => {
+                    if (treeMap.has(child)) {
+                        if (!isUndefined(treeMap.get(child)) && expanded.includes(child)) {
+                            // @ts-expect-error expected
+                            return recursiveMapUpdate(treeMap.get(child), child);
+                        }
+                        return treeMap.get(child) ?? null;
+                    } else return null;
+                });
+                // @ts-expect-error expected
+                objCopy.children = children;
+            }
+        }
+        return { ...objCopy } as GenericDocument & { children: Array<GenericDocument | null> | null };
+    };
     // =========================== | Data Functions | ================================//
     /**
      * Fetch root folder
@@ -300,16 +324,16 @@ export function LeftSidebar() {
                     return [rootFolder.path];
                 }
             });
-            actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
-            const data: RenderTree = {
-                id: rootFolder.path,
-                doc_name: rootFolder.doc_name,
-                hasChildren: rootFolder.hasChildren,
-                index: 0,
-                is_dir: true,
-                children: [null]
-            };
-            setData(data);
+            // actions.setSelected([{ id: rootFolder.path, is_dir: true }]);
+            // const data: RenderTree = {
+            //     id: rootFolder.path,
+            //     doc_name: rootFolder.doc_name,
+            //     hasChildren: rootFolder.hasChildren,
+            //     index: 0,
+            //     is_dir: true,
+            //     children: [null]
+            // };
+            // setData(data);
         }
     }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, rootUrl]);
     // ================================== | FETCH: CHILDREN  | ================================== //
@@ -342,83 +366,91 @@ export function LeftSidebar() {
             skip: isUndefined(currentExpanded) || isNull(currentExpanded) || isEmpty(currentExpanded)
         }
     );
-    console.log(childrenFiles, 'FILES');
+
+    // React.useEffect(() => {
+    //     if (
+    //         folderChildrenIsSuccess &&
+    //         !folderChildrenIsFetching &&
+    //         !folderChildrenIsLoading &&
+    //         isArray(folderChildren.folders) &&
+    //         childrenFilesIsSuccess &&
+    //         !childrenFilesIsFetching &&
+    //         !childrenFilesIsLoading &&
+    //         isArray(childrenFiles.documents) &&
+    //         currentExpanded !== null
+    //     ) {
+    //         const newChildren: RenderTree[] = folderChildren.folders.map((child: FolderInterface, i: number) => {
+    //             const treeItem: RenderTree = {
+    //                 id: child.path,
+    //                 doc_name: child.doc_name,
+    //                 children: child.hasChildren ? [null] : [],
+    //                 is_dir: true,
+    //                 hasChildren: child.hasChildren
+    //             };
+    //             treeItem['index'] = i;
+    //             return treeItem;
+    //         });
+    //         const newFilesChildren: RenderTree[] = childrenFiles.documents.map((child, i: number) => {
+    //             const treeItem: RenderTree = {
+    //                 id: child.path,
+    //                 doc_name: child.doc_name,
+    //                 children: [],
+    //                 is_dir: false,
+    //                 hasChildren: false,
+    //                 mimeType: child.mimeType
+    //             };
+    //             treeItem['index'] = i;
+    //             return treeItem;
+    //         });
+    //         setData((data) => {
+    //             let dataCopy = data !== null ? { ...data } : null;
+    //             dataCopy = expanded.includes(currentExpanded)
+    //                 ? recursiveUpdate(data, currentExpanded, [...newChildren, ...newFilesChildren])
+    //                 : dataCopy;
+    //             return dataCopy !== null ? { ...dataCopy } : null;
+    //         });
+    //     }
+    // }, [
+    //     rootUrl,
+    //     rootFolder,
+    //     folderChildrenIsSuccess,
+    //     folderChildrenIsFetching,
+    //     folderChildrenIsLoading,
+    //     childrenFilesIsFetching,
+    //     childrenFilesIsSuccess,
+    //     childrenFilesIsLoading,
+    //     childrenFiles,
+    //     folderChildren,
+    //     currentExpanded,
+    //     expanded
+    // ]);
+    const {} = useTreeMap({ expanded, treeMap, setTreeMap });
     /**
      * add children folders to tree
      */
     React.useEffect(() => {
         if (
-            folderChildrenIsSuccess &&
-            !folderChildrenIsFetching &&
-            !folderChildrenIsLoading &&
-            isArray(folderChildren.folders) &&
-            childrenFilesIsSuccess &&
-            !childrenFilesIsFetching &&
-            !childrenFilesIsLoading &&
-            isArray(childrenFiles.documents) &&
-            currentExpanded !== null
+            !isNull(rootFolder) &&
+            !isUndefined(rootFolder) &&
+            expanded.includes(rootFolder.path) &&
+            !isUndefined(treeMap.get(rootFolder.path))
         ) {
-            const newChildren: RenderTree[] = folderChildren.folders.map((child: FolderInterface, i: number) => {
-                const treeItem: RenderTree = {
-                    id: child.path,
-                    doc_name: child.doc_name,
-                    children: child.hasChildren ? [null] : [],
-                    is_dir: true,
-                    hasChildren: child.hasChildren
-                };
-                // if (isArray(expanded) && expanded.includes(child.path)) {
-                //     console.log(child.path, 'CHILD PATH');
-                //     setExpanded((oldExpanded) => {
-                //         if (!isEmpty(oldExpanded)) {
-                //             return [...new Set([...oldExpanded, child.path])];
-                //         } else {
-                //             return [child.path];
-                //         }
-                //     });
-                // }
-                treeItem['index'] = i;
-                return treeItem;
-            });
-            const newFilesChildren: RenderTree[] = childrenFiles.documents.map((child, i: number) => {
-                const treeItem: RenderTree = {
-                    id: child.path,
-                    doc_name: child.doc_name,
-                    children: [],
-                    is_dir: false,
-                    hasChildren: false,
-                    mimeType: child.mimeType
-                };
-                treeItem['index'] = i;
-                return treeItem;
-            });
-            setData((data) => {
-                let dataCopy = data !== null ? { ...data } : null;
-                dataCopy = expanded.includes(currentExpanded)
-                    ? recursiveUpdate(data, currentExpanded, [...newChildren, ...newFilesChildren])
-                    : dataCopy;
-                return dataCopy !== null ? { ...dataCopy } : null;
-            });
+            setData(null);
+            // @ts-expect-error exp
+            const obj: GenericDocument & { children: Array<string | null> | null; hasChildren: boolean } = treeMap.get(rootFolder.path);
+            if (!isUndefined(rootFolder) && !isNull(rootFolder)) {
+                const test = recursiveMapUpdate(obj, rootFolder.path);
+                actions.setSelected([{ id: last(paramArray) ?? '', is_dir: true }]);
+                // @ts-expect-error expected
+                setData(test);
+            }
         }
-    }, [
-        rootUrl,
-        rootFolder,
-        folderChildrenIsSuccess,
-        folderChildrenIsFetching,
-        folderChildrenIsLoading,
-        childrenFilesIsFetching,
-        childrenFilesIsSuccess,
-        childrenFilesIsLoading,
-        childrenFiles,
-        folderChildren,
-        currentExpanded,
-        expanded
-    ]);
-
+    }, [treeMap, expanded]);
     return (
         <>
             {/* Initial Loader */}
-            {rootFolderIsFetching ? (
-                <LazyLoader align="flex-start" width="80%" justify="flex-start" height={20} />
+            {rootFolderIsFetching || isNull(data) || (!isUndefined(rootFolder) && data.id !== rootFolder.path) ? (
+                <LazyLoader align="center" width="80%" justify="center" height={20} />
             ) : rootFolderError ? (
                 <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="100%" minWidth="100%">
                     <Error height={50} width={50} />
