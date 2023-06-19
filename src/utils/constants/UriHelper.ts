@@ -217,11 +217,11 @@ export const UriHelper = {
     WORKFLOW_SET_TASK_INSTANCE_ACTOR_ID: 'workflow/setTaskInstanceActorId',
     WORKFLOW_START_TASKINSTANCE: 'workflow/startTaskInstance',
     WORKFLOW_END_TASKINSTANCE: 'workflow/endTaskInstance',
-    WORKFLOW_GET_PROCESS_DEFINITION_FORMS: 'workflow/getProcessDefinitionForms'
-
+    WORKFLOW_GET_PROCESS_DEFINITION_FORMS: 'workflow/getProcessDefinitionForms',
     /**
      * getUri
      */
+    TRANSITION: '0.1s'
 };
 /**
  *

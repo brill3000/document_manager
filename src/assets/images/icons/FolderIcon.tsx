@@ -9,7 +9,7 @@ function FolderIcon({ size, selected }: { size: number; selected?: boolean }) {
             display="flex"
             alignItems="center"
             sx={{
-                transition: '0.2s all',
+                transition: '0.1s all',
                 transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
             }}
         >

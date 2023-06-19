@@ -11,6 +11,7 @@ import { FileDetailsList } from './DetailsList/FileDetailsList';
 import { isEmpty } from 'lodash';
 import { BsCursorFill } from 'react-icons/bs';
 import { LazyLoader } from '../..';
+import { UriHelper } from 'utils/constants/UriHelper';
 
 export function RightSidebar() {
     const { browserHeight } = useViewStore();
@@ -63,7 +64,7 @@ export function RightSidebar() {
                         minWidth="100%"
                         sx={{
                             opacity: splitScreen ? 1 : 0,
-                            transition: '0.2s all',
+                            transition: `${UriHelper.TRANSITION} all`,
                             transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                         }}
                     >
@@ -81,7 +82,7 @@ export function RightSidebar() {
                     minWidth="100%"
                     sx={{
                         opacity: splitScreen ? 1 : 0,
-                        transition: '0.2s all',
+                        transition: `${UriHelper.TRANSITION} all`,
                         transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                     }}
                 >

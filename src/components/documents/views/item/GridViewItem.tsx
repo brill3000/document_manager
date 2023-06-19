@@ -16,6 +16,7 @@ import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
 import FolderOpenIcon from 'assets/images/icons/FolderOpenIcon';
+import { UriHelper } from 'utils/constants/UriHelper';
 
 export const MemorizedFcFolder = React.memo(FolderIcon);
 export const MemorizedFcFolderOpen = React.memo(FolderOpenIcon);
@@ -154,7 +155,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     '& :hover': {
                                         cursor: isRenaming ? 'text' : 'pointer'
                                     },
-                                    transition: '0.2s all',
+                                    transition: `${UriHelper.TRANSITION} all`,
                                     transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                     fontFamily: 'inherit',
                                     display: 'flex',
@@ -309,7 +310,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                 '& :hover': {
                                     cursor: isRenaming ? 'text' : 'pointer'
                                 },
-                                transition: '0.2s all',
+                                transition: `${UriHelper.TRANSITION} all`,
                                 transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 fontFamily: 'inherit',
                                 display: 'flex',
