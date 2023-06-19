@@ -4,13 +4,18 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { FolderInterface, GenericDocument, TreeMap } from 'global/interfaces';
+import { FolderInterface, TreeMap } from 'global/interfaces';
 import { first, isArray, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
-import { useDeleteFolderDocMutation, useMoveFolderMutation, useRenameFolderMutation } from 'store/async/dms/folders/foldersApi';
+import {
+    useDeleteFolderDocMutation,
+    useGetFoldersExpandedChildrenQuery,
+    useMoveFolderMutation,
+    useRenameFolderMutation
+} from 'store/async/dms/folders/foldersApi';
 import { Permissions } from './constants/Permissions';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
@@ -79,7 +84,29 @@ export const useHandleChangeRoute = () => {
     };
 };
 
-// export const useTreeMap = ({ expanded, treeMap, setTreeMap }: TreeMap) => {};
+export const useTreeMap = ({ expanded, treeMap, setTreeMap }: TreeMap) => {
+    const { data } = useGetFoldersExpandedChildrenQuery({ expanded });
+
+    React.useEffect(() => {
+        if (!isUndefined(data) && isArray(data.folders)) {
+            setTreeMap((oldMap) => {
+                const map = new Map(oldMap);
+                for (let index = 0; index < data.folders.length; index++) {
+                    if (!isUndefined(data.folders[index].status)) {
+                        data.folders[index].status === 'fulfilled' &&
+                            map.set(data.folders[index].value.path, { id: data.folders[index].value.path, ...data.folders[index].value });
+                    } else {
+                        map.set(data.folders[index].path, { id: data.folders[index].path, ...data.folders[index] });
+                    }
+                }
+                return map;
+            });
+        }
+    }, [data]);
+    return {
+        expandedData: data
+    };
+};
 
 export const createPermissionObj = ({ permissionId }: { permissionId: number }): PermissionTypes => {
     const folderPermission: PermissionTypes = {

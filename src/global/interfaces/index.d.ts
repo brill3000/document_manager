@@ -232,6 +232,6 @@ export interface FolderReponseInterface extends GenericDocumentResponse {
 
 export interface TreeMap {
     expanded: string[];
-    treeMap: Map<string, GenericDocument[]>;
-    setTreeMap: React.Dispatch<SetStateAction<Map<string, GenericDocument>>>;
+    treeMap: Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>;
+    setTreeMap: React.Dispatch<SetStateAction<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>>;
 }
