@@ -9,7 +9,7 @@ import { first, isArray, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
+import { useDeleteFileMutation, useExtractFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import {
     useCreateFolderMutation,
     useCreateSimpleFolderMutation,
@@ -218,6 +218,8 @@ export const useHandleActionMenu = ({
     const [deleteFolder] = useDeleteFolderDocMutation();
     const [deleteFile] = useDeleteFileMutation();
     const [renameFile] = useRenameFileMutation();
+    const [extractFile] = useExtractFileMutation();
+
     const [renameFolder] = useRenameFolderMutation();
     const [createSimpleFolder] = useCreateSimpleFolderMutation();
     // ================================= | EVENT HANDLERS | ============================= //
@@ -229,7 +231,7 @@ export const useHandleActionMenu = ({
 
     const handleMenuClick = (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions'
+        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
     ) => {
         e.preventDefault();
         try {
@@ -260,6 +262,25 @@ export const useHandleActionMenu = ({
                             const deleteDoc = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
                             if (deleteDoc && !isUndefined(path) && !isNull(path)) {
                                 is_dir ? deleteFolder({ fldId: path }) : deleteFile({ docId: path });
+                                setContextMenu(null);
+                            } else {
+                                setContextMenu(null);
+                            }
+                        } catch (e) {
+                            if (e instanceof Error) {
+                                console.log(e.message);
+                            } else {
+                                console.log(e);
+                            }
+                        }
+                        setContextMenu(null);
+                        break;
+                    case 'extract':
+                        try {
+                            // eslint-disable-next-line no-restricted-globals
+                            const deleteDoc = confirm(`Extract document?`);
+                            if (deleteDoc && !isUndefined(path) && !isNull(path)) {
+                                !is_dir && extractFile({ docId: path });
                                 setContextMenu(null);
                             } else {
                                 setContextMenu(null);

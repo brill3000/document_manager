@@ -276,6 +276,14 @@ export const filesApi = createApi({
                 }
             }
         }),
+        extractFile: build.mutation<any, { docId: string }>({
+            query: ({ docId }) => ({
+                url: UriHelper.DOCUMENT_EXTRACT,
+                method: 'PUT',
+                params: { docId }
+            }),
+            invalidatesTags: ['DMS_FILES']
+        }),
         setFileProperties: build.mutation<any, { doc: string }>({
             query: ({ doc }) => ({
                 url: UriHelper.DOCUMENT_SET_PROPERTIES,
@@ -417,6 +425,7 @@ export const {
     /**
      * Mutations: PUT
      */
+    useExtractFileMutation,
     useRenameFileMutation,
     useSetFilePropertiesMutation,
     useCancelCheckoutMutation,

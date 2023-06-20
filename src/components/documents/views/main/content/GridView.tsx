@@ -60,7 +60,8 @@ export function GridView({ closeContext }: ViewsProps): React.ReactElement {
               isArray(childrenDocuments?.documents) &&
               isEmpty([...folderChildren.folders, ...childrenDocuments.documents, ...newFiles]) ? (
                 [...folderChildren.folders, ...childrenDocuments.documents, ...newFiles].map((document: GenericDocument) => (
-                    <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                    // <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                    <></>
                 ))
             ) : (
                 <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">

@@ -220,7 +220,7 @@ export function ListViewItem({
     };
     const handleMenuClick = (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions'
+        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
     ) => {
         e.preventDefault();
         try {

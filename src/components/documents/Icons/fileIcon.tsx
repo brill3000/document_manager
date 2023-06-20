@@ -4,6 +4,7 @@ import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/r
 import { green } from '@mui/material/colors';
 import { darken } from '@mui/material';
 import { isNull, isUndefined } from 'lodash';
+import UnzipIcon from 'assets/images/icons/UnzipIcon';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -11,6 +12,7 @@ const MemorizedRiFileExcel2Fill = React.memo(RiFileExcel2Fill);
 const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
 const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
+export const MemorizedBsFillFileEarmarkUnZipFill = React.memo(UnzipIcon);
 
 export interface FileIconProps {
     mimeType: string | undefined;

@@ -71,6 +71,7 @@ export const UriHelper = {
     DOCUMENT_GET_CHILDREN: 'document/getChildren',
     DOCUMENT_RENAME: 'document/rename',
     DOCUMENT_SET_PROPERTIES: 'document/setProperties',
+    DOCUMENT_EXTRACT: 'document/unzip',
     DOCUMENT_CHECKOUT: 'document/checkout',
     DOCUMENT_CANCEL_CHECKOUT: 'document/cancelCheckout',
     DOCUMENT_FORCE_CANCEL_CHECKOUT: 'document/forceCancelCheckout',

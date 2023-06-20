@@ -12,7 +12,7 @@ import { RenameDocument } from '../views/item';
 import { useHandleActionMenu } from 'utils/hooks';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 
-export function RenderCustomCell({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps): React.ReactNode {
+export function RenderCustomCell({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps) {
     const theme = useTheme();
     const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc, created, permissions, subscribed } = document;
 

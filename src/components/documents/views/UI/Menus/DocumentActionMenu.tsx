@@ -7,6 +7,7 @@ import { StyledMenu } from './StyledMenu';
 import { CiEdit, CiEraser } from 'react-icons/ci';
 import { theme } from '../../../Themes/theme';
 import { MdSecurity } from 'react-icons/md';
+import { MemorizedBsFillFileEarmarkUnZipFill } from 'components/documents/Icons/fileIcon';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -15,12 +16,14 @@ interface ActionMenuProps {
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     handleMenuClick: (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions'
+        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
     ) => void;
 }
 
-export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked }: ActionMenuProps) => {
-    const [selected, setSelected] = React.useState<'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'delete' | 'permissions' | null>(null);
+export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir }: ActionMenuProps) => {
+    const [selected, setSelected] = React.useState<
+        'open' | 'copy' | 'cut' | 'rename' | 'extract' | 'edit' | 'delete' | 'permissions' | null
+    >(null);
     React.useEffect(() => {
         return () => {
             setSelected(null);
@@ -116,6 +119,21 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                         <CiEraser size={20} />
                         <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
                             Edit
+                        </Typography>
+                    </Stack>
+                </MenuItem>
+                <MenuItem
+                    selected={selected === 'extract'}
+                    onClick={(e) => {
+                        setSelected('extract');
+                        handleMenuClick(e, 'extract');
+                    }}
+                    disabled={locked || is_dir}
+                >
+                    <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
+                        <MemorizedBsFillFileEarmarkUnZipFill size={17} />
+                        <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
+                            Extract
                         </Typography>
                     </Stack>
                 </MenuItem>
