@@ -29,9 +29,6 @@ export function RightSidebar() {
             skip: !focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id)
         }
     );
-    // React.useEffect(() => {
-    //     console.log(!focused.is_dir || focused.id === null || focused.id === undefined || isEmpty(focused.id), 'FOCUSED');
-    // }, [focused]);
     const {
         data: fileInfo,
         error: fileInfoError,
