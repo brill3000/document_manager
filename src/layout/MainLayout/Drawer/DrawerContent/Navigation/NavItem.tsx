@@ -63,27 +63,6 @@ const NavItem = ({ item, level, children }: NavItemProps) => {
     // ================================= | ROUTES | ============================= //
     const { pathname } = useLocation();
 
-    // const handleChangeRoute = (path: string, is_dir: boolean) => {
-    //     if (path !== null || path !== undefined) {
-    //         actions.setSelected([{ id: path, is_dir }]);
-    //         const encodedPathParam = encodeURIComponent(path);
-    //         const documentPath = pathParam
-    //             ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
-    //             : `${pathname}/${encodedPathParam}`;
-    //         navigate(documentPath);
-    //     }
-    // };
-    useEffect(() => {
-        const pathArray = pathname.split('/');
-        if (isArray(pathArray) && !isEmpty(pathArray)) {
-            pathArray.includes('documents') && setOpen(true);
-            pathArray.shift();
-            pathArray.shift();
-            if (pathArray.length > 0) {
-                dispatch(activeItem({ openItem: [first(pathArray)] }));
-            }
-        }
-    }, [pathname]);
     const handleClick = () => {
         if (!isDisabled) setOpen(true);
     };
@@ -118,12 +97,15 @@ const NavItem = ({ item, level, children }: NavItemProps) => {
             dispatch(setUsers({ users: customers }));
         }
     };
-
+    // ============================== | CONSTANTS | =========================== //
     const Icon = item.icon;
     const itemIcon = item.icon ? <Icon style={{ fontSize: drawerOpen ? '1rem' : '1.25rem' }} /> : false;
     const menuChildren = item.children ? item.children.map((child) => child.id) : [];
     const isSelected = openItem.findIndex((id: string) => id === item.id || menuChildren?.includes(id)) > -1;
+    const textColor = 'text.primary';
+    const iconSelectedColor = 'primary.main';
 
+    // ============================== | EFFECTS | =========================== //
     // active menu item on page load
     useEffect(() => {
         const currentIndex = document.location.pathname
@@ -136,8 +118,17 @@ const NavItem = ({ item, level, children }: NavItemProps) => {
         // eslint-disable-next-line
     }, []);
 
-    const textColor = 'text.primary';
-    const iconSelectedColor = 'primary.main';
+    useEffect(() => {
+        const pathArray = pathname.split('/');
+        if (isArray(pathArray) && !isEmpty(pathArray)) {
+            pathArray.includes('documents') && setOpen(true);
+            pathArray.shift();
+            pathArray.shift();
+            if (pathArray.length > 0) {
+                dispatch(activeItem({ openItem: [first(pathArray)] }));
+            }
+        }
+    }, [pathname]);
 
     return (
         <>
