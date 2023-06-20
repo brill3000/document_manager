@@ -20,8 +20,8 @@ export const BorderLinearProgress = (props) => {
 export const StyledLinearProgress = styled(LinearProgress, {
     shouldForwardProp: (prop) => prop !== 'progressHeight' && prop !== 'progressBorderRadius'
 })(({ theme, progressHeight, progressBorderRadius }) => ({
-    height: progressHeight,
-    borderRadius: progressBorderRadius,
+    height: progressHeight ?? 10,
+    borderRadius: progressBorderRadius ?? 5,
     [`&.${linearProgressClasses.colorPrimary}`]: {
         backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800]
     },
