@@ -11,6 +11,8 @@ import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import {
+    useCreateFolderMutation,
+    useCreateSimpleFolderMutation,
     useDeleteFolderDocMutation,
     useGetFoldersExpandedChildrenQuery,
     useMoveFolderMutation,
@@ -19,6 +21,7 @@ import {
 import { Permissions } from './constants/Permissions';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 export const useForwardRef = <T>(ref: React.ForwardedRef<T>) => {
     // @ts-expect-error expect the error
@@ -45,7 +48,8 @@ export const useHandleChangeRoute = () => {
     // ================================= | ROUTES | ============================= //
     const navigate = useNavigate();
     const { pathParam } = useParams();
-    const { pathname } = useLocation();
+    const { pathname, key } = useLocation();
+    const [searchParams] = useSearchParams();
 
     const handleChangeRoute = (path: string, is_dir: boolean) => {
         if (path !== null || path !== undefined) {
@@ -54,7 +58,7 @@ export const useHandleChangeRoute = () => {
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
                 : `${pathname}/${encodedPathParam}`;
-            navigate(documentPath);
+            navigate(documentPath + `?is_dir=${is_dir ? 'true' : 'false'}`);
         }
     };
     const paramArray: string[] | null = React.useMemo(() => {
@@ -74,17 +78,18 @@ export const useHandleChangeRoute = () => {
 
         return arr;
     }, [pathParam]);
-
     return {
         handleChangeRoute,
         navigate,
         pathParam,
         pathname,
-        paramArray
+        paramArray,
+        key,
+        is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true
     };
 };
 
-export const useTreeMap = ({ expanded, treeMap, setTreeMap }: TreeMap) => {
+export const useTreeMap = ({ expanded, setTreeMap }: TreeMap) => {
     const { data } = useGetFoldersExpandedChildrenQuery({ expanded });
 
     React.useEffect(() => {
@@ -194,17 +199,17 @@ export const useHandleActionMenu = ({
     is_dir,
     path,
     doc_name,
-    setContextMenu,
-    setRenameTarget
+    is_new,
+    setContextMenu
 }: {
     setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
-    setRenameTarget: React.Dispatch<SetStateAction<{ id: string; rename: boolean } | null>>;
     path: string;
     is_dir: boolean;
     doc_name: string;
+    is_new: boolean;
 }) => {
     // ================================= | ZUSTAND | ============================= //
-    const { focused, selected } = useBrowserStore();
+    const { focused, selected, actions, isCreating, renameTarget } = useBrowserStore();
     const { addToClipBoard } = useStore();
     const { setOpenPermissionDialog } = useViewStore();
     // ================================= | HOOKS | ============================= //
@@ -214,6 +219,7 @@ export const useHandleActionMenu = ({
     const [deleteFile] = useDeleteFileMutation();
     const [renameFile] = useRenameFileMutation();
     const [renameFolder] = useRenameFolderMutation();
+    const [createSimpleFolder] = useCreateSimpleFolderMutation();
     // ================================= | EVENT HANDLERS | ============================= //
 
     const handleMenuClose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -268,7 +274,7 @@ export const useHandleActionMenu = ({
                         setContextMenu(null);
                         break;
                     case 'rename':
-                        setRenameTarget(() => ({ id: path, rename: true }));
+                        actions.setRenameTarget({ id: path, rename: true, is_new });
                         setContextMenu(null);
                         break;
                     default:
@@ -279,8 +285,45 @@ export const useHandleActionMenu = ({
             console.error(e);
         }
     };
-    const renameFn = ({ value, renameTarget }: { value: string; renameTarget: { id: string; rename: boolean } | null }) => {
-        if (value && renameTarget && renameTarget.id !== value) {
+    const renameFn = async ({
+        value,
+        renameTarget
+    }: {
+        value: string;
+        renameTarget: { id: string; rename: boolean; is_new?: boolean } | null;
+    }) => {
+        if (value && renameTarget && renameTarget?.is_new && isCreating) {
+            try {
+                actions.setIsCreating(false);
+                // eslint-disable-next-line no-restricted-globals
+                const res = confirm('Create folder ? ');
+                if (res === true) {
+                    if (is_dir) {
+                        const newName = value;
+                        const newPath = renameTarget.id.split('/');
+                        newPath.pop();
+                        newPath.push(newName);
+                        await createSimpleFolder({
+                            fldPath: newPath.join('/')
+                        });
+                        actions.setIsCreating(false);
+                        actions.removeNewFolder();
+                        actions.setFocused(newPath.join('/'), true);
+                    }
+                    actions.setRenameTarget(null);
+                } else {
+                    actions.setIsCreating(false);
+                    actions.removeNewFolder();
+                    actions.setRenameTarget(null);
+                }
+            } catch (e) {
+                actions.setIsCreating(false);
+                actions.removeNewFolder();
+                if (e instanceof Error) {
+                    console.error(e.message);
+                } else console.log(e);
+            }
+        } else if (value && renameTarget && renameTarget.id !== value) {
             try {
                 // eslint-disable-next-line no-restricted-globals
                 const res = confirm('Rename document ? ');
@@ -313,9 +356,9 @@ export const useHandleActionMenu = ({
                         });
                     }
 
-                    setRenameTarget(null);
+                    actions.setRenameTarget(null);
                 } else {
-                    setRenameTarget(null);
+                    actions.setRenameTarget(null);
                 }
             } catch (e) {
                 if (e instanceof Error) {
@@ -323,13 +366,17 @@ export const useHandleActionMenu = ({
                 } else console.log(e);
             }
         } else {
-            setRenameTarget(null);
+            actions.setRenameTarget(null);
         }
     };
+    const isRenaming = React.useMemo(() => renameTarget && path !== undefined && renameTarget.id === path && renameTarget.rename, [
+        renameTarget
+    ]);
     return {
         handleMenuClick,
         handleMenuClose,
-        renameFn
+        renameFn,
+        isRenaming
     };
 };
 export const useHandleClickEvents = ({
@@ -343,7 +390,6 @@ export const useHandleClickEvents = ({
 }: {
     setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
-    setRenameTarget: React.Dispatch<SetStateAction<{ id: string; rename: boolean } | null>>;
     setRowSelected?: React.Dispatch<SetStateAction<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>>;
     path: string;
     is_dir: boolean;
@@ -351,11 +397,12 @@ export const useHandleClickEvents = ({
     locked?: boolean;
 }) => {
     // ================================= | ZUSTAND | ============================= //
-    const { actions } = useBrowserStore();
+    const { actions, isCreating } = useBrowserStore();
     const { setViewFile } = useViewStore();
     // ================================= | HOOKS | ============================= //
     const { handleChangeRoute } = useHandleChangeRoute();
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (isCreating === true) return;
         !isUndefined(setRowSelected) && setRowSelected({ path, is_dir, doc_name, locked });
         e.stopPropagation();
         e.preventDefault();
@@ -377,6 +424,7 @@ export const useHandleClickEvents = ({
         }
     };
     const handleDoubleClick = (disableDoubleClick: boolean) => {
+        if (isCreating === true) return;
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
             actions.setFocused(path, is_dir);
