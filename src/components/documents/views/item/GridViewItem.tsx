@@ -11,32 +11,49 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import { isUndefined } from 'lodash';
+import { isNull, isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
 import FolderOpenIcon from 'assets/images/icons/FolderOpenIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
+import { VirtuosoGridHandle } from 'react-virtuoso';
 
 export const MemorizedFcFolder = React.memo(FolderIcon);
 export const MemorizedFcFolderOpen = React.memo(FolderOpenIcon);
 
-function GridViewItem({ document, closeContext }: { document: GenericDocument; closeContext: boolean; splitScreen: boolean }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress } = document;
-    const { browserHeight } = useViewStore();
+function GridViewItem({
+    document,
+    closeContext
+}: {
+    document: GenericDocument;
+    closeContext: boolean;
+    splitScreen: boolean;
+    isScrolling?: boolean;
+    virtuoso: React.MutableRefObject<VirtuosoGridHandle | null>;
+    index: number;
+}): JSX.Element {
+    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
-    const { setDragging } = useStore((state) => state);
-    const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
     const { memorizedFileIcon } = useMemorizedDocumemtIcon();
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
     // ================================= | Zustand | ============================= //
-    const { actions, focused } = useBrowserStore();
+    const { actions, focused, isCreating, renameTarget } = useBrowserStore();
+    const { setDragging } = useStore((state) => state);
+    const { browserHeight } = useViewStore();
+
     // ================================= | Action Menu | ============================= //
-    const { handleMenuClick, handleMenuClose, renameFn } = useHandleActionMenu({ is_dir, path, doc_name, setContextMenu, setRenameTarget });
+    const { handleMenuClick, handleMenuClose, renameFn, isRenaming } = useHandleActionMenu({
+        is_dir,
+        path,
+        doc_name,
+        setContextMenu,
+        is_new: newDoc ?? false
+    });
     // ================================= | Drag & Drop | ============================= //
     const { preview, isDragging, drag, drop, isOver } = useDragAndDropHandlers({ is_dir, doc_name, path });
     // ================================= | Click Events Hook | ========================== //
@@ -46,7 +63,6 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         locked,
         setContextMenu,
         contextMenu,
-        setRenameTarget,
         doc_name
     });
 
@@ -54,6 +70,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         return path === focused.id;
     }, [path, focused]);
 
+    // ================================ | EFFECTS | ================================ //
     React.useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
     }, [preview]);
@@ -68,12 +85,15 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
         closeContext && setContextMenu(null);
     }, [closeContext]);
 
-    const isRenaming = React.useMemo(() => renameTarget && path !== undefined && renameTarget.id === path && renameTarget.rename, [
-        renameTarget
-    ]);
     React.useEffect(() => {
-        isRenaming && renameTarget && actions.setFocused(renameTarget?.id, is_dir);
-    }, [isRenaming, renameTarget]);
+        isRenaming && renameTarget && newDoc !== true && actions.setFocused(renameTarget?.id, is_dir);
+    }, [isRenaming, renameTarget, newDoc]);
+
+    React.useEffect(() => {
+        if (isCreating && newDoc === true) {
+            actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
+        }
+    }, [newDoc, isCreating]);
 
     return (
         <Grid key={path !== undefined ? path : 'key'} height="max-content" justifyContent="center" alignItems="center" width="100%">
@@ -95,11 +115,6 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                         >
                             <Box
                                 borderRadius={2}
-                                // {...(isFocused || isOver
-                                //     ? { bgcolor: alpha(grey[300], 0.5) }
-                                //     : isHovered
-                                //     ? { bgcolor: alpha(grey[300], 0.2) }
-                                //     : {})}
                                 width="max-content"
                                 height="max-content"
                                 onClick={handleClick}
@@ -168,6 +183,7 @@ function GridViewItem({ document, closeContext }: { document: GenericDocument; c
                                     <RenameDocument
                                         renameFn={(val) => renameFn({ value: val, renameTarget })}
                                         renameTarget={renameTarget}
+                                        is_new={newDoc ?? false}
                                         name={
                                             renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
                                                 ? document.doc_name

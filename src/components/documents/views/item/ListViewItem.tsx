@@ -38,9 +38,8 @@ export function ListViewItem({
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const { setDragging, addToClipBoard } = useStore((state) => state);
-    const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
-    const { actions, focused } = useBrowserStore();
+    const { actions, focused, renameTarget } = useBrowserStore();
     const { setOpenPermissionDialog } = useViewStore();
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
 
@@ -64,8 +63,6 @@ export function ListViewItem({
     const { pathname } = useLocation();
 
     // ================================= | RTK MUTATIONS | ============================ //
-    const [renameFolder] = useRenameFolderMutation();
-    const [renameFile] = useRenameFileMutation();
     const [moveFolder] = useMoveFolderMutation();
     const [deleteFolder] = useDeleteFolderDocMutation();
     const [moveFile] = useMoveFileMutation();
@@ -267,7 +264,7 @@ export function ListViewItem({
                         setContextMenu(null);
                         break;
                     case 'rename':
-                        setRenameTarget(() => ({ id: path, rename: true }));
+                        actions.setRenameTarget({ id: path, rename: true });
                         setContextMenu(null);
                         break;
                     default:
@@ -283,7 +280,7 @@ export function ListViewItem({
         renameTarget
     ]);
     const closeRename = () => {
-        setRenameTarget(null);
+        actions.setRenameTarget(null);
     };
     return (
         <ListItemButton

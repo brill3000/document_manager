@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
-import { VirtuosoGrid } from 'react-virtuoso';
+import { VirtuosoGrid, VirtuosoGridHandle } from 'react-virtuoso';
 import { GridVirtuosoContainer, GridVirtuosoItem, GridVirtuosoItemWrapper } from 'components/documents/views/UI/Grid';
 import { GenericDocument } from 'global/interfaces';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
-import { isArray, isEmpty, isUndefined } from 'lodash';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
@@ -18,13 +18,16 @@ const GridViewItem = React.lazy(() => import('components/documents/views/item').
 export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height: number }) {
     // ================================= | STATE | ================================ //
     const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    // const [isScrolling, setIsScrolling] = React.useState(false);
+    const virtuoso = React.useRef<VirtuosoGridHandle | null>(null);
 
     // ================================= | ZUSTAND | ================================ //
-    const { selected, uploadFiles } = useBrowserStore();
+    const { selected, uploadFiles, newFolder, focused } = useBrowserStore();
     const { browserHeight } = useViewStore();
 
     // ================================= | ROUTES | ================================ //
-    // const { pathParam } = useHandleChangeRoute();
+    const { pathParam } = useHandleChangeRoute();
 
     // ================================= | RTK QUERY | ================================ //
     const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
@@ -55,15 +58,23 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const documents: GenericDocument[] = React.useMemo(() => {
         if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
             const doc = [
+                ...(!isNull(newFolder) ? [newFolder] : []),
                 ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
                 ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
                 ...newFiles
             ];
             return doc;
         } else return [];
-    }, [childrenDocuments, folderChildren, newFiles, folderChildrenIsLoading, childrenDocumentsIsLoading]);
-
+    }, [childrenDocuments, folderChildren, newFiles, newFolder]);
     // ================================= | EFFECTS | ================================ //
+
+    React.useEffect(() => {
+        if (folderChildrenIsLoading || childrenDocumentsIsLoading) {
+            setIsLoading(true);
+        } else if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            setIsLoading(false);
+        }
+    }, [pathParam, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);
 
     React.useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -71,9 +82,37 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         setNewFiles(filesArray);
     }, [uploadFiles]);
 
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const index = isArray(documents) ? documents.findIndex((x) => x.path === focused.id) : null;
+            if (!isNull(index) && index > -1) {
+                virtuoso?.current?.scrollToIndex({
+                    index: index,
+                    align: 'center',
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [focused, documents, isLoading]);
+
     return (
         <>
-            {isEmpty(documents) ? (
+            {isLoading ? (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={browserHeight * 0.25}
+                    minWidth="100%"
+                >
+                    <LazyLoader />
+                </Box>
+            ) : isEmpty(documents) ? (
                 <Box
                     display="flex"
                     flexDirection="column"
@@ -93,11 +132,21 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
                         Item: GridVirtuosoItem,
                         List: GridVirtuosoContainer
                     }}
+                    ref={virtuoso}
+                    // isScrolling={setIsScrolling}
                     itemContent={(index, document) => (
                         <>
                             <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.25}>
                                 <Suspense fallback={<LazyLoader />}>
-                                    <GridViewItem closeContext={closeContext} document={document} key={document.path} splitScreen />
+                                    <GridViewItem
+                                        closeContext={closeContext}
+                                        document={document}
+                                        key={document.path}
+                                        index={index}
+                                        // isScrolling={isScrolling}
+                                        virtuoso={virtuoso}
+                                        splitScreen
+                                    />
                                 </Suspense>
                             </GridVirtuosoItemWrapper>
                         </>

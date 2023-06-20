@@ -1,4 +1,4 @@
-import { Components, TableVirtuoso } from 'react-virtuoso';
+import { Components, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
 import React, { Suspense } from 'react';
 import Table, { TableProps } from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -6,60 +6,71 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
-import { MemorizedFcFolder } from '../views/item/GridViewItem';
 import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
-import { isArray, isEmpty, isObject, isUndefined } from 'lodash';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
-import { getDateFromObject } from 'utils/constants/UriHelper';
-import { FileIconProps, fileIcon } from '../Icons/fileIcon';
-import { PermissionIconProps, permissionsIcon } from '../Icons/permissionsIcon';
-import { PermissionTypes } from '../Interface/FileBrowser';
-import { useHandleActionMenu } from 'utils/hooks';
+import { useHandleActionMenu, useHandleChangeRoute } from 'utils/hooks';
 import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
 import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 import { FolderEmpty } from 'ui-component/LoadHandlers';
 import { GenericDocument } from 'global/interfaces';
+import { LazyLoader } from '../views';
+import { RenderCustomCell } from './RenderCustomCell';
 
 const DragDropTableRow = React.lazy(() => import('./DragDropTableRow'));
 
 export function VirtualizedList({ height }: { height: number }) {
     // ========================= | STATE | =========================== //
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const virtuoso = React.useRef<TableVirtuosoHandle | null>(null);
 
-    const [rowSelected, setRowSelected] = React.useState<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>({
+    const [rowSelected, setRowSelected] = React.useState<{
+        path: string;
+        locked?: boolean;
+        doc_name: string;
+        is_dir: boolean;
+        newDoc?: boolean;
+    }>({
         path: '',
         doc_name: '',
         locked: false,
-        is_dir: false
+        is_dir: false,
+        newDoc: false
     });
-    const [renameTarget, setRenameTarget] = React.useState<{ id: string; rename: boolean } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
+
+    const disableDoubleClickFn = (disabled: boolean) => {
+        setDisableDoubleClick(disabled);
+    };
 
     // ========================= | THEME | =========================== //
     const theme = useTheme();
     // ========================= | ZUSTAND HOOKS | =========================== //
-    const { selected } = useBrowserStore();
+    const { selected, newFolder, uploadFiles, focused } = useBrowserStore();
+
+    // ================================= | ROUTES | ================================ //
+    const { pathParam } = useHandleChangeRoute();
 
     // ========================= | ICONS | =========================== //
-    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
-    const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
     // ================================= | Action Menu | ============================= //
     const { handleMenuClick, handleMenuClose } = useHandleActionMenu({
         is_dir: rowSelected.is_dir,
         path: rowSelected.path,
         doc_name: rowSelected.doc_name,
         setContextMenu,
-        setRenameTarget
+        is_new: rowSelected.newDoc ?? false
     });
 
     // ========================= | MUTATIONS | =========================== //
     const {
-        data: folderChildren
+        data: folderChildren,
         // error: folderChildrenError,
         // isFetching: folderChildrenIsFetching,
-        // isLoading: folderChildrenIsLoading
+        isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -84,7 +95,6 @@ export function VirtualizedList({ height }: { height: number }) {
                         {
                             // @ts-expect-error expected
                             <DragDropTableRow
-                                setRenameTarget={setRenameTarget}
                                 parentContextMenu={contextMenu}
                                 setContextParentMenu={setContextMenu}
                                 setRowSelected={setRowSelected}
@@ -103,10 +113,10 @@ export function VirtualizedList({ height }: { height: number }) {
         []
     );
     const {
-        data: childrenDocuments
+        data: childrenDocuments,
         // error: childrenDocumentsError,
         // isFetching: childrenDocumentsIsFetching,
-        // isLoading: childrenDocumentsnIsLoading
+        isLoading: childrenDocumentsIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -122,15 +132,59 @@ export function VirtualizedList({ height }: { height: number }) {
     const documents: GenericDocument[] = React.useMemo(() => {
         if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
             const doc = [
+                ...(!isNull(newFolder) ? [newFolder] : []),
                 ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
-                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : [])
+                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
+                ...newFiles
             ];
             return doc;
         } else return [];
-    }, [childrenDocuments, folderChildren]);
+    }, [childrenDocuments, folderChildren, newFiles, newFolder]);
+    // ========================= | EFFECTS | =========================== //
+    React.useEffect(() => {
+        if (folderChildrenIsLoading || childrenDocumentsIsLoading) {
+            setIsLoading(true);
+        } else if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            setIsLoading(false);
+        }
+    }, [pathParam, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);
+    React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
+        setNewFiles(filesArray);
+    }, [uploadFiles]);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const index = isArray(documents) ? documents.findIndex((x) => x.path === focused.id) : null;
+            if (!isNull(index) && index > -1) {
+                virtuoso?.current?.scrollToIndex({
+                    index: index,
+                    align: 'center',
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [focused, documents, isLoading]);
+
     return (
         <>
-            {isEmpty(documents) ? (
+            {isLoading ? (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={height * 0.25}
+                    minWidth="100%"
+                >
+                    <LazyLoader />
+                </Box>
+            ) : isEmpty(documents) ? (
                 <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                     <FolderEmpty height={100} width={100} />
                     <Typography variant="caption">Empty Folders</Typography>
@@ -138,15 +192,9 @@ export function VirtualizedList({ height }: { height: number }) {
             ) : (
                 <TableVirtuoso
                     style={{ height: height }}
-                    data={
-                        folderChildren !== undefined &&
-                        childrenDocuments !== undefined &&
-                        isArray(folderChildren?.folders) &&
-                        isArray(childrenDocuments?.documents)
-                            ? [...folderChildren.folders, ...childrenDocuments.documents]
-                            : []
-                    }
+                    data={documents}
                     components={TableComponents}
+                    ref={virtuoso}
                     fixedHeaderContent={() => (
                         <StyledTableRow>
                             <StyledTableCell
@@ -177,54 +225,12 @@ export function VirtualizedList({ height }: { height: number }) {
                         </StyledTableRow>
                     )}
                     itemContent={(index, document) => (
-                        <>
-                            <StyledTableCell
-                                sx={{
-                                    width: 350,
-                                    position: 'sticky',
-                                    left: 0,
-                                    borderRight: `1px solid ${theme.palette.divider}`
-                                }}
-                            >
-                                <Stack direction="row" spacing={1} alignItems="center">
-                                    <Checkbox
-                                        size="small"
-                                        checked={rowSelected.path === document.path}
-                                        inputProps={{
-                                            'aria-labelledby': document.path
-                                        }}
-                                        sx={{ p: 0 }}
-                                    />
-                                    {document.is_dir ? (
-                                        <MemorizedFcFolder size={16} />
-                                    ) : (
-                                        memorizedFileIcon({ mimeType: document.mimeType, size: 18, file_icon_margin: 0 })
-                                    )}
-                                    <Typography variant="caption" noWrap maxWidth="80%">
-                                        {document.doc_name}
-                                    </Typography>
-                                </Stack>
-                            </StyledTableCell>
-                            <StyledTableCell>{getDateFromObject(document.created).toString()}</StyledTableCell>
-
-                            {isObject(document.permissions) &&
-                                !isUndefined(document.permissions) &&
-                                Object.entries(document.permissions).map((p: [string, boolean]) => {
-                                    const perm = p[0] as keyof PermissionTypes;
-                                    return (
-                                        <StyledTableCell key={p[0]} sx={{ pl: 1.5 }}>
-                                            {memorizedPermissionsIcon({
-                                                type: perm,
-                                                permission: p[1],
-                                                theme: theme,
-                                                size: 10,
-                                                file_icon_margin: 0
-                                            })}
-                                        </StyledTableCell>
-                                    );
-                                })}
-                            <StyledTableCell>{String(document.subscribed)}</StyledTableCell>
-                        </>
+                        <RenderCustomCell
+                            rowSelected={rowSelected}
+                            document={document}
+                            setContextMenu={setContextMenu}
+                            disableDoubleClickFn={disableDoubleClickFn}
+                        />
                     )}
                 />
             )}
