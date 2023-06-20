@@ -1,4 +1,4 @@
-import { alpha, Box, Divider, IconButton, Skeleton, Typography } from '@mui/material';
+import { alpha, Box, Divider, IconButton, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
 import { CiSearch } from 'react-icons/ci';
@@ -8,23 +8,22 @@ import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { isArray, isEmpty, isNull } from 'lodash';
+import { useHandleChangeRoute } from 'utils/hooks';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 
 export default function TopNavHandles() {
     const tooltipDelay = 200;
-    const { selected, actions } = useBrowserStore();
+    const { selected } = useBrowserStore();
+    const { navigate, key } = useHandleChangeRoute();
     const handleBack = () => {
         if (Array.isArray(selected) && selected.length > 0) {
-            const currentPath = selected[selected.length - 1].id;
-            if (typeof currentPath === 'string') {
-                const pathArray = currentPath.split('/');
-                if (pathArray.length > 2) {
-                    pathArray.pop();
-                    const newPath = pathArray.join('/');
-                    actions.setSelected([{ id: newPath, is_dir: true }]);
-                }
-            }
+            navigate(-1);
+        }
+    };
+    const handleForward = () => {
+        if (Array.isArray(selected) && selected.length > 0) {
+            navigate(1);
         }
     };
     const {
@@ -103,15 +102,17 @@ export default function TopNavHandles() {
                             '&:hover': {
                                 color: (theme) => theme.palette.error.contrastText,
                                 bgcolor: (theme) => theme.palette.error.main
-                            }
+                            },
+                            height: '50%'
                         }}
                         onClick={handleBack}
+                        disabled={key === 'default'}
                     >
                         <IoReturnUpBackOutline size={17} />
                     </IconButton>
                 </HtmlTooltip>
 
-                {/* <HtmlTooltip
+                <HtmlTooltip
                     enterNextDelay={tooltipDelay}
                     placement="bottom-start"
                     title={
@@ -123,22 +124,22 @@ export default function TopNavHandles() {
                         </React.Fragment>
                     }
                     arrow
-                > */}
-                <IconButton
-                    color="primary"
-                    sx={{
-                        borderRadius: 1,
-                        '&:hover': {
-                            color: (theme) => theme.palette.primary.contrastText,
-                            bgcolor: (theme) => theme.palette.primary.main
-                        }
-                    }}
-                    disabled
-                    // onClick={handleForward}
                 >
-                    <IoReturnUpForwardOutline size={17} />
-                </IconButton>
-                {/* </HtmlTooltip> */}
+                    <IconButton
+                        color="primary"
+                        sx={{
+                            borderRadius: 1,
+                            '&:hover': {
+                                color: (theme) => theme.palette.primary.contrastText,
+                                bgcolor: (theme) => theme.palette.primary.main
+                            },
+                            height: '60%'
+                        }}
+                        onClick={handleForward}
+                    >
+                        <IoReturnUpForwardOutline size={17} />
+                    </IconButton>
+                </HtmlTooltip>
             </Stack>
             <Divider orientation="vertical" variant="fullWidth" flexItem />
             <Stack

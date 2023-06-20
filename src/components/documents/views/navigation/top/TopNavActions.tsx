@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from 'react-icons/bs';
-import { alpha, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { alpha, Box, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dropzone from 'react-dropzone';
 import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
@@ -11,11 +11,10 @@ import { isArray, isEmpty, isNaN, isNull, isUndefined } from 'lodash';
 import { UseModelActions } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { GenericDocument, JavaCalendar } from 'global/interfaces';
+import { FolderInterface, GenericDocument, JavaCalendar } from 'global/interfaces';
 import { useSnackbar } from 'notistack';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { useDispatch } from 'react-redux';
-
 const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
@@ -40,11 +39,8 @@ const uploadFile = async ({
                 !isNull(progressEvent.total) && !isUndefined(progressEvent.total)
                     ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
                     : null;
-            // dispatch(updateUploadProgress(progress));
-            console.log(`Upload progress for ${fileName}: ${progress}`);
             if (!isNaN(progress) && !isNull(progress)) {
                 actions.updateFileUploadingProgress(docPath, progress);
-                console.log(`Upload progress for ${fileName}: ${progress}`);
             }
         },
         headers: { 'Content-Type': 'multipart/form-data', Cookie: 'token=d0ce7166-59bc-455f-8fc8-dcf56e6c036d' }
@@ -59,11 +55,12 @@ export default function TopNavActions() {
     const minWidth = 'max-content';
     const tooltipDelay = 200;
     const theme = useTheme();
-    const { selected, actions } = useBrowserStore();
+    const { selected, actions, isCreating } = useBrowserStore();
     // const [createSimple] = useCreateSimpleFileMutation({});
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
     const timoutRef = React.useRef<any>(null);
+    // ============================= | EVENT HANDLERS | =============================== //
 
     const changeHandler = (files: File[]) => {
         try {
@@ -133,6 +130,44 @@ export default function TopNavActions() {
         }
     };
 
+    const handleCreate = () => {
+        actions.setIsCreating(true);
+        const parent =
+            isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir ? selected[selected.length - 1].id : null;
+        if (parent !== null) {
+            const docPath = `${parent}/new folder`;
+            const folderName = 'new folder';
+            const newDate = new Date();
+            const javaDate: JavaCalendar = {
+                year: newDate.getFullYear(),
+                month: newDate.getMonth(),
+                dayOfMonth: newDate.getUTCDay(),
+                hourOfDay: newDate.getHours(),
+                minute: newDate.getMinutes(),
+                second: newDate.getSeconds()
+            };
+            const newFolder: FolderInterface = {
+                author: 'undefined',
+                created: javaDate,
+                doc_name: folderName,
+                path: docPath,
+                permissions: { read: true, write: true, delete: true, security: true },
+                subscribed: false,
+                uuid: 'null',
+                is_dir: true,
+                hasChildren: false,
+                locked: false,
+                isLoading: true,
+                error: false,
+                newDoc: true
+            };
+            actions.addNewFolder(newFolder);
+        }
+    };
+    const handleClickAway = () => {
+        actions.setIsCreating(false);
+    };
+
     React.useEffect(() => {
         return () => {
             clearTimeout(timoutRef.current);
@@ -148,7 +183,7 @@ export default function TopNavActions() {
                     borderRadius: 1,
                     bgcolor: alpha(theme.palette.text.secondary, 0.01),
                     color: 'text.primary',
-                    transition: 'all .3s',
+                    transition: `${UriHelper.TRANSITION} all`,
                     transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                     '& svg': {
                         m: 0
@@ -166,8 +201,8 @@ export default function TopNavActions() {
                     direction="row"
                     spacing={1}
                     sx={{
-                        transition: 'all .2s',
-                        transitionTimingFunction: 'ease-in-out',
+                        transition: `${UriHelper.TRANSITION} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                         py: 0.3,
                         px: 0.5,
                         '&:hover': {
@@ -190,30 +225,34 @@ export default function TopNavActions() {
                             </React.Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pr: 0.7,
-                                py: 0.5,
-                                pl: 0.5,
-                                borderRadius: 1,
-                                '&:hover': {
-                                    color: (theme) => theme.palette.primary.contrastText,
-                                    bgcolor: (theme) => theme.palette.primary.main
-                                },
-                                width: 'max-content',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            direction="row"
-                            component={ButtonBase}
-                            columnGap={0.7}
-                        >
-                            <BsFolderPlus size={19} />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                Create Folder
-                            </Typography>
-                        </Stack>
+                        <Box>
+                            <Stack
+                                sx={{
+                                    pr: 0.7,
+                                    py: 0.5,
+                                    pl: 0.5,
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.primary.contrastText,
+                                        bgcolor: (theme) => theme.palette.primary.main
+                                    },
+                                    width: 'max-content',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                direction="row"
+                                component={ButtonBase}
+                                onClick={() => handleCreate()}
+                                disabled={isCreating}
+                                columnGap={0.7}
+                            >
+                                <BsFolderPlus size={19} />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    Create Folder
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
 
                     <Dropzone onDrop={changeHandler}>
@@ -245,6 +284,8 @@ export default function TopNavActions() {
                                             bgcolor: (theme) => theme.palette.primary.main
                                         },
                                         width: minWidth,
+                                        transition: `${UriHelper.TRANSITION} all`,
+                                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                         height: '100%'
                                     }}
                                     justifyContent="space-between"
@@ -309,9 +350,9 @@ export default function TopNavActions() {
                                     color: (theme) => theme.palette.secondary.contrastText,
                                     bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
                                 },
-                                transition: 'all .1s',
-                                transitionTimingFunction: 'ease-in-out',
                                 width: minWidth,
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 height: '100%'
                             }}
                             justifyContent="space-between"
@@ -353,9 +394,9 @@ export default function TopNavActions() {
                                     color: (theme) => theme.palette.secondary.contrastText,
                                     bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
                                 },
-                                transition: 'all .1s',
-                                transitionTimingFunction: 'ease-in-out',
                                 width: minWidth,
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 height: '100%'
                             }}
                             justifyContent="space-between"
@@ -418,6 +459,8 @@ export default function TopNavActions() {
                                     bgcolor: (theme) => darken(theme.palette.warning.main, 0.1)
                                 },
                                 width: minWidth,
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 height: '100%'
                             }}
                             justifyContent="space-between"
@@ -457,6 +500,8 @@ export default function TopNavActions() {
                                     bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
                                 },
                                 width: minWidth,
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                                 height: '100%'
                             }}
                             justifyContent="space-between"

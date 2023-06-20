@@ -1,5 +1,7 @@
-import { GenericDocument } from 'global/interfaces';
+import { FolderInterface, GenericDocument } from 'global/interfaces';
 import React, { RefObject, SetStateAction } from 'react';
+import { FileIconProps } from '../Icons/fileIcon';
+import { PermissionIconProps } from '../Icons/permissionsIcon';
 
 export interface FileBrowserProps {
     height?: key;
@@ -118,8 +120,12 @@ export interface UseModelActions {
     documentExists: (key: string) => boolean;
     setSplitScreen: (splitScreen: boolean) => void;
     addUploadingFile: (file: GenericDocument) => void;
+    addNewFolder: (folder: FolderInterface) => void;
+    removeNewFolder: () => boolean;
+    setIsCreating: (isCreating: boolean) => void;
     updateFileUploadingProgress: (fileId: string, progress: number) => void;
     removeUploadingFile: (fileId: string) => boolean;
+    setRenameTarget: (arg0: { id: string; rename: boolean; is_new?: boolean } | null) => void;
 }
 
 export interface StoreState {
@@ -132,6 +138,9 @@ export interface StoreState {
     initiateFileBrowser: (documents: DocumentType[]) => boolean | Error;
     actions: UseModelActions;
     uploadFiles: Map<string, GenericDocument>;
+    newFolder: FolderInterface | null;
+    isCreating: boolean;
+    renameTarget: { id: string; rename: boolean; is_new?: boolean } | null;
 }
 
 export type key = string;
@@ -162,4 +171,11 @@ export interface PermissionTypes {
     write: boolean;
     delete: boolean;
     security: boolean;
+}
+
+export interface RenderCustomProps {
+    rowSelected: { path: string; locked?: boolean | undefined; doc_name: string; is_dir: boolean; newDoc?: boolean | undefined };
+    document: GenericDocument;
+    disableDoubleClickFn: (disabled: boolean) => void;
+    setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
 }

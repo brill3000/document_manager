@@ -222,15 +222,15 @@ export const foldersApi = createApi({
             query: ({ fld }) => ({
                 url: UriHelper.FOLDER_CREATE,
                 method: 'POST',
-                body: { fld }
+                data: { fld }
             }),
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),
         createSimpleFolder: build.mutation<any, CreateFoldersSimpleProps>({
-            query: ({ docPath, content }) => ({
+            query: ({ fldPath }) => ({
                 url: UriHelper.FOLDER_CREATE_SIMPLE,
                 method: 'POST',
-                body: { docPath, content }
+                data: { fldPath }
             }),
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),
@@ -293,7 +293,7 @@ export const foldersApi = createApi({
             query: ({ doc }) => ({
                 url: UriHelper.DOCUMENT_SET_PROPERTIES,
                 method: 'PUT',
-                body: { doc }
+                data: { doc }
             }),
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),

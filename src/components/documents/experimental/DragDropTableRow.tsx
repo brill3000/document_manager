@@ -12,7 +12,6 @@ export type DragDropTableRowProps = TableRowProps & {
     item: GenericDocument;
     setContextParentMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     parentContextMenu: { mouseX: number; mouseY: number } | null;
-    setRenameTarget: React.Dispatch<SetStateAction<{ id: string; rename: boolean } | null>>;
     setRowSelected: React.Dispatch<SetStateAction<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>>;
     setDisableDoubleClick: React.Dispatch<SetStateAction<boolean>>;
     disableDoubleClick: boolean;
@@ -20,7 +19,7 @@ export type DragDropTableRowProps = TableRowProps & {
 };
 
 const DragDropTableRow = React.forwardRef<HTMLTableRowElement, DragDropTableRowProps>(({ ...props }, ref) => {
-    const { item, setContextParentMenu, parentContextMenu, setRenameTarget, setRowSelected, disableDoubleClick } = props;
+    const { item, setContextParentMenu, parentContextMenu, setRowSelected, disableDoubleClick } = props;
     // ================================= | STATE | ============================= //
     const innerRef = useForwardRef(ref);
     // ================================= | Zustand | ============================= //
@@ -38,7 +37,6 @@ const DragDropTableRow = React.forwardRef<HTMLTableRowElement, DragDropTableRowP
         doc_name: item.doc_name,
         setContextMenu: setContextParentMenu,
         contextMenu: parentContextMenu,
-        setRenameTarget,
         setRowSelected
     });
 

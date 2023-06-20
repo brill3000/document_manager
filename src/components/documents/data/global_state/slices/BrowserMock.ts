@@ -1,4 +1,4 @@
-import { GenericDocument } from 'global/interfaces';
+import { FolderInterface, GenericDocument } from 'global/interfaces';
 import { DocumentType, EditDocumentType, key, StoreState } from '../../../Interface/FileBrowser';
 import { create } from '../../../__mocks__/zustand';
 import { has, isEmpty, isNull } from 'lodash';
@@ -11,6 +11,9 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     focused: { id: null, is_dir: false },
     splitScreen: true,
     uploadFiles: new Map(),
+    newFolder: null,
+    isCreating: false,
+    renameTarget: null,
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -69,6 +72,24 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
                     uploadFiles: mapCopy
                 };
             });
+        },
+        addNewFolder: (folder: FolderInterface) => {
+            set(() => ({ newFolder: folder }));
+        },
+        setRenameTarget: (arg0: { id: string; rename: boolean; is_new?: boolean } | null) => {
+            if (isNull(arg0)) {
+                set(() => ({ renameTarget: null }));
+            } else {
+                const { id, rename, is_new } = arg0;
+                set(() => ({ renameTarget: { id, rename, is_new: is_new ?? false } }));
+            }
+        },
+        removeNewFolder: () => {
+            set(() => ({ newFolder: null }));
+            return get().newFolder === null;
+        },
+        setIsCreating: (isCreating: boolean) => {
+            set(() => ({ isCreating: isCreating }));
         },
         removeUploadingFile: (fileId: string) => {
             let has = false;

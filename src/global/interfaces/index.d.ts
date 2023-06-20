@@ -122,6 +122,7 @@ export interface GenericDocument {
     isLoading?: boolean;
     progress?: number;
     error?: boolean;
+    newDoc?: boolean;
 }
 
 export interface FolderInterface extends Omit<GenericDocument, 'permissions'> {
@@ -148,8 +149,7 @@ export interface CreateFoldersProps {
     fld: any;
 }
 export interface CreateFoldersSimpleProps {
-    docPath: string;
-    content: string;
+    fldPath: string;
 }
 
 interface GenericRenameProps {
