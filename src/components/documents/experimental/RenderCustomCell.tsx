@@ -14,7 +14,20 @@ import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
 
 export function RenderCustomCell({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps) {
     const theme = useTheme();
-    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc, created, permissions, subscribed } = document;
+    const {
+        doc_name,
+        path,
+        is_dir,
+        mimeType,
+        locked,
+        isLoading,
+        progress,
+        newDoc,
+        created,
+        permissions,
+        subscribed,
+        isExtracting
+    } = document;
 
     // ========================= | ICONS | =========================== //
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
@@ -34,6 +47,7 @@ export function RenderCustomCell({ rowSelected, document, disableDoubleClickFn, 
             actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
         }
     }, [newDoc, isCreating]);
+
     return (
         <>
             <StyledTableCell
@@ -75,6 +89,8 @@ export function RenderCustomCell({ rowSelected, document, disableDoubleClickFn, 
             <StyledTableCell>
                 {!isUndefined(progress) ? (
                     <StyledLinearProgress variant="determinate" value={progress ?? 0} />
+                ) : !isUndefined(isExtracting) ? (
+                    <StyledLinearProgress variant="indeterminate" />
                 ) : (
                     getDateFromObject(created).toString()
                 )}

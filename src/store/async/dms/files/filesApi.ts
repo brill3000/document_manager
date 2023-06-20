@@ -11,12 +11,14 @@ import {
     GetDocumentContentProps,
     MoveDocumentProps,
     RenameDocumentsProps,
-    FileInterface
+    FileInterface,
+    DeleteFileRequest
 } from 'global/interfaces';
 import { isEmpty, isNull, isObject, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { axiosBaseQuery, createPermissionObj } from 'utils/hooks';
+import { foldersApi } from '../folders/foldersApi';
 type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR' | 'DMS_FILE_INFO' | 'DMS_FILE_INFO_SUCCESS' | 'DMS_FILE_INFO_ERROR';
 
 export const filesApi = createApi({
@@ -276,13 +278,51 @@ export const filesApi = createApi({
                 }
             }
         }),
-        extractFile: build.mutation<any, { docId: string }>({
+        extractFile: build.mutation<any, { docId: string; parent: string }>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_EXTRACT,
                 method: 'PUT',
                 params: { docId }
             }),
-            invalidatesTags: ['DMS_FILES']
+            async onQueryStarted({ docId, parent }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = dispatch(
+                    filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+                        const draftCopy = draft.documents.map((cachedRole) => {
+                            if (cachedRole.path === docId) {
+                                cachedRole['isExtracting'] = true;
+                            }
+                            return cachedRole;
+                        });
+
+                        Object.assign(draft.documents, draftCopy);
+                    })
+                );
+
+                try {
+                    await queryFulfilled;
+                    dispatch(
+                        filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+                            const draftCopy = draft.documents.map((cachedRole) => {
+                                if (cachedRole.path === docId) {
+                                    cachedRole['isExtracting'] = false;
+                                }
+                                return cachedRole;
+                            });
+
+                            Object.assign(draft.documents, draftCopy);
+                        })
+                    );
+                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
+                    dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
+                } catch {
+                    patchChildrenResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         setFileProperties: build.mutation<any, { doc: string }>({
             query: ({ doc }) => ({
@@ -389,12 +429,29 @@ export const filesApi = createApi({
             invalidatesTags: ['DMS_FILES']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
-        deleteFile: build.mutation<any, GetDocumentContentProps>({
+        deleteFile: build.mutation<any, DeleteFileRequest>({
             query: ({ docId }) => ({
                 url: UriHelper.DOCUMENT_DELETE,
                 method: 'DELETE',
                 params: { docId }
             }),
+            async onQueryStarted({ docId, parent }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = dispatch(
+                    filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+                        draft.documents = draft.documents.filter((cachedRole) => cachedRole.path !== docId);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchChildrenResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            },
             invalidatesTags: ['DMS_FILES']
         })
     })

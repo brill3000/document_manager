@@ -4,6 +4,7 @@ import {
     CreateFoldersProps,
     CreateFoldersSimpleProps,
     CreateMissingFoldersProps,
+    DeleteFolderRequest,
     ExtendeCopyFoldersProps,
     FolderInterface,
     FolderReponseInterface,
@@ -330,12 +331,29 @@ export const foldersApi = createApi({
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
-        deleteFolderDoc: build.mutation<any, GetFoldersContentProps>({
+        deleteFolderDoc: build.mutation<any, DeleteFolderRequest>({
             query: ({ fldId }) => ({
                 url: UriHelper.FOLDER_DELETE,
                 method: 'DELETE',
                 params: { fldId }
             }),
+            async onQueryStarted({ fldId, parent }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = dispatch(
+                    foldersApi.util.updateQueryData('getFoldersChildren', { fldId: parent }, (draft) => {
+                        draft.folders = draft.folders.filter((cachedRole) => cachedRole.path !== fldId);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchChildrenResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            },
             transformResponse: (response: { data: any }) => response.data
         })
     })

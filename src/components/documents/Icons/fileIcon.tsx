@@ -5,6 +5,8 @@ import { green } from '@mui/material/colors';
 import { darken } from '@mui/material';
 import { isNull, isUndefined } from 'lodash';
 import UnzipIcon from 'assets/images/icons/UnzipIcon';
+import EmptyTrash from 'assets/images/icons/EmptyTrash';
+import EmptyFolder from 'assets/images/icons/EmptyFolder';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -13,6 +15,8 @@ const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
 const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
 export const MemorizedBsFillFileEarmarkUnZipFill = React.memo(UnzipIcon);
+export const MemorizedBsEmptyTrashFill = React.memo(EmptyTrash);
+export const MemorizedBsEmptyFolder = React.memo(EmptyFolder);
 
 export interface FileIconProps {
     mimeType: string | undefined;

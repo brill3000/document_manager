@@ -52,6 +52,16 @@ export interface GetDocumentContentProps {
     docId: string;
 }
 
+interface DeleteDocRequest {
+    parent: string;
+}
+export interface DeleteFileRequest extends DeleteDocRequest {
+    docId: string;
+}
+
+export interface DeleteFolderRequest extends DeleteDocRequest {
+    fldId: string;
+}
 export interface GetDocumentContentByVersionProps extends GetDocumentContentProps {
     versionId: string;
 }
@@ -120,6 +130,7 @@ export interface GenericDocument {
     size?: number;
     locked?: boolean;
     isLoading?: boolean;
+    isExtracting?: boolean;
     progress?: number;
     error?: boolean;
     newDoc?: boolean;

@@ -33,7 +33,7 @@ function GridViewItem({
     virtuoso: React.MutableRefObject<VirtuosoGridHandle | null>;
     index: number;
 }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc } = document;
+    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc, isExtracting } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
@@ -94,6 +94,10 @@ function GridViewItem({
             actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
         }
     }, [newDoc, isCreating]);
+
+    React.useEffect(() => {
+        console.log(isExtracting, 'IS EXTRACTING');
+    }, [isExtracting]);
 
     return (
         <Grid key={path !== undefined ? path : 'key'} height="max-content" justifyContent="center" alignItems="center" width="100%">
@@ -273,7 +277,7 @@ function GridViewItem({
                                         left={0}
                                         height="100%"
                                         width="100%"
-                                        bgcolor={alpha('rgb(0,0,0,1)', 0.015)}
+                                        bgcolor={alpha('rgb(0,0,0,1)', 0.01)}
                                         sx={{
                                             backdropFilter: 'blur(0.8px)',
                                             borderRadius: 2,
@@ -294,6 +298,38 @@ function GridViewItem({
                                         zIndex={20}
                                     >
                                         <FacebookCircularProgress value={progress} />
+                                    </Box>
+                                </>
+                            )}
+                            {!isUndefined(isExtracting) && isExtracting === true && (
+                                <>
+                                    <Box
+                                        position="absolute"
+                                        top={0}
+                                        left={0}
+                                        height="100%"
+                                        width="100%"
+                                        bgcolor={alpha('rgb(0,0,0,1)', 0.01)}
+                                        sx={{
+                                            backdropFilter: 'blur(0.8px)',
+                                            borderRadius: 2,
+                                            zIndex: 10
+                                        }}
+                                    ></Box>
+                                    <Box
+                                        sx={{
+                                            top: 10,
+                                            left: 0,
+                                            bottom: 0,
+                                            right: 0,
+                                            position: 'absolute',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                        zIndex={20}
+                                    >
+                                        <FacebookCircularProgress />
                                     </Box>
                                 </>
                             )}

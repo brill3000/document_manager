@@ -10,17 +10,24 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useHistory } from 'components/documents/data/History';
 import { VirtualizedList, VirtualizedGrid } from 'components/documents/experimental';
+import { useHandleChangeRoute } from 'utils/hooks';
+import { usePurgeTrashFolderMutation } from 'store/async/dms/repository/repositoryApi';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
+    // ========================= | STATES | =========================== //
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [open, setOpen] = React.useState(false);
     const [closeContext, setCloseContext] = React.useState<boolean>(false);
-    const { clipboard } = useStore();
-    const { view } = useViewStore();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    // ========================= | ZUSTAND | =========================== //
     const { nav } = useHistory();
-
     const { actions } = useBrowserStore();
+    const { view } = useViewStore();
+    const { clipboard } = useStore();
+    // ========================= | HOOKS | =========================== //
+    const { isTrashFolder } = useHandleChangeRoute();
+    // ========================= | RTK QUERIES | =========================== //
+    const [purgeTrash] = usePurgeTrashFolderMutation();
 
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
@@ -77,9 +84,9 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
         close();
         setContextMenu(null);
     };
-    const handleMenuClick = (
+    const handleMenuClick = async (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'delete'
+        type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder'
     ) => {
         e.preventDefault();
         switch (type) {
@@ -111,6 +118,55 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                         console.log(e);
                     }
                 }
+
+                break;
+            case 'purgeTrash':
+                try {
+                    // eslint-disable-next-line no-restricted-globals
+                    const deleteDoc = confirm(`Empty trash?`);
+                    setContextMenu(null);
+                    if (deleteDoc && isTrashFolder) {
+                        try {
+                            await purgeTrash().unwrap();
+                            enqueueSnackbar('Trash Emptied', {
+                                // action: WithUndo,
+                                onClose: () => {
+                                    setOpen(false);
+                                },
+                                variant: 'success'
+                                // persist: true,
+                            });
+                        } catch (e) {
+                            enqueueSnackbar('Failed To empty trash', {
+                                // action: WithUndo,
+                                onClose: () => {
+                                    setOpen(false);
+                                },
+                                variant: 'error'
+                                // persist: true,
+                            });
+                            console.log(e);
+                        }
+                        setContextMenu(null);
+                    } else {
+                        enqueueSnackbar('Failed To empty trash', {
+                            // action: WithUndo,
+                            onClose: () => {
+                                setOpen(false);
+                            },
+                            variant: 'error'
+                            // persist: true,
+                        });
+                        setContextMenu(null);
+                    }
+                } catch (e) {
+                    if (e instanceof Error) {
+                        console.log(e.message);
+                    } else {
+                        console.log(e);
+                    }
+                }
+                setContextMenu(null);
 
                 break;
             default:
