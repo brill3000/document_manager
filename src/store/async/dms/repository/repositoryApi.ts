@@ -242,10 +242,16 @@ export const repositoryApi = createApi({
                 if (error) return [...tags, { type: 'DMS_REPOSITORY_ERROR', id: 'error' }];
                 return tags;
             }
-        })
+        }),
         // ===========================| MUTATIIONS: POST |===================== //
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
+        purgeTrashFolder: build.mutation<any, void>({
+            query: () => ({
+                url: UriHelper.REPOSITORY_PURGE_TRASH,
+                method: 'DELETE'
+            })
+        })
     })
 });
 
@@ -268,13 +274,14 @@ export const {
     useHasNodeQuery,
     useGetNodePathQuery,
     useGetAppVersionQuery,
-    useGetConfigurationQuery
+    useGetConfigurationQuery,
     /**
      * Mutations: POST
      */
     /**
      * Mutations: PUT
      */
+    usePurgeTrashFolderMutation
     /**
      * Mutations: DELETE
      */

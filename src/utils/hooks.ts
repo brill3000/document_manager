@@ -5,12 +5,13 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FolderInterface, TreeMap } from 'global/interfaces';
-import { first, isArray, isNull, isUndefined, slice } from 'lodash';
+import { first, isArray, isEmpty, isNull, isUndefined, lastIndexOf, slice, trimEnd } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useDeleteFileMutation, useExtractFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
 import {
+    foldersApi,
     useCreateFolderMutation,
     useCreateSimpleFolderMutation,
     useDeleteFolderDocMutation,
@@ -22,6 +23,7 @@ import { Permissions } from './constants/Permissions';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 export const useForwardRef = <T>(ref: React.ForwardedRef<T>) => {
     // @ts-expect-error expect the error
@@ -61,6 +63,18 @@ export const useHandleChangeRoute = () => {
             navigate(documentPath + `?is_dir=${is_dir ? 'true' : 'false'}`);
         }
     };
+    const isTrashFolder = React.useMemo(() => {
+        const pathArray = pathname.split('/');
+        if (isArray(pathArray) && !isEmpty(pathArray)) {
+            pathArray.includes('documents');
+            pathArray.shift();
+            pathArray.shift();
+            if (first(pathArray) === 'trash') return true;
+            else return false;
+        } else {
+            return false;
+        }
+    }, [pathname]);
     const paramArray: string[] | null = React.useMemo(() => {
         let arr = !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null;
         if (isArray(arr)) {
@@ -85,6 +99,7 @@ export const useHandleChangeRoute = () => {
         pathname,
         paramArray,
         key,
+        isTrashFolder,
         is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true
     };
 };
@@ -212,6 +227,8 @@ export const useHandleActionMenu = ({
     const { focused, selected, actions, isCreating, renameTarget } = useBrowserStore();
     const { addToClipBoard } = useStore();
     const { setOpenPermissionDialog } = useViewStore();
+    // ================================= | REDUX | ============================= //
+    const dispatch = useDispatch();
     // ================================= | HOOKS | ============================= //
     const { handleChangeRoute } = useHandleChangeRoute();
     // ================================= | Mutations | ============================= //
@@ -229,7 +246,7 @@ export const useHandleActionMenu = ({
         setContextMenu(null);
     };
 
-    const handleMenuClick = (
+    const handleMenuClick = async (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
         type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
     ) => {
@@ -261,7 +278,8 @@ export const useHandleActionMenu = ({
                             // eslint-disable-next-line no-restricted-globals
                             const deleteDoc = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
                             if (deleteDoc && !isUndefined(path) && !isNull(path)) {
-                                is_dir ? deleteFolder({ fldId: path }) : deleteFile({ docId: path });
+                                const parent = trimEnd(path.substring(0, lastIndexOf(path, '/')), '/');
+                                is_dir ? deleteFolder({ fldId: path, parent }) : deleteFile({ docId: path, parent });
                                 setContextMenu(null);
                             } else {
                                 setContextMenu(null);
@@ -279,8 +297,15 @@ export const useHandleActionMenu = ({
                         try {
                             // eslint-disable-next-line no-restricted-globals
                             const deleteDoc = confirm(`Extract document?`);
+                            setContextMenu(null);
                             if (deleteDoc && !isUndefined(path) && !isNull(path)) {
-                                !is_dir && extractFile({ docId: path });
+                                try {
+                                    const parent = trimEnd(path.substring(0, lastIndexOf(path, '/')), '/');
+                                    !is_dir && (await extractFile({ docId: path, parent }).unwrap());
+                                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
+                                } catch (e) {
+                                    console.log(e);
+                                }
                                 setContextMenu(null);
                             } else {
                                 setContextMenu(null);

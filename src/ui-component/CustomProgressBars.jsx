@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import CircularProgress, { circularProgressClasses } from '@mui/material/CircularProgress';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { Typography, useTheme } from '@mui/material';
+import { isUndefined, omit } from 'lodash';
 export const BorderLinearProgress = (props) => {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -33,21 +34,23 @@ export const StyledLinearProgress = styled(LinearProgress, {
 
 // Inspired by the former Facebook spinners.
 export function FacebookCircularProgress(props) {
+    const { value } = props;
+    const omited = omit(props, 'value');
     const theme = useTheme();
     return (
         <Box sx={{ position: 'relative' }}>
             <CircularProgress
-                variant="determinate"
+                variant={isUndefined(value) ? 'indeterminate' : 'determinate'}
                 sx={{
                     color: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800]
                 }}
                 size={35}
                 thickness={5}
-                {...props}
+                {...omited}
                 value={props.value}
             />
             <CircularProgress
-                variant="determinate"
+                variant={isUndefined(value) ? 'indeterminate' : 'determinate'}
                 disableShrink
                 sx={{
                     color: (theme) => (theme.palette.mode === 'light' ? '#fffff' : '#308fe8'),
@@ -60,7 +63,7 @@ export function FacebookCircularProgress(props) {
                 }}
                 size={35}
                 thickness={5}
-                {...props}
+                {...omited}
             />
             <Box
                 sx={{
@@ -69,7 +72,7 @@ export function FacebookCircularProgress(props) {
                     bottom: 0,
                     right: 0,
                     position: 'absolute',
-                    display: 'flex',
+                    display: isUndefined(value) ? 'none' : 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}
