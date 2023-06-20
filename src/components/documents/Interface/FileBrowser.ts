@@ -126,6 +126,8 @@ export interface UseModelActions {
     updateFileUploadingProgress: (fileId: string, progress: number) => void;
     removeUploadingFile: (fileId: string) => boolean;
     setRenameTarget: (arg0: { id: string; rename: boolean; is_new?: boolean } | null) => void;
+    addExpanded: (node: string) => void;
+    removeExpand: (node: string) => void;
 }
 
 export interface StoreState {
@@ -141,6 +143,7 @@ export interface StoreState {
     newFolder: FolderInterface | null;
     isCreating: boolean;
     renameTarget: { id: string; rename: boolean; is_new?: boolean } | null;
+    expanded: string[];
 }
 
 export type key = string;

@@ -56,6 +56,7 @@ export const useHandleChangeRoute = () => {
     const handleChangeRoute = (path: string, is_dir: boolean) => {
         if (path !== null || path !== undefined) {
             actions.setSelected([{ id: path, is_dir }]);
+            actions.addExpanded(path);
             const encodedPathParam = encodeURIComponent(path);
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)

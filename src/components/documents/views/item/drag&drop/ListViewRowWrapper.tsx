@@ -1,14 +1,14 @@
 import React, { SetStateAction } from 'react';
 import { TableRowProps } from '@mui/material/TableRow';
-import { StyledTableRow } from '../views/UI/Tables';
+import { StyledTableRow } from '../../UI/Tables';
 import { useDragAndDropHandlers, useForwardRef, useHandleClickEvents } from 'utils/hooks';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { GenericDocument } from 'global/interfaces';
-import { useBrowserStore } from '../data/global_state/slices/BrowserMock';
+import { useBrowserStore } from '../../../data/global_state/slices/BrowserMock';
 // import { isNull } from 'lodash';
 // import ActionMenu from '../views/UI/Menus/DocumentActionMenu';
 
-export type DragDropTableRowProps = TableRowProps & {
+export type ListViewRowWrapperProps = TableRowProps & {
     item: GenericDocument;
     setContextParentMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     parentContextMenu: { mouseX: number; mouseY: number } | null;
@@ -18,7 +18,7 @@ export type DragDropTableRowProps = TableRowProps & {
     // onDrop: () => void;
 };
 
-const DragDropTableRow = React.forwardRef<HTMLTableRowElement, DragDropTableRowProps>(({ ...props }, ref) => {
+export const ListViewRowWrapper = React.forwardRef<HTMLTableRowElement, ListViewRowWrapperProps>(({ ...props }, ref) => {
     const { item, setContextParentMenu, parentContextMenu, setRowSelected, disableDoubleClick } = props;
     // ================================= | STATE | ============================= //
     const innerRef = useForwardRef(ref);
@@ -71,5 +71,3 @@ const DragDropTableRow = React.forwardRef<HTMLTableRowElement, DragDropTableRowP
         />
     );
 });
-
-export default DragDropTableRow;

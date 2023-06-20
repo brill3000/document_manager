@@ -1,24 +1,77 @@
-import React from 'react';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Typography, darken, lighten } from '@mui/material';
-import { ListViewsProps } from 'components/documents/Interface/FileBrowser';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import { ListViewItem } from 'components/documents/views/item/ListViewItem';
-import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { Components, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
+import React, { Suspense } from 'react';
+import Table, { TableProps } from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
+import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
-import { Error, FolderEmpty } from 'ui-component/LoadHandlers';
+import { useBrowserStore } from '../../../data/global_state/slices/BrowserMock';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
+import { useHandleActionMenu, useHandleChangeRoute } from 'utils/hooks';
+import ActionMenu from '../../UI/Menus/DocumentActionMenu';
+import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+import { FolderEmpty } from 'ui-component/LoadHandlers';
 import { GenericDocument } from 'global/interfaces';
-import { isEmpty } from 'lodash';
 import { LazyLoader } from '../..';
+import { ListViewItem } from '../../item';
 
-export function ListView({ closeContext, width, height }: ListViewsProps): React.ReactElement {
-    const { selected } = useBrowserStore();
+const ListViewRowWrapper = React.lazy(() =>
+    import('components/documents/views/item').then((module) => ({ default: module.ListViewRowWrapper }))
+);
+
+export function VirtualizedList({ height }: { height: number }) {
+    // ========================= | STATE | =========================== //
+    const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [newFiles, setNewFiles] = React.useState<GenericDocument[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const virtuoso = React.useRef<TableVirtuosoHandle | null>(null);
+
+    const [rowSelected, setRowSelected] = React.useState<{
+        path: string;
+        locked?: boolean;
+        doc_name: string;
+        is_dir: boolean;
+        newDoc?: boolean;
+    }>({
+        path: '',
+        doc_name: '',
+        locked: false,
+        is_dir: false,
+        newDoc: false
+    });
+    const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
+
+    const disableDoubleClickFn = (disabled: boolean) => {
+        setDisableDoubleClick(disabled);
+    };
+
+    // ========================= | THEME | =========================== //
+    const theme = useTheme();
+    // ========================= | ZUSTAND HOOKS | =========================== //
+    const { selected, newFolder, uploadFiles, focused } = useBrowserStore();
+
+    // ================================= | ROUTES | ================================ //
+    const { pathParam } = useHandleChangeRoute();
+
+    // ========================= | ICONS | =========================== //
+    // ================================= | Action Menu | ============================= //
+    const { handleMenuClick, handleMenuClose } = useHandleActionMenu({
+        is_dir: rowSelected.is_dir,
+        path: rowSelected.path,
+        doc_name: rowSelected.doc_name,
+        setContextMenu,
+        is_new: rowSelected.newDoc ?? false
+    });
+
+    // ========================= | MUTATIONS | =========================== //
     const {
         data: folderChildren,
-        error: folderChildrenError,
-        isFetching: folderChildrenIsFetching,
+        // error: folderChildrenError,
+        // isFetching: folderChildrenIsFetching,
         isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
@@ -31,11 +84,41 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                 !selected[selected.length - 1]?.is_dir
         }
     );
+    // ========================= | TABLE COMPONENTS | =========================== //
+
+    const TableComponents: Components = React.useMemo(
+        () => ({
+            Scroller: React.forwardRef((props, ref) => <TableContainer component={Box} {...props} ref={ref} />),
+            Table: (props: TableProps) => <Table {...props} sx={{ borderCollapse: 'separate', width: '80vw', borderRadius: 0 }} />,
+            TableHead: TableHead,
+            TableRow: React.forwardRef((props: React.ComponentPropsWithoutRef<typeof TableRow>, ref: React.Ref<HTMLTableRowElement>) => {
+                return (
+                    <Suspense fallback={<TableRow ref={ref} />}>
+                        {
+                            // @ts-expect-error expected
+                            <ListViewRowWrapper
+                                parentContextMenu={contextMenu}
+                                setContextParentMenu={setContextMenu}
+                                setRowSelected={setRowSelected}
+                                setDisableDoubleClick={setDisableDoubleClick}
+                                disableDoubleClick={disableDoubleClick}
+                                {...props}
+                                ref={ref}
+                            />
+                        }
+                    </Suspense>
+                );
+            }),
+            // @ts-expect-error ref
+            TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />)
+        }),
+        []
+    );
     const {
         data: childrenDocuments,
-        error: childrenDocumentsError,
-        isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsnIsLoading
+        // error: childrenDocumentsError,
+        // isFetching: childrenDocumentsIsFetching,
+        isLoading: childrenDocumentsIsLoading
     } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
         {
@@ -47,127 +130,121 @@ export function ListView({ closeContext, width, height }: ListViewsProps): React
                 !selected[selected.length - 1]?.is_dir
         }
     );
+
+    const documents: GenericDocument[] = React.useMemo(() => {
+        if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            const doc = [
+                ...(!isNull(newFolder) ? [newFolder] : []),
+                ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
+                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
+                ...newFiles
+            ];
+            return doc;
+        } else return [];
+    }, [childrenDocuments, folderChildren, newFiles, newFolder]);
+    // ========================= | EFFECTS | =========================== //
+    React.useEffect(() => {
+        if (folderChildrenIsLoading || childrenDocumentsIsLoading) {
+            setIsLoading(true);
+        } else if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+            setIsLoading(false);
+        }
+    }, [pathParam, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);
+    React.useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const filesArray = Array.from(uploadFiles, ([_, value]) => value);
+        setNewFiles(filesArray);
+    }, [uploadFiles]);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            const index = isArray(documents) ? documents.findIndex((x) => x.path === focused.id) : null;
+            if (!isNull(index) && index > -1) {
+                virtuoso?.current?.scrollToIndex({
+                    index: index,
+                    align: 'center',
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [focused, documents, isLoading]);
+
     return (
-        <List
-            sx={{
-                width: width,
-                p: 0
-            }}
-        >
-            <ListItem
-                sx={{
-                    position: 'sticky',
-                    width: width,
-                    top: 0,
-                    zIndex: 2,
-                    pt: 0,
-                    pb: 0.5,
-                    px: 0,
-                    webkitTransform: 'translate3d(0, 0, 0)',
-                    bgcolor: (theme) => lighten(theme.palette.primary.light, 0.9),
-                    borderBottom: (theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`,
-                    minWidth: '100vw'
-                }}
-            >
-                <Grid container direction="row" minWidth={'100vw'} position="relative" ml={1}>
-                    <Grid
-                        xs={2.5}
-                        zIndex={2}
-                        top="1%"
-                        left={0}
-                        position="sticky"
-                        bgcolor={(theme) => lighten(theme.palette.primary.light, 0.9)}
-                        borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={0.5}
-                        pl={1}
-                    >
-                        <Typography variant="caption" noWrap color={(theme) => theme.palette.primary.main}>
-                            Name
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        xs={2}
-                        pl={2}
-                        bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
-                        borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={0.5}
-                    >
-                        <Typography noWrap variant="caption">
-                            Author
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        xs={3}
-                        pl={2}
-                        bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
-                        borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={0.5}
-                    >
-                        <Typography noWrap variant="caption">
-                            Date Created
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        xs={2}
-                        pl={2}
-                        bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)}
-                        borderRight={(theme) => `1px solid ${darken(theme.palette.divider, 0.03)}`}
-                        py={0.5}
-                    >
-                        <Typography noWrap variant="caption">
-                            Subscribed
-                        </Typography>
-                    </Grid>
-                    {/* <Grid xs={2} pl={2} bgcolor={(theme) => lighten(theme.palette.secondary.light, 0.7)} py={0.5}>
-                        <Typography noWrap variant="caption">
-                            Permission
-                        </Typography>
-                    </Grid> */}
-                </Grid>
-            </ListItem>
-            <>
-                <>
-                    {folderChildrenIsLoading ||
-                    folderChildrenIsFetching ||
-                    childrenDocumentsIsFetching ||
-                    childrenDocumentsnIsLoading ||
-                    selected.length === 0 ? (
-                        <LazyLoader />
-                    ) : folderChildrenError || childrenDocumentsError ? (
-                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                            <Error height={50} width={50} />
-                        </Box>
-                    ) : folderChildren !== undefined &&
-                      childrenDocuments !== undefined &&
-                      Array.isArray(folderChildren?.folders) &&
-                      Array.isArray(childrenDocuments?.documents) &&
-                      [...folderChildren.folders, ...childrenDocuments.documents].length > 0 ? (
-                        [...folderChildren.folders, ...childrenDocuments.documents].map((document: GenericDocument, i: number) => (
-                            <ListViewItem
-                                isColored={i % 2 === 0}
-                                closeContext={closeContext}
-                                document={document}
-                                width={width}
-                                height={height}
-                                key={document.path}
-                            />
-                        ))
-                    ) : (
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            minHeight="100%"
-                            minWidth="100%"
-                        >
-                            <FolderEmpty height={100} width={100} />
-                            <Typography variant="caption">Empty Folders</Typography>
-                        </Box>
+        <>
+            {isLoading ? (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={height * 0.25}
+                    minWidth="100%"
+                >
+                    <LazyLoader />
+                </Box>
+            ) : isEmpty(documents) ? (
+                <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
+                    <FolderEmpty height={100} width={100} />
+                    <Typography variant="caption">Empty Folders</Typography>
+                </Box>
+            ) : (
+                <TableVirtuoso
+                    style={{ height: height }}
+                    data={documents}
+                    components={TableComponents}
+                    ref={virtuoso}
+                    fixedHeaderContent={() => (
+                        <StyledTableRow>
+                            <StyledTableCell
+                                sx={{
+                                    width: 350,
+                                    position: 'sticky',
+                                    left: 0,
+                                    borderRight: `1px solid ${lighten(theme.palette.secondary.light, 0.2)}`
+                                }}
+                            >
+                                <Stack direction="row">
+                                    <Checkbox
+                                        size="small"
+                                        inputProps={{
+                                            'aria-labelledby': 'select_all'
+                                        }}
+                                        sx={{ p: 0 }}
+                                    />
+                                    <Box pl={1}>Name</Box>
+                                </Stack>
+                            </StyledTableCell>
+                            <StyledTableCell>Date Created</StyledTableCell>
+                            <StyledTableCell>Read</StyledTableCell>
+                            <StyledTableCell>Write</StyledTableCell>
+                            <StyledTableCell>Delete</StyledTableCell>
+                            <StyledTableCell>Security</StyledTableCell>
+                            <StyledTableCell>Subscribed</StyledTableCell>
+                        </StyledTableRow>
                     )}
-                </>
-            </>
-        </List>
-        // <VirtualizedList />
+                    itemContent={(index, document) => (
+                        <ListViewItem
+                            rowSelected={rowSelected}
+                            document={document}
+                            setContextMenu={setContextMenu}
+                            disableDoubleClickFn={disableDoubleClickFn}
+                        />
+                    )}
+                />
+            )}
+
+            <ActionMenu
+                is_dir={rowSelected.is_dir}
+                locked={rowSelected.locked ?? false}
+                contextMenu={contextMenu}
+                handleMenuClose={handleMenuClose}
+                handleMenuClick={handleMenuClick}
+            />
+            <PermissionsDialog />
+        </>
     );
 }

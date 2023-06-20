@@ -14,6 +14,7 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     newFolder: null,
     isCreating: false,
     renameTarget: null,
+    expanded: [],
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -53,6 +54,22 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
         clear: () => {
             set(() => ({ fileMap: new Map() }));
             return get().fileMap.size === 0;
+        },
+        addExpanded: (node: string) => {
+            set((state) => {
+                if (!isEmpty(state.expanded)) {
+                    return {
+                        expanded: [...new Set([...state.expanded, node])]
+                    };
+                } else {
+                    return { expanded: [node] };
+                }
+            });
+        },
+        removeExpand: (node: string) => {
+            set((state) => ({
+                expanded: [...new Set([...state.expanded.filter((x) => x !== node)])]
+            }));
         },
         delete: (key: key) => {
             set((state) => {

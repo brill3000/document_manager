@@ -116,14 +116,11 @@ export function LeftSidebar() {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
-    const { selected, actions } = useBrowserStore();
+    const { selected, actions, expanded } = useBrowserStore();
     const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const [treeMap, setTreeMap] = React.useState<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>(new Map());
     const [mouseOverCaret, setMouseOverCaret] = React.useState<boolean>(false);
-
-    // =========================== | CONTROLLED TREE VIEW FUNCTIONS | ================================//
-    const [expanded, setExpanded] = React.useState<string[]>([]);
 
     // ============================== | STORE | =========================== //
     // @ts-expect-error expected
@@ -139,9 +136,9 @@ export function LeftSidebar() {
             if (route_is_dir !== true) {
                 const paramArrayCopy = [...paramArray];
                 paramArrayCopy.pop();
-                setExpanded(paramArrayCopy);
+                paramArrayCopy.forEach((x) => actions.addExpanded(x));
             } else {
-                setExpanded(paramArray);
+                paramArray.forEach((x) => actions.addExpanded(x));
             }
         }
     }, []);
@@ -178,17 +175,12 @@ export function LeftSidebar() {
         }
     }, [pathParam, pathname]);
 
-    const handleExpandClick = React.useCallback((path: string) => {
-        setExpanded((oldExpanded) => {
-            if (!isEmpty(oldExpanded)) {
-                return oldExpanded.includes(path)
-                    ? [...new Set([...oldExpanded.filter((x) => x !== path)])]
-                    : [...new Set([...oldExpanded, path])];
-            } else {
-                return [path];
-            }
-        });
-    }, []);
+    const handleExpandClick = React.useCallback(
+        (path: string) => {
+            expanded.includes(path) ? actions.removeExpand(path) : actions.addExpanded(path);
+        },
+        [expanded]
+    );
 
     // =========================== | Render Function | ================================//
 
@@ -311,13 +303,7 @@ export function LeftSidebar() {
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
             !isArray(paramArray) && actions.setSelected([{ id: rootFolder.path ?? '', is_dir: true }]);
-            setExpanded((oldExpanded) => {
-                if (!isEmpty(oldExpanded)) {
-                    return [...new Set([...oldExpanded, rootFolder.path])];
-                } else {
-                    return [rootFolder.path];
-                }
-            });
+            actions.addExpanded(rootFolder.path);
         }
     }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, rootUrl, openItem]);
 
@@ -354,6 +340,7 @@ export function LeftSidebar() {
             }
         }
     }, [treeMap, expanded, openItem]);
+    console.log(expanded, 'EXPANDED');
     return (
         <>
             {/* Initial Loader */}

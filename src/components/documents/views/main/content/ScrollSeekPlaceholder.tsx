@@ -1,5 +1,5 @@
 import React from 'react';
-import { LazyLoader } from '../views';
+import { LazyLoader } from '../..';
 
 // You can use index to randomize
 // and make the placeholder list more organic.

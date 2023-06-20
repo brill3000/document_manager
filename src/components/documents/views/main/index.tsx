@@ -9,7 +9,7 @@ import { useSnackbar } from 'notistack';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { useHistory } from 'components/documents/data/History';
-import { VirtualizedList, VirtualizedGrid } from 'components/documents/experimental';
+import { VirtualizedList, VirtualizedGrid } from 'components/documents/views/main/content';
 import { useHandleChangeRoute } from 'utils/hooks';
 import { usePurgeTrashFolderMutation } from 'store/async/dms/repository/repositoryApi';
 
