@@ -7,7 +7,6 @@ function ProtectedRoutes({ children }) {
     const { data, error, isSuccess } = useIsAuthenticatedQuery({});
     const [isAuthenticated, setIsAuthenticated] = React.useState(null);
     React.useEffect(() => {
-        console.log(error, 'error');
         if (!isNull(data) && !isUndefined(data)) {
             setIsAuthenticated(data);
         } else if (error && error.data.includes('Invalid token')) {
