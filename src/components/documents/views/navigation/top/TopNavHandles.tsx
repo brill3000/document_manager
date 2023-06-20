@@ -7,7 +7,7 @@ import { IoReturnUpForwardOutline } from 'react-icons/io5';
 import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
-import { isArray, isEmpty, isNull } from 'lodash';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
 import { useHandleChangeRoute } from 'utils/hooks';
 
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
@@ -15,7 +15,7 @@ import { useHandleChangeRoute } from 'utils/hooks';
 export default function TopNavHandles() {
     const tooltipDelay = 200;
     const { selected } = useBrowserStore();
-    const { navigate, key } = useHandleChangeRoute();
+    const { navigate, key, currenFolder, is_dir: route_is_dir } = useHandleChangeRoute();
     const handleBack = () => {
         if (Array.isArray(selected) && selected.length > 0) {
             navigate(-1);
@@ -33,21 +33,9 @@ export default function TopNavHandles() {
         isLoading: folderInfoIsLoading,
         isSuccess: folderInfoIsSuccess
     } = useGetFoldersPropertiesQuery(
+        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
         {
-            fldId:
-                isArray(selected) && !isEmpty(selected) && !isEmpty(selected[selected?.length - 1].id)
-                    ? selected[selected.length - 1].id
-                    : ''
-        },
-        {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                !isArray(selected) ||
-                isEmpty(selected) ||
-                isEmpty(selected[selected?.length - 1].id) ||
-                isNull(selected[selected?.length - 1].id) ||
-                !selected[selected?.length - 1].is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
     return (

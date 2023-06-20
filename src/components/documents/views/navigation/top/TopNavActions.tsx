@@ -7,7 +7,7 @@ import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 // import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
-import { isArray, isEmpty, isNaN, isNull, isUndefined } from 'lodash';
+import { isEmpty, isNaN, isNull, isUndefined } from 'lodash';
 import { UseModelActions } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { UriHelper } from 'utils/constants/UriHelper';
@@ -15,6 +15,7 @@ import { FolderInterface, GenericDocument, JavaCalendar } from 'global/interface
 import { useSnackbar } from 'notistack';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { useDispatch } from 'react-redux';
+import { useHandleChangeRoute } from 'utils/hooks';
 const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
@@ -61,65 +62,61 @@ export default function TopNavActions() {
     const dispatch = useDispatch();
     const timoutRef = React.useRef<any>(null);
     // ============================= | EVENT HANDLERS | =============================== //
-
+    // =========================== | CUSTOM HOOKS | ================================//
+    const { currenFolder } = useHandleChangeRoute();
     const changeHandler = (files: File[]) => {
         try {
-            if (isArray(selected) && !isEmpty(selected)) {
-                const parent =
-                    isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir
-                        ? selected[selected.length - 1].id
-                        : null;
-                if (parent !== null) {
-                    files.forEach((file) => {
-                        const docPath = `${parent}/${file.name}`;
-                        const fileName = file.name;
-                        const newDate = new Date();
-                        const javaDate: JavaCalendar = {
-                            year: newDate.getFullYear(),
-                            month: newDate.getMonth(),
-                            dayOfMonth: newDate.getUTCDay(),
-                            hourOfDay: newDate.getHours(),
-                            minute: newDate.getMinutes(),
-                            second: newDate.getSeconds()
-                        };
-                        const newFile: GenericDocument = {
-                            author: 'undefined',
-                            created: javaDate,
-                            doc_name: fileName,
-                            path: docPath,
-                            permissions: { read: true, write: true, delete: true, security: true },
-                            subscribed: false,
-                            uuid: 'null',
-                            is_dir: false,
-                            mimeType: file.type,
-                            size: file.size,
-                            locked: false,
-                            isLoading: true,
-                            progress: 0,
-                            error: false
-                        };
-                        actions.addUploadingFile(newFile);
-                        uploadFile({ docPath, fileName, file, actions })
-                            .then((res) => {
-                                if (res.status === 200) {
-                                    const message = `File ${file.name} uploaded`;
-                                    actions.removeUploadingFile(`${parent}/${file.name}`);
-                                    dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
-                                    enqueueSnackbar(message, { variant: 'success' });
-                                } else {
-                                    const message = `File ${file.name} upload failed`;
-                                    actions.removeUploadingFile(`${parent}/${file.name}`);
-                                    enqueueSnackbar(message, { variant: 'error' });
-                                }
-                            })
-                            .catch(() => {
+            console.log(currenFolder, 'CURRENT');
+            if (!isUndefined(currenFolder) && !isNull(currenFolder) && !isEmpty(selected)) {
+                files.forEach((file) => {
+                    const docPath = `${currenFolder}/${file.name}`;
+                    const fileName = file.name;
+                    const newDate = new Date();
+                    const javaDate: JavaCalendar = {
+                        year: newDate.getFullYear(),
+                        month: newDate.getMonth(),
+                        dayOfMonth: newDate.getUTCDay(),
+                        hourOfDay: newDate.getHours(),
+                        minute: newDate.getMinutes(),
+                        second: newDate.getSeconds()
+                    };
+                    const newFile: GenericDocument = {
+                        author: 'undefined',
+                        created: javaDate,
+                        doc_name: fileName,
+                        path: docPath,
+                        permissions: { read: true, write: true, delete: true, security: true },
+                        subscribed: false,
+                        uuid: 'null',
+                        is_dir: false,
+                        mimeType: file.type,
+                        size: file.size,
+                        locked: false,
+                        isLoading: true,
+                        progress: 0,
+                        error: false
+                    };
+                    actions.addUploadingFile(newFile);
+                    uploadFile({ docPath, fileName, file, actions })
+                        .then((res) => {
+                            if (res.status === 200) {
+                                const message = `File ${file.name} uploaded`;
+                                actions.removeUploadingFile(`${currenFolder}/${file.name}`);
+                                dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
+                                enqueueSnackbar(message, { variant: 'success' });
+                            } else {
                                 const message = `File ${file.name} upload failed`;
-                                actions.removeUploadingFile(`${parent}/${file.name}`);
+                                actions.removeUploadingFile(`${currenFolder}/${file.name}`);
                                 enqueueSnackbar(message, { variant: 'error' });
-                            });
-                        // createSimple({ docPath, fileName, file });
-                    });
-                }
+                            }
+                        })
+                        .catch(() => {
+                            const message = `File ${file.name} upload failed`;
+                            actions.removeUploadingFile(`${currenFolder}/${file.name}`);
+                            enqueueSnackbar(message, { variant: 'error' });
+                        });
+                    // createSimple({ docPath, fileName, file });
+                });
             }
         } catch (e) {
             if (e instanceof Error) {
@@ -132,10 +129,8 @@ export default function TopNavActions() {
 
     const handleCreate = () => {
         actions.setIsCreating(true);
-        const parent =
-            isArray(selected) && !isEmpty(selected) && selected[selected.length - 1].is_dir ? selected[selected.length - 1].id : null;
-        if (parent !== null) {
-            const docPath = `${parent}/new folder`;
+        if (!isUndefined(currenFolder) && !isNull(currenFolder) && !isEmpty(selected)) {
+            const docPath = `${currenFolder}/new folder`;
             const folderName = 'new folder';
             const newDate = new Date();
             const javaDate: JavaCalendar = {

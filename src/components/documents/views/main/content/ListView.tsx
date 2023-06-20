@@ -55,7 +55,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const { selected, newFolder, uploadFiles, focused } = useBrowserStore();
 
     // ================================= | ROUTES | ================================ //
-    const { pathParam } = useHandleChangeRoute();
+    const { pathParam, currenFolder, is_dir: route_is_dir } = useHandleChangeRoute();
 
     // ========================= | ICONS | =========================== //
     // ================================= | Action Menu | ============================= //
@@ -74,14 +74,9 @@ export function VirtualizedList({ height }: { height: number }) {
         // isFetching: folderChildrenIsFetching,
         isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
         {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                selected?.length < 1 ||
-                isEmpty(selected[selected.length - 1]?.id) ||
-                !selected[selected.length - 1]?.is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
     // ========================= | TABLE COMPONENTS | =========================== //
@@ -120,14 +115,9 @@ export function VirtualizedList({ height }: { height: number }) {
         // isFetching: childrenDocumentsIsFetching,
         isLoading: childrenDocumentsIsLoading
     } = useGetFolderChildrenFilesQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
         {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                selected?.length < 1 ||
-                isEmpty(selected[selected.length - 1]?.id) ||
-                !selected[selected.length - 1]?.is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
 

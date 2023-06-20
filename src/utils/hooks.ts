@@ -55,8 +55,7 @@ export const useHandleChangeRoute = () => {
 
     const handleChangeRoute = (path: string, is_dir: boolean) => {
         if (path !== null || path !== undefined) {
-            actions.setSelected([{ id: path, is_dir }]);
-            actions.addExpanded(path);
+            is_dir && actions.addExpanded(path);
             const encodedPathParam = encodeURIComponent(path);
             const documentPath = pathParam
                 ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
@@ -93,15 +92,27 @@ export const useHandleChangeRoute = () => {
 
         return arr;
     }, [pathParam]);
+    const currenFolder: string | null | undefined = React.useMemo(() => {
+        if (isArray(paramArray)) {
+            if (!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true) {
+                return paramArray[paramArray.length - 1] ?? null;
+            } else {
+                const paramArrayCopy = [...paramArray];
+                paramArrayCopy.pop();
+                return paramArrayCopy[paramArrayCopy.length - 1] ?? null;
+            }
+        }
+    }, [pathParam]);
     return {
         handleChangeRoute,
         navigate,
-        pathParam,
+        pathParam: !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null,
         pathname,
         paramArray,
         key,
         isTrashFolder,
-        is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true
+        is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true,
+        currenFolder
     };
 };
 
@@ -231,7 +242,7 @@ export const useHandleActionMenu = ({
     // ================================= | REDUX | ============================= //
     const dispatch = useDispatch();
     // ================================= | HOOKS | ============================= //
-    const { handleChangeRoute } = useHandleChangeRoute();
+    const { handleChangeRoute, currenFolder } = useHandleChangeRoute();
     // ================================= | Mutations | ============================= //
     const [deleteFolder] = useDeleteFolderDocMutation();
     const [deleteFile] = useDeleteFileMutation();
@@ -375,32 +386,34 @@ export const useHandleActionMenu = ({
                 // eslint-disable-next-line no-restricted-globals
                 const res = confirm('Rename document ? ');
                 if (res === true) {
-                    if (is_dir) {
-                        const fldId = renameTarget.id;
-                        const newName = value;
-                        const newPath = renameTarget.id.split('/');
-                        newPath.pop();
-                        newPath.push(newName);
-                        renameFolder({
-                            fldId,
-                            newName,
-                            parent: selected[selected.length - 1].id,
-                            newPath: newPath.join('/'),
-                            oldPath: renameTarget.id
-                        });
-                    } else {
-                        const docId = renameTarget.id;
-                        const newName = value;
-                        const newPath = renameTarget.id.split('/');
-                        newPath.pop();
-                        newPath.push(newName);
-                        renameFile({
-                            docId,
-                            newName,
-                            parent: selected[selected.length - 1].id,
-                            newPath: newPath.join('/'),
-                            oldPath: renameTarget.id
-                        });
+                    if (!isUndefined(currenFolder) && !isNull(currenFolder)) {
+                        if (is_dir) {
+                            const fldId = renameTarget.id;
+                            const newName = value;
+                            const newPath = renameTarget.id.split('/');
+                            newPath.pop();
+                            newPath.push(newName);
+                            renameFolder({
+                                fldId,
+                                newName,
+                                parent: currenFolder,
+                                newPath: newPath.join('/'),
+                                oldPath: renameTarget.id
+                            });
+                        } else {
+                            const docId = renameTarget.id;
+                            const newName = value;
+                            const newPath = renameTarget.id.split('/');
+                            newPath.pop();
+                            newPath.push(newName);
+                            renameFile({
+                                docId,
+                                newName,
+                                parent: currenFolder,
+                                newPath: newPath.join('/'),
+                                oldPath: renameTarget.id
+                            });
+                        }
                     }
 
                     actions.setRenameTarget(null);

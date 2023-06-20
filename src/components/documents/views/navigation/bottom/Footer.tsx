@@ -33,9 +33,10 @@ import { useBrowserStore } from 'components/documents/data/global_state/slices/B
 // import { MemorizedFcFolder } from 'components/documents/views/item/GridViewItem';
 // import { useHistory } from 'components/documents/data/History';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
-import { isArray, isEmpty, isNull } from 'lodash';
+import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
+import { useHandleChangeRoute } from 'utils/hooks';
 
 // interface CustomChipProps extends ChipProps {
 //     doc?: DocumentType | undefined;
@@ -131,22 +132,15 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
     //     event.preventDefault();
     //     Array.isArray(navHistory) && navHistory[navHistory.length - 1] && navHistory[navHistory.length - 1] !== id && select(id);
     // };
+    // =========================== | ROUTES | ================================//
+
+    const { currenFolder, is_dir: route_is_dir } = useHandleChangeRoute();
+
     const { data: folderInfo, isFetching: folderInfoIsFetching, isLoading: folderInfoIsLoading } = useGetFoldersPropertiesQuery(
+        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
+
         {
-            fldId:
-                isArray(selected) && !isEmpty(selected) && !isEmpty(selected[selected?.length - 1].id)
-                    ? selected[selected.length - 1].id
-                    : ''
-        },
-        {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                !isArray(selected) ||
-                isEmpty(selected) ||
-                isEmpty(selected[selected?.length - 1].id) ||
-                isNull(selected[selected?.length - 1].id) ||
-                !selected[selected?.length - 1].is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
     return (

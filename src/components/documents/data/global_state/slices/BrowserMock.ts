@@ -1,7 +1,7 @@
 import { FolderInterface, GenericDocument } from 'global/interfaces';
 import { DocumentType, EditDocumentType, key, StoreState } from '../../../Interface/FileBrowser';
 import { create } from '../../../__mocks__/zustand';
-import { has, isEmpty, isNull } from 'lodash';
+import { first, has, isArray, isEmpty, isNull, slice } from 'lodash';
 
 export const useBrowserStore = create<StoreState>((set, get) => ({
     fileMap: new Map<string, DocumentType>(),
@@ -56,15 +56,28 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
             return get().fileMap.size === 0;
         },
         addExpanded: (node: string) => {
-            set((state) => {
-                if (!isEmpty(state.expanded)) {
-                    return {
-                        expanded: [...new Set([...state.expanded, node])]
-                    };
-                } else {
-                    return { expanded: [node] };
-                }
-            });
+            let arr = typeof node === 'string' ? node.split('/') : [];
+            if (!isEmpty(arr) && isArray(arr)) {
+                set((state) => {
+                    arr.shift();
+                    arr = arr.map((x, i) => {
+                        let pathString = '';
+                        if (i === 0) {
+                            pathString = '/' + first(arr);
+                        } else {
+                            pathString = '/' + slice(arr, 0, i + 1).join('/');
+                        }
+                        return pathString;
+                    });
+                    if (!isEmpty(state.expanded)) {
+                        return {
+                            expanded: [...new Set([...state.expanded, ...arr])]
+                        };
+                    } else {
+                        return { expanded: [...arr] };
+                    }
+                });
+            }
         },
         removeExpand: (node: string) => {
             set((state) => ({
@@ -112,7 +125,6 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
             let has = false;
             set((state) => {
                 const mapCopy = new Map(state.uploadFiles);
-                console.log(mapCopy.has(fileId));
                 mapCopy.delete(fileId);
                 has = mapCopy.has(fileId);
                 return {

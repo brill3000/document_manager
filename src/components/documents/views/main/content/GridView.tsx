@@ -23,36 +23,25 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const virtuoso = React.useRef<VirtuosoGridHandle | null>(null);
 
     // ================================= | ZUSTAND | ================================ //
-    const { selected, uploadFiles, newFolder, focused } = useBrowserStore();
+    const { uploadFiles, newFolder, focused } = useBrowserStore();
     const { browserHeight } = useViewStore();
 
     // ================================= | ROUTES | ================================ //
-    const { pathParam } = useHandleChangeRoute();
+    const { paramArray, is_dir: route_is_dir, currenFolder } = useHandleChangeRoute();
 
     // ================================= | RTK QUERY | ================================ //
     const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
         {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                selected?.length < 1 ||
-                isEmpty(selected[selected.length - 1]?.id) ||
-                !selected[selected.length - 1]?.is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
     const { data: childrenDocuments, isLoading: childrenDocumentsIsLoading } = useGetFolderChildrenFilesQuery(
-        { fldId: Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : '' },
+        { fldId: Array.isArray(paramArray) && paramArray.length > 0 ? paramArray[paramArray.length - 1] : '' },
         {
-            skip:
-                selected === null ||
-                selected === undefined ||
-                selected?.length < 1 ||
-                isEmpty(selected[selected.length - 1]?.id) ||
-                !selected[selected.length - 1]?.is_dir
+            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
         }
     );
-
     // ================================= | DATA | ================================ //
 
     const documents: GenericDocument[] = React.useMemo(() => {
@@ -74,7 +63,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         } else if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
             setIsLoading(false);
         }
-    }, [pathParam, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);
+    }, [paramArray, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);
 
     React.useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

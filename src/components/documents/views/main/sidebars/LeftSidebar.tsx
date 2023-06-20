@@ -126,10 +126,15 @@ export function LeftSidebar() {
     // @ts-expect-error expected
     const menu = useSelector((state) => state.menu);
     const { openItem } = menu;
-
     // =========================== | CUSTOM HOOKS | ================================//
-
-    const { paramArray, pathParam, pathname, handleChangeRoute: handleDocumentClick, is_dir: route_is_dir } = useHandleChangeRoute();
+    const {
+        paramArray,
+        pathParam,
+        pathname,
+        handleChangeRoute: handleDocumentClick,
+        is_dir: route_is_dir,
+        currenFolder
+    } = useHandleChangeRoute();
 
     React.useEffect(() => {
         if (isArray(paramArray)) {
@@ -340,7 +345,6 @@ export function LeftSidebar() {
             }
         }
     }, [treeMap, expanded, openItem]);
-    console.log(expanded, 'EXPANDED');
     return (
         <>
             {/* Initial Loader */}
@@ -353,7 +357,7 @@ export function LeftSidebar() {
             ) : data !== null && data !== undefined ? (
                 <TreeView
                     aria-label="Folder Sidebar"
-                    selected={Array.isArray(selected) && selected.length > 0 ? selected[selected.length - 1].id : undefined}
+                    selected={currenFolder}
                     expanded={expanded}
                     sx={{
                         flexGrow: 1,
