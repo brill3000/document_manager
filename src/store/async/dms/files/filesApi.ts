@@ -14,7 +14,7 @@ import {
     FileInterface,
     DeleteFileRequest
 } from 'global/interfaces';
-import { isEmpty, isNull, isObject, isUndefined } from 'lodash';
+import { isEmpty, isNull, isObject, isString, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { axiosBaseQuery, createPermissionObj } from 'utils/hooks';
@@ -408,7 +408,40 @@ export const filesApi = createApi({
                 method: 'PUT',
                 params: { docId, dstId }
             }),
-            invalidatesTags: ['DMS_FILES']
+            async onQueryStarted({ docId, currentId, newPath, oldPath }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult =
+                    isString(currentId) && !isEmpty(currentId)
+                        ? dispatch(
+                              filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: currentId }, (draft) => {
+                                  draft.documents = draft.documents.filter((cachedRole) => cachedRole.path !== docId);
+                              })
+                          )
+                        : null;
+                const patchInfoResult =
+                    isString(newPath) && !isEmpty(newPath)
+                        ? dispatch(
+                              filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
+                                  if (!isNull(draft) && draft.path === oldPath) {
+                                      const draftCopy = { ...draft };
+                                      draftCopy['path'] = newPath;
+                                      Object.assign(draft, draftCopy);
+                                  }
+                              })
+                          )
+                        : null;
+                try {
+                    await queryFulfilled;
+                    dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
+                } catch {
+                    !isNull(patchChildrenResult) && patchChildrenResult.undo();
+                    !isNull(patchInfoResult) && patchInfoResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         copyFile: build.mutation<any, MoveDocumentProps>({
             query: ({ docId, dstId }) => ({

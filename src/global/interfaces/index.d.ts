@@ -92,6 +92,9 @@ export interface RenameDocumentsProps extends GetDocumentContentProps, GenericRe
 
 export interface MoveDocumentProps extends GetDocumentContentProps {
     dstId: string;
+    currentId?: string;
+    newPath?: string;
+    oldPath?: string;
 }
 
 export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
@@ -177,6 +180,9 @@ export interface SetFoldersPropertiesProps {
 
 export interface MoveFoldersProps extends GetFoldersContentProps {
     dstId: string;
+    currentId?: string;
+    newPath?: string;
+    oldPath?: string;
 }
 
 export interface ExtendeCopyFoldersProps extends MoveFoldersProps {

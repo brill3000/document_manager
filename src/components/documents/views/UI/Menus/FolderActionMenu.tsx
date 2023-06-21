@@ -12,6 +12,7 @@ import { useHandleChangeRoute } from 'utils/hooks';
 import { MemorizedBsEmptyTrashFill } from 'components/documents/Icons/fileIcon';
 import { FolderActionMenuType } from 'global/interfaces';
 import { RiFolderWarningLine } from 'react-icons/ri';
+import { isString } from 'lodash';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -78,17 +79,42 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                         const id = keysArray[keysArray.length - 1];
                         const type = clipboard.get(id);
                         const dstId = dstFldArray[dstFldArray.length - 1].id;
+
                         if (type?.is_dir) {
                             if (type?.action === 'copy') {
                                 copyFolder({ fldId: id, dstId });
                             } else if (type?.action === 'cut') {
-                                moveFolder({ fldId: id, dstId });
+                                const fldId = id;
+                                const oldPathArray = id.split('/');
+                                oldPathArray.pop();
+                                const newPath = dstId + '/' + oldPathArray;
+                                if (isString(oldPathArray?.join('/'))) {
+                                    moveFolder({
+                                        fldId,
+                                        currentId: oldPathArray.join('/'),
+                                        newPath: newPath,
+                                        dstId,
+                                        oldPath: fldId
+                                    }).unwrap();
+                                }
                             }
                         } else {
                             if (type?.action === 'copy') {
                                 copyFile({ docId: id, dstId });
                             } else if (type?.action === 'cut') {
-                                moveFile({ docId: id, dstId });
+                                const docId = id;
+                                const oldPathArray = id.split('/');
+                                oldPathArray.pop();
+                                const newPath = dstId + '/' + oldPathArray;
+                                if (isString(oldPathArray.join('/'))) {
+                                    moveFile({
+                                        docId,
+                                        currentId: oldPathArray.join('/'),
+                                        newPath: newPath,
+                                        dstId,
+                                        oldPath: docId
+                                    }).unwrap();
+                                }
                             }
                         }
                     }

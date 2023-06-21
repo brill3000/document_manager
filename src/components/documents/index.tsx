@@ -9,7 +9,7 @@ const FolderView = ({ title }: { title: string }) => {
     return (
         <>
             <FileBrowser title={title} height="85vh" width="100%" />
-            <SearchDialog />
+            {searchDialogIsOpen && <SearchDialog />}
         </>
     );
 };

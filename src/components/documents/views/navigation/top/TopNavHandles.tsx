@@ -142,10 +142,8 @@ export default function TopNavHandles() {
                 sx={{
                     transition: 'all .1s',
                     transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                    pr: 0.4,
-                    pl: 0.7,
                     '&:hover': {
-                        px: 1,
+                        px: 0.5,
                         bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.1),
                         cursor: 'text'
                     },

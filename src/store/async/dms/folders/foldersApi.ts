@@ -330,7 +330,40 @@ export const foldersApi = createApi({
                 method: 'PUT',
                 params: { fldId, dstId }
             }),
-            invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
+            async onQueryStarted({ fldId, currentId, newPath, oldPath }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult =
+                    !isNull(currentId) && !isUndefined(currentId)
+                        ? dispatch(
+                              foldersApi.util.updateQueryData('getFoldersChildren', { fldId: currentId }, (draft) => {
+                                  draft.folders = draft.folders.filter((cachedRole) => cachedRole.path !== fldId);
+                              })
+                          )
+                        : null;
+                const patchInfoResult =
+                    !isNull(newPath) && !isUndefined(newPath)
+                        ? dispatch(
+                              foldersApi.util.updateQueryData('getFoldersProperties', { fldId }, (draft) => {
+                                  if (!isNull(draft) && draft.path === oldPath) {
+                                      const draftCopy = { ...draft };
+                                      draftCopy['path'] = newPath;
+                                      Object.assign(draft, draftCopy);
+                                  }
+                              })
+                          )
+                        : null;
+                try {
+                    await queryFulfilled;
+                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
+                } catch {
+                    !isNull(patchChildrenResult) && patchChildrenResult.undo();
+                    !isNull(patchInfoResult) && patchInfoResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         copyFolders: build.mutation<any, MoveFoldersProps>({
             query: ({ fldId, dstId }) => ({

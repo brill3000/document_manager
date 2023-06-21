@@ -7,6 +7,7 @@ import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { MemorizedFcFolder } from '../item/GridViewItem';
 import { isNull } from 'lodash';
+import zIndex from '@mui/material/styles/zIndex';
 
 export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<HTMLDivElement> }) => {
     const theme = useTheme();
@@ -31,15 +32,15 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
                         px={0.3}
                         pt={0.3}
                         borderRadius={1}
-                        sx={{ cursor: 'grabbing !important' }}
+                        alignItems="center"
                     >
                         <Grid item xs={1.5} p={0}>
                             {item.is_dir ? (
-                                <MemorizedFcFolder size={18} />
+                                <MemorizedFcFolder size={15} />
                             ) : (
                                 memorizedFileIcon({
                                     mimeType: item.type,
-                                    size: browserHeight * 0.015,
+                                    size: 15,
                                     file_icon_margin: 0,
                                     contrast: theme.palette.primary.contrastText
                                 })
@@ -76,10 +77,6 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
     const getItemStyles = React.useCallback(
         (currentOffset: XYCoord | null) => {
             if (!currentOffset) return { display: 'none' };
-            // console.log(currentOffset.y, 'CURRENT OFFSET');
-            // console.log(mousePosition.y, 'MOUSE POSITION');
-            // console.log(parentRef.current?.offsetTop, 'PARENT OFFSET');
-
             const { x, y } = mousePosition;
             const transform = `translate(${x}px, ${y}px)`;
             return {
@@ -94,10 +91,10 @@ export const CustomDragDocument = ({ parentRef }: { parentRef: React.RefObject<H
     return (
         <Box
             sx={{
-                position: 'absolute',
+                position: 'fixed',
                 pointerEvents: 'none',
                 cursor: 'grabbing !important',
-                zIndex: 1500,
+                zIndex: zIndex.modal + 1,
                 left: 0,
                 top: 0,
                 width: '100%',

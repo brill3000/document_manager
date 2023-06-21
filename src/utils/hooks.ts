@@ -11,7 +11,7 @@ import {
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isUndefined, slice } from 'lodash';
+import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -443,10 +443,10 @@ export const useHandleActionMenu = ({
                         const newPath = renameTarget.id.split('/');
                         newPath.pop();
                         newPath.push(newName);
+                        actions.setIsCreating(false);
                         await createSimpleFolder({
                             fldPath: newPath.join('/')
-                        });
-                        actions.setIsCreating(false);
+                        }).unwrap();
                         actions.removeNewFolder();
                         actions.setFocused(newPath.join('/'), true);
                     }
@@ -604,9 +604,37 @@ export const useDragAndDropHandlers = ({ is_dir, path, doc_name }: { is_dir: boo
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
                 if (moveDoc === true && !isUndefined(item.path) && !isNull(item.path) && path !== undefined && path !== null) {
-                    item.is_dir
-                        ? moveFolder({ fldId: item.path, dstId: path }).unwrap()
-                        : moveFile({ docId: item.path, dstId: path }).unwrap;
+                    if (item.is_dir) {
+                        const fldId = item.path;
+                        const dstId = path;
+                        const oldPathArray = item.path.split('/');
+                        oldPathArray.pop();
+                        const newPath = path + '/' + oldPathArray;
+                        if (isString(oldPathArray?.join('/'))) {
+                            moveFolder({
+                                fldId,
+                                currentId: oldPathArray?.join('/'),
+                                newPath: newPath,
+                                dstId,
+                                oldPath: fldId
+                            }).unwrap();
+                        }
+                    } else {
+                        const docId = item.path;
+                        const dstId = path;
+                        const oldPathArray = item.path.split('/');
+                        oldPathArray.pop();
+                        const newPath = path + '/' + oldPathArray;
+                        if (isString(oldPathArray?.join('/'))) {
+                            moveFile({
+                                docId,
+                                currentId: oldPathArray?.join('/'),
+                                newPath: newPath,
+                                dstId,
+                                oldPath: oldPathArray.join('/')
+                            }).unwrap();
+                        }
+                    }
                 }
             } catch (e) {
                 if (e instanceof Error) {

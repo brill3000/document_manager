@@ -10,7 +10,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import { isEmpty, isString, isUndefined } from 'lodash';
+import { isEmpty, isFunction, isString, isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
@@ -117,124 +117,123 @@ function GridViewItem({
             actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
         }
     }, [newDoc, isCreating]);
-
     return (
         <Grid key={path !== undefined ? path : 'key'} height="max-content" justifyContent="center" alignItems="center" width="100%">
             {path !== undefined ? (
                 is_dir ? (
-                    <Box
-                        ref={drop}
-                        sx={{
-                            cursor: isDragging ? 'grabbing !important' : isOver ? 'move' : 'pointer'
+                    <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={1}
+                        ref={(node) => {
+                            if (!isUndefined(node)) {
+                                // @ts-expect-error node is a node element
+                                isFunction(drag) && drag(node);
+                                // @ts-expect-error node is a node element
+                                isFunction(drop) && drop(node);
+                            }
                         }}
+                        display={isDragging ? 'none' : 'flex'}
+                        width="100%"
                     >
-                        <Stack
-                            justifyContent="center"
-                            alignItems="center"
-                            spacing={1}
-                            ref={drag}
-                            display={isDragging ? 'none' : 'flex'}
-                            width="100%"
-                        >
-                            <Box
-                                borderRadius={2}
-                                width="max-content"
-                                height="max-content"
-                                onClick={handleClick}
-                                onContextMenu={handleClick}
-                                onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
-                                onFocus={() => actions.setFocused(path, is_dir)}
-                                // onBlur={() => focused.id === path && actions.setFocused(null, false)}
-                                onMouseOver={() => {
-                                    setIsHovered(true);
-                                }}
-                                onMouseLeave={() => {
-                                    setIsHovered(false);
-                                }}
-                                sx={{
-                                    '& :hover': {
-                                        cursor: 'pointer'
-                                    }
-                                }}
-                                component={Box}
-                                p={0}
-                                m={0}
-                            >
-                                <MemorizedFcFolder
-                                    size={browserHeight * (isRenaming ? 0.07 : 0.095)}
-                                    selected={isFocused || isOver || isHovered}
-                                />
-                            </Box>
-                            <Box
-                                borderRadius={1}
-                                px={isRenaming ? 0 : 1}
-                                py={isRenaming ? 0 : 1}
-                                bgcolor={(theme) =>
-                                    (isFocused || isOver) && !isRenaming
-                                        ? alpha(theme.palette.primary.main, 0.4)
-                                        : isHovered && !isRenaming
-                                        ? alpha(theme.palette.primary.main, 0.1)
-                                        : '#f9f7f6'
+                        <Box
+                            borderRadius={2}
+                            width="max-content"
+                            height="max-content"
+                            onClick={handleClick}
+                            onContextMenu={handleClick}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onFocus={() => actions.setFocused(path, is_dir)}
+                            // onBlur={() => focused.id === path && actions.setFocused(null, false)}
+                            onMouseOver={() => {
+                                setIsHovered(true);
+                            }}
+                            onMouseLeave={() => {
+                                setIsHovered(false);
+                            }}
+                            sx={{
+                                '& :hover': {
+                                    cursor: 'pointer'
                                 }
-                                width={isRenaming ? '100%' : 120}
-                                height="max-content"
-                                border={isRenaming ? 0 : 0.3}
-                                borderColor={(theme) => theme.palette.secondary.light}
-                                onClick={handleClick}
-                                onContextMenu={handleClick}
-                                onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
-                                onMouseOver={() => {
-                                    setIsHovered(true);
-                                }}
-                                onMouseLeave={() => {
-                                    setIsHovered(false);
-                                }}
-                                sx={{
-                                    '& :hover': {
-                                        cursor: isRenaming ? 'text' : 'pointer'
-                                    },
-                                    transition: `${UriHelper.TRANSITION} all`,
-                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                    fontFamily: 'inherit',
-                                    display: 'flex',
-                                    alignContent: 'center',
-                                    justifyContent: 'center'
-                                }}
-                                component={Box}
-                            >
-                                {isRenaming ? (
-                                    <RenameDocument
-                                        renameFn={(val) => renameFn({ value: val, renameTarget })}
-                                        renameTarget={renameTarget}
-                                        is_new={newDoc ?? false}
-                                        name={
-                                            renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
-                                                ? document.doc_name
-                                                : ''
-                                        }
-                                        disableDoubleClick={disableDoubleClickFn}
-                                    />
-                                ) : (
-                                    <Box
-                                        sx={{
-                                            overflow: 'hidden',
-                                            color: theme.palette.text.primary,
-                                            fontWeight: isFocused || isOver ? 500 : 400,
-                                            textOverflow: 'ellipsis',
-                                            fontSize: theme.typography.caption,
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: '3',
-                                            WebkitBoxOrient: 'vertical',
-                                            textAlign: 'center',
-                                            lineHeight: 1.1
-                                        }}
-                                    >
-                                        {text}
-                                    </Box>
-                                )}
-                            </Box>
-                        </Stack>
-                    </Box>
+                            }}
+                            component={Box}
+                            p={0}
+                            m={0}
+                        >
+                            <MemorizedFcFolder
+                                size={browserHeight * (isRenaming ? 0.07 : 0.095)}
+                                selected={isFocused || isOver || isHovered}
+                            />
+                        </Box>
+                        <Box
+                            borderRadius={1}
+                            px={isRenaming ? 0 : 1}
+                            py={isRenaming ? 0 : 1}
+                            bgcolor={(theme) =>
+                                (isFocused || isOver) && !isRenaming
+                                    ? alpha(theme.palette.primary.main, 0.4)
+                                    : isHovered && !isRenaming
+                                    ? alpha(theme.palette.primary.main, 0.1)
+                                    : '#f9f7f6'
+                            }
+                            width={isRenaming ? '100%' : 120}
+                            height="max-content"
+                            border={isRenaming ? 0 : 0.3}
+                            borderColor={(theme) => theme.palette.secondary.light}
+                            onClick={handleClick}
+                            onContextMenu={handleClick}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onMouseOver={() => {
+                                setIsHovered(true);
+                            }}
+                            onMouseLeave={() => {
+                                setIsHovered(false);
+                            }}
+                            sx={{
+                                '& :hover': {
+                                    cursor: isRenaming ? 'text' : 'pointer'
+                                },
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                fontFamily: 'inherit',
+                                display: 'flex',
+                                alignContent: 'center',
+                                justifyContent: 'center'
+                            }}
+                            component={Box}
+                        >
+                            {isRenaming ? (
+                                <RenameDocument
+                                    renameFn={(val) => renameFn({ value: val, renameTarget })}
+                                    renameTarget={renameTarget}
+                                    is_new={newDoc ?? false}
+                                    name={
+                                        renameTarget !== null && renameTarget !== undefined && renameTarget.id === document.path
+                                            ? document.doc_name
+                                            : ''
+                                    }
+                                    disableDoubleClick={disableDoubleClickFn}
+                                />
+                            ) : (
+                                <Box
+                                    sx={{
+                                        overflow: 'hidden',
+                                        color: theme.palette.text.primary,
+                                        fontWeight: isFocused || isOver ? 500 : 400,
+                                        textOverflow: 'ellipsis',
+                                        fontSize: theme.typography.caption,
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: '3',
+                                        WebkitBoxOrient: 'vertical',
+                                        textAlign: 'center',
+                                        lineHeight: 1.1
+                                    }}
+                                >
+                                    {text}
+                                </Box>
+                            )}
+                        </Box>
+                    </Stack>
                 ) : (
                     <Stack
                         justifyContent="center"
