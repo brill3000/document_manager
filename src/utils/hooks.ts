@@ -4,7 +4,13 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { DocumentActionMenuType, FolderInterface, TreeMap, UseHandleActionMenuReturnType } from 'global/interfaces';
+import {
+    DocumentActionMenuType,
+    FolderInterface,
+    ListViewRowSelectedProps,
+    TreeMap,
+    UseHandleActionMenuReturnType
+} from 'global/interfaces';
 import { first, isArray, isEmpty, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
@@ -515,17 +521,19 @@ export const useHandleClickEvents = ({
     is_dir,
     doc_name,
     locked,
-    setContextMenu,
+    mimeType,
     contextMenu,
+    setContextMenu,
     setRowSelected
 }: {
     setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
-    setRowSelected?: React.Dispatch<SetStateAction<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>>;
+    setRowSelected?: React.Dispatch<SetStateAction<ListViewRowSelectedProps>>;
     path: string;
     is_dir: boolean;
     doc_name: string;
     locked?: boolean;
+    mimeType?: string;
 }) => {
     // ================================= | ZUSTAND | ============================= //
     const { actions, isCreating } = useBrowserStore();
@@ -534,7 +542,7 @@ export const useHandleClickEvents = ({
     const { handleChangeRoute } = useHandleChangeRoute();
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (isCreating === true) return;
-        !isUndefined(setRowSelected) && setRowSelected({ path, is_dir, doc_name, locked });
+        !isUndefined(setRowSelected) && setRowSelected({ path, is_dir, doc_name, locked, mimeType });
         e.stopPropagation();
         e.preventDefault();
         if (e.nativeEvent.button === 0 && path !== undefined && path !== null) {

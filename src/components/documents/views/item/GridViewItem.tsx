@@ -408,6 +408,7 @@ function GridViewItem({
                 contextMenu={contextMenu}
                 handleMenuClose={handleMenuClose}
                 handleMenuClick={handleMenuClick}
+                is_zip={mimeType === 'application/zip'}
             />
         </Grid>
     );

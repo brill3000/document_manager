@@ -35,6 +35,7 @@ export const ListViewRowWrapper = React.forwardRef<HTMLTableRowElement, ListView
         path: item.path,
         is_dir: item.is_dir,
         doc_name: item.doc_name,
+        mimeType: item.mimeType,
         setContextMenu: setContextParentMenu,
         contextMenu: parentContextMenu,
         setRowSelected

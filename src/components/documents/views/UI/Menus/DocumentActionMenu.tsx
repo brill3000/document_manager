@@ -15,11 +15,12 @@ interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
     locked: boolean;
     is_dir: boolean;
+    is_zip?: boolean;
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: DocumentActionMenuType['type']) => void;
 }
 
-export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir }: ActionMenuProps) => {
+export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir, is_zip }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<DocumentActionMenuType['type'] | null>(null);
     React.useEffect(() => {
         return () => {
@@ -125,7 +126,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                         setSelected('extract');
                         handleMenuClick(e, 'extract');
                     }}
-                    disabled={locked || is_dir}
+                    disabled={locked || is_dir || !is_zip}
                 >
                     <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
                         <MemorizedBsFillFileEarmarkUnZipFill size={17} />

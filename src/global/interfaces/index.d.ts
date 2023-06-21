@@ -263,3 +263,12 @@ export interface DocumentActionMenuType {
 export interface FolderActionMenuType {
     type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder' | 'moveToTrash';
 }
+
+export interface ListViewRowSelectedProps {
+    path: string;
+    locked?: boolean;
+    doc_name: string;
+    is_dir: boolean;
+    mimeType?: string;
+    newDoc?: boolean;
+}

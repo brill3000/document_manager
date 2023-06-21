@@ -15,7 +15,7 @@ import { useHandleActionMenu, useHandleChangeRoute } from 'utils/hooks';
 import ActionMenu from '../../UI/Menus/DocumentActionMenu';
 import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 import { FolderEmpty } from 'ui-component/LoadHandlers';
-import { GenericDocument } from 'global/interfaces';
+import { GenericDocument, ListViewRowSelectedProps } from 'global/interfaces';
 import { LazyLoader } from '../..';
 import { ListViewItem } from '../../item';
 
@@ -30,13 +30,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const virtuoso = React.useRef<TableVirtuosoHandle | null>(null);
 
-    const [rowSelected, setRowSelected] = React.useState<{
-        path: string;
-        locked?: boolean;
-        doc_name: string;
-        is_dir: boolean;
-        newDoc?: boolean;
-    }>({
+    const [rowSelected, setRowSelected] = React.useState<ListViewRowSelectedProps>({
         path: '',
         doc_name: '',
         locked: false,
@@ -233,6 +227,7 @@ export function VirtualizedList({ height }: { height: number }) {
                 contextMenu={contextMenu}
                 handleMenuClose={handleMenuClose}
                 handleMenuClick={handleMenuClick}
+                is_zip={rowSelected.mimeType === 'application/zip'}
             />
             <PermissionsDialog />
         </>
