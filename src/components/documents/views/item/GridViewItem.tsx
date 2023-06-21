@@ -1,8 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, Badge, Box, Stack } from '@mui/material';
+import { alpha, Badge, Box, Stack, useTheme } from '@mui/material';
 import { orange } from '@mui/material/colors';
-import { theme } from '../../Themes/theme';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import ActionMenu from '../UI/Menus/DocumentActionMenu';
 import { RenameDocument } from './Rename';
@@ -11,7 +10,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import { isString, isUndefined } from 'lodash';
+import { isEmpty, isString, isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
@@ -43,28 +42,32 @@ function GridViewItem({
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
+    // ================================= | THEME | ============================= //
+    const theme = useTheme();
     // ================================= | Zustand | ============================= //
-
-    const { actions, focused, isCreating, renameTarget, searchDialogIsOpen } = useBrowserStore();
+    const { actions, focused, isCreating, renameTarget, quickSearchString } = useBrowserStore();
     const { setDragging } = useStore((state) => state);
     const { browserHeight } = useViewStore();
+    /**
+     * Memorized doc name with highlighted searched characters
+     */
     const text = React.useMemo(() => {
-        if (!isString(doc_name)) {
-            const matches = match(doc_name, searchDialogIsOpen);
+        if (isString(doc_name) && isString(quickSearchString) && !isEmpty(quickSearchString)) {
+            const matches = match(doc_name, quickSearchString);
             const parts = parse(doc_name, matches);
             return parts.map((part: any, index: number) => (
                 <span
                     key={index}
                     style={{
-                        color: parts.highlight ? 'red' : 'inherit',
+                        color: part.highlight ? theme.palette.error.main : 'inherit',
                         fontWeight: part.highlight ? 700 : 400
                     }}
                 >
                     {part.text}
                 </span>
             ));
-        } else return '';
-    }, [searchDialogIsOpen, doc_name]);
+        } else return doc_name;
+    }, [quickSearchString, doc_name]);
 
     // ================================= | Action Menu | ============================= //
     const { handleMenuClick, handleMenuClose, renameFn, isRenaming } = useHandleActionMenu({
@@ -226,7 +229,7 @@ function GridViewItem({
                                             lineHeight: 1.1
                                         }}
                                     >
-                                        {doc_name}
+                                        {text}
                                     </Box>
                                 )}
                             </Box>
@@ -413,7 +416,7 @@ function GridViewItem({
                                         lineHeight: 1.2
                                     }}
                                 >
-                                    {doc_name}
+                                    {text}
                                 </Box>
                             )}
                         </Box>

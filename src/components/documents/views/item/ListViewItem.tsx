@@ -2,7 +2,7 @@ import React from 'react';
 import { StyledTableCell } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from './GridViewItem';
 import { Checkbox, Stack, Typography, useTheme } from '@mui/material';
-import { isObject, isUndefined } from 'lodash';
+import { isEmpty, isObject, isString, isUndefined } from 'lodash';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { FileIconProps, fileIcon } from '../../Icons/fileIcon';
 import { PermissionIconProps, permissionsIcon } from '../../Icons/permissionsIcon';
@@ -11,6 +11,8 @@ import { StyledLinearProgress } from 'ui-component/CustomProgressBars';
 import { RenameDocument } from '.';
 import { useHandleActionMenu } from 'utils/hooks';
 import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
 export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps) {
     const theme = useTheme();
@@ -32,7 +34,7 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
     // ========================= | ICONS | =========================== //
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
-    const { renameTarget, isCreating, actions } = useBrowserStore();
+    const { renameTarget, isCreating, actions, quickSearchString } = useBrowserStore();
     // ================================= | Action Menu | ============================= //
     const { renameFn, isRenaming } = useHandleActionMenu({
         is_dir,
@@ -47,6 +49,26 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
             actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
         }
     }, [newDoc, isCreating]);
+    /**
+     * Memorized doc name with highlighted searched characters
+     */
+    const text = React.useMemo(() => {
+        if (isString(doc_name) && isString(quickSearchString) && !isEmpty(quickSearchString)) {
+            const matches = match(doc_name, quickSearchString);
+            const parts = parse(doc_name, matches);
+            return parts.map((part: any, index: number) => (
+                <span
+                    key={index}
+                    style={{
+                        color: part.highlight ? theme.palette.error.main : 'inherit',
+                        fontWeight: part.highlight ? 700 : 400
+                    }}
+                >
+                    {part.text}
+                </span>
+            ));
+        } else return doc_name;
+    }, [quickSearchString, doc_name]);
 
     return (
         <>
@@ -81,7 +103,7 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
                         />
                     ) : (
                         <Typography variant="caption" noWrap maxWidth="80%">
-                            {doc_name}
+                            {text}
                         </Typography>
                     )}
                 </Stack>

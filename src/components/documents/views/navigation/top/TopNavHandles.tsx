@@ -182,7 +182,7 @@ export default function TopNavHandles() {
                         </InputAdornment>
                     }
                     onChange={handleQuickSearch}
-                    sx={{ ml: 1, flex: 1, width: 250 }}
+                    sx={{ ml: 1, flex: 1, width: 250, height: '100%' }}
                     placeholder={
                         folderInfoIsLoading && folderInfoIsFetching
                             ? 'Loading...'
