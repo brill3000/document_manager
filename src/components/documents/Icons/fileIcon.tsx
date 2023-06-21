@@ -7,6 +7,7 @@ import { isNull, isUndefined } from 'lodash';
 import UnzipIcon from 'assets/images/icons/UnzipIcon';
 import EmptyTrash from 'assets/images/icons/EmptyTrash';
 import EmptyFolder from 'assets/images/icons/EmptyFolder';
+import SearchIcon from 'assets/images/icons/SearchIcon';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -17,6 +18,7 @@ const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
 export const MemorizedBsFillFileEarmarkUnZipFill = React.memo(UnzipIcon);
 export const MemorizedBsEmptyTrashFill = React.memo(EmptyTrash);
 export const MemorizedBsEmptyFolder = React.memo(EmptyFolder);
+export const MemorizedSearchIcon = React.memo(SearchIcon);
 
 export interface FileIconProps {
     mimeType: string | undefined;

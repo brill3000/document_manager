@@ -1,30 +1,33 @@
-import { alpha, Box, Divider, IconButton, Typography } from '@mui/material';
+import { alpha, Box, Divider, IconButton, InputAdornment, InputBase, Typography, useTheme } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
-import { CiSearch } from 'react-icons/ci';
-import { IoReturnUpBackOutline } from 'react-icons/io5';
+import { IoClose, IoReturnUpBackOutline } from 'react-icons/io5';
 import { IoReturnUpForwardOutline } from 'react-icons/io5';
 import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers';
-import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { isEmpty, isNull, isUndefined } from 'lodash';
 import { useHandleChangeRoute } from 'utils/hooks';
-
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+import { GrSearchAdvanced } from 'react-icons/gr';
 // NEED TO REFACTOR THE ICON BUTTON USING STYLED COMPONENTS
 
 export default function TopNavHandles() {
+    // ======================== | STATES | ==================== //
+    const parentContainer = React.useRef<HTMLDivElement | null>(null);
+    // ======================== | THEME | ==================== //
+    const theme = useTheme();
+    // ======================== | CONSTANTS | ==================== //
     const tooltipDelay = 200;
-    const { selected } = useBrowserStore();
+    // ======================== | ZUSTAND | ==================== //
+    const { actions, searchDialogIsOpen } = useBrowserStore();
+    // ======================== | HOOKS | ==================== //
     const { navigate, key, currentFolder, is_dir: route_is_dir } = useHandleChangeRoute();
+    // ======================== | EVENTS | ==================== //
     const handleBack = () => {
-        if (Array.isArray(selected) && selected.length > 0) {
-            navigate(-1);
-        }
+        navigate(-1);
     };
     const handleForward = () => {
-        if (Array.isArray(selected) && selected.length > 0) {
-            navigate(1);
-        }
+        navigate(1);
     };
     const {
         data: folderInfo,
@@ -37,12 +40,17 @@ export default function TopNavHandles() {
             skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
+    const handleClickSearch = () => {
+        searchDialogIsOpen === true ? actions.closeSearchDialog() : actions.openSearchDialog();
+    };
+    const handleQuickSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        actions.setQuickSearchString(event.target.value);
+    };
     return (
         <Box
             sx={{
                 display: 'flex',
                 alignItems: 'center',
-                width: 'max-content',
                 justifyContent: 'space-between',
                 border: (theme) => `1px solid ${theme.palette.divider}`,
                 borderRadius: 1,
@@ -55,6 +63,7 @@ export default function TopNavHandles() {
                     mx: 0
                 }
             }}
+            ref={parentContainer}
         >
             <Stack
                 direction="row"
@@ -131,41 +140,58 @@ export default function TopNavHandles() {
             <Divider orientation="vertical" variant="fullWidth" flexItem />
             <Stack
                 sx={{
-                    transition: 'all .2s',
-                    transitionTimingFunction: 'ease-in-out',
+                    transition: 'all .1s',
+                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
                     pr: 0.4,
                     pl: 0.7,
                     '&:hover': {
-                        px: 2,
+                        px: 1,
                         bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.1),
                         cursor: 'text'
-                    }
+                    },
+                    height:
+                        !isUndefined(parentContainer.current) && !isNull(parentContainer.current)
+                            ? parentContainer.current.clientHeight
+                            : '100%'
                 }}
                 direction="row"
-                rowGap={1}
+                rowGap={2}
                 alignItems="center"
             >
-                <Typography variant="body2" width={250} noWrap>
-                    {folderInfoIsLoading && folderInfoIsFetching
-                        ? 'Loading...'
-                        : folderInfoIsSuccess && folderInfo
-                        ? folderInfo.doc_name
-                        : 'Current Folder'}
-                </Typography>
-
-                <IconButton
-                    color="secondary"
-                    sx={{
-                        p: 0.5,
-                        borderRadius: '50%',
-                        '&:hover': {
-                            color: (theme) => theme.palette.secondary.contrastText,
-                            bgcolor: (theme) => theme.palette.secondary.main
-                        }
-                    }}
-                >
-                    <CiSearch size={18} />
-                </IconButton>
+                <InputBase
+                    endAdornment={
+                        <InputAdornment position="start">
+                            <Divider orientation="vertical" variant="fullWidth" flexItem />
+                            <IconButton
+                                sx={{
+                                    p: 0.5,
+                                    overflow: 'hidden',
+                                    transition: 'all .1s',
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    borderRadius: 2
+                                }}
+                                onClick={handleClickSearch}
+                                size="small"
+                            >
+                                {searchDialogIsOpen ? (
+                                    <IoClose size={19} color={theme.palette.secondary.main} />
+                                ) : (
+                                    <GrSearchAdvanced size={16} color={theme.palette.divider} />
+                                )}
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                    onChange={handleQuickSearch}
+                    sx={{ ml: 1, flex: 1, width: 250 }}
+                    placeholder={
+                        folderInfoIsLoading && folderInfoIsFetching
+                            ? 'Loading...'
+                            : folderInfoIsSuccess && folderInfo
+                            ? folderInfo.doc_name
+                            : 'Current Folder'
+                    }
+                    inputProps={{ 'aria-label': 'quick search' }}
+                />
             </Stack>
         </Box>
     );

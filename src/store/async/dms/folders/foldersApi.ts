@@ -13,7 +13,7 @@ import {
     RenameFoldersProps,
     SetFoldersPropertiesProps
 } from 'global/interfaces';
-import { isObject, isEmpty, isNull } from 'lodash';
+import { isObject, isEmpty, isNull, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
@@ -154,33 +154,37 @@ export const foldersApi = createApi({
                                 method: 'GET',
                                 params: { fldId }
                             });
-                            const parentCopy = { ...parentData };
-                            const parentPathArray = parentData.path.split('/');
-                            const doc_name = parentPathArray[parentPathArray.length - 1];
-                            const is_dir = true;
-                            const permissions: PermissionTypes = createPermissionObj({ permissionId: parentCopy.permissions });
-                            let children: string[] = [];
-                            if (Array.isArray(data.folders)) {
-                                children = data.folders.map((child) => {
-                                    const childCopy = { ...child };
-                                    const childPathArray = childCopy.path.split('/');
-                                    const childDocName = childPathArray[childPathArray.length - 1];
-                                    const childIsDir = true;
-                                    const childPermissions: PermissionTypes = createPermissionObj({ permissionId: childCopy.permissions });
-                                    const childObj: FolderInterface & { children: string[] } = {
-                                        doc_name: childDocName,
-                                        is_dir: childIsDir,
-                                        ...childCopy,
-                                        permissions: childPermissions,
-                                        children: []
-                                    };
-                                    someChildren.push(childObj);
-                                    return child.path;
-                                });
-                            } else if (isObject(data.folders) && !isEmpty(data.folders)) {
-                                children = [data.folders.path];
+                            if (!isUndefined(parentData)) {
+                                const parentCopy = { ...parentData };
+                                const parentPathArray = parentData.path.split('/');
+                                const doc_name = parentPathArray[parentPathArray.length - 1];
+                                const is_dir = true;
+                                const permissions: PermissionTypes = createPermissionObj({ permissionId: parentCopy.permissions });
+                                let children: string[] = [];
+                                if (Array.isArray(data.folders)) {
+                                    children = data.folders.map((child) => {
+                                        const childCopy = { ...child };
+                                        const childPathArray = childCopy.path.split('/');
+                                        const childDocName = childPathArray[childPathArray.length - 1];
+                                        const childIsDir = true;
+                                        const childPermissions: PermissionTypes = createPermissionObj({
+                                            permissionId: childCopy.permissions
+                                        });
+                                        const childObj: FolderInterface & { children: string[] } = {
+                                            doc_name: childDocName,
+                                            is_dir: childIsDir,
+                                            ...childCopy,
+                                            permissions: childPermissions,
+                                            children: []
+                                        };
+                                        someChildren.push(childObj);
+                                        return child.path;
+                                    });
+                                } else if (isObject(data.folders) && !isEmpty(data.folders)) {
+                                    children = [data.folders.path];
+                                }
+                                return { doc_name, is_dir, ...parentCopy, permissions, children: children };
                             }
-                            return { doc_name, is_dir, ...parentCopy, permissions, children: children };
                         })
                     );
 
@@ -255,6 +259,7 @@ export const foldersApi = createApi({
                     : null;
                 try {
                     await queryFulfilled;
+                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
                 } catch {
                     !isNull(patchChildrenResult) && patchChildrenResult.undo();
                     /**
@@ -283,7 +288,6 @@ export const foldersApi = createApi({
                             }
                             return cachedRole;
                         });
-
                         Object.assign(draft.folders, draftCopy);
                     })
                 );
@@ -300,6 +304,7 @@ export const foldersApi = createApi({
                 );
                 try {
                     await queryFulfilled;
+                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
                 } catch {
                     patchChildrenResult.undo();
                     patchInfoResult.undo();
@@ -368,6 +373,7 @@ export const foldersApi = createApi({
                     : null;
                 try {
                     await queryFulfilled;
+                    dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
                 } catch {
                     !isNull(patchChildrenResult) && patchChildrenResult.undo();
                     /**

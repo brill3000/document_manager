@@ -7,3 +7,5 @@ declare module 'react-beautiful-dnd';
 declare module 'react-signature-canvas';
 declare module 'pdfjs-dist/build/pdf';
 declare module 'pdfjs-dist/webpack';
+declare module 'autosuggest-highlight/parse';
+declare module 'autosuggest-highlight/match';

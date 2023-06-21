@@ -128,6 +128,10 @@ export interface UseModelActions {
     setRenameTarget: (arg0: { id: string; rename: boolean; is_new?: boolean } | null) => void;
     addExpanded: (node: string) => void;
     removeExpand: (node: string) => void;
+    openSearchDialog: () => void;
+    closeSearchDialog: () => void;
+    setQuickSearchString: (searchString: string) => void;
+    clearQuickSearchString: () => void;
 }
 
 export interface StoreState {
@@ -144,6 +148,8 @@ export interface StoreState {
     isCreating: boolean;
     renameTarget: { id: string; rename: boolean; is_new?: boolean } | null;
     expanded: string[];
+    searchDialogIsOpen: boolean;
+    quickSearchString: string | null;
 }
 
 export type key = string;

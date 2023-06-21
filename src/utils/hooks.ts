@@ -161,11 +161,18 @@ export const useTreeMap = ({ expanded, setTreeMap }: TreeMap) => {
             setTreeMap((oldMap) => {
                 const map = new Map(oldMap);
                 for (let index = 0; index < data.folders.length; index++) {
-                    if (!isUndefined(data.folders[index].status)) {
-                        data.folders[index].status === 'fulfilled' &&
-                            map.set(data.folders[index].value.path, { id: data.folders[index].value.path, ...data.folders[index].value });
-                    } else {
-                        map.set(data.folders[index].path, { id: data.folders[index].path, ...data.folders[index] });
+                    if (!isUndefined(data.folders) && !isUndefined(data.folders[index])) {
+                        if (!isUndefined(data.folders[index].status)) {
+                            data.folders[index].status === 'fulfilled' &&
+                                !isUndefined(data.folders[index].value) &&
+                                !isNull(data.folders[index].value) &&
+                                map.set(data.folders[index].value.path, {
+                                    id: data.folders[index].value.path,
+                                    ...data.folders[index].value
+                                });
+                        } else {
+                            map.set(data.folders[index].path, { id: data.folders[index].path, ...data.folders[index] });
+                        }
                     }
                 }
                 return map;

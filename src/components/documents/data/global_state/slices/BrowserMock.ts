@@ -15,6 +15,8 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
     isCreating: false,
     renameTarget: null,
     expanded: [],
+    searchDialogIsOpen: false,
+    quickSearchString: null,
     initiateFileBrowser: (documents: DocumentType[]) => {
         if (Array.isArray(documents) && documents.length > 0) {
             const copy = new Map();
@@ -54,6 +56,18 @@ export const useBrowserStore = create<StoreState>((set, get) => ({
         clear: () => {
             set(() => ({ fileMap: new Map() }));
             return get().fileMap.size === 0;
+        },
+        setQuickSearchString: (searchString: string) => {
+            set(() => ({ quickSearchString: searchString }));
+        },
+        clearQuickSearchString: () => {
+            set(() => ({ quickSearchString: null }));
+        },
+        openSearchDialog: () => {
+            set(() => ({ searchDialogIsOpen: true }));
+        },
+        closeSearchDialog: () => {
+            set(() => ({ searchDialogIsOpen: false }));
         },
         addExpanded: (node: string) => {
             let arr = typeof node === 'string' ? node.split('/') : [];

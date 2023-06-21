@@ -11,13 +11,15 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import { isUndefined } from 'lodash';
+import { isString, isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
 import FolderOpenIcon from 'assets/images/icons/FolderOpenIcon';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { VirtuosoGridHandle } from 'react-virtuoso';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
 export const MemorizedFcFolder = React.memo(FolderIcon);
 export const MemorizedFcFolderOpen = React.memo(FolderOpenIcon);
@@ -42,9 +44,27 @@ function GridViewItem({
         setDisableDoubleClick(disabled);
     };
     // ================================= | Zustand | ============================= //
-    const { actions, focused, isCreating, renameTarget } = useBrowserStore();
+
+    const { actions, focused, isCreating, renameTarget, searchDialogIsOpen } = useBrowserStore();
     const { setDragging } = useStore((state) => state);
     const { browserHeight } = useViewStore();
+    const text = React.useMemo(() => {
+        if (!isString(doc_name)) {
+            const matches = match(doc_name, searchDialogIsOpen);
+            const parts = parse(doc_name, matches);
+            return parts.map((part: any, index: number) => (
+                <span
+                    key={index}
+                    style={{
+                        color: parts.highlight ? 'red' : 'inherit',
+                        fontWeight: part.highlight ? 700 : 400
+                    }}
+                >
+                    {part.text}
+                </span>
+            ));
+        } else return '';
+    }, [searchDialogIsOpen, doc_name]);
 
     // ================================= | Action Menu | ============================= //
     const { handleMenuClick, handleMenuClose, renameFn, isRenaming } = useHandleActionMenu({

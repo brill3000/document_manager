@@ -14,7 +14,7 @@ import { useHandleChangeRoute } from 'utils/hooks';
 import { usePurgeTrashFolderMutation } from 'store/async/dms/repository/repositoryApi';
 import { FolderActionMenuType } from 'global/interfaces';
 import { isNull, isUndefined, last } from 'lodash';
-import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { foldersApi, useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     // ========================= | STATES | =========================== //
@@ -206,6 +206,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                                 variant: 'success'
                                 // persist: true,
                             });
+                            foldersApi.util.invalidateTags(['DMS_FOLDERS']);
                         } catch (e) {
                             enqueueSnackbar('Failed To empty trash', {
                                 // action: WithUndo,

@@ -5,7 +5,7 @@ import { GenericDocument } from 'global/interfaces';
 import { useBrowserStore } from '../../../data/global_state/slices/BrowserMock';
 import { useGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
-import { isArray, isEmpty, isNull, isUndefined } from 'lodash';
+import { isArray, isEmpty, isNull, isString, isUndefined } from 'lodash';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
@@ -23,7 +23,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const virtuoso = React.useRef<VirtuosoGridHandle | null>(null);
 
     // ================================= | ZUSTAND | ================================ //
-    const { uploadFiles, newFolder, focused } = useBrowserStore();
+    const { uploadFiles, newFolder, focused, quickSearchString } = useBrowserStore();
     const { browserHeight } = useViewStore();
 
     // ================================= | ROUTES | ================================ //
@@ -45,16 +45,35 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     // ================================= | DATA | ================================ //
 
     const documents: GenericDocument[] = React.useMemo(() => {
-        if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
-            const doc = [
-                ...(!isNull(newFolder) ? [newFolder] : []),
-                ...(isArray(folderChildren?.folders) ? folderChildren.folders : []),
-                ...(isArray(childrenDocuments?.documents) ? childrenDocuments.documents : []),
-                ...newFiles
-            ];
-            return doc;
-        } else return [];
-    }, [childrenDocuments, folderChildren, newFiles, newFolder]);
+        const folderChildrenCopy: GenericDocument[] =
+            !isUndefined(folderChildren) && isArray(folderChildren?.folders)
+                ? isString(quickSearchString) && !isEmpty(quickSearchString)
+                    ? folderChildren?.folders.filter((fld) => fld.doc_name.includes(quickSearchString.toLowerCase()))
+                    : folderChildren?.folders
+                : [];
+        const childrenDocumentsCopy: GenericDocument[] =
+            !isUndefined(childrenDocuments) && isArray(childrenDocuments.documents)
+                ? isString(quickSearchString) && !isEmpty(quickSearchString)
+                    ? childrenDocuments.documents.filter((file) =>
+                          isString(file.doc_name) ? file.doc_name.toLowerCase().includes(quickSearchString.toLowerCase()) : true
+                      )
+                    : childrenDocuments.documents
+                : [];
+        const newFilesCopy: GenericDocument[] = isArray(newFiles)
+            ? isString(quickSearchString) && !isEmpty(quickSearchString)
+                ? newFiles.filter((newFile) => newFile.doc_name.includes(quickSearchString.toLowerCase()))
+                : newFiles
+            : [];
+        const newFolderCopy: GenericDocument[] = !isNull(newFolder)
+            ? isString(quickSearchString) && !isEmpty(quickSearchString) && newFolder.doc_name.includes(quickSearchString.toLowerCase())
+                ? newFolder.doc_name.includes(quickSearchString)
+                    ? [newFolder]
+                    : []
+                : [newFolder]
+            : [];
+        const doc = [...newFolderCopy, ...folderChildrenCopy, ...childrenDocumentsCopy, ...newFilesCopy];
+        return doc;
+    }, [childrenDocuments, folderChildren, newFiles, newFolder, quickSearchString]);
     // ================================= | EFFECTS | ================================ //
 
     React.useEffect(() => {
