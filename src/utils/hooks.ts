@@ -4,26 +4,33 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { FolderInterface, TreeMap } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isUndefined, lastIndexOf, slice, trimEnd } from 'lodash';
+import { DocumentActionMenuType, FolderInterface, TreeMap, UseHandleActionMenuReturnType } from 'global/interfaces';
+import { first, isArray, isEmpty, isNull, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useDeleteFileMutation, useExtractFileMutation, useMoveFileMutation, useRenameFileMutation } from 'store/async/dms/files/filesApi';
+import {
+    useMoveFileToTrashMutation,
+    useExtractFileMutation,
+    useMoveFileMutation,
+    useRenameFileMutation,
+    usePurgeFileMutation
+} from 'store/async/dms/files/filesApi';
 import {
     foldersApi,
-    useCreateFolderMutation,
     useCreateSimpleFolderMutation,
-    useDeleteFolderDocMutation,
+    useMoveFolderToTrashMutation,
     useGetFoldersExpandedChildrenQuery,
     useMoveFolderMutation,
-    useRenameFolderMutation
+    useRenameFolderMutation,
+    usePurgeFolderMutation
 } from 'store/async/dms/folders/foldersApi';
 import { Permissions } from './constants/Permissions';
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
 export const useForwardRef = <T>(ref: React.ForwardedRef<T>) => {
     // @ts-expect-error expect the error
@@ -92,17 +99,39 @@ export const useHandleChangeRoute = () => {
 
         return arr;
     }, [pathParam]);
-    const currenFolder: string | null | undefined = React.useMemo(() => {
-        if (isArray(paramArray)) {
+    const currentFolder: string | undefined = React.useMemo(() => {
+        if (isArray(paramArray) && !isEmpty(paramArray)) {
             if (!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true) {
-                return paramArray[paramArray.length - 1] ?? null;
+                return paramArray[paramArray.length - 1];
             } else {
                 const paramArrayCopy = [...paramArray];
                 paramArrayCopy.pop();
-                return paramArrayCopy[paramArrayCopy.length - 1] ?? null;
+                return paramArrayCopy[paramArrayCopy.length - 1];
             }
-        }
-    }, [pathParam]);
+        } else return undefined;
+    }, [pathParam, pathname]);
+    const parentFolder: string | undefined = React.useMemo(() => {
+        if (isArray(paramArray) && !isEmpty(paramArray)) {
+            if (!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true) {
+                return paramArray.length > 1 ? paramArray[paramArray.length - 2] : undefined;
+            } else {
+                const paramArrayCopy = [...paramArray];
+                paramArrayCopy.pop();
+                return paramArray[paramArray.length - 1];
+            }
+        } else return undefined;
+    }, [pathParam, pathname]);
+    const currentFile: string | null = React.useMemo(() => {
+        if (
+            isArray(paramArray) &&
+            !isEmpty(paramArray) &&
+            !(!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true)
+        ) {
+            const paramArrayCopy = [...paramArray] ?? null;
+            paramArrayCopy.pop();
+            return paramArrayCopy[paramArrayCopy.length - 1] ?? null;
+        } else return null;
+    }, [pathParam, pathname]);
     return {
         handleChangeRoute,
         navigate,
@@ -112,7 +141,9 @@ export const useHandleChangeRoute = () => {
         key,
         isTrashFolder,
         is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true,
-        currenFolder
+        currentFolder,
+        currentFile,
+        parentFolder
     };
 };
 
@@ -234,18 +265,24 @@ export const useHandleActionMenu = ({
     is_dir: boolean;
     doc_name: string;
     is_new: boolean;
-}) => {
+}): UseHandleActionMenuReturnType => {
     // ================================= | ZUSTAND | ============================= //
-    const { focused, selected, actions, isCreating, renameTarget } = useBrowserStore();
+    const { focused, actions, isCreating, renameTarget } = useBrowserStore();
     const { addToClipBoard } = useStore();
     const { setOpenPermissionDialog } = useViewStore();
     // ================================= | REDUX | ============================= //
     const dispatch = useDispatch();
     // ================================= | HOOKS | ============================= //
-    const { handleChangeRoute, currenFolder } = useHandleChangeRoute();
+    const { handleChangeRoute, currentFolder } = useHandleChangeRoute();
+    // ================================= | ALERTS | ============================= //
+
+    const { enqueueSnackbar } = useSnackbar();
+
     // ================================= | Mutations | ============================= //
-    const [deleteFolder] = useDeleteFolderDocMutation();
-    const [deleteFile] = useDeleteFileMutation();
+    const [moveFolderToTrash] = useMoveFolderToTrashMutation();
+    const [moveFileToTrash] = useMoveFileToTrashMutation();
+    const [purgeFolder] = usePurgeFolderMutation();
+    const [purgeFile] = usePurgeFileMutation();
     const [renameFile] = useRenameFileMutation();
     const [extractFile] = useExtractFileMutation();
 
@@ -258,10 +295,7 @@ export const useHandleActionMenu = ({
         setContextMenu(null);
     };
 
-    const handleMenuClick = async (
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
-    ) => {
+    const handleMenuClick = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: DocumentActionMenuType['type']) => {
         e.preventDefault();
         try {
             if (!isUndefined(focused.id) && !isNull(focused.id)) {
@@ -285,18 +319,52 @@ export const useHandleActionMenu = ({
                         setOpenPermissionDialog(true, 'paper');
                         setContextMenu(null);
                         break;
-                    case 'delete':
+                    case 'moveToTrash':
                         try {
                             // eslint-disable-next-line no-restricted-globals
-                            const deleteDoc = confirm(`You are about to DELETE ${doc_name}. Delete the document?`);
-                            if (deleteDoc && !isUndefined(path) && !isNull(path)) {
-                                const parent = trimEnd(path.substring(0, lastIndexOf(path, '/')), '/');
-                                is_dir ? deleteFolder({ fldId: path, parent }) : deleteFile({ docId: path, parent });
+                            const moveToTrash = confirm(
+                                `You are about to Move ${doc_name} to trash. Move the ${is_dir ? 'folder' : 'file'}?`
+                            );
+                            if (moveToTrash && !isUndefined(path) && !isNull(path)) {
+                                is_dir
+                                    ? await moveFolderToTrash({ fldId: path, parent: currentFolder ?? null }).unwrap()
+                                    : await moveFileToTrash({ docId: path, parent: currentFolder ?? null }).unwrap();
+                                enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} Deleted sucessfully`, { variant: 'success' });
+
                                 setContextMenu(null);
                             } else {
                                 setContextMenu(null);
                             }
                         } catch (e) {
+                            enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} Delete Failed`, { variant: 'error' });
+                            if (e instanceof Error) {
+                                console.log(e.message);
+                            } else {
+                                console.log(e);
+                            }
+                        }
+                        setContextMenu(null);
+                        break;
+                    case 'delete':
+                        try {
+                            // eslint-disable-next-line no-restricted-globals
+                            const person = prompt(
+                                `You are about to DELETE ${doc_name}. The Document Will be LOST FOREVER, to delete enter in YES, to cancel enter NO or close the prompt`,
+                                'NO'
+                            );
+
+                            if (!isNull(person) && person.toLowerCase() === 'yes' && !isUndefined(path) && !isNull(path)) {
+                                is_dir
+                                    ? await purgeFolder({ fldId: path, parent: currentFolder ?? null }).unwrap()
+                                    : await purgeFile({ docId: path, parent: currentFolder ?? null }).unwrap();
+                                enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} Deleted sucessfully`, { variant: 'success' });
+
+                                setContextMenu(null);
+                            } else {
+                                setContextMenu(null);
+                            }
+                        } catch (e) {
+                            enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} Delete Failed`, { variant: 'error' });
                             if (e instanceof Error) {
                                 console.log(e.message);
                             } else {
@@ -308,21 +376,22 @@ export const useHandleActionMenu = ({
                     case 'extract':
                         try {
                             // eslint-disable-next-line no-restricted-globals
-                            const deleteDoc = confirm(`Extract document?`);
+                            const extractDoc = confirm(`Extract document?`);
                             setContextMenu(null);
-                            if (deleteDoc && !isUndefined(path) && !isNull(path)) {
+                            if (extractDoc && !isUndefined(path) && !isNull(path)) {
                                 try {
-                                    const parent = trimEnd(path.substring(0, lastIndexOf(path, '/')), '/');
-                                    !is_dir && (await extractFile({ docId: path, parent }).unwrap());
+                                    !is_dir && (await extractFile({ docId: path, parent: currentFolder ?? null }).unwrap());
+                                    enqueueSnackbar('File Extracted sucessfully', { variant: 'success' });
                                     dispatch(foldersApi.util.invalidateTags(['DMS_FOLDERS']));
                                 } catch (e) {
-                                    console.log(e);
+                                    enqueueSnackbar('File did not extract correctly', { variant: 'error' });
                                 }
                                 setContextMenu(null);
                             } else {
                                 setContextMenu(null);
                             }
                         } catch (e) {
+                            enqueueSnackbar('File did not extract correctly', { variant: 'error' });
                             if (e instanceof Error) {
                                 console.log(e.message);
                             } else {
@@ -384,43 +453,45 @@ export const useHandleActionMenu = ({
         } else if (value && renameTarget && renameTarget.id !== value) {
             try {
                 // eslint-disable-next-line no-restricted-globals
-                const res = confirm('Rename document ? ');
+                const res = confirm(`Rename ${is_dir ? 'folder' : 'file'}  ? `);
                 if (res === true) {
-                    if (!isUndefined(currenFolder) && !isNull(currenFolder)) {
+                    if (!isUndefined(currentFolder) && !isNull(currentFolder)) {
                         if (is_dir) {
                             const fldId = renameTarget.id;
                             const newName = value;
                             const newPath = renameTarget.id.split('/');
                             newPath.pop();
                             newPath.push(newName);
-                            renameFolder({
+                            await renameFolder({
                                 fldId,
                                 newName,
-                                parent: currenFolder,
+                                parent: currentFolder,
                                 newPath: newPath.join('/'),
                                 oldPath: renameTarget.id
-                            });
+                            }).unwrap();
                         } else {
                             const docId = renameTarget.id;
                             const newName = value;
                             const newPath = renameTarget.id.split('/');
                             newPath.pop();
                             newPath.push(newName);
-                            renameFile({
+                            await renameFile({
                                 docId,
                                 newName,
-                                parent: currenFolder,
+                                parent: currentFolder,
                                 newPath: newPath.join('/'),
                                 oldPath: renameTarget.id
-                            });
+                            }).unwrap();
                         }
                     }
-
+                    enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} renamed sucessfully `, { variant: 'success' });
                     actions.setRenameTarget(null);
                 } else {
                     actions.setRenameTarget(null);
                 }
             } catch (e) {
+                enqueueSnackbar(`${is_dir ? 'Folder' : 'File'} rename failed `, { variant: 'error' });
+
                 if (e instanceof Error) {
                     console.error(e.message);
                 } else console.log(e);
@@ -518,7 +589,9 @@ export const useDragAndDropHandlers = ({ is_dir, path, doc_name }: { is_dir: boo
                 // eslint-disable-next-line no-restricted-globals
                 const moveDoc = confirm(`You are about to move ${item.doc_name} to ${doc_name}`);
                 if (moveDoc === true && !isUndefined(item.path) && !isNull(item.path) && path !== undefined && path !== null) {
-                    item.is_dir ? moveFolder({ fldId: item.path, dstId: path }) : moveFile({ docId: item.path, dstId: path });
+                    item.is_dir
+                        ? moveFolder({ fldId: item.path, dstId: path }).unwrap()
+                        : moveFile({ docId: item.path, dstId: path }).unwrap;
                 }
             } catch (e) {
                 if (e instanceof Error) {

@@ -236,13 +236,34 @@ export const foldersApi = createApi({
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
-        purgeFolder: build.mutation<any, { fldId: string }>({
+        /**
+         * This is a dangerous function that completely deletes the folder bypassing the trash
+         */
+        purgeFolder: build.mutation<any, DeleteFolderRequest>({
             query: ({ fldId }) => ({
                 url: UriHelper.FOLDER_PURGE,
                 method: 'PUT',
                 params: { fldId }
             }),
-            invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
+            async onQueryStarted({ fldId, parent }, { dispatch, queryFulfilled }) {
+                const patchChildrenResult = !isNull(parent)
+                    ? dispatch(
+                          foldersApi.util.updateQueryData('getFoldersChildren', { fldId: parent }, (draft) => {
+                              draft.folders = draft.folders.filter((cachedRole) => cachedRole.path !== fldId);
+                          })
+                      )
+                    : null;
+                try {
+                    await queryFulfilled;
+                } catch {
+                    !isNull(patchChildrenResult) && patchChildrenResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         renameFolder: build.mutation<any, RenameFoldersProps>({
             query: ({ fldId, newName }) => {
@@ -331,22 +352,24 @@ export const foldersApi = createApi({
             invalidatesTags: ['DMS_FOLDERS', 'DMS_FOLDER_INFO']
         }),
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
-        deleteFolderDoc: build.mutation<any, DeleteFolderRequest>({
+        moveFolderToTrash: build.mutation<any, DeleteFolderRequest>({
             query: ({ fldId }) => ({
                 url: UriHelper.FOLDER_DELETE,
                 method: 'DELETE',
                 params: { fldId }
             }),
             async onQueryStarted({ fldId, parent }, { dispatch, queryFulfilled }) {
-                const patchChildrenResult = dispatch(
-                    foldersApi.util.updateQueryData('getFoldersChildren', { fldId: parent }, (draft) => {
-                        draft.folders = draft.folders.filter((cachedRole) => cachedRole.path !== fldId);
-                    })
-                );
+                const patchChildrenResult = !isNull(parent)
+                    ? dispatch(
+                          foldersApi.util.updateQueryData('getFoldersChildren', { fldId: parent }, (draft) => {
+                              draft.folders = draft.folders.filter((cachedRole) => cachedRole.path !== fldId);
+                          })
+                      )
+                    : null;
                 try {
                     await queryFulfilled;
                 } catch {
-                    patchChildrenResult.undo();
+                    !isNull(patchChildrenResult) && patchChildrenResult.undo();
                     /**
                      * Alternatively, on failure you can invalidate the corresponding cache tags
                      * to trigger a re-fetch:
@@ -388,5 +411,5 @@ export const {
     /**
      * Mutations: DELETE
      */
-    useDeleteFolderDocMutation
+    useMoveFolderToTrashMutation
 } = foldersApi;

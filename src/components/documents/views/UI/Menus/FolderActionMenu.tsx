@@ -1,6 +1,6 @@
 import { Divider, MenuItem, Stack, Typography, useTheme } from '@mui/material';
 import React from 'react';
-import { BsFolderPlus } from 'react-icons/bs';
+import { BsFolderPlus, BsTrash } from 'react-icons/bs';
 import { CiEraser } from 'react-icons/ci';
 import { StyledMenu } from './StyledMenu';
 import { BiPaste, BiBrush } from 'react-icons/bi';
@@ -9,32 +9,31 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useCopyFileMutation, useMoveFileMutation } from 'store/async/dms/files/filesApi';
 import { useHandleChangeRoute } from 'utils/hooks';
-import { MemorizedBsEmptyFolder, MemorizedBsEmptyTrashFill } from 'components/documents/Icons/fileIcon';
+import { MemorizedBsEmptyTrashFill } from 'components/documents/Icons/fileIcon';
+import { FolderActionMenuType } from 'global/interfaces';
+import { RiFolderWarningLine } from 'react-icons/ri';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, close: () => void) => void;
-    handleMenuClick: (
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder'
-    ) => void;
+    handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: FolderActionMenuType['type']) => void;
 }
 
 export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick }: ActionMenuProps) => {
     // ================================= | STATES | ============================= //
+    const [selected, setSelected] = React.useState<FolderActionMenuType['type'] | null>(null);
+    // ================================= | ZUSTAND | ============================= //
+    const { selected: dstFldArray } = useBrowserStore();
 
-    const [selected, setSelected] = React.useState<'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder' | null>(
-        null
-    );
     // ================================= | Mutations | ============================= //
     const { clipboard } = useStore();
     const [moveFolder] = useMoveFolderMutation();
     const [copyFolder] = useCopyFoldersMutation();
     const [moveFile] = useMoveFileMutation();
     const [copyFile] = useCopyFileMutation();
-    const { selected: dstFldArray } = useBrowserStore();
+    // =========================== | THEME | ================================//
+    const theme = useTheme();
     // ================================= | ROUTEs | ============================= //
-
     const { isTrashFolder } = useHandleChangeRoute();
 
     React.useEffect(() => {
@@ -138,7 +137,7 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                         handleMenuClick(e, 'purgeTrash');
                     }}
                 >
-                    <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
+                    <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1} alignItems="center">
                         <MemorizedBsEmptyTrashFill size={19} />
                         <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
                             Empty Trash
@@ -147,6 +146,20 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 </MenuItem>
             )}
             <MenuItem
+                selected={selected === 'moveToTrash'}
+                onClick={(e) => {
+                    setSelected('moveToTrash');
+                    handleMenuClick(e, 'moveToTrash');
+                }}
+            >
+                <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1} alignItems="center">
+                    <BsTrash size={17} color={theme.palette.error.main} />
+                    <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
+                        Move Folder to Trash
+                    </Typography>
+                </Stack>
+            </MenuItem>
+            <MenuItem
                 selected={selected === 'purgeFolder'}
                 onClick={(e) => {
                     setSelected('purgeFolder');
@@ -154,9 +167,9 @@ export const FolderActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick
                 }}
             >
                 <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
-                    <MemorizedBsEmptyFolder size={20} />
+                    <RiFolderWarningLine size={17} color={theme.palette.error.main} />
                     <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
-                        Empty Folder
+                        Delete Opened Folder
                     </Typography>
                 </Stack>
             </MenuItem>

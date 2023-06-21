@@ -12,6 +12,9 @@ import { useHistory } from 'components/documents/data/History';
 import { VirtualizedList, VirtualizedGrid } from 'components/documents/views/main/content';
 import { useHandleChangeRoute } from 'utils/hooks';
 import { usePurgeTrashFolderMutation } from 'store/async/dms/repository/repositoryApi';
+import { FolderActionMenuType } from 'global/interfaces';
+import { isNull, isUndefined, last } from 'lodash';
+import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     // ========================= | STATES | =========================== //
@@ -25,9 +28,11 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
     const { view } = useViewStore();
     const { clipboard } = useStore();
     // ========================= | HOOKS | =========================== //
-    const { isTrashFolder } = useHandleChangeRoute();
+    const { isTrashFolder, currentFolder, navigate } = useHandleChangeRoute();
     // ========================= | RTK QUERIES | =========================== //
     const [purgeTrash] = usePurgeTrashFolderMutation();
+    const [purgeFolder] = usePurgeFolderMutation();
+    const [moveFolderToTrash] = useMoveFolderToTrashMutation();
 
     React.useEffect(() => {
         view === 'grid' ? actions.setSplitScreen(true) : actions.setSplitScreen(false);
@@ -84,10 +89,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
         close();
         setContextMenu(null);
     };
-    const handleMenuClick = async (
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder'
-    ) => {
+    const handleMenuClick = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: FolderActionMenuType['type']) => {
         e.preventDefault();
         switch (type) {
             case 'paste':
@@ -118,6 +120,74 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                         console.log(e);
                     }
                 }
+
+                break;
+            case 'purgeFolder':
+                try {
+                    if (!isUndefined(currentFolder) && !isNull(currentFolder)) {
+                        const doc_name = last(currentFolder.split('/'));
+                        const person = prompt(
+                            `You are about to DELETE ${
+                                doc_name ?? ''
+                            }. The Document Will be LOST FOREVER, to delete enter in YES, to cancel enter NO or close the prompt`,
+                            'NO'
+                        );
+                        setContextMenu(null);
+                        if (!isNull(person) && person.toLowerCase() === 'yes') {
+                            try {
+                                await purgeFolder({ fldId: currentFolder, parent: null }).unwrap();
+                                navigate(-1);
+                                enqueueSnackbar(`Folder ${doc_name ?? ''} deleted`, { variant: 'success' });
+                            } catch (e) {
+                                enqueueSnackbar('Failed To empty trash', {
+                                    // action: WithUndo,
+                                    onClose: () => {
+                                        setOpen(false);
+                                    },
+                                    variant: 'error'
+                                    // persist: true,
+                                });
+                                console.log(e);
+                            }
+                            setContextMenu(null);
+                        } else {
+                            enqueueSnackbar(`Failed to delete ${doc_name ?? ''} folder`, { variant: 'error' });
+                            setContextMenu(null);
+                        }
+                    }
+                } catch (e) {
+                    enqueueSnackbar(`Failed to delete folder`, { variant: 'error' });
+                    if (e instanceof Error) {
+                        console.log(e.message);
+                    } else {
+                        console.log(e);
+                    }
+                }
+                setContextMenu(null);
+
+                break;
+            case 'moveToTrash':
+                try {
+                    if (!isUndefined(currentFolder) && !isNull(currentFolder)) {
+                        const doc_name = last(currentFolder.split('/'));
+                        setContextMenu(null);
+                        const emptyFolder = confirm(`Move the opened folder ${doc_name} to TRASH?`);
+                        if (emptyFolder === true) {
+                            await moveFolderToTrash({ fldId: currentFolder, parent: null }).unwrap();
+                            navigate(-1);
+                            enqueueSnackbar(`Folder ${doc_name ?? ''} moved to trash`, { variant: 'success' });
+                            setContextMenu(null);
+                        }
+                    }
+                } catch (e) {
+                    enqueueSnackbar(`Failed to delete folder`, { variant: 'error' });
+                    if (e instanceof Error) {
+                        console.log(e.message);
+                    } else {
+                        console.log(e);
+                    }
+                }
+                setContextMenu(null);
 
                 break;
             case 'purgeTrash':

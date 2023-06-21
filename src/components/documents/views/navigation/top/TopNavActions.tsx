@@ -7,7 +7,7 @@ import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 // import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
-import { isEmpty, isNaN, isNull, isUndefined } from 'lodash';
+import { isEmpty, isNaN, isNull, isUndefined, last } from 'lodash';
 import { UseModelActions } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { UriHelper } from 'utils/constants/UriHelper';
@@ -16,6 +16,8 @@ import { useSnackbar } from 'notistack';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { useDispatch } from 'react-redux';
 import { useHandleChangeRoute } from 'utils/hooks';
+import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
+import { RiFolderWarningFill } from 'react-icons/ri';
 const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
@@ -51,25 +53,36 @@ const uploadFile = async ({
 };
 
 export default function TopNavActions() {
-    const { toogleView, view } = useViewStore();
+    // =========================== | STATES | ================================//
     const [isDeleteHovered, setIsDeleteHovered] = React.useState<boolean>(false);
+    const [isMoveToTrashHovered, setIsMoveToTrashHovered] = React.useState<boolean>(false);
+
+    const timoutRef = React.useRef<any>(null);
+    // =========================== | CONSTANTS | ================================//
     const minWidth = 'max-content';
     const tooltipDelay = 200;
+    // =========================== | THEME | ================================//
     const theme = useTheme();
+    // =========================== | STORE: ZUSTAND | ================================//
     const { selected, actions, isCreating } = useBrowserStore();
-    // const [createSimple] = useCreateSimpleFileMutation({});
-    const { enqueueSnackbar } = useSnackbar();
+    const { toogleView, view } = useViewStore();
+    // =========================== | STORE: REDUX | ================================//
     const dispatch = useDispatch();
-    const timoutRef = React.useRef<any>(null);
-    // ============================= | EVENT HANDLERS | =============================== //
+    // =========================== | RTK QUERY | ================================//
+    const [purgeFolder] = usePurgeFolderMutation();
+    const [moveFolderToTrash] = useMoveFolderToTrashMutation();
+
+    // =========================== | ALERTS | ================================//
+    const { enqueueSnackbar } = useSnackbar();
+
     // =========================== | CUSTOM HOOKS | ================================//
-    const { currenFolder } = useHandleChangeRoute();
+    const { currentFolder, navigate } = useHandleChangeRoute();
+    // ============================= | EVENT HANDLERS | =============================== //
     const changeHandler = (files: File[]) => {
         try {
-            console.log(currenFolder, 'CURRENT');
-            if (!isUndefined(currenFolder) && !isNull(currenFolder) && !isEmpty(selected)) {
+            if (!isUndefined(currentFolder) && !isNull(currentFolder) && !isEmpty(selected)) {
                 files.forEach((file) => {
-                    const docPath = `${currenFolder}/${file.name}`;
+                    const docPath = `${currentFolder}/${file.name}`;
                     const fileName = file.name;
                     const newDate = new Date();
                     const javaDate: JavaCalendar = {
@@ -101,18 +114,18 @@ export default function TopNavActions() {
                         .then((res) => {
                             if (res.status === 200) {
                                 const message = `File ${file.name} uploaded`;
-                                actions.removeUploadingFile(`${currenFolder}/${file.name}`);
+                                actions.removeUploadingFile(`${currentFolder}/${file.name}`);
                                 dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
                                 enqueueSnackbar(message, { variant: 'success' });
                             } else {
                                 const message = `File ${file.name} upload failed`;
-                                actions.removeUploadingFile(`${currenFolder}/${file.name}`);
+                                actions.removeUploadingFile(`${currentFolder}/${file.name}`);
                                 enqueueSnackbar(message, { variant: 'error' });
                             }
                         })
                         .catch(() => {
                             const message = `File ${file.name} upload failed`;
-                            actions.removeUploadingFile(`${currenFolder}/${file.name}`);
+                            actions.removeUploadingFile(`${currentFolder}/${file.name}`);
                             enqueueSnackbar(message, { variant: 'error' });
                         });
                     // createSimple({ docPath, fileName, file });
@@ -129,8 +142,8 @@ export default function TopNavActions() {
 
     const handleCreate = () => {
         actions.setIsCreating(true);
-        if (!isUndefined(currenFolder) && !isNull(currenFolder) && !isEmpty(selected)) {
-            const docPath = `${currenFolder}/new folder`;
+        if (!isUndefined(currentFolder) && !isNull(currentFolder) && !isEmpty(selected)) {
+            const docPath = `${currentFolder}/new folder`;
             const folderName = 'new folder';
             const newDate = new Date();
             const javaDate: JavaCalendar = {
@@ -159,10 +172,44 @@ export default function TopNavActions() {
             actions.addNewFolder(newFolder);
         }
     };
-    const handleClickAway = () => {
-        actions.setIsCreating(false);
+    const handlePurgeFolder = async () => {
+        if (!isUndefined(currentFolder)) {
+            try {
+                if (!isNull(currentFolder) && !isUndefined(currentFolder)) {
+                    const doc_name = last(currentFolder.split('/'));
+                    const person = prompt(
+                        `You are about to DELETE ${doc_name}. The Document Will be LOST FOREVER, to delete enter in YES, to cancel enter NO or close the prompt`,
+                        'NO'
+                    );
+                    if (!isNull(person) && person.toLowerCase() === 'yes') {
+                        await purgeFolder({ fldId: currentFolder, parent: null }).unwrap();
+                        navigate(-1);
+                        enqueueSnackbar(`Folder ${doc_name ?? ''} deleted`, { variant: 'success' });
+                    }
+                }
+            } catch (e) {
+                enqueueSnackbar(`Failed to delete folder`, { variant: 'error' });
+            }
+        }
+    };
+    const handleMoveToTrashFolder = async () => {
+        if (!isUndefined(currentFolder)) {
+            try {
+                const doc_name = last(currentFolder.split('/'));
+
+                const emptyFolder = confirm(`Move the opened folder ${doc_name} to TRASH?`);
+                if (emptyFolder === true) {
+                    await moveFolderToTrash({ fldId: currentFolder, parent: null }).unwrap();
+                    navigate(-1);
+                    enqueueSnackbar(`Folder ${doc_name ?? ''} moved to trash`, { variant: 'success' });
+                }
+            } catch (e) {
+                enqueueSnackbar(`Failed to delete folder`, { variant: 'error' });
+            }
+        }
     };
 
+    // ============================= | EFFECTS | ======================= //
     React.useEffect(() => {
         return () => {
             clearTimeout(timoutRef.current);
@@ -477,9 +524,9 @@ export default function TopNavActions() {
                         title={
                             <React.Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
-                                    Delete file/folder
+                                    Move Opened folder to trash
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to delete the selected file/folder</Typography>
+                                <Typography fontSize={10.5}>This button allows you to move the current opened folder to trash</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* File deletion is a permanent operation and cannot be reverted"}</Typography> */}
                             </React.Fragment>
                         }
@@ -502,12 +549,65 @@ export default function TopNavActions() {
                             justifyContent="space-between"
                             alignItems="center"
                             component={ButtonBase}
+                            onClick={handleMoveToTrashFolder}
+                            onMouseOver={() => setIsMoveToTrashHovered(true)}
+                            onMouseLeave={() => setIsMoveToTrashHovered(false)}
+                            direction="row"
+                            columnGap={0.7}
+                        >
+                            <BsTrashFill
+                                size={19}
+                                color={isMoveToTrashHovered ? theme.palette.error.contrastText : theme.palette.error.main}
+                            />
+                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                Move to Trash
+                            </Typography>
+                        </Stack>
+                    </HtmlTooltip>
+                    <HtmlTooltip
+                        arrow
+                        enterNextDelay={tooltipDelay}
+                        placement="top-start"
+                        title={
+                            <React.Fragment>
+                                <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                    Delete the opened folder
+                                </Typography>
+                                <Typography fontSize={10.5}>This button allows you to delete the current opened folder</Typography>
+                                <Typography fontSize={8.5} fontWeight={500}>
+                                    {'NB* File deletion is a permanent operation and cannot be reverted'}
+                                </Typography>
+                            </React.Fragment>
+                        }
+                    >
+                        <Stack
+                            sx={{
+                                pl: 0.5,
+                                py: 0.5,
+                                pr: 0.7,
+                                borderRadius: 1,
+                                '&:hover': {
+                                    color: (theme) => theme.palette.error.contrastText,
+                                    bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
+                                },
+                                width: minWidth,
+                                transition: `${UriHelper.TRANSITION} all`,
+                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                height: '100%'
+                            }}
+                            justifyContent="space-between"
+                            alignItems="center"
+                            component={ButtonBase}
+                            onClick={handlePurgeFolder}
                             onMouseOver={() => setIsDeleteHovered(true)}
                             onMouseLeave={() => setIsDeleteHovered(false)}
                             direction="row"
                             columnGap={0.7}
                         >
-                            <BsTrashFill size={19} color={isDeleteHovered ? theme.palette.error.contrastText : theme.palette.error.main} />
+                            <RiFolderWarningFill
+                                size={19}
+                                color={isDeleteHovered ? theme.palette.error.contrastText : theme.palette.error.main}
+                            />
                             <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
                                 Delete Folder
                             </Typography>

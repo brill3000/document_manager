@@ -134,13 +134,13 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
     // };
     // =========================== | ROUTES | ================================//
 
-    const { currenFolder, is_dir: route_is_dir } = useHandleChangeRoute();
+    const { currentFolder, is_dir: route_is_dir } = useHandleChangeRoute();
 
     const { data: folderInfo, isFetching: folderInfoIsFetching, isLoading: folderInfoIsLoading } = useGetFoldersPropertiesQuery(
-        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
 
         {
-            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
     return (

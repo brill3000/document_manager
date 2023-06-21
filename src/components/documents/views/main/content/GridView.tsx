@@ -27,19 +27,19 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const { browserHeight } = useViewStore();
 
     // ================================= | ROUTES | ================================ //
-    const { paramArray, is_dir: route_is_dir, currenFolder } = useHandleChangeRoute();
+    const { paramArray, is_dir: route_is_dir, currentFolder } = useHandleChangeRoute();
 
     // ================================= | RTK QUERY | ================================ //
     const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
-        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
     const { data: childrenDocuments, isLoading: childrenDocumentsIsLoading } = useGetFolderChildrenFilesQuery(
         { fldId: Array.isArray(paramArray) && paramArray.length > 0 ? paramArray[paramArray.length - 1] : '' },
         {
-            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
     // ================================= | DATA | ================================ //

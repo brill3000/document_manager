@@ -11,7 +11,7 @@ import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
 import { BsLockFill } from 'react-icons/bs';
-import { isNull, isUndefined } from 'lodash';
+import { isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
@@ -94,10 +94,6 @@ function GridViewItem({
             actions.setRenameTarget({ id: path, rename: is_dir, is_new: newDoc ?? false });
         }
     }, [newDoc, isCreating]);
-
-    React.useEffect(() => {
-        console.log(isExtracting, 'IS EXTRACTING');
-    }, [isExtracting]);
 
     return (
         <Grid key={path !== undefined ? path : 'key'} height="max-content" justifyContent="center" alignItems="center" width="100%">

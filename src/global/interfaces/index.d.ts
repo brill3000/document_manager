@@ -53,7 +53,7 @@ export interface GetDocumentContentProps {
 }
 
 interface DeleteDocRequest {
-    parent: string;
+    parent: string | null;
 }
 export interface DeleteFileRequest extends DeleteDocRequest {
     docId: string;
@@ -245,4 +245,21 @@ export interface TreeMap {
     expanded: string[];
     treeMap: Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>;
     setTreeMap: React.Dispatch<SetStateAction<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>>;
+}
+
+// =============================== | HOOKS: RETURN TYPE | ============================== //
+
+export interface UseHandleActionMenuReturnType {
+    handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: DocumentActionMenuType['type']) => void;
+    renameFn: (args0: { value: string; renameTarget: { id: string; rename: boolean; is_new?: boolean } | null }) => void;
+    isRenaming: boolean | null;
+}
+
+export interface DocumentActionMenuType {
+    type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'moveToTrash' | 'delete' | 'permissions';
+}
+
+export interface FolderActionMenuType {
+    type: 'new_folder' | 'paste' | 'paste_all' | 'edit' | 'purgeTrash' | 'purgeFolder' | 'moveToTrash';
 }

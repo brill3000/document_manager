@@ -55,7 +55,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const { selected, newFolder, uploadFiles, focused } = useBrowserStore();
 
     // ================================= | ROUTES | ================================ //
-    const { pathParam, currenFolder, is_dir: route_is_dir } = useHandleChangeRoute();
+    const { pathParam, currentFolder, is_dir: route_is_dir } = useHandleChangeRoute();
 
     // ========================= | ICONS | =========================== //
     // ================================= | Action Menu | ============================= //
@@ -74,9 +74,9 @@ export function VirtualizedList({ height }: { height: number }) {
         // isFetching: folderChildrenIsFetching,
         isLoading: folderChildrenIsLoading
     } = useGetFoldersChildrenQuery(
-        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
     // ========================= | TABLE COMPONENTS | =========================== //
@@ -115,9 +115,9 @@ export function VirtualizedList({ height }: { height: number }) {
         // isFetching: childrenDocumentsIsFetching,
         isLoading: childrenDocumentsIsLoading
     } = useGetFolderChildrenFilesQuery(
-        { fldId: !isUndefined(currenFolder) && !isNull(currenFolder) ? currenFolder : '' },
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currenFolder === null || currenFolder === undefined || isEmpty(currenFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
         }
     );
 

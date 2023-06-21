@@ -1,20 +1,15 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 
 // hero icons
 import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
 import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
-import { ButtonBase, Collapse, Skeleton, Stack, alpha } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import { useSpring, animated } from '@react-spring/web';
+import { ButtonBase, Stack } from '@mui/material';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error } from 'ui-component/LoadHandlers';
-import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, omit, uniqueId } from 'lodash';
+import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, uniqueId } from 'lodash';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { RxCaretRight } from 'react-icons/rx';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
@@ -23,100 +18,12 @@ import { LazyLoader } from '../..';
 import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
 import { GenericDocument } from 'global/interfaces';
 import { useSelector } from 'react-redux';
-function TransitionComponent(props: TransitionProps) {
-    const style = useSpring({
-        from: {
-            opacity: 0,
-            transform: 'translate3d(20px,0,0)'
-        },
-        to: {
-            opacity: props.in ? 1 : 0,
-            transform: `translate3d(${props.in ? 0 : 20}px,0,0)`
-        }
-    });
-    return (
-        <animated.div style={style}>
-            <Collapse {...props} />
-        </animated.div>
-    );
-}
-
-const StyledTreeItemRoot = styled(
-    (props: TreeItemProps & { isLoader: boolean }) => <TreeItem {...props} TransitionComponent={TransitionComponent} />,
-    {
-        shouldForwardProp: (props) =>
-            props !== 'isLoader' && props !== 'bgColor' && props !== 'labelInfo' && props !== 'labelText' && props !== 'isFocused'
-    }
-)(({ theme, isLoader }) => ({
-    color: theme.palette.text.secondary,
-    paddingRight: 0,
-    paddingTop: theme.spacing(0.5),
-
-    [`& .${treeItemClasses.content}`]: {
-        borderRadius: theme.spacing(0.5),
-        paddingLeft: theme.spacing(1.5),
-        backgroundColor: 'transparent',
-        ...(isLoader && { padding: '0 !important', height: '1.4rem !important' }),
-        fontWeight: theme.typography.fontWeightMedium,
-        '&.Mui-expanded': {
-            fontWeight: theme.typography.fontWeightRegular
-        },
-        '&.Mui-selected': {
-            backgroundColor: `${alpha(theme.palette.primary.main, 0.25)} !important`,
-            '&.Mui-focused': {
-                backgroundColor: `${alpha(theme.palette.primary.main, 0.3)} !important`
-            }
-        },
-        '&.Mui-focused': {
-            backgroundColor: `${alpha(theme.palette.primary.main, 0.1)} !important`
-        },
-        '&.Mui-hover': {
-            backgroundColor: `${alpha(theme.palette.primary.main, 0.1)} !important`
-        },
-        '& .MuiTreeItem-label': {
-            paddingLeft: theme.spacing(1)
-        }
-    },
-    [`& .${treeItemClasses.iconContainer}`]: {
-        display: isLoader ? 'none' : 'inherit'
-    }
-}));
-
-function StyledTreeItem(props: TreeItemProps) {
-    const { label, nodeId, ...other } = props;
-    const otherOmitted = omit(other, ['label', 'focused']);
-    return (
-        <StyledTreeItemRoot
-            nodeId={nodeId}
-            label={
-                !nodeId?.includes('loader') ? (
-                    <Typography variant="body2" color="text.primary" noWrap>
-                        {label}
-                    </Typography>
-                ) : (
-                    <Box width="100%" height="100%">
-                        <Skeleton width="100%" height="2.1rem" animation="wave" />
-                    </Box>
-                )
-            }
-            {...otherOmitted}
-            isLoader={nodeId?.includes('loader')}
-        />
-    );
-}
-
-StyledTreeItem.propTypes = {
-    bgColor: PropTypes.string,
-    color: PropTypes.string,
-    labelInfo: PropTypes.string,
-    labelText: PropTypes.string.isRequired
-};
-
+import { StyledTreeItem } from 'components/documents/views/UI/TreeView';
 export function LeftSidebar() {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
-    const { selected, actions, expanded } = useBrowserStore();
+    const { actions, expanded } = useBrowserStore();
     const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     const [treeMap, setTreeMap] = React.useState<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>(new Map());
@@ -133,7 +40,7 @@ export function LeftSidebar() {
         pathname,
         handleChangeRoute: handleDocumentClick,
         is_dir: route_is_dir,
-        currenFolder
+        currentFolder
     } = useHandleChangeRoute();
 
     React.useEffect(() => {
@@ -180,14 +87,12 @@ export function LeftSidebar() {
         }
     }, [pathParam, pathname]);
 
-    const handleExpandClick = React.useCallback(
-        (path: string) => {
-            expanded.includes(path) ? actions.removeExpand(path) : actions.addExpanded(path);
-        },
-        [expanded]
-    );
-
     // =========================== | Render Function | ================================//
+    /**
+     * A Function which recursively renders the tree elemenst with all the nesting
+     * @param nodes: RenderTree | null
+     * @returns React.ReactNode;
+     */
 
     const renderTree = (nodes: RenderTree | null) => {
         const uniqueLoaderId = uniqueId('loader');
@@ -263,7 +168,25 @@ export function LeftSidebar() {
             />
         );
     };
-    // ====================== | Update Tree: Recursive function  | ========================== //
+    // ====================== | EVENTS  | ========================== //
+    /**
+     * A Function expands or retracts the nodes
+     * @param path: string
+     * @returns void
+     */
+    const handleExpandClick = React.useCallback(
+        (path: string) => {
+            expanded.includes(path) ? actions.removeExpand(path) : actions.addExpanded(path);
+        },
+        [expanded]
+    );
+
+    /**
+     * A Function which populates and updated the tree data
+     * @param obj GenericDocument & { children: Array<string | null> | null; hasChildren: boolean },
+     * @param pathToCompare: string
+     * @returns GenericDocument & { children: Array<GenericDocument | null> | null }) | null;
+     */
 
     const recursiveMapUpdate = (
         obj: GenericDocument & { children: Array<string | null> | null; hasChildren: boolean },
@@ -307,10 +230,15 @@ export function LeftSidebar() {
 
     React.useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
-            !isArray(paramArray) && actions.setSelected([{ id: rootFolder.path ?? '', is_dir: true }]);
             actions.addExpanded(rootFolder.path);
         }
-    }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, rootUrl, openItem]);
+    }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, openItem]);
+
+    React.useEffect(() => {
+        if (!isUndefined(rootFolder) && !isNull(rootFolder.path) && !isEmpty(rootFolder.path)) {
+            isEmpty(paramArray) && handleDocumentClick(rootFolder.path, true);
+        }
+    }, [rootFolder]);
 
     const {} = useTreeMap({ expanded, treeMap, setTreeMap });
     /**
@@ -357,7 +285,7 @@ export function LeftSidebar() {
             ) : data !== null && data !== undefined ? (
                 <TreeView
                     aria-label="Folder Sidebar"
-                    selected={currenFolder}
+                    selected={currentFolder}
                     expanded={expanded}
                     sx={{
                         flexGrow: 1,

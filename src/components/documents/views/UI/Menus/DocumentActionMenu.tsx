@@ -1,29 +1,26 @@
 import { Divider, MenuItem, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { BsFolderPlus } from 'react-icons/bs';
-import { IoMdCopy, IoMdTrash } from 'react-icons/io';
+import { BsFolderPlus, BsTrash } from 'react-icons/bs';
+import { IoMdCopy } from 'react-icons/io';
 import { IoCutOutline } from 'react-icons/io5';
 import { StyledMenu } from './StyledMenu';
 import { CiEdit, CiEraser } from 'react-icons/ci';
 import { theme } from '../../../Themes/theme';
 import { MdSecurity } from 'react-icons/md';
 import { MemorizedBsFillFileEarmarkUnZipFill } from 'components/documents/Icons/fileIcon';
+import { RiFileWarningLine, RiFolderWarningLine } from 'react-icons/ri';
+import { DocumentActionMenuType } from 'global/interfaces';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
     locked: boolean;
     is_dir: boolean;
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-    handleMenuClick: (
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'delete' | 'permissions'
-    ) => void;
+    handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: DocumentActionMenuType['type']) => void;
 }
 
 export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir }: ActionMenuProps) => {
-    const [selected, setSelected] = React.useState<
-        'open' | 'copy' | 'cut' | 'rename' | 'extract' | 'edit' | 'delete' | 'permissions' | null
-    >(null);
+    const [selected, setSelected] = React.useState<DocumentActionMenuType['type'] | null>(null);
     React.useEffect(() => {
         return () => {
             setSelected(null);
@@ -154,6 +151,21 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                 </MenuItem>
                 <Divider sx={{ my: 0.2 }} variant="middle" />
                 <MenuItem
+                    selected={selected === 'moveToTrash'}
+                    onClick={(e) => {
+                        setSelected('moveToTrash');
+                        handleMenuClick(e, 'moveToTrash');
+                    }}
+                    disabled={locked}
+                >
+                    <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
+                        <BsTrash size={17} color={theme.palette.error.main} />
+                        <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
+                            Move {is_dir ? 'folder' : 'file'} to Trash
+                        </Typography>
+                    </Stack>
+                </MenuItem>
+                <MenuItem
                     selected={selected === 'delete'}
                     onClick={(e) => {
                         setSelected('delete');
@@ -162,9 +174,13 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                     disabled={locked}
                 >
                     <Stack height="max-content" direction="row" spacing={1} p={0.3} borderRadius={1}>
-                        <IoMdTrash size={20} color={theme.palette.error.main} />
+                        {is_dir ? (
+                            <RiFolderWarningLine size={17} color={theme.palette.error.main} />
+                        ) : (
+                            <RiFileWarningLine size={17} color={theme.palette.error.main} />
+                        )}
                         <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
-                            Delete
+                            Delete {is_dir ? 'folder' : 'file'}
                         </Typography>
                     </Stack>
                 </MenuItem>
