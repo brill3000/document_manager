@@ -181,7 +181,7 @@ export const repositoryApi = createApi({
             }
         }),
         getCategoriesFolder: build.query<any, void>({
-            query: () => ({ url: `${UriHelper.REPOSITORY_GET_CATEGORIES_FOLDERS}`, method: 'GET' }),
+            query: () => ({ url: `${UriHelper.REPOSITORY_GET_ROOT_CATEGORIES}`, method: 'GET' }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_REPOSITORY' }];
                 if (result) return [...tags, { type: 'DMS_REPOSITORY_SUCCESS', id: 'success' }];

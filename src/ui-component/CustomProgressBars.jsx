@@ -35,7 +35,6 @@ export const StyledLinearProgress = styled(LinearProgress, {
 // Inspired by the former Facebook spinners.
 export function FacebookCircularProgress(props) {
     const { value } = props;
-    const omited = omit(props, 'value');
     const theme = useTheme();
     return (
         <Box sx={{ position: 'relative' }}>
@@ -46,7 +45,7 @@ export function FacebookCircularProgress(props) {
                 }}
                 size={35}
                 thickness={5}
-                {...omited}
+                {...props}
                 value={props.value}
             />
             <CircularProgress
@@ -63,7 +62,7 @@ export function FacebookCircularProgress(props) {
                 }}
                 size={35}
                 thickness={5}
-                {...omited}
+                {...props}
             />
             <Box
                 sx={{

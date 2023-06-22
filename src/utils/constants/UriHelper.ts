@@ -167,26 +167,27 @@ export const UriHelper = {
     REPOSITORY_EXECUTE_SCRIPT: 'repository/executeScript',
     REPOSITORY_EXECUTE_SQL_QUERY: 'repository/executeSqlQuery',
     REPOSITORY_EXECUTE_HQL_QUERY: 'repository/executeHqlQuery',
+    REPOSITORY_GET_CONFIGURATION: 'repository/getConfiguration',
 
     /**
      * Search
      */
-    REPOSITORY_FIND_BY_CONTENT: 'search/findByContent',
-    REPOSITORY_FIND_BY_NAME: 'search/findByName',
-    REPOSITORY_FIND_BY_KEYWORDS: 'search/findByKeywords',
-    REPOSITORY_FIND: 'search/find',
-    REPOSITORY_FIND_PAGINATED: 'search/findPaginated',
-    REPOSITORY_FIND_SIMPLE_QUERY_PAGINATED: 'search/findSimpleQueryPaginated',
-    REPOSITORY_FIND_MORE_LIKE_THIS: 'search/findMoreLikeThis',
-    REPOSITORY_GET_CATEGORIES_FOLDERS: 'search/getCategoriesFolder',
-    REPOSITORY_GET_KEYWORD_MAP: 'search/getKeywordMap',
-    REPOSITORY_GET_CATEGORIZED_DOCUMENTS: 'search/getCategorizedDocuments',
-    REPOSITORY_SAVE_SEARCH: 'search/saveSearch',
-    REPOSITORY_UPDATE_SEARCH: 'search/updateSearch',
-    REPOSITORY_GET_SEARCH: 'search/getSearch',
-    REPOSITORY_GET_ALL_SEARCH: 'search/getAllSearchs',
-    REPOSITORY_DELETE_SEARCH: 'search/deleteSearch',
-    REPOSITORY_GET_CONFIGURATION: 'search/getConfiguration',
+    SEARCH_FIND_BY_CONTENT: 'search/findByContent',
+    SEARCH_FIND_BY_NAME: 'search/findByName',
+    SEARCH_FIND_BY_KEYWORDS: 'search/findByKeywords',
+    SEARCH_FIND: 'search/find',
+    SEARCH_FIND_PAGINATED: 'search/findPaginated',
+    SEARCH_FIND_SIMPLE_QUERY_PAGINATED: 'search/findSimpleQueryPaginated',
+    SEARCH_FIND_MORE_LIKE_THIS: 'search/findMoreLikeThis',
+    SEARCH_GET_CATEGORIES_FOLDERS: 'search/getCategoriesFolder',
+    SEARCH_GET_KEYWORD_MAP: 'search/getKeywordMap',
+    SEARCH_GET_CATEGORIZED_DOCUMENTS: 'search/getCategorizedDocuments',
+    SEARCH_SAVE_SEARCH: 'search/saveSearch',
+    SEARCH_UPDATE_SEARCH: 'search/updateSearch',
+    SEARCH_GET_SEARCH: 'search/getSearch',
+    SEARCH_GET_ALL_SEARCH: 'search/getAllSearchs',
+    SEARCH_DELETE_SEARCH: 'search/deleteSearch',
+    SEARCH_GET_CONFIGURATION: 'search/getConfiguration',
 
     /**
      * Property

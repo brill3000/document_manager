@@ -31,9 +31,11 @@ import reducers from './reducers';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { repositoryApi } from 'store/async/dms/repository/repositoryApi';
+import { searchApi } from 'store/async/dms/search/searchApi';
 
 export const store = configureStore({
     reducer: reducers,
+    // @ts-expect-error expected
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
             // .concat(logger)
@@ -47,6 +49,7 @@ export const store = configureStore({
             .concat(filesApi.middleware)
             .concat(foldersApi.middleware)
             .concat(repositoryApi.middleware)
+            .concat(searchApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

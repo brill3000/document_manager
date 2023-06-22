@@ -11,7 +11,7 @@ import {
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice } from 'lodash';
+import { first, isArray, isEmpty, isNull, isString, isUndefined, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -693,3 +693,13 @@ export const axiosBaseQuery = (
         };
     }
 };
+
+// export function debounce<T extends (...args: any[]) => void>(func: T, timeout = 300): (...args: Parameters<T>) => void {
+//     let timer: NodeJS.Timeout;
+//     return function (this: any, ...args: Parameters<T>) {
+//         clearTimeout(timer);
+//         timer = setTimeout(() => {
+//             func.apply(this, args);
+//         }, timeout);
+//     };
+// }
