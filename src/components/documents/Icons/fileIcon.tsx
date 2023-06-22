@@ -8,6 +8,7 @@ import UnzipIcon from 'assets/images/icons/UnzipIcon';
 import EmptyTrash from 'assets/images/icons/EmptyTrash';
 import EmptyFolder from 'assets/images/icons/EmptyFolder';
 import SearchIcon from 'assets/images/icons/SearchIcon';
+import { MimeTypeConfigInterface } from 'global/interfaces';
 const MemorizedBsFileEarmarkPdfFill = React.memo(BsFileEarmarkPdfFill);
 const MemorizedBsFillFileEarmarkTextFill = React.memo(BsFillFileEarmarkTextFill);
 const MemorizedBsFillImageFill = React.memo(BsFillFileEarmarkImageFill);
@@ -21,7 +22,7 @@ export const MemorizedBsEmptyFolder = React.memo(EmptyFolder);
 export const MemorizedSearchIcon = React.memo(SearchIcon);
 
 export interface FileIconProps {
-    mimeType: string | undefined;
+    mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface] | undefined;
     size?: number;
     file_icon_margin?: number;
     contrast?: string | null;
@@ -50,7 +51,6 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast, dark }: F
                 />
             );
         case 'application/zip':
-        case 'application/x-rar-compressed':
             return (
                 <MemorizedBsFillFileEarmarkZipFill
                     size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
@@ -123,12 +123,9 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast, dark }: F
         case 'image/jpeg':
         case 'image/gif':
         case 'image/bmp':
-        case 'image/avif':
         case 'image/png':
         case 'image/svg+xml':
-        case 'image/svg':
         case 'image/tiff':
-        case 'image/webp':
             return (
                 <MemorizedBsFillImageFill
                     size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}

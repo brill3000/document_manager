@@ -1,9 +1,11 @@
+import { MimeTypeConfigInterface } from 'global/interfaces';
+
 /**
  * MimeTypeConfig
  *
  * @author brilliant
  */
-export const MimeTypeConfig = {
+export const MimeTypeConfig: MimeTypeConfigInterface = {
     // MIME types:> NOTE Keep on sync with default.sql
     MIME_UNDEFINED: 'application/octet-stream',
     // Application

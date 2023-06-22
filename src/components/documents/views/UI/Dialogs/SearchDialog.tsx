@@ -3,13 +3,14 @@ import Draggable from 'react-draggable';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { Box, alpha, useTheme, InputBase, Stack, InputAdornment, ButtonBase, ClickAwayListener } from '@mui/material';
 import { useHandleChangeRoute } from 'utils/hooks';
-import { debounce, isEmpty, isNull, isUndefined, last } from 'lodash';
+import { debounce, isEmpty, isNull, isString, isUndefined, last } from 'lodash';
 import { MemorizedSearchIcon } from 'components/documents/Icons/fileIcon';
 import zIndex from '@mui/material/styles/zIndex';
 import { StyledTab, StyledTabs, TabPanel, a11yProps } from '../Tabs';
 import { TbBackspace, TbSettingsSearch } from 'react-icons/tb';
 import SwipeableViews from 'react-swipeable-views';
 import SearchList from '../../lists/SearchList';
+import { useLazyFindByContentQuery } from 'store/async/dms/search/searchApi';
 
 export function SearchDialog() {
     // ========================= | STATES | =========================== //
@@ -17,15 +18,14 @@ export function SearchDialog() {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [value, setValue] = React.useState<string>('');
     const [tabValue, setTabValue] = React.useState(0);
-
     // ========================= | THEME | =========================== //
     const theme = useTheme();
     // ========================= | HOOKS | =========================== //
     const { currentFolder } = useHandleChangeRoute();
     // ========================= | ZUSTAND | =========================== //
-
     const { searchDialogIsOpen, actions } = useBrowserStore();
-
+    // ========================= | RTK QUERY | =========================== //
+    const [findByContent, findByContentResuts] = useLazyFindByContentQuery();
     // ========================= | EVENTS | =========================== //
     const handleClickAway = () => {
         actions.closeSearchDialog();
@@ -33,15 +33,27 @@ export function SearchDialog() {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
-    // ========================= | EFFECTS | =========================== //
-
     const handleDebouncedChange = React.useCallback(
         debounce((value) => {
             // Do something with the debounced value
-            console.log(value, 'VALUE');
+            if (isString(value) && !isEmpty(value)) {
+                findByContent({ content: value });
+            }
         }, 1000), // Specify the debounce delay (in milliseconds)
         []
     );
+    // ========================= | EFFECTS | =========================== //
+    React.useEffect(() => {
+        if (
+            !isUndefined(findByContentResuts) &&
+            !isNull(findByContentResuts) &&
+            !isUndefined(findByContentResuts.data) &&
+            !isNull(findByContentResuts.data)
+        ) {
+            console.log(findByContentResuts.data, 'QUERY RESULTS');
+        }
+    }, [findByContentResuts]);
+
     return (
         <Draggable disabled={disableDrag} bounds="html">
             <Box

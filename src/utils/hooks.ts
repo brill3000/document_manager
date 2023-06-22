@@ -8,6 +8,7 @@ import {
     DocumentActionMenuType,
     FolderInterface,
     ListViewRowSelectedProps,
+    MimeTypeConfigInterface,
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
@@ -540,7 +541,7 @@ export const useHandleClickEvents = ({
     is_dir: boolean;
     doc_name: string;
     locked?: boolean;
-    mimeType?: string;
+    mimeType?: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
 }) => {
     // ================================= | ZUSTAND | ============================= //
     const { actions, isCreating } = useBrowserStore();

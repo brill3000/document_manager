@@ -1,6 +1,75 @@
 import { PermissionTypes, RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
 import { SetStateAction } from 'react';
 
+export type MimeTypeConfigInterface = {
+    // MIME types:> NOTE Keep on sync with default.sql
+    MIME_UNDEFINED: 'application/octet-stream';
+    // Application
+    MIME_RTF: 'application/rtf';
+    MIME_JSON: 'application/json';
+    MIME_PDF: 'application/pdf';
+    MIME_ZIP: 'application/zip';
+    MIME_POSTSCRIPT: 'application/postscript';
+    MIME_MS_WORD: 'application/msword';
+    MIME_MS_EXCEL: 'application/vnd.ms-excel';
+    MIME_MS_POWERPOINT: 'application/vnd.ms-powerpoint';
+    MIME_MS_WORD_2007: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    MIME_MS_EXCEL_2007: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    MIME_MS_POWERPOINT_2007: 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    MIME_OO_TEXT: 'application/vnd.oasis.opendocument.text';
+    MIME_OO_SPREADSHEET: 'application/vnd.oasis.opendocument.spreadsheet';
+    MIME_OO_PRESENTATION: 'application/vnd.oasis.opendocument.presentation';
+    MIME_SWF: 'application/x-shockwave-flash';
+    MIME_JAR: 'application/x-java-archive';
+    MIME_EPUB: 'application/epub+zip';
+    // Image
+    MIME_DXF: 'image/vnd.dxf';
+    MIME_DWG: 'image/vnd.dwg';
+    MIME_TIFF: 'image/tiff';
+    MIME_JPEG: 'image/jpeg';
+    MIME_GIF: 'image/gif';
+    MIME_PNG: 'image/png';
+    MIME_BMP: 'image/bmp';
+    MIME_PSD: 'image/x-psd';
+    MIME_ICO: 'image/x-ico';
+    MIME_PBM: 'image/pbm';
+    MIME_SVG: 'image/svg+xml';
+    // Video
+    MIME_MP4: 'video/mp4';
+    MIME_MPEG: 'video/mpeg';
+    MIME_FLV: 'video/x-flv';
+    MIME_WMV: 'video/x-ms-wmv';
+    MIME_AVI: 'video/x-msvideo';
+    // Text
+    MIME_HTML: 'text/html';
+    MIME_TEXT: 'text/plain';
+    MIME_XML: 'text/xml';
+    MIME_CSV: 'text/csv';
+    MIME_CSS: 'text/css';
+    // Language
+    MIME_SQL: 'text/x-sql';
+    MIME_JAVA: 'text/x-java';
+    MIME_SCALA: 'text/x-scala';
+    MIME_PYTHON: 'text/x-python';
+    MIME_GROOVY: 'text/x-groovy';
+    MIME_DIFF: 'text/x-diff';
+    MIME_PASCAL: 'text/x-pascal';
+    MIME_CSHARP: 'text/x-csharp';
+    MIME_CPP: 'text/x-c++';
+    MIME_APPLESCRIPT: 'text/applescript';
+    MIME_SH: 'application/x-shellscript';
+    MIME_BSH: 'application/x-bsh';
+    MIME_PHP: 'application/x-php';
+    MIME_PERL: 'application/x-perl';
+    MIME_JAVASCRIPT: 'application/javascript';
+    MIME_AS3: 'application/x-font-truetype';
+    // Mail
+    MIME_OUTLOOK: 'application/vnd.ms-outlook';
+    MIME_EML: 'message/rfc822';
+};
+type AcceptedFilesType<T extends Record<string, string>> = {
+    [K in T[keyof T]]: any[];
+};
 export interface User {
     first_name: string;
     last_name: string;
@@ -129,7 +198,7 @@ export interface GenericDocument {
     subscribed: boolean;
     uuid: string;
     is_dir: boolean;
-    mimeType?: string;
+    mimeType?: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
     size?: number;
     locked?: boolean;
     isLoading?: boolean;
@@ -138,6 +207,10 @@ export interface GenericDocument {
     error?: boolean;
     newDoc?: boolean;
 }
+
+export type UploadedFileInterface = Omit<File, 'type'> & {
+    type: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
+};
 
 export interface FolderInterface extends Omit<GenericDocument, 'permissions'> {
     hasChildren: boolean;
@@ -152,7 +225,7 @@ export interface FileInterface extends Omit<GenericDocument, 'permissions'> {
     permissions: PermissionTypes;
     lockInfo: LockInfoType;
     locked: boolean;
-    mimeType: string;
+    mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
     signed: boolean;
     title: string;
     uuid: string;
@@ -275,6 +348,62 @@ export interface ListViewRowSelectedProps {
     locked?: boolean;
     doc_name: string;
     is_dir: boolean;
-    mimeType?: string;
+    mimeType?: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
     newDoc?: boolean;
+}
+
+// =============================== | SEARCH | ============================== //
+
+interface QueryResults {
+    attachment: boolean;
+    excerpt: string | null;
+    score: number;
+}
+interface QueryNode {
+    node: {
+        title: string;
+        language: string;
+        lastModified: JavaCalendar;
+        mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
+        // "locked": false,
+        // "checkedOut": false,
+        // "actualVersion": {
+        //     "name": "1.0",
+        //     "created": {
+        //         "year": 2023,
+        //         "month": 5,
+        //         "dayOfMonth": 22,
+        //         "hourOfDay": 8,
+        //         "minute": 35,
+        //         "second": 15
+        //     },
+        //     "size": 1317377,
+        //     "author": "okmAdmin",
+        //     "actual": true,
+        //     "checksum": "856e73508cccfbc69fb40292e689897a"
+        // },
+        // "signed": false,
+        // "convertibleToPdf": false,
+        // "convertibleToSwf": false,
+        // "created": {
+        //     "year": 2023,
+        //     "month": 5,
+        //     "dayOfMonth": 22,
+        //     "hourOfDay": 8,
+        //     "minute": 35,
+        //     "second": 15
+        // },
+        // "path": "/okm:root/04.Tender document for the Supply, installation, implementation and commissioning of human resources management system-1-1.pdf",
+        // "author": "okmAdmin",
+        // "permissions": 15,
+        // "uuid": "850116ea-6dc6-49f4-bd51-d68709d46497",
+        // "subscribed": false,
+        // "subscriptors": [],
+        // "keywords": [],
+        // "categories": [],
+        // "notes": []
+    };
+}
+export interface SearchResultsInterface {
+    queryResults: QueryResults[];
 }

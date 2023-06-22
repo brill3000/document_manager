@@ -12,7 +12,7 @@ export const searchApi = createApi({
     tagTypes: ['DMS_SEARCH', 'DMS_SEARCH_SUCCESS', 'DMS_SEARCH_ERROR'],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        findByContent: build.query<any, { content: string }>({
+        findByContent: build.query<SearchResultsInterface, { content: string }>({
             query: ({ content }) => ({ url: `${UriHelper.SEARCH_FIND_BY_CONTENT}`, method: 'GET', params: { content } }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_SEARCH' }];
@@ -32,7 +32,7 @@ export const {
     /**
      * Getters
      */
-    useFindByContentQuery
+    useLazyFindByContentQuery
     /**
      * Mutations: POST
      */

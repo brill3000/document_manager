@@ -7,17 +7,25 @@ import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 // import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
-import { isEmpty, isNaN, isNull, isUndefined, last } from 'lodash';
+import { isEmpty, isNaN, isNull, isUndefined, last, map } from 'lodash';
 import { UseModelActions } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { FolderInterface, GenericDocument, JavaCalendar } from 'global/interfaces';
+import {
+    AcceptedFilesType,
+    FolderInterface,
+    GenericDocument,
+    JavaCalendar,
+    MimeTypeConfigInterface,
+    UploadedFileInterface
+} from 'global/interfaces';
 import { useSnackbar } from 'notistack';
 import { filesApi } from 'store/async/dms/files/filesApi';
 import { useDispatch } from 'react-redux';
 import { useHandleChangeRoute } from 'utils/hooks';
 import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RiFolderWarningFill } from 'react-icons/ri';
+import { MimeTypeConfig } from 'utils/constants/MimeTypes';
 const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
@@ -61,6 +69,14 @@ export default function TopNavActions() {
     // =========================== | CONSTANTS | ================================//
     const minWidth = 'max-content';
     const tooltipDelay = 200;
+    const AcceptedTypes = React.useMemo(() => {
+        const newObj = {} as AcceptedFilesType<MimeTypeConfigInterface>;
+        for (const [key, value] of Object.entries(MimeTypeConfig)) {
+            console.log(`${key}: ${value}`);
+            newObj[value] = [];
+        }
+        return newObj;
+    }, []);
     // =========================== | THEME | ================================//
     const theme = useTheme();
     // =========================== | STORE: ZUSTAND | ================================//
@@ -78,7 +94,7 @@ export default function TopNavActions() {
     // =========================== | CUSTOM HOOKS | ================================//
     const { currentFolder, navigate } = useHandleChangeRoute();
     // ============================= | EVENT HANDLERS | =============================== //
-    const changeHandler = (files: File[]) => {
+    const changeHandler = (files: UploadedFileInterface[]) => {
         try {
             if (!isUndefined(currentFolder) && !isNull(currentFolder) && !isEmpty(selected)) {
                 files.forEach((file) => {
@@ -296,8 +312,8 @@ export default function TopNavActions() {
                             </Stack>
                         </Box>
                     </HtmlTooltip>
-
-                    <Dropzone onDrop={changeHandler}>
+                    {/* @ts-expect-error expected*/}
+                    <Dropzone onDrop={changeHandler} accept={AcceptedTypes}>
                         {({ getRootProps, getInputProps }) => (
                             <HtmlTooltip
                                 arrow
