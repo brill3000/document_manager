@@ -305,7 +305,7 @@ export interface FileResponseInterface extends GenericDocumentResponse {
     lastModified: string;
     lockInfo: LockInfoType;
     locked: boolean;
-    mimeType: string;
+    mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
     permissions: number;
     signed: boolean;
     title: string;
@@ -354,55 +354,13 @@ export interface ListViewRowSelectedProps {
 
 // =============================== | SEARCH | ============================== //
 
-interface QueryResults {
+interface QueryResults extends QueryNode {
     attachment: boolean;
     excerpt: string | null;
     score: number;
 }
 interface QueryNode {
-    node: {
-        title: string;
-        language: string;
-        lastModified: JavaCalendar;
-        mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
-        // "locked": false,
-        // "checkedOut": false,
-        // "actualVersion": {
-        //     "name": "1.0",
-        //     "created": {
-        //         "year": 2023,
-        //         "month": 5,
-        //         "dayOfMonth": 22,
-        //         "hourOfDay": 8,
-        //         "minute": 35,
-        //         "second": 15
-        //     },
-        //     "size": 1317377,
-        //     "author": "okmAdmin",
-        //     "actual": true,
-        //     "checksum": "856e73508cccfbc69fb40292e689897a"
-        // },
-        // "signed": false,
-        // "convertibleToPdf": false,
-        // "convertibleToSwf": false,
-        // "created": {
-        //     "year": 2023,
-        //     "month": 5,
-        //     "dayOfMonth": 22,
-        //     "hourOfDay": 8,
-        //     "minute": 35,
-        //     "second": 15
-        // },
-        // "path": "/okm:root/04.Tender document for the Supply, installation, implementation and commissioning of human resources management system-1-1.pdf",
-        // "author": "okmAdmin",
-        // "permissions": 15,
-        // "uuid": "850116ea-6dc6-49f4-bd51-d68709d46497",
-        // "subscribed": false,
-        // "subscriptors": [],
-        // "keywords": [],
-        // "categories": [],
-        // "notes": []
-    };
+    node: FileInterface;
 }
 export interface SearchResultsInterface {
     queryResults: QueryResults[];

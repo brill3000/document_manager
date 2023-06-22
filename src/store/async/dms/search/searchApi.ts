@@ -1,11 +1,12 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { SearchResultsInterface } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { axiosBaseQuery } from 'utils/hooks';
 type UserTags = 'DMS_SEARCH' | 'DMS_SEARCH_SUCCESS' | 'DMS_SEARCH_ERROR';
 
 export const searchApi = createApi({
-    reducerPath: 'searchApi',
+    reducerPath: 'search_api',
     baseQuery: axiosBaseQuery({
         baseUrl: UriHelper.HOST
     }),

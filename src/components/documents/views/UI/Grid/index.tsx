@@ -21,9 +21,9 @@ export const GridVirtuosoItem = styled(Box)<GridItemProps>(({ theme }) => ({
 
 export const GridVirtuosoItemWrapper = styled(Box)<GridItemProps & { height?: number }>(({ height }) => ({
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'start',
     justifyContent: 'center',
-    p: 0,
+    paddingTop: 20,
     display: 'flex',
     minHeight: height ?? '33%'
 }));

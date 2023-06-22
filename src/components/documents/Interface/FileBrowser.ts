@@ -1,7 +1,5 @@
-import { FolderInterface, GenericDocument } from 'global/interfaces';
+import { FolderInterface, GenericDocument, MimeTypeConfigInterface } from 'global/interfaces';
 import React, { RefObject, SetStateAction } from 'react';
-import { FileIconProps } from '../Icons/fileIcon';
-import { PermissionIconProps } from '../Icons/permissionsIcon';
 
 export interface FileBrowserProps {
     height?: key;
@@ -161,7 +159,7 @@ export interface RenderTree {
     children?: Array<RenderTree | null>;
     hasChildren: boolean;
     is_dir: boolean;
-    mimeType?: string;
+    mimeType?: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
 }
 
 export interface User {

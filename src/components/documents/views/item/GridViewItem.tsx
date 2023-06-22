@@ -158,6 +158,7 @@ function GridViewItem({
                             }}
                             component={Box}
                             p={0}
+                            pb={1}
                             m={0}
                         >
                             <MemorizedFcFolder

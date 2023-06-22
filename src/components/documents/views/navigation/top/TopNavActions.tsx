@@ -7,7 +7,7 @@ import { HtmlTooltip } from 'components/documents/views/UI/Poppers/CustomPoppers
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
 // import { useCreateSimpleFileMutation } from 'store/async/dms/files/filesApi';
-import { isEmpty, isNaN, isNull, isUndefined, last, map } from 'lodash';
+import { isEmpty, isNaN, isNull, isUndefined, last } from 'lodash';
 import { UseModelActions } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { UriHelper } from 'utils/constants/UriHelper';
@@ -71,8 +71,8 @@ export default function TopNavActions() {
     const tooltipDelay = 200;
     const AcceptedTypes = React.useMemo(() => {
         const newObj = {} as AcceptedFilesType<MimeTypeConfigInterface>;
-        for (const [key, value] of Object.entries(MimeTypeConfig)) {
-            console.log(`${key}: ${value}`);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for (const [_, value] of Object.entries(MimeTypeConfig)) {
             newObj[value] = [];
         }
         return newObj;

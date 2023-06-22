@@ -25,7 +25,6 @@ import { messageQuery } from 'store/async/messagesQuery';
 import { logsQuery } from 'store/async/logsQuery';
 import { workflowQuery } from 'store/async/workflowQuery';
 import { authApi } from 'store/async/dms/auth/authApi';
-
 // import logger from 'redux-logger';
 import reducers from './reducers';
 import { filesApi } from 'store/async/dms/files/filesApi';
@@ -35,7 +34,6 @@ import { searchApi } from 'store/async/dms/search/searchApi';
 
 export const store = configureStore({
     reducer: reducers,
-    // @ts-expect-error expected
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
             // .concat(logger)

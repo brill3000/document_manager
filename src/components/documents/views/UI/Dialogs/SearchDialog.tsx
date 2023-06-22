@@ -3,7 +3,7 @@ import Draggable from 'react-draggable';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { Box, alpha, useTheme, InputBase, Stack, InputAdornment, ButtonBase, ClickAwayListener } from '@mui/material';
 import { useHandleChangeRoute } from 'utils/hooks';
-import { debounce, isEmpty, isNull, isString, isUndefined, last } from 'lodash';
+import { debounce, isArray, isEmpty, isNull, isString, isUndefined, last } from 'lodash';
 import { MemorizedSearchIcon } from 'components/documents/Icons/fileIcon';
 import zIndex from '@mui/material/styles/zIndex';
 import { StyledTab, StyledTabs, TabPanel, a11yProps } from '../Tabs';
@@ -11,13 +11,16 @@ import { TbBackspace, TbSettingsSearch } from 'react-icons/tb';
 import SwipeableViews from 'react-swipeable-views';
 import SearchList from '../../lists/SearchList';
 import { useLazyFindByContentQuery } from 'store/async/dms/search/searchApi';
+import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 
 export function SearchDialog() {
     // ========================= | STATES | =========================== //
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [disableDrag, setDisableDrag] = React.useState<boolean>(false);
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [value, setValue] = React.useState<string>('');
     const [tabValue, setTabValue] = React.useState(0);
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
     // ========================= | THEME | =========================== //
     const theme = useTheme();
     // ========================= | HOOKS | =========================== //
@@ -25,7 +28,10 @@ export function SearchDialog() {
     // ========================= | ZUSTAND | =========================== //
     const { searchDialogIsOpen, actions } = useBrowserStore();
     // ========================= | RTK QUERY | =========================== //
-    const [findByContent, findByContentResuts] = useLazyFindByContentQuery();
+    const [
+        findByContent,
+        { isFetching: findByContentIsFetching, data: findByContentData, isUninitialized: findByContentIsUninitialized }
+    ] = useLazyFindByContentQuery();
     // ========================= | EVENTS | =========================== //
     const handleClickAway = () => {
         actions.closeSearchDialog();
@@ -37,6 +43,7 @@ export function SearchDialog() {
         debounce((value) => {
             // Do something with the debounced value
             if (isString(value) && !isEmpty(value)) {
+                setIsLoading(true);
                 findByContent({ content: value });
             }
         }, 1000), // Specify the debounce delay (in milliseconds)
@@ -44,15 +51,8 @@ export function SearchDialog() {
     );
     // ========================= | EFFECTS | =========================== //
     React.useEffect(() => {
-        if (
-            !isUndefined(findByContentResuts) &&
-            !isNull(findByContentResuts) &&
-            !isUndefined(findByContentResuts.data) &&
-            !isNull(findByContentResuts.data)
-        ) {
-            console.log(findByContentResuts.data, 'QUERY RESULTS');
-        }
-    }, [findByContentResuts]);
+        findByContentIsFetching !== true && setIsLoading(false);
+    }, [findByContentIsFetching]);
 
     return (
         <Draggable disabled={disableDrag} bounds="html">
@@ -89,7 +89,11 @@ export function SearchDialog() {
                                 <InputBase
                                     startAdornment={
                                         <InputAdornment position="start">
-                                            <MemorizedSearchIcon size={17} color={theme.palette.common.white} stroke={1} />
+                                            {isLoading ? (
+                                                <FacebookCircularProgress size={20} />
+                                            ) : (
+                                                <MemorizedSearchIcon size={17} color={theme.palette.common.white} stroke={1} />
+                                            )}
                                         </InputAdornment>
                                     }
                                     autoFocus
@@ -150,7 +154,9 @@ export function SearchDialog() {
                                 style={{ height: '100%', width: '100%', overflowY: 'hidden' }}
                             >
                                 <TabPanel value={tabValue} index={0}>
-                                    <SearchList height="50vh" />
+                                    {isArray(findByContentData?.queryResults) && (
+                                        <SearchList height="45vh" searchList={findByContentData ?? null} />
+                                    )}
                                 </TabPanel>
                                 <TabPanel value={tabValue} index={1}>
                                     Item Two
