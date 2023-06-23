@@ -12,10 +12,10 @@ import {
     useMediaQuery,
     useTheme
 } from '@mui/material';
-import { CustomButton } from '../UI/CustomButton';
 import { SearchOutlined } from '@ant-design/icons';
 import { RxCaretDown } from 'react-icons/rx';
 import MailsList from './lists/MailsList';
+import { CustomButton } from 'components/workflow/components/UI/CustomButton';
 
 export function InnerSidebar() {
     const theme = useTheme();
@@ -64,8 +64,12 @@ export function InnerSidebar() {
                         />
                     </FormControl>
                     <CustomButton
-                        mainColor={alpha(theme.palette.secondary.main, 0.2)}
-                        hoverColor={alpha(theme.palette.secondary.main, 0.5)}
+                        sx={{
+                            bgcolor: alpha(theme.palette.secondary.main, 0.2),
+                            '& :hover': {
+                                bgcolor: alpha(theme.palette.secondary.main, 0.5)
+                            }
+                        }}
                     >
                         <Stack direction="row" spacing={1} alignItems="center" px={2} width="100%">
                             <SearchOutlined />

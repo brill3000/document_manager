@@ -142,7 +142,7 @@ function GridViewItem({
                             height="max-content"
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
                             onFocus={() => actions.setFocused(path, is_dir)}
                             // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
@@ -183,7 +183,7 @@ function GridViewItem({
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}
@@ -252,7 +252,7 @@ function GridViewItem({
                             px={0.5}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
                             onFocus={() => actions.setFocused(path, is_dir)}
                             // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
@@ -272,22 +272,22 @@ function GridViewItem({
                             component={Box}
                             position="relative"
                         >
-                            <Badge
+                            {/* <Badge
                                 overlap="circular"
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 badgeContent={locked ? <BsLockFill size={browserHeight * 0.025} color={orange[500]} /> : 0}
-                            >
-                                {memorizedFileIcon({
-                                    mimeType,
-                                    size: browserHeight * (isRenaming ? 0.06 : 0.075),
-                                    file_icon_margin: browserHeight * 0.006,
-                                    dark: isFocused || isOver || isHovered,
-                                    contrast:
-                                        !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
-                                            ? theme.palette.divider
-                                            : undefined
-                                })}
-                            </Badge>
+                            > */}
+                            {memorizedFileIcon({
+                                mimeType,
+                                size: browserHeight * (isRenaming ? 0.06 : 0.075),
+                                file_icon_margin: browserHeight * 0.006,
+                                dark: isFocused || isOver || isHovered,
+                                contrast:
+                                    !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
+                                        ? theme.palette.divider
+                                        : undefined
+                            })}
+                            {/* </Badge> */}
                             {!isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress) && (
                                 <>
                                     <Box
@@ -370,7 +370,7 @@ function GridViewItem({
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}

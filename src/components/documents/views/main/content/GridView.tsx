@@ -8,7 +8,7 @@ import { useGetFolderChildrenFilesQuery } from 'store/async/dms/files/filesApi';
 import { isArray, isEmpty, isNull, isString, isUndefined } from 'lodash';
 import { ViewsProps } from 'components/documents/Interface/FileBrowser';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { FileViewerDialog, PermissionsDialog } from 'components/documents/views/UI/Dialogs';
+import { PermissionsDialog } from 'components/documents/views/UI/Dialogs';
 import { LazyLoader } from '../..';
 import { Box, Typography } from '@mui/material';
 import { FolderEmpty } from 'ui-component/LoadHandlers';
@@ -33,13 +33,13 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
         { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder)
         }
     );
     const { data: childrenDocuments, isLoading: childrenDocumentsIsLoading } = useGetFolderChildrenFilesQuery(
-        { fldId: Array.isArray(paramArray) && paramArray.length > 0 ? paramArray[paramArray.length - 1] : '' },
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder)
         }
     );
     // ================================= | DATA | ================================ //
@@ -79,7 +79,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     React.useEffect(() => {
         if (folderChildrenIsLoading || childrenDocumentsIsLoading) {
             setIsLoading(true);
-        } else if (!isUndefined(folderChildren) && !isUndefined(childrenDocuments)) {
+        } else {
             setIsLoading(false);
         }
     }, [paramArray, folderChildrenIsLoading, childrenDocumentsIsLoading, documents]);

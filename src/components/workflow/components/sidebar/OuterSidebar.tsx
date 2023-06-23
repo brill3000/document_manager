@@ -57,7 +57,14 @@ export function OuterSidebar() {
                         </Typography>
                     </Stack>
                 </Stack>
-                <CustomButton mainColor="primary.main" hoverColor="primary.dark" onClick={() => setOpenView(true)}>
+                <CustomButton
+                    sx={{
+                        bgcolor: theme.palette.primary.main,
+                        '& :hover': {
+                            bgcolor: theme.palette.primary.dark
+                        }
+                    }}
+                >
                     <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
                         <TbSettingsAutomation size={17} color={theme.palette.primary.contrastText} />
                         <Typography variant="body2" color={theme.palette.primary.contrastText}>
@@ -77,8 +84,12 @@ export function OuterSidebar() {
                 ].map((navItem) => (
                     <CustomButton
                         key={navItem.nav}
-                        mainColor={navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2)}
-                        hoverColor="white"
+                        sx={{
+                            bgcolor: navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2),
+                            '& :hover': {
+                                bgcolor: 'white'
+                            }
+                        }}
                         onClick={() => handleClick(navItem.nav)}
                     >
                         <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">

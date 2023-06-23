@@ -64,8 +64,12 @@ export function InnerSidebar() {
                         />
                     </FormControl>
                     <CustomButton
-                        mainColor={alpha(theme.palette.secondary.main, 0.2)}
-                        hoverColor={alpha(theme.palette.secondary.main, 0.5)}
+                        sx={{
+                            bgcolor: alpha(theme.palette.secondary.main, 0.2),
+                            '& :hover': {
+                                bgcolor: alpha(theme.palette.secondary.main, 0.5)
+                            }
+                        }}
                     >
                         <Stack direction="row" spacing={1} alignItems="center" px={2} width="100%">
                             <SearchOutlined />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileViewerDialog as FileD } from './FileViewerDialog';
+import { FileViewerDialog as FileD } from './FileViewer';
 import { PermissionsDialog as PermissionD } from './PermissionsDialog';
 import { SearchDialog as SearchD } from './SearchDialog';
 

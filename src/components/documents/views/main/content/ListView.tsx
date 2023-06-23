@@ -70,7 +70,18 @@ export function VirtualizedList({ height }: { height: number }) {
     } = useGetFoldersChildrenQuery(
         { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
         {
-            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder)
+        }
+    );
+    const {
+        data: childrenDocuments,
+        // error: childrenDocumentsError,
+        // isFetching: childrenDocumentsIsFetching,
+        isLoading: childrenDocumentsIsLoading
+    } = useGetFolderChildrenFilesQuery(
+        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
+        {
+            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder)
         }
     );
     // ========================= | TABLE COMPONENTS | =========================== //
@@ -103,18 +114,6 @@ export function VirtualizedList({ height }: { height: number }) {
         }),
         []
     );
-    const {
-        data: childrenDocuments,
-        // error: childrenDocumentsError,
-        // isFetching: childrenDocumentsIsFetching,
-        isLoading: childrenDocumentsIsLoading
-    } = useGetFolderChildrenFilesQuery(
-        { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
-        {
-            skip: currentFolder === null || currentFolder === undefined || isEmpty(currentFolder) || !route_is_dir
-        }
-    );
-
     const documents: GenericDocument[] = React.useMemo(() => {
         const folderChildrenCopy: GenericDocument[] =
             !isUndefined(folderChildren) && isArray(folderChildren?.folders)

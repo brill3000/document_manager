@@ -1,15 +1,17 @@
+import { GenericDocument } from 'global/interfaces';
 import { create } from 'zustand';
 
 interface State {
     view: 'list' | 'grid';
-    viewFile: { open: boolean; scrollType: 'paper' | 'body' };
-    openPermissionDialog: { open: boolean; scrollType: 'paper' | 'body' };
+    filesOpened: Map<string, GenericDocument>;
     toogleView: (view: 'list' | 'grid') => void;
+    openPermissionDialog: { open: boolean; scrollType: 'paper' | 'body' };
     browserHeight: number;
     browserWidth: number;
     setBrowserHeight: (height: number) => void;
     setBrowserWidth: (width: number) => void;
-    setViewFile: (open: boolean, scrollType: 'paper' | 'body') => void;
+    openFile: (node: GenericDocument) => void;
+    closeFile: (node: GenericDocument) => void;
     setOpenPermissionDialog: (open: boolean, scrollType: 'paper' | 'body') => void;
 }
 
@@ -23,11 +25,22 @@ export const useViewStore = create<State>((set) => {
          * View
          */
         view: 'grid',
-        viewFile: { open: false, scrollType: 'paper' },
+        filesOpened: new Map(),
         openPermissionDialog: { open: false, scrollType: 'paper' },
         toogleView: (view: 'list' | 'grid') =>
             set(() => ({ view: view?.toLowerCase() === 'list' ? 'list' : view?.toLowerCase() === 'grid' ? 'grid' : 'grid' })),
-        setViewFile: (open: boolean, scrollType: 'paper' | 'body') => set(() => ({ viewFile: { open, scrollType } })),
+        openFile: (node: GenericDocument) =>
+            set((state) => {
+                const fileMapCopy = new Map(state.filesOpened);
+                fileMapCopy.set(node.path, node);
+                return { filesOpened: fileMapCopy };
+            }),
+        closeFile: (node: GenericDocument) =>
+            set((state) => {
+                const fileMapCopy = new Map(state.filesOpened);
+                fileMapCopy.delete(node.path);
+                return { filesOpened: fileMapCopy };
+            }),
         setOpenPermissionDialog: (open: boolean, scrollType: 'paper' | 'body') =>
             set(() => ({ openPermissionDialog: { open, scrollType } }))
     };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, Box, Divider, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
-import { CustomButton } from '../UI/CustomButton';
 import { MdEmail, MdOutbox, MdOutgoingMail } from 'react-icons/md';
+import { CustomButton } from 'components/workflow/components/UI/CustomButton';
 
 export function OuterSidebar() {
     const theme = useTheme();
@@ -40,7 +40,15 @@ export function OuterSidebar() {
                         </Typography>
                     </Stack>
                 </Stack>
-                <CustomButton mainColor="primary.main" hoverColor="primary.dark">
+                <CustomButton
+                    sx={{
+                        borderRadius: 1,
+                        bgcolor: theme.palette.primary.main,
+                        '& :hover': {
+                            bgcolor: theme.palette.primary.dark
+                        }
+                    }}
+                >
                     <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
                         <MdEmail size={17} color={theme.palette.primary.contrastText} />
                         <Typography variant="body2" color={theme.palette.primary.contrastText}>
@@ -60,8 +68,12 @@ export function OuterSidebar() {
                 ].map((navItem) => (
                     <CustomButton
                         key={navItem.nav}
-                        mainColor={navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2)}
-                        hoverColor="white"
+                        sx={{
+                            bgcolor: navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2),
+                            '& :hover': {
+                                bgcolor: 'white'
+                            }
+                        }}
                         onClick={() => handleClick(navItem.nav)}
                     >
                         <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">

@@ -7,6 +7,7 @@ import { useViewStore } from 'components/documents/data/global_state/slices/view
 import {
     DocumentActionMenuType,
     FolderInterface,
+    GenericDocument,
     ListViewRowSelectedProps,
     MimeTypeConfigInterface,
     TreeMap,
@@ -545,7 +546,7 @@ export const useHandleClickEvents = ({
 }) => {
     // ================================= | ZUSTAND | ============================= //
     const { actions, isCreating } = useBrowserStore();
-    const { setViewFile } = useViewStore();
+    const { openFile } = useViewStore();
     // ================================= | HOOKS | ============================= //
     const { handleChangeRoute } = useHandleChangeRoute();
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -570,13 +571,13 @@ export const useHandleClickEvents = ({
             );
         }
     };
-    const handleDoubleClick = (disableDoubleClick: boolean) => {
+    const handleDoubleClick = (disableDoubleClick: boolean, document: GenericDocument) => {
         if (isCreating === true) return;
         if (disableDoubleClick) return true;
         if (path !== undefined && path !== null) {
             actions.setFocused(path, is_dir);
             handleChangeRoute(path, is_dir);
-            !is_dir && setViewFile(true, 'paper');
+            !is_dir && openFile(document);
         }
     };
     return {

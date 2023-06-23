@@ -62,7 +62,7 @@ export const ListViewRowWrapper = React.forwardRef<HTMLTableRowElement, ListView
             }}
             onClick={handleClick}
             onContextMenu={handleClick}
-            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
+            onDoubleClick={() => handleDoubleClick(disableDoubleClick, item)}
             sx={{
                 opacity: isDragging ? 0 : 1,
                 transition: '0.1s opacity',
