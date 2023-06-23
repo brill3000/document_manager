@@ -1,1 +1,1 @@
-export { Content } from 'components/email/components/main/content/Content';
+export { Content } from './Content';

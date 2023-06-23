@@ -1,7 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { alpha, Badge, Box, Stack, useTheme } from '@mui/material';
-import { orange } from '@mui/material/colors';
+import { alpha, Box, Stack, useTheme } from '@mui/material';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import ActionMenu from '../UI/Menus/DocumentActionMenu';
 import { RenameDocument } from './Rename';
@@ -9,7 +8,6 @@ import { useViewStore } from 'components/documents/data/global_state/slices/view
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
-import { BsLockFill } from 'react-icons/bs';
 import { isEmpty, isFunction, isString, isUndefined } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
@@ -71,11 +69,8 @@ function GridViewItem({
 
     // ================================= | Action Menu | ============================= //
     const { handleMenuClick, handleMenuClose, renameFn, isRenaming } = useHandleActionMenu({
-        is_dir,
-        path,
-        doc_name,
-        setContextMenu,
-        is_new: newDoc ?? false
+        document,
+        setContextMenu
     });
     // ================================= | Drag & Drop | ============================= //
     const { preview, isDragging, drag, drop, isOver } = useDragAndDropHandlers({ is_dir, doc_name, path });

@@ -21,6 +21,7 @@ export function SearchDialog() {
     const [value, setValue] = React.useState<string>('');
     const [tabValue, setTabValue] = React.useState(0);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [isHovered, setIsHovered] = React.useState<boolean>(false);
     // ========================= | THEME | =========================== //
     const theme = useTheme();
     // ========================= | HOOKS | =========================== //
@@ -79,8 +80,10 @@ export function SearchDialog() {
                         theme.palette.common.black,
                         0.9
                     )} `,
-                    zIndex: zIndex.modal + 1
+                    zIndex: zIndex.modal + (isHovered ? 2 : 1)
                 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
                 <Box>
                     <ClickAwayListener onClickAway={handleClickAway}>

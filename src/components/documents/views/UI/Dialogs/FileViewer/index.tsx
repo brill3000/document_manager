@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useViewStore } from 'components/documents/data/global_state/slices/view';
+// import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import Draggable from 'react-draggable';
-import { Box, ClickAwayListener, Grid, Stack, Theme, alpha, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid, Stack, Theme, alpha, lighten, useMediaQuery, useTheme } from '@mui/material';
 import { GenericDocument } from 'global/interfaces';
 import zIndex from '@mui/material/styles/zIndex';
 import { ViewFileSideBar } from './ViewFileSideBar';
@@ -9,8 +9,9 @@ import { MainContent } from './main';
 
 export function FileViewerDialog({ file }: { file: GenericDocument }) {
     // ================================= | STATE | ============================= //
-    const [disableDrag, setDiasableDrag] = React.useState<boolean>(false);
+    // const [disableDrag, setDiasableDrag] = React.useState<boolean>(false);
     const [selected, setSelected] = React.useState<string | null>(null);
+    const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const handleClick = React.useCallback((nav: any): void => {
         setSelected(nav);
     }, []);
@@ -18,18 +19,18 @@ export function FileViewerDialog({ file }: { file: GenericDocument }) {
     const theme = useTheme();
     const matchesXs = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     // ================================= | ZUSTAND | ============================= //
-    const { closeFile } = useViewStore();
+    // const { closeFile } = useViewStore();
     // ================================= | EVENTS | ============================= //
 
-    const handleClose = () => {
-        closeFile(file);
-    };
-    const handleClickAway = () => {
-        handleClose();
-    };
+    // const handleClose = () => {
+    //     closeFile(file);
+    // };
+    // const handleClickAway = () => {
+    //     handleClose();
+    // };
     // ================================= | RTK QUERY | ============================= //
     return (
-        <Draggable disabled={disableDrag} bounds="html">
+        <Draggable bounds="html">
             <Box
                 bgcolor="background.paper"
                 width={matchesXs ? '100vw' : '60vw'}
@@ -51,15 +52,27 @@ export function FileViewerDialog({ file }: { file: GenericDocument }) {
                         theme.palette.common.black,
                         0.11
                     )} `,
-                    zIndex: zIndex.modal + 1
+                    zIndex: zIndex.modal + (isHovered ? 2 : 1)
                 }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
                 <Box width="100%" height="100%">
                     <Stack width="100%" height="100%">
                         <Grid container width="100%" height="100%">
-                            <ViewFileSideBar selected={selected} handleClick={handleClick} file={file} />
-                            <Grid xs={8} item>
-                                <MainContent />
+                            <Grid
+                                xs={3.5}
+                                item
+                                bgcolor={lighten(theme.palette.divider, 0.5)}
+                                px={2}
+                                py={3}
+                                maxHeight="100%"
+                                overflow="auto"
+                            >
+                                <ViewFileSideBar selected={selected} handleClick={handleClick} file={file} />
+                            </Grid>
+                            <Grid xs={8.5} item p={2}>
+                                <MainContent file={file} />
                             </Grid>
                         </Grid>
                     </Stack>

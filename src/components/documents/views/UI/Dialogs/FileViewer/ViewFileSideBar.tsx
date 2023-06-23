@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Divider, Grid, Stack, Typography, lighten, useTheme } from '@mui/material';
+import { Box, Divider, Stack, Typography, useTheme } from '@mui/material';
 import { CustomButton } from 'components/workflow/components/UI/CustomButton';
 import {
     BsFileEarmarkDiffFill,
@@ -43,11 +43,11 @@ export function ViewFileSideBar({
         []
     );
     return (
-        <Grid xs={4} item bgcolor={lighten(theme.palette.divider, 0.5)} px={2} py={2.5} maxHeight="100%" overflow="auto">
+        <>
             <Stack direction="column" spacing={1.2} width="100%">
                 <Stack direction="row" mb={2} spacing={1} alignItems="center">
                     <Stack direction="column" spacing={0.5}>
-                        <Typography variant="body1">
+                        <Typography fontSize={12}>
                             <b>{file.doc_name ?? 'View File'}</b>
                         </Typography>
                         <Typography fontSize={10} color="text.secondary">
@@ -65,7 +65,7 @@ export function ViewFileSideBar({
                 >
                     <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
                         <HiDocumentDuplicate size={17} color={theme.palette.primary.contrastText} />
-                        <Typography variant="body2" color={theme.palette.primary.contrastText}>
+                        <Typography variant="caption" color={theme.palette.primary.contrastText}>
                             Create New Version
                         </Typography>
                     </Stack>
@@ -86,7 +86,7 @@ export function ViewFileSideBar({
                         <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
                             {navItem.icon}
                             <Typography
-                                variant="body2"
+                                variant="caption"
                                 color={theme.palette.text.primary}
                                 maxWidth="70%"
                                 minWidth="70%"
@@ -95,7 +95,7 @@ export function ViewFileSideBar({
                             >
                                 {navItem.nav}
                             </Typography>
-                            <Typography variant="body2" color={theme.palette.text.primary}>
+                            <Typography variant="caption" color={theme.palette.text.primary}>
                                 {navItem.count}
                             </Typography>
                         </Stack>
@@ -117,7 +117,7 @@ export function ViewFileSideBar({
                         <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
                             {navItem.icon}
                             <Typography
-                                variant="body2"
+                                variant="caption"
                                 color={theme.palette.text.primary}
                                 maxWidth="70%"
                                 minWidth="70%"
@@ -126,7 +126,7 @@ export function ViewFileSideBar({
                             >
                                 {navItem.nav}
                             </Typography>
-                            <Typography variant="body2" color={theme.palette.text.primary}>
+                            <Typography variant="caption" color={theme.palette.text.primary}>
                                 {navItem.count}
                             </Typography>
                         </Stack>
@@ -149,6 +149,6 @@ export function ViewFileSideBar({
                     {getDateFromObject(file.created).toLocaleString()}
                 </Box>
             </Typography>
-        </Grid>
+        </>
     );
 }
