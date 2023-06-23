@@ -1,5 +1,4 @@
 import { GroupedVirtuoso } from 'react-virtuoso';
-import { generateGroupedUsers } from './data';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItem from '@mui/material/ListItem';
@@ -11,7 +10,8 @@ import { Rating, alpha, lighten, useTheme } from '@mui/material';
 import { Assignment } from '@mui/icons-material';
 import { QueryResults, SearchResultsInterface } from 'global/interfaces';
 import { Dictionary, groupBy, isArray, isNull, isObject, isString, isUndefined, last } from 'lodash';
-import Interweave, { Markup } from 'interweave';
+import { Interweave } from 'interweave';
+
 // interface User {
 //     name: string;
 //     initials: string;
@@ -38,11 +38,11 @@ export default function SearchList({ height, searchList }: { height?: number | s
     }, [searchList]);
     const groupCounts =
         isObject(groupedDocuments) && !isNull(groupedDocuments) ? Object.values(groupedDocuments).map((users) => users.length) : null;
-    const groups = isObject(groupedDocuments) && !isNull(groupedDocuments) ? Object.keys(groupedDocuments) : null;
+    const groups = isObject(groupedDocuments) && !isNull(groupedDocuments) ? Object.keys(groupedDocuments).reverse() : null;
     const theme = useTheme();
     React.useEffect(() => {
-        if (!isNull(documents)) {
-            console.log(documents, 'GROUPED');
+        if (!isNull(groupedDocuments)) {
+            console.log(groupedDocuments, 'GROUPED');
         }
     }, [documents]);
     return !isNull(groupCounts) && !isNull(groups) ? (
@@ -86,7 +86,7 @@ export default function SearchList({ height, searchList }: { height?: number | s
                                 }
                             }}
                             primary={doc_name}
-                            secondary={<Markup content={document?.excerpt ?? ''} />}
+                            secondary={<Interweave content={isString(document.excerpt) ? document.excerpt : ''} />}
                         />
                     </>
                 );
@@ -127,7 +127,7 @@ const MUIComponents = {
                 {...props}
                 sx={{
                     ...style,
-                    backdropFilter: 'blur(3px)', // This be the blur
+                    backdropFilter: 'blur(5px)', // This be the blur
                     bgcolor: alpha(theme.palette.common.black, 0.4),
                     borderColor: theme.palette.grey[500],
                     borderWidth: 0.5,
