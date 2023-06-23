@@ -8,18 +8,21 @@ import {
     BsFillFileLock2Fill,
     BsFillFileLockFill
 } from 'react-icons/bs';
-import { GenericDocument } from 'global/interfaces';
+import { FileInterface } from 'global/interfaces';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { HiDocumentDuplicate } from 'react-icons/hi';
+import { isEmpty, isNull, isString, isUndefined, last } from 'lodash';
 
 export function ViewFileSideBar({
     selected,
     handleClick,
-    file
+    file,
+    filePath
 }: {
     selected: string | null;
     handleClick: (nav: any) => void;
-    file: GenericDocument;
+    file: FileInterface | undefined | null;
+    filePath: string;
 }) {
     const theme = useTheme();
     const operation = React.useMemo(
@@ -48,7 +51,7 @@ export function ViewFileSideBar({
                 <Stack direction="row" mb={2} spacing={1} alignItems="center">
                     <Stack direction="column" spacing={0.5}>
                         <Typography fontSize={12}>
-                            <b>{file.doc_name ?? 'View File'}</b>
+                            <b>{isString(filePath) && !isEmpty(filePath) ? last(filePath.split('/')) ?? 'Opened File' : 'Opened File'}</b>
                         </Typography>
                         <Typography fontSize={10} color="text.secondary">
                             Version: 1.0
@@ -146,7 +149,7 @@ export function ViewFileSideBar({
             >
                 Date Created:{' '}
                 <Box component="span" className="date">
-                    {getDateFromObject(file.created).toLocaleString()}
+                    {!isUndefined(file) && !isNull(file) && getDateFromObject(file.created).toLocaleString()}
                 </Box>
             </Typography>
         </>

@@ -163,7 +163,6 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
             )}
 
             <PermissionsDialog />
-            {/* <FileViewerDialog /> */}
         </>
     );
 }

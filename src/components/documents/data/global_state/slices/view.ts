@@ -1,17 +1,16 @@
-import { GenericDocument } from 'global/interfaces';
 import { create } from 'zustand';
 
 interface State {
     view: 'list' | 'grid';
-    filesOpened: Map<string, GenericDocument>;
+    filesOpened: Map<string, string>;
     toogleView: (view: 'list' | 'grid') => void;
     openPermissionDialog: { open: boolean; scrollType: 'paper' | 'body' };
     browserHeight: number;
     browserWidth: number;
     setBrowserHeight: (height: number) => void;
     setBrowserWidth: (width: number) => void;
-    openFile: (node: GenericDocument) => void;
-    closeFile: (node: GenericDocument) => void;
+    openFile: (fileId: string) => void;
+    closeFile: (fileId: string) => void;
     setOpenPermissionDialog: (open: boolean, scrollType: 'paper' | 'body') => void;
 }
 
@@ -29,16 +28,16 @@ export const useViewStore = create<State>((set) => {
         openPermissionDialog: { open: false, scrollType: 'paper' },
         toogleView: (view: 'list' | 'grid') =>
             set(() => ({ view: view?.toLowerCase() === 'list' ? 'list' : view?.toLowerCase() === 'grid' ? 'grid' : 'grid' })),
-        openFile: (node: GenericDocument) =>
+        openFile: (fileId: string) =>
             set((state) => {
                 const fileMapCopy = new Map(state.filesOpened);
-                fileMapCopy.set(node.path, node);
+                fileMapCopy.set(fileId, fileId);
                 return { filesOpened: fileMapCopy };
             }),
-        closeFile: (node: GenericDocument) =>
+        closeFile: (fileId: string) =>
             set((state) => {
                 const fileMapCopy = new Map(state.filesOpened);
-                fileMapCopy.delete(node.path);
+                fileMapCopy.delete(fileId);
                 return { filesOpened: fileMapCopy };
             }),
         setOpenPermissionDialog: (open: boolean, scrollType: 'paper' | 'body') =>

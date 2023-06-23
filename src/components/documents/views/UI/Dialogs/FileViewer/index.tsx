@@ -2,12 +2,13 @@ import * as React from 'react';
 // import { useViewStore } from 'components/documents/data/global_state/slices/view';
 import Draggable from 'react-draggable';
 import { Box, Grid, Stack, Theme, alpha, lighten, useMediaQuery, useTheme } from '@mui/material';
-import { GenericDocument } from 'global/interfaces';
 import zIndex from '@mui/material/styles/zIndex';
 import { ViewFileSideBar } from './ViewFileSideBar';
 import { MainContent } from './main';
+import { isEmpty, isNull, isUndefined } from 'lodash';
+import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
 
-export function FileViewerDialog({ file }: { file: GenericDocument }) {
+export function FileViewerDialog({ filePath }: { filePath: string }) {
     // ================================= | STATE | ============================= //
     // const [disableDrag, setDiasableDrag] = React.useState<boolean>(false);
     const [selected, setSelected] = React.useState<string | null>(null);
@@ -29,6 +30,12 @@ export function FileViewerDialog({ file }: { file: GenericDocument }) {
     //     handleClose();
     // };
     // ================================= | RTK QUERY | ============================= //
+    const { data: fileInfo } = useGetFilePropertiesQuery(
+        { docId: !isNull(filePath) && !isUndefined(filePath) ? filePath : '' },
+        {
+            skip: isNull(filePath) || isUndefined(filePath) || isEmpty(filePath)
+        }
+    );
     return (
         <Draggable bounds="html">
             <Box
@@ -69,10 +76,10 @@ export function FileViewerDialog({ file }: { file: GenericDocument }) {
                                 maxHeight="100%"
                                 overflow="auto"
                             >
-                                <ViewFileSideBar selected={selected} handleClick={handleClick} file={file} />
+                                <ViewFileSideBar selected={selected} handleClick={handleClick} file={fileInfo} filePath={filePath} />
                             </Grid>
                             <Grid xs={8.5} item p={2}>
-                                <MainContent file={file} />
+                                <MainContent filePath={filePath} />
                             </Grid>
                         </Grid>
                     </Stack>

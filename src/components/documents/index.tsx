@@ -8,7 +8,7 @@ const FolderView = ({ title }: { title: string }) => {
     const { searchDialogIsOpen } = useBrowserStore();
     const { filesOpened } = useViewStore();
     const renderItem = React.useCallback(
-        () => Array.from(filesOpened.values()).map((file) => <FileViewerDialog key={file.path} file={file} />),
+        () => Array.from(filesOpened.values()).map((filePath) => <FileViewerDialog key={filePath} filePath={filePath} />),
         [filesOpened]
     );
     return (

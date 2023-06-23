@@ -1,12 +1,11 @@
 import React from 'react';
 import { IconButton, Stack, Typography, useTheme } from '@mui/material';
-import { BsArrowLeftShort, BsEnvelopePlus, BsTrashFill, BsWindowSplit } from 'react-icons/bs';
+import { BsArrowLeftShort, BsWindowSplit } from 'react-icons/bs';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import { useViewStore } from 'components/documents/data/global_state/slices/view';
-import { GenericDocument } from 'global/interfaces';
 import { IoClose } from 'react-icons/io5';
 
-export function TopNav({ file }: { file: GenericDocument }) {
+export function TopNav({ filePath }: { filePath: string }) {
     const theme = useTheme();
     // =========================== | ZUSTAND | ========================== //
     const { closeFile } = useViewStore();
@@ -29,7 +28,7 @@ export function TopNav({ file }: { file: GenericDocument }) {
                 <IconButton size="small">
                     <BsWindowSplit size={14} />
                 </IconButton>
-                <IconButton size="small" onClick={() => closeFile(file)}>
+                <IconButton size="small" onClick={() => closeFile(filePath)}>
                     <IoClose size={15} color={theme.palette.error.main} />
                 </IconButton>
             </Stack>
