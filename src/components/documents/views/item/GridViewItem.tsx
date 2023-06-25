@@ -69,8 +69,11 @@ function GridViewItem({
 
     // ================================= | Action Menu | ============================= //
     const { handleMenuClick, handleMenuClose, renameFn, isRenaming } = useHandleActionMenu({
-        document,
-        setContextMenu
+        is_dir,
+        path,
+        doc_name,
+        setContextMenu,
+        is_new: newDoc ?? false
     });
     // ================================= | Drag & Drop | ============================= //
     const { preview, isDragging, drag, drop, isOver } = useDragAndDropHandlers({ is_dir, doc_name, path });
@@ -137,7 +140,7 @@ function GridViewItem({
                             height="max-content"
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onFocus={() => actions.setFocused(path, is_dir)}
                             // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
@@ -178,7 +181,7 @@ function GridViewItem({
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}
@@ -247,7 +250,7 @@ function GridViewItem({
                             px={0.5}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onFocus={() => actions.setFocused(path, is_dir)}
                             // onBlur={() => focused.id === path && actions.setFocused(null, false)}
                             onMouseOver={() => {
@@ -365,7 +368,7 @@ function GridViewItem({
                             borderColor={(theme) => theme.palette.secondary.light}
                             onClick={handleClick}
                             onContextMenu={handleClick}
-                            onDoubleClick={() => handleDoubleClick(disableDoubleClick, document)}
+                            onDoubleClick={() => handleDoubleClick(disableDoubleClick)}
                             onMouseOver={() => {
                                 setIsHovered(true);
                             }}

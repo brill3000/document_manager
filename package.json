@@ -6,6 +6,7 @@
     "dependencies": {
         "@ant-design/colors": "^4.0.0-alpha.0",
         "@ant-design/icons": "^4.0.0-rc.0",
+        "@cyntler/react-doc-viewer": "^1.13.0",
         "@emotion/cache": "^11.7.1",
         "@emotion/react": "^11.10.4",
         "@emotion/styled": "^11.10.4",
@@ -52,7 +53,6 @@
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dnd-touch-backend": "^16.0.1",
-        "react-doc-viewer": "^0.1.5",
         "react-dom": "^17.0.2",
         "react-draggable": "^4.4.5",
         "react-dropzone": "^14.2.2",

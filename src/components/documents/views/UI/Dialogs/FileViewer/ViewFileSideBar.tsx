@@ -27,7 +27,7 @@ export function ViewFileSideBar({
     const theme = useTheme();
     const operation = React.useMemo(
         () => [
-            { nav: 'Edit', icon: <BsFileEarmarkDiffFill size={15} color={theme.palette.primary.main} />, count: 0 },
+            { nav: 'Add Note', icon: <BsFileEarmarkDiffFill size={15} color={theme.palette.primary.main} />, count: 0 },
             {
                 nav: 'Compare Versions',
                 icon: <BsFillFileEarmarkBreakFill size={15} color={theme.palette.info.main} />,

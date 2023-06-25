@@ -21,6 +21,24 @@ export const searchApi = createApi({
                 if (error) return [...tags, { type: 'DMS_SEARCH_ERROR', id: 'error' }];
                 return tags;
             }
+        }),
+        findByName: build.query<SearchResultsInterface, { name: string }>({
+            query: ({ name }) => ({ url: `${UriHelper.SEARCH_FIND_BY_NAME}`, method: 'GET', params: { name } }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_SEARCH' }];
+                if (result) return [...tags, { type: 'DMS_SEARCH_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_SEARCH_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        findByKeyword: build.query<SearchResultsInterface, { keywords: string[] }>({
+            query: ({ keywords }) => ({ url: `${UriHelper.SEARCH_FIND_BY_KEYWORDS}`, method: 'GET', params: { keywords } }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_SEARCH' }];
+                if (result) return [...tags, { type: 'DMS_SEARCH_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_SEARCH_ERROR', id: 'error' }];
+                return tags;
+            }
         })
         // ===========================| MUTATIIONS: POST |===================== //
         // -------------------------------| MUTATIONS: PUT|-------------------------------- //
@@ -33,7 +51,9 @@ export const {
     /**
      * Getters
      */
-    useLazyFindByContentQuery
+    useLazyFindByContentQuery,
+    useLazyFindByNameQuery,
+    useLazyFindByKeywordQuery
     /**
      * Mutations: POST
      */

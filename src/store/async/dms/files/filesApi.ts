@@ -56,7 +56,8 @@ export const filesApi = createApi({
             query: ({ docId }) => ({
                 url: `${UriHelper.DOCUMENT_GET_CONTENT}`,
                 method: 'GET',
-                params: { docId }
+                params: { docId },
+                responseType: 'blob'
             }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
@@ -70,7 +71,7 @@ export const filesApi = createApi({
                 url: `${UriHelper.DOCUMENT_GET_CONTENT_BY_VERSION}`,
                 method: 'GET',
                 params: { docId, versionId },
-                resonseType: 'arraybuffer'
+                responseType: 'blob'
             }),
             // transformResponse: (response: string) => {
 

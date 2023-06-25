@@ -2,8 +2,9 @@ import React from 'react';
 import { Stack } from '@mui/material';
 import { TopNav } from './navigation';
 import { Content } from './content';
+import { FileInterface } from 'global/interfaces';
 
-export function MainContent({ filePath }: { filePath: string }) {
+export function MainContent({ file, filePath }: { file?: FileInterface | null; filePath: string }) {
     return (
         <Stack direction="column" height="100%" width="100%">
             <Stack
@@ -17,7 +18,7 @@ export function MainContent({ filePath }: { filePath: string }) {
                 <TopNav filePath={filePath} />
             </Stack>
             <Stack height="93%" spacing={3}>
-                <Content />
+                <Content filePath={filePath} file={file} />
             </Stack>
         </Stack>
     );

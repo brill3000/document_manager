@@ -283,7 +283,7 @@ export const useHandleActionMenu = ({
     // ================================= | ZUSTAND | ============================= //
     const { focused, actions, isCreating, renameTarget } = useBrowserStore();
     const { addToClipBoard } = useStore();
-    const { setOpenPermissionDialog } = useViewStore();
+    const { setOpenPermissionDialog, openFile } = useViewStore();
     // ================================= | REDUX | ============================= //
     const dispatch = useDispatch();
     // ================================= | HOOKS | ============================= //
@@ -316,11 +316,12 @@ export const useHandleActionMenu = ({
                 switch (type) {
                     case 'open':
                         if (path !== undefined) {
-                            if (is_dir) {
-                                if (path !== null || path !== undefined) {
-                                    handleChangeRoute(path, is_dir);
-                                    setContextMenu(null);
-                                }
+                            if (path !== null || path !== undefined) {
+                                handleChangeRoute(path, is_dir);
+                                setContextMenu(null);
+                            }
+                            if (!is_dir) {
+                                openFile(path);
                             }
                         }
                         break;
@@ -676,13 +677,14 @@ export const axiosBaseQuery = (
         method: AxiosRequestConfig['method'];
         data?: AxiosRequestConfig['data'];
         params?: AxiosRequestConfig['params'];
+        responseType?: AxiosRequestConfig['responseType'];
         onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
     },
     unknown,
     unknown
-> => async ({ url, method, data, params, onUploadProgress }) => {
+> => async ({ url, method, data, params, responseType, onUploadProgress }) => {
     try {
-        const result = await axios({ url: baseUrl + url, method, data, params, onUploadProgress, withCredentials: true });
+        const result = await axios({ url: baseUrl + url, method, data, responseType, params, onUploadProgress, withCredentials: true });
         return { data: result.data };
     } catch (axiosError) {
         const err = axiosError as AxiosError;

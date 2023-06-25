@@ -365,3 +365,8 @@ interface QueryNode {
 export interface SearchResultsInterface {
     queryResults: QueryResults[];
 }
+// =============================== | FILE VIEWER | ============================== //
+interface PdfPreview {
+    docUrl: string;
+    uniqueContainerId: string;
+}
