@@ -32,7 +32,11 @@ export const searchApi = createApi({
             }
         }),
         findByKeyword: build.query<SearchResultsInterface, { keywords: string[] }>({
-            query: ({ keywords }) => ({ url: `${UriHelper.SEARCH_FIND_BY_KEYWORDS}`, method: 'GET', params: { keywords } }),
+            query: ({ keywords }) => ({
+                url: `${UriHelper.SEARCH_FIND_BY_KEYWORDS}`,
+                method: 'GET',
+                params: { keywords: keywords[0] }
+            }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_SEARCH' }];
                 if (result) return [...tags, { type: 'DMS_SEARCH_SUCCESS', id: 'success' }];

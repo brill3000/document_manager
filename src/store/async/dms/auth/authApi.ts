@@ -94,91 +94,93 @@ export const authApi = createApi({
                     // Assert the shape of the response
                     const rolesPermissionArray = rolesPemissionsData.grantedRoles as { role: string; permissions: number }[];
                     const grantedRoles = rolesData.roles as string[];
-                    const rolesAccess = grantedRoles.map((role) => {
-                        const getRolePermission = rolesPermissionArray.find((x) => x.role === role);
-                        const rolePermission: RolePermission = {
-                            name: role,
-                            read: false,
-                            write: false,
-                            delete: false,
-                            security: false
-                        };
-                        if (!isUndefined(getRolePermission)) {
-                            const { permissions: permissionId } = getRolePermission;
+                    const rolesAccess = grantedRoles
+                        .filter((r) => r !== 'ROLE_ADMIN')
+                        .map((role) => {
+                            const getRolePermission = rolesPermissionArray.find((x) => x.role === role);
+                            const rolePermission: RolePermission = {
+                                name: role,
+                                read: false,
+                                write: false,
+                                delete: false,
+                                security: false
+                            };
+                            if (!isUndefined(getRolePermission)) {
+                                const { permissions: permissionId } = getRolePermission;
 
-                            switch (permissionId) {
-                                case Permissions.ALL_GRANTS:
-                                    rolePermission.read = true;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = true;
-                                    rolePermission.security = true;
-                                    break;
-                                case Permissions.READ:
-                                    rolePermission.read = true;
-                                    rolePermission.write = false;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.WRITE:
-                                    rolePermission.read = false;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.DELETE:
-                                    rolePermission.read = false;
-                                    rolePermission.write = false;
-                                    rolePermission.delete = true;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.SECURITY:
-                                    rolePermission.read = false;
-                                    rolePermission.write = false;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = true;
-                                    break;
-                                case Permissions.READ + Permissions.WRITE:
-                                    rolePermission.read = true;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.READ + Permissions.DELETE:
-                                    rolePermission.read = true;
-                                    rolePermission.write = false;
-                                    rolePermission.delete = true;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.READ + Permissions.SECURITY:
-                                    rolePermission.read = true;
-                                    rolePermission.write = false;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = true;
-                                    break;
-                                case Permissions.WRITE + Permissions.DELETE:
-                                    rolePermission.read = false;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = true;
-                                    rolePermission.security = false;
-                                    break;
-                                case Permissions.WRITE + Permissions.SECURITY:
-                                    rolePermission.read = false;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = false;
-                                    rolePermission.security = true;
-                                    break;
-                                case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
-                                    rolePermission.read = true;
-                                    rolePermission.write = true;
-                                    rolePermission.delete = true;
-                                    rolePermission.security = false;
-                                    break;
-                                default:
-                                    break;
+                                switch (permissionId) {
+                                    case Permissions.ALL_GRANTS:
+                                        rolePermission.read = true;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = true;
+                                        rolePermission.security = true;
+                                        break;
+                                    case Permissions.READ:
+                                        rolePermission.read = true;
+                                        rolePermission.write = false;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.WRITE:
+                                        rolePermission.read = false;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.DELETE:
+                                        rolePermission.read = false;
+                                        rolePermission.write = false;
+                                        rolePermission.delete = true;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.SECURITY:
+                                        rolePermission.read = false;
+                                        rolePermission.write = false;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE:
+                                        rolePermission.read = true;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.DELETE:
+                                        rolePermission.read = true;
+                                        rolePermission.write = false;
+                                        rolePermission.delete = true;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.READ + Permissions.SECURITY:
+                                        rolePermission.read = true;
+                                        rolePermission.write = false;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = true;
+                                        break;
+                                    case Permissions.WRITE + Permissions.DELETE:
+                                        rolePermission.read = false;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = true;
+                                        rolePermission.security = false;
+                                        break;
+                                    case Permissions.WRITE + Permissions.SECURITY:
+                                        rolePermission.read = false;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = false;
+                                        rolePermission.security = true;
+                                        break;
+                                    case Permissions.READ + Permissions.WRITE + Permissions.DELETE:
+                                        rolePermission.read = true;
+                                        rolePermission.write = true;
+                                        rolePermission.delete = true;
+                                        rolePermission.security = false;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
-                        }
-                        return rolePermission;
-                    });
+                            return rolePermission;
+                        });
                     return { data: rolesAccess };
                 } catch (e) {
                     if (e instanceof Error) {

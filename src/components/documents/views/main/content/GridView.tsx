@@ -27,7 +27,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     const { browserHeight } = useViewStore();
 
     // ================================= | ROUTES | ================================ //
-    const { paramArray, is_dir: route_is_dir, currentFolder } = useHandleChangeRoute();
+    const { paramArray, currentFolder } = useHandleChangeRoute();
 
     // ================================= | RTK QUERY | ================================ //
     const { data: folderChildren, isLoading: folderChildrenIsLoading } = useGetFoldersChildrenQuery(
@@ -105,7 +105,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         return () => {
             clearTimeout(timer);
         };
-    }, [focused, documents, isLoading]);
+    }, [focused, isLoading]);
 
     return (
         <>

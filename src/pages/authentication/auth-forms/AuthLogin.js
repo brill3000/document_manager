@@ -34,6 +34,7 @@ import { authApi, useLoginMutation } from 'store/async/dms/auth/authApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { useDispatch } from 'react-redux';
 import { filesApi } from 'store/async/dms/files/filesApi';
+import { useUserAuth } from 'context/authContext';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -43,6 +44,7 @@ const AuthLogin = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
     const [loginWithPassword] = useLoginMutation();
+    const { updateUserName } = useUserAuth();
     const dispatch = useDispatch();
 
     const handleClickShowPassword = () => {
@@ -70,6 +72,7 @@ const AuthLogin = () => {
                         if (navigator.onLine) throw new Error('No Internet connection');
                         try {
                             await loginWithPassword({ username: values.username, password: values.password }).unwrap();
+                            typeof updateUserName === 'function' && updateUserName(values.username);
                             const message = `Login successfully`;
                             dispatch(foldersApi.util.resetApiState());
                             dispatch(filesApi.util.resetApiState());

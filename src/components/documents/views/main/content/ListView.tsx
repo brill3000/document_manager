@@ -173,7 +173,7 @@ export function VirtualizedList({ height }: { height: number }) {
         return () => {
             clearTimeout(timer);
         };
-    }, [focused, documents, isLoading]);
+    }, [focused, isLoading]);
 
     return (
         <>

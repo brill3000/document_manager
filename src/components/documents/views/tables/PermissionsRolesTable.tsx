@@ -100,6 +100,7 @@ const PermissionsRolesTable = React.forwardRef<
     const rows = React.useMemo(() => roles.map((role) => createData(role.name, role.read, role.write, role.delete, role.security)), [
         roles
     ]);
+    console.log(rows, 'ROWS');
     const handleChange = (value: boolean | string, role: string, type: keyof PermissionTypes) => {
         if (typeof value === 'boolean') {
             switch (type) {

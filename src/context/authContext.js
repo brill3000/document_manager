@@ -4,7 +4,6 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
-    updateProfile,
     sendEmailVerification
 } from 'firebase/auth';
 import { auth } from 'firebase-config';
@@ -14,11 +13,13 @@ const userAuthContext = React.createContext();
 
 export const UserAuthContextProvider = ({ children }) => {
     const [user, setUser] = useLocalStorage('user', null);
+    const [userName, setUserName] = useLocalStorage('userName', null);
+
     const signUp = async (email, password) => {
         return await createUserWithEmailAndPassword(auth, email, password);
     };
     const updateUserName = async (name) => {
-        return await updateProfile(auth.currentUser, { displayName: name });
+        return setUserName(name);
     };
     const login = async (email, password) => {
         return await signInWithEmailAndPassword(auth, email, password);
@@ -38,7 +39,7 @@ export const UserAuthContextProvider = ({ children }) => {
         };
     }, []);
     return (
-        <userAuthContext.Provider value={{ user, signUp, login, logout, updateUserName, sendVerification }}>
+        <userAuthContext.Provider value={{ user, userName, signUp, login, logout, updateUserName, sendVerification }}>
             {children}
         </userAuthContext.Provider>
     );

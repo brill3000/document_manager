@@ -65,6 +65,9 @@ export function LeftSidebar() {
                         case 'system-documents':
                             setRootUrl(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
                             break;
+                        case 'categories':
+                            setRootUrl(UriHelper.REPOSITORY_GET_ROOT_CATEGORIES);
+                            break;
                         case 'my-documents':
                             setRootUrl(UriHelper.REPOSITORY_GET_ROOT_PERSONAL);
                             break;

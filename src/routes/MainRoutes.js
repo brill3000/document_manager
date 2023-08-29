@@ -94,6 +94,24 @@ const MainRoutes = {
                     ]
                 },
                 {
+                    path: 'categories',
+                    element: (
+                        <ProtectedRoutes>
+                            <CustomizedTreeView title="categories" />
+                        </ProtectedRoutes>
+                    ),
+                    children: [
+                        {
+                            path: ':pathParam',
+                            element: (
+                                <ProtectedRoutes>
+                                    <CustomizedTreeView title="categories" />
+                                </ProtectedRoutes>
+                            )
+                        }
+                    ]
+                },
+                {
                     path: 'templates',
                     element: (
                         <ProtectedRoutes>

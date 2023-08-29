@@ -29,7 +29,7 @@ import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 import { BsFolder, BsPersonRolodex, BsTrash, BsFilesAlt } from 'react-icons/bs';
 import { MdOutlineAttachEmail, MdOutlineMailOutline } from 'react-icons/md';
-
+import { TbCategory2 } from 'react-icons/tb';
 const icons = {
     DashboardOutlined,
     ApartmentOutlined,
@@ -64,7 +64,8 @@ const icons = {
     MdOutlineAttachEmail,
     BsTrash,
     BsFilesAlt,
-    MdOutlineMailOutline
+    MdOutlineMailOutline,
+    TbCategory2
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -104,6 +105,14 @@ const dashboard = {
                     type: 'item',
                     url: '/documents/my-documents',
                     icon: icons.BsPersonRolodex,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'categories',
+                    title: 'Categories',
+                    type: 'item',
+                    url: '/documents/categories',
+                    icon: icons.TbCategory2,
                     breadcrumbs: false
                 },
                 {

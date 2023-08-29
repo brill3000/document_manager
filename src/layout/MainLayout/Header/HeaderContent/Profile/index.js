@@ -35,6 +35,7 @@ import { isNull } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { filesApi } from 'store/async/dms/files/filesApi';
+import { useUserAuth } from 'context/authContext';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -66,10 +67,11 @@ const Profile = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [logoutUser] = useLogoutUserMutation();
     const dispatch = useDispatch();
-
+    const { userName, updateUserName } = useUserAuth();
     const handleLogout = async () => {
         try {
             await logoutUser().unwrap();
+            typeof updateUserName === 'function' && updateUserName(null);
             dispatch(foldersApi.util.resetApiState());
             dispatch(filesApi.util.resetApiState());
             dispatch(authApi.util.resetApiState());
@@ -101,7 +103,7 @@ const Profile = () => {
 
     const iconBackColorOpen = 'grey.300';
 
-    const { data: user, isError } = useGetNameQuery({ user: 'okmAdmin' });
+    const { data: user, isError } = useGetNameQuery({ user: userName });
 
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>

@@ -10,7 +10,7 @@ import { StyledTab, StyledTabs, TabPanel, a11yProps } from '../Tabs';
 import { TbBackspace, TbSettingsSearch } from 'react-icons/tb';
 import SwipeableViews from 'react-swipeable-views';
 import SearchList from '../../lists/SearchList';
-import { useLazyFindByContentQuery } from 'store/async/dms/search/searchApi';
+import { useLazyFindByContentQuery, useLazyFindByKeywordQuery, useLazyFindByNameQuery } from 'store/async/dms/search/searchApi';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 
 export function SearchDialog() {
@@ -31,8 +31,14 @@ export function SearchDialog() {
     // ========================= | RTK QUERY | =========================== //
     const [
         findByContent,
-        { isFetching: findByContentIsFetching, data: findByContentData, isUninitialized: findByContentIsUninitialized }
+        { isFetching: findByContentIsFetching, data: findByContentData, error: findByContentError }
     ] = useLazyFindByContentQuery();
+    const [findByName, { isFetching: findByNameIsFetching, data: findByNameData, error: findByNameError }] = useLazyFindByNameQuery();
+    const [
+        findByKeywords,
+        { isFetching: findByKeywordsIsFetching, data: findByKeywordsData, error: findByKeywordsError }
+    ] = useLazyFindByKeywordQuery();
+
     // ========================= | EVENTS | =========================== //
     const handleClickAway = () => {
         actions.closeSearchDialog();
@@ -44,16 +50,87 @@ export function SearchDialog() {
         debounce((value) => {
             // Do something with the debounced value
             if (isString(value) && !isEmpty(value)) {
-                setIsLoading(true);
-                findByContent({ content: value });
+                switch (tabValue) {
+                    case 0:
+                        findByContent({ content: value });
+                        break;
+                    case 1:
+                        findByName({ name: value });
+                        break;
+                    case 2:
+                        findByKeywords({ keywords: [value] });
+                        break;
+                    default:
+                        break;
+                }
             }
         }, 1000), // Specify the debounce delay (in milliseconds)
-        []
+        [tabValue]
     );
     // ========================= | EFFECTS | =========================== //
     React.useEffect(() => {
-        findByContentIsFetching !== true && setIsLoading(false);
-    }, [findByContentIsFetching]);
+        switch (tabValue) {
+            case 0:
+                console.log(findByContentIsFetching, 'DATA 2');
+                findByContentIsFetching === true && isString(value) && !isEmpty(value) && setIsLoading(true);
+                findByContentIsFetching === false && setIsLoading(false);
+
+                break;
+            case 1:
+                findByNameIsFetching === true && isString(value) && !isEmpty(value) && setIsLoading(true);
+                findByNameIsFetching === false && setIsLoading(false);
+
+                break;
+            case 2:
+                findByKeywordsIsFetching === true && isString(value) && !isEmpty(value) && setIsLoading(true);
+                findByKeywordsIsFetching === false && setIsLoading(false);
+                break;
+            default:
+                break;
+        }
+    }, [findByContentIsFetching, findByNameIsFetching, findByKeywordsIsFetching]);
+    // React.useEffect(() => {
+    //     switch (tabValue) {
+    //         case 0:
+    //             (!isUndefined(findByContentData?.queryResults) || !isUndefined(findByContentError)) && setIsLoading(false);
+    //             break;
+    //         case 1:
+    //             (!isUndefined(findByNameData?.queryResults) || !isUndefined(findByNameError)) && setIsLoading(false);
+    //             break;
+    //         case 2:
+    //             (!isUndefined(findByKeywordsData?.queryResults) || !isUndefined(findByKeywordsError)) && setIsLoading(false);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }, [
+    //     findByContentData,
+    //     findByContentError,
+    //     findByNameData,
+    //     findByNameError,
+    //     findByKeywordsError,
+    //     findByKeywordsError,
+    //     findByContentIsFetching,
+    //     findByNameIsFetching,
+    //     findByKeywordsIsFetching
+    // ]);
+    React.useEffect(() => {
+        if (isString(value) && !isEmpty(value)) {
+            switch (tabValue) {
+                case 0:
+                    findByContent({ content: value });
+                    break;
+                case 1:
+                    findByName({ name: value });
+                    break;
+                case 2:
+                    findByKeywords({ keywords: [value] });
+                    break;
+                default:
+                    break;
+            }
+        }
+    }, [tabValue]);
 
     return (
         <Draggable disabled={disableDrag} bounds="html">
@@ -162,10 +239,14 @@ export function SearchDialog() {
                                     )}
                                 </TabPanel>
                                 <TabPanel value={tabValue} index={1}>
-                                    Item Two
+                                    {isArray(findByNameData?.queryResults) && (
+                                        <SearchList height="45vh" searchList={findByNameData ?? null} />
+                                    )}
                                 </TabPanel>
                                 <TabPanel value={tabValue} index={2}>
-                                    Item Three
+                                    {isArray(findByKeywordsData?.queryResults) && (
+                                        <SearchList height="45vh" searchList={findByKeywordsData ?? null} />
+                                    )}
                                 </TabPanel>
                             </SwipeableViews>
                         </Stack>

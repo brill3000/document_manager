@@ -7,10 +7,9 @@ import { ViewFileSideBar } from './ViewFileSideBar';
 import { MainContent } from './main';
 import { isEmpty, isNull, isUndefined } from 'lodash';
 import { useGetFilePropertiesQuery } from 'store/async/dms/files/filesApi';
-import { GenericDocument } from 'global/interfaces';
 import { PiHandGrabbingFill } from 'react-icons/pi';
 
-export function FileViewerDialog({ filePath }: { filePath: string; file: GenericDocument }) {
+export function FileViewerDialog({ filePath }: { filePath: string }) {
     // ================================= | STATE | ============================= //
     // const [disableDrag, setDiasableDrag] = React.useState<boolean>(false);
     const [selected, setSelected] = React.useState<string | null>(null);

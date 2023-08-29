@@ -12,7 +12,7 @@ import {
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isString, isUndefined, slice } from 'lodash';
+import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice } from 'lodash';
 import React, { SetStateAction } from 'react';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -68,14 +68,49 @@ export const useHandleChangeRoute = () => {
     const [searchParams] = useSearchParams();
 
     const handleChangeRoute = (path: string, is_dir: boolean) => {
-        if (path !== null || path !== undefined) {
-            is_dir && actions.addExpanded(path);
-            const encodedPathParam = encodeURIComponent(path);
-            const documentPath = pathParam
-                ? pathname.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
-                : `${pathname}/${encodedPathParam}`;
-            navigate(documentPath + `?is_dir=${is_dir ? 'true' : 'false'}`);
+        if (isNull(path) || isUndefined(path)) return;
+        is_dir && actions.addExpanded(path);
+        let pathnameCopy = pathname;
+        const encodedPathParam = encodeURIComponent(path);
+        if (!isEmpty(paramArray)) {
+            const pathnameCopyArray = pathnameCopy.split('/');
+            const pathArray = path.split('/');
+            console.log(pathname, 'PATH NAME COPY');
+            switch (nth(pathArray, 1)) {
+                case 'okm:root':
+                    pathnameCopyArray[2] = 'system-documents';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                case 'okm:personal':
+                    pathnameCopyArray[2] = 'my-documents';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                case 'okm:categories':
+                    pathnameCopyArray[2] = 'categories';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                case 'okm:templates':
+                    pathnameCopyArray[2] = 'templates';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                case 'okm:email':
+                    pathnameCopyArray[2] = 'email-attachments';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                case 'okm:trash':
+                    pathnameCopyArray[2] = 'trash';
+                    pathnameCopy = pathnameCopyArray.join('/');
+                    break;
+                default:
+                    break;
+            }
         }
+        const documentPath = pathParam
+            ? pathnameCopy.replace(`/${encodeURIComponent(pathParam)}`, `/${encodedPathParam}`)
+            : `${pathnameCopy}/${encodedPathParam}`;
+        console.log(documentPath, 'DOC PATH');
+
+        navigate(documentPath + `?is_dir=${is_dir ? 'true' : 'false'}`);
     };
     const isTrashFolder = React.useMemo(() => {
         const pathArray = pathname.split('/');
