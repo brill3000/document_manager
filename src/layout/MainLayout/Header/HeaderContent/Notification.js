@@ -17,7 +17,8 @@ import {
     Paper,
     Popper,
     Typography,
-    useMediaQuery
+    useMediaQuery,
+    ListItem
 } from '@mui/material';
 
 // project import
@@ -78,7 +79,7 @@ const Notification = () => {
                 aria-haspopup="true"
                 onClick={handleToggle}
             >
-                <Badge badgeContent={4} color="primary">
+                <Badge badgeContent={0} color="primary">
                     <BellOutlined />
                 </Badge>
             </IconButton>
@@ -136,7 +137,10 @@ const Notification = () => {
                                             }
                                         }}
                                     >
-                                        <ListItemButton>
+                                        <ListItem>
+                                            <ListItemText>No notifications</ListItemText>
+                                        </ListItem>
+                                        {/* <ListItemButton>
                                             <ListItemAvatar>
                                                 <Avatar
                                                     sx={{
@@ -264,7 +268,7 @@ const Notification = () => {
                                                     </Typography>
                                                 }
                                             />
-                                        </ListItemButton>
+                                        </ListItemButton> */}
                                     </List>
                                 </MainCard>
                             </ClickAwayListener>

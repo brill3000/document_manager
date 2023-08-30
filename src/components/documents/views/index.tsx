@@ -1,11 +1,11 @@
-import React, { Suspense } from 'react';
+import { Suspense, lazy, memo } from 'react';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Skeleton, Stack, SxProps, Theme, useMediaQuery } from '@mui/material';
 import { FileBrowserContentProps } from 'components/documents/Interface/FileBrowser';
 import { theme } from 'components/styles/themes';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { UriHelper } from 'utils/constants/UriHelper';
-const RightSidebar = React.lazy(() =>
+const RightSidebar = lazy(() =>
     import('components/documents/views/main/sidebars')
         .then((module) => ({ default: module.RightSidebar }))
         .catch((error) => {
@@ -14,17 +14,9 @@ const RightSidebar = React.lazy(() =>
             return { default: Skeleton };
         })
 );
-const LeftSidebar = React.lazy(() =>
-    import('components/documents/views/main/sidebars')
-        .then((module) => ({ default: module.LeftSidebar }))
-        .catch((error) => {
-            // Handle the error
-            console.error('Error loading component:', error);
-            return { default: Skeleton };
-        })
-);
-const MainGrid = React.lazy(() => import('components/documents/views/main'));
-export const LazyLoader = React.memo(
+const LeftSidebar = lazy(() => import('components/documents/views/main/sidebars').then((module) => ({ default: module.LeftSidebar })));
+const MainGrid = lazy(() => import('components/documents/views/main'));
+export const LazyLoader = memo(
     ({
         align,
         height,
@@ -101,4 +93,4 @@ const Content = ({ gridRef }: FileBrowserContentProps): JSX.Element => {
     );
 };
 
-export default React.memo(Content);
+export default memo(Content);
