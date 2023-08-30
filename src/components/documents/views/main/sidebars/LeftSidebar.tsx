@@ -19,7 +19,7 @@ import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
 import { GenericDocument } from 'global/interfaces';
 import { useSelector } from 'react-redux';
 import { StyledTreeItem } from 'components/documents/views/UI/TreeView';
-export function LeftSidebar() {
+export function LeftSidebar({ root, customHandleClick }: { root?: string | null; customHandleClick?: (node: RenderTree) => void }) {
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
@@ -56,6 +56,7 @@ export function LeftSidebar() {
     }, []);
 
     React.useEffect(() => {
+        if (typeof root === 'string') return setRootUrl(root);
         if (isString(pathname) && !isEmpty(pathname)) {
             const pathArray = pathname.split('/');
             if (nth(pathArray, 1) === 'documents') {
@@ -105,7 +106,9 @@ export function LeftSidebar() {
                 nodeId={nodes.id}
                 label={nodes.doc_name}
                 onClickCapture={() => {
-                    nodes.is_dir && !mouseOverCaret && handleDocumentClick(String(nodes.id), nodes.is_dir);
+                    typeof customHandleClick === 'function'
+                        ? customHandleClick(nodes)
+                        : nodes.is_dir && !mouseOverCaret && handleDocumentClick(String(nodes.id), nodes.is_dir);
                 }}
                 icon={
                     nodes.hasChildren ? (

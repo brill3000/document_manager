@@ -336,7 +336,7 @@ export interface UseHandleActionMenuReturnType {
 }
 
 export interface DocumentActionMenuType {
-    type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'moveToTrash' | 'delete' | 'permissions';
+    type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'moveToTrash' | 'delete' | 'permissions' | 'add';
 }
 
 export interface FolderActionMenuType {

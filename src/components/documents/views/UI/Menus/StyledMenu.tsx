@@ -43,6 +43,9 @@ export const StyledMenu = styled(({ verticalPosition, horizontalPosition, vertic
             },
             '&:active': {
                 backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity)
+            },
+            '&:selected': {
+                backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity)
             }
         }
     }

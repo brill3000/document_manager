@@ -1,15 +1,35 @@
-import { Divider, MenuItem, Stack, Typography } from '@mui/material';
-import React from 'react';
-import { BsFolderPlus, BsTrash } from 'react-icons/bs';
-import { IoMdCopy } from 'react-icons/io';
-import { IoCutOutline } from 'react-icons/io5';
+import {
+    Box,
+    Button,
+    Divider,
+    Fade,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    MenuItem,
+    Paper,
+    Popper,
+    Stack,
+    Typography
+} from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyledMenu } from './StyledMenu';
-import { CiEdit, CiEraser } from 'react-icons/ci';
 import { theme } from '../../../Themes/theme';
-import { MdSecurity } from 'react-icons/md';
 import { MemorizedBsFillFileEarmarkUnZipFill } from 'components/documents/Icons/fileIcon';
 import { RiFileWarningLine, RiFolderWarningLine } from 'react-icons/ri';
 import { DocumentActionMenuType } from 'global/interfaces';
+import zIndex from '@mui/material/styles/zIndex';
+
+import { MdSecurity } from 'react-icons/md';
+import { CiEdit, CiEraser } from 'react-icons/ci';
+import { BsCaretLeft, BsCaretRight, BsDatabaseAdd, BsFolderPlus, BsGear, BsKey, BsTrash } from 'react-icons/bs';
+import { IoMdCopy } from 'react-icons/io';
+import { IoCutOutline } from 'react-icons/io5';
+import { TbCategory2 } from 'react-icons/tb';
+import { LeftSidebar } from '../../main/sidebars';
+import { UriHelper } from 'utils/constants/UriHelper';
+import { RenderTree } from 'components/documents/Interface/FileBrowser';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -22,13 +42,24 @@ interface ActionMenuProps {
 
 export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir, is_zip }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<DocumentActionMenuType['type'] | null>(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLLIElement | null>(null);
+    const [open, setOpen] = useState(false);
+
+    const handleOpenSubMenu = useCallback((event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+        setAnchorEl(open === true ? null : event.currentTarget);
+        setOpen((prev) => !prev);
+    }, []);
+
     React.useEffect(() => {
         return () => {
             setSelected(null);
+            setOpen(false);
+            setAnchorEl(null);
         };
-    });
+    }, []);
     return (
         <>
+            <AddMenuOption open={open} anchorEl={anchorEl} />
             <StyledMenu
                 id="demo-customized-menu"
                 MenuListProps={{
@@ -38,6 +69,8 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                 onClose={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
                     handleMenuClose(e);
                     setSelected(null);
+                    setOpen(false);
+                    setAnchorEl(null);
                 }}
                 anchorReference="anchorPosition"
                 verticalOrigin="top"
@@ -150,6 +183,38 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
                         </Typography>
                     </Stack>
                 </MenuItem>
+                <MenuItem
+                    selected={selected === 'add'}
+                    onClick={(e) => {
+                        setSelected('add');
+                        handleMenuClick(e, 'add');
+                        handleOpenSubMenu(e);
+                    }}
+                    disabled={locked}
+                >
+                    <Stack
+                        height="max-content"
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        width="100%"
+                        spacing={1}
+                        p={0.3}
+                        borderRadius={1}
+                    >
+                        <Stack spacing={1} width="max-content" direction="row">
+                            <BsGear size={18} color={theme.palette.warning.dark} />
+                            <Typography variant="body2" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
+                                Add
+                            </Typography>
+                        </Stack>
+                        {open === true ? (
+                            <BsCaretLeft color={theme.palette.primary.main} />
+                        ) : (
+                            <BsCaretRight color={theme.palette.primary.main} />
+                        )}
+                    </Stack>
+                </MenuItem>
                 <Divider sx={{ my: 0.2 }} variant="middle" />
                 <MenuItem
                     selected={selected === 'moveToTrash'}
@@ -190,4 +255,82 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
     );
 };
 
+const AddMenuOption = ({ open, anchorEl }: { open: boolean; anchorEl: any }) => {
+    // ======================== | STATE | ========================= //
+
+    const [selected, setSelected] = useState<string | null>(null);
+    const [selectedFolder, setSelectedFolder] = useState<RenderTree | null>(null);
+    // ======================== | EVENTS | ========================= //
+    const handleSelectCategory = useCallback((node: RenderTree) => {
+        setSelectedFolder(node);
+    }, []);
+    // ======================== | EFFECTS | ========================= //
+
+    useEffect(() => {
+        return () => {
+            setSelectedFolder(null);
+        };
+    }, []);
+
+    useEffect(() => {
+        console.log(selectedFolder, 'SELECTED');
+    }, [selectedFolder]);
+
+    return (
+        <Popper open={open} anchorEl={anchorEl} placement="right-start" transition sx={{ zIndex: zIndex.modal }}>
+            {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                    <Paper
+                        sx={{
+                            '& .MuiPaper-root': {
+                                borderRadius: 6,
+                                marginTop: theme.spacing(1),
+                                minWidth: selected === 'categories' ? 300 : 180,
+                                maxWidth: 200,
+                                oveflowY: 'auto',
+                                color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+                                boxShadow:
+                                    'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px'
+                            }
+                        }}
+                    >
+                        {selected === null && (
+                            <List disablePadding>
+                                <ListItemButton onClick={() => setSelected('keyword')}>
+                                    <ListItemIcon>
+                                        <BsKey size={18} color={theme.palette.warning.dark} />
+                                    </ListItemIcon>
+                                    <ListItemText disableTypography primary={<Typography variant="caption">Keyword</Typography>} />
+                                </ListItemButton>
+                                <ListItemButton onClick={() => setSelected('categories')}>
+                                    <ListItemIcon>
+                                        <TbCategory2 size={18} color={theme.palette.warning.dark} />
+                                    </ListItemIcon>
+                                    <ListItemText disableTypography primary={<Typography variant="caption">Category</Typography>} />
+                                </ListItemButton>
+                                <ListItemButton onClick={() => setSelected('categories')}>
+                                    <ListItemIcon>
+                                        <BsDatabaseAdd size={18} color={theme.palette.warning.dark} />
+                                    </ListItemIcon>
+                                    <ListItemText disableTypography primary={<Typography variant="caption">Metadata</Typography>} />
+                                </ListItemButton>
+                            </List>
+                        )}
+                        {selected === 'categories' && (
+                            <Stack p={1} width="100%" height="100%">
+                                <Typography>Select category</Typography>
+                                <Box height={200} overflow="auto">
+                                    <LeftSidebar root={UriHelper.REPOSITORY_GET_ROOT_CATEGORIES} customHandleClick={handleSelectCategory} />
+                                </Box>
+                                <Button variant="contained" size="small">
+                                    Add Category
+                                </Button>
+                            </Stack>
+                        )}
+                    </Paper>
+                </Fade>
+            )}
+        </Popper>
+    );
+};
 export default ActionMenu;
