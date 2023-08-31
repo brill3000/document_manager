@@ -20,7 +20,7 @@ const Email = Loadable(lazy(() => import('components/email')));
 // const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 // const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 // const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
-const CustomizedTreeView = Loadable(lazy(() => import('components/documents')));
+const FileBrowser = Loadable(lazy(() => import('components/documents')));
 const Users = Loadable(lazy(() => import('components/users')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -45,7 +45,7 @@ const MainRoutes = {
             path: 'documents',
             element: (
                 <ProtectedRoutes>
-                    <CustomizedTreeView />
+                    <FileBrowser />
                 </ProtectedRoutes>
             ),
             children: [
@@ -53,7 +53,7 @@ const MainRoutes = {
                     path: ':pathParam',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView />
+                            <FileBrowser />
                         </ProtectedRoutes>
                     )
                 },
@@ -61,7 +61,7 @@ const MainRoutes = {
                     path: 'system-documents',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="system_documents" />
+                            <FileBrowser title="system_documents" />
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -69,7 +69,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="system_documents" />
+                                    <FileBrowser title="system_documents" />
                                 </ProtectedRoutes>
                             )
                         }
@@ -79,7 +79,7 @@ const MainRoutes = {
                     path: 'my-documents',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="my_documents" />
+                            <FileBrowser title="my_documents" />
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -87,7 +87,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="my_documents" />
+                                    <FileBrowser title="my_documents" />
                                 </ProtectedRoutes>
                             )
                         }
@@ -97,7 +97,7 @@ const MainRoutes = {
                     path: 'categories',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="categories" />
+                            <FileBrowser title="categories" />
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -105,7 +105,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="categories" />
+                                    <FileBrowser title="categories" />
                                 </ProtectedRoutes>
                             )
                         }
@@ -115,7 +115,7 @@ const MainRoutes = {
                     path: 'templates',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="templates" />,
+                            <FileBrowser title="templates" />,
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -123,7 +123,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="templates" />
+                                    <FileBrowser title="templates" />
                                 </ProtectedRoutes>
                             )
                         }
@@ -133,7 +133,7 @@ const MainRoutes = {
                     path: 'email-attachments',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="email-attachments" />
+                            <FileBrowser title="email-attachments" />
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -141,7 +141,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="email-attachments" />
+                                    <FileBrowser title="email-attachments" />
                                 </ProtectedRoutes>
                             )
                         }
@@ -151,7 +151,7 @@ const MainRoutes = {
                     path: 'trash',
                     element: (
                         <ProtectedRoutes>
-                            <CustomizedTreeView title="trash" />
+                            <FileBrowser title="trash" />
                         </ProtectedRoutes>
                     ),
                     children: [
@@ -159,7 +159,7 @@ const MainRoutes = {
                             path: ':pathParam',
                             element: (
                                 <ProtectedRoutes>
-                                    <CustomizedTreeView title="trash" />
+                                    <FileBrowser title="trash" />
                                 </ProtectedRoutes>
                             )
                         }
