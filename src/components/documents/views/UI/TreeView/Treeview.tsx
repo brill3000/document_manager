@@ -1,7 +1,7 @@
 import { Box, Collapse, Skeleton, Typography, alpha, styled } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { useSpring, animated } from '@react-spring/web';
-import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
+import { TreeItem, TreeItemProps, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import PropTypes from 'prop-types';
 import { omit } from 'lodash';
 
@@ -69,11 +69,11 @@ function StyledTreeItem(props: TreeItemProps) {
     const otherOmitted = omit(other, ['label', 'focused']);
     return (
         <StyledTreeItemRoot
-            nodeId={nodeId}
+            nodeId={nodeId ?? ''}
             label={
                 !nodeId?.includes('loader') ? (
                     <Typography variant="body2" color="text.primary" noWrap>
-                        {label}
+                        <>{label}</>
                     </Typography>
                 ) : (
                     <Box width="100%" height="100%">

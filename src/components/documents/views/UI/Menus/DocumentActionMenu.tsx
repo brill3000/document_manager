@@ -12,14 +12,13 @@ import {
     Stack,
     Typography
 } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyledMenu } from './StyledMenu';
 import { theme } from '../../../Themes/theme';
 import { MemorizedBsFillFileEarmarkUnZipFill } from 'components/documents/Icons/fileIcon';
 import { RiFileWarningLine, RiFolderWarningLine } from 'react-icons/ri';
-import { DocumentActionMenuType } from 'global/interfaces';
 import zIndex from '@mui/material/styles/zIndex';
-
+// ICONS
 import { MdSecurity } from 'react-icons/md';
 import { CiEdit, CiEraser } from 'react-icons/ci';
 import { BsCaretLeft, BsCaretRight, BsDatabaseAdd, BsFolderPlus, BsGear, BsKey, BsTrash } from 'react-icons/bs';
@@ -28,11 +27,14 @@ import { IoCutOutline } from 'react-icons/io5';
 import { TbCategory2 } from 'react-icons/tb';
 import { LeftSidebar } from '../../main/sidebars';
 import { UriHelper } from 'utils/constants/UriHelper';
-import { RenderTree } from 'components/documents/Interface/FileBrowser';
+// INTERFACES
+import { DocumentActionMenuType } from 'global/interfaces';
+// RTK: QUERY
 import { useAddToCategoryMutation, useLazyGetFilePropertiesQuery, useRemoveFromCategoryMutation } from 'store/async/dms/files/filesApi';
-import { enqueueSnackbar } from 'notistack';
 import { useLazyGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
+import { LazyLoader } from '../..';
 import { uniq } from 'lodash';
+import { enqueueSnackbar } from 'notistack';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
@@ -45,7 +47,7 @@ interface ActionMenuProps {
 }
 
 export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir, is_zip, nodeId }: ActionMenuProps) => {
-    const [selected, setSelected] = React.useState<DocumentActionMenuType['type'] | null>(null);
+    const [selected, setSelected] = useState<DocumentActionMenuType['type'] | null>(null);
     const [anchorEl, setAnchorEl] = useState<HTMLLIElement | null>(null);
     const [open, setOpen] = useState(false);
 
@@ -54,7 +56,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
         setOpen((prev) => !prev);
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         return () => {
             setSelected(null);
             setOpen(false);
@@ -271,21 +273,22 @@ const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchor
     const [getFolderInfo, folderInfo] = useLazyGetFoldersPropertiesQuery();
 
     // ======================== | EVENTS | ========================= //
-    const handleSelectCategory = useCallback(async (node: RenderTree) => {
-        if (node.id === '/okm:categories') return;
+    const handleSelectCategory = useCallback(async (node: string) => {
+        if (node === '/okm:categories') return;
         if (uuid === null) return;
         let isSelected;
-        const catId = node.id;
+        const catId = node;
         const nodeId = uuid;
         setSelectedFolders((selectedFolders) => {
-            if (!Array.isArray(selectedFolders)) return [node.id];
-            isSelected = selectedFolders.some((selectedFolder) => selectedFolder === node.id);
+            if (!Array.isArray(selectedFolders)) return [node];
+            isSelected = selectedFolders.some((selectedFolder) => selectedFolder === node);
             if (isSelected) {
-                return [...selectedFolders?.filter((selectedFolder) => selectedFolder !== node.id)];
+                return [...selectedFolders?.filter((selectedFolder) => selectedFolder !== node)];
             } else {
-                return [...selectedFolders, node.id];
+                return [...selectedFolders, node];
             }
         });
+        console.log(catId, 'ID');
         try {
             if (isSelected) {
                 await removeFromCategory({
@@ -389,16 +392,19 @@ const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchor
                                 </ListItemButton>
                             </List>
                         )}
-                        {selected === 'categories' && isLoading === false && (
+                        {selected === 'categories' && (
                             <Stack p={1} width="100%" height="100%">
                                 <Typography variant="caption">Select category</Typography>
                                 <Box height={150} overflow="auto">
-                                    <LeftSidebar
-                                        standAlone
-                                        root={UriHelper.REPOSITORY_GET_ROOT_CATEGORIES}
-                                        customHandleClick={handleSelectCategory}
-                                        selectedList={selectedFolders}
-                                    />
+                                    {isLoading === true && <LazyLoader align="center" width="80%" justify="center" height={20} />}
+                                    {isLoading === false && (
+                                        <LeftSidebar
+                                            standAlone
+                                            root={UriHelper.REPOSITORY_GET_ROOT_CATEGORIES}
+                                            customHandleClick={handleSelectCategory}
+                                            selectedList={selectedFolders}
+                                        />
+                                    )}
                                 </Box>
                             </Stack>
                         )}

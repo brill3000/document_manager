@@ -1,25 +1,38 @@
-import * as React from 'react';
+import { useCallback, useState, useEffect } from 'react';
+// MUI
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-
-// hero icons
-import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
-import { RenderTree } from 'components/documents/Interface/FileBrowser';
-import TreeView from '@mui/lab/TreeView/TreeView';
+import { TreeView } from '@mui/x-tree-view/TreeView';
 import { ButtonBase, Stack, useTheme } from '@mui/material';
-import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
-import { Error } from 'ui-component/LoadHandlers';
+//icons
+import { BsDatabaseFill, BsFillCheckCircleFill } from 'react-icons/bs';
+
+// LODASH
 import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, uniqueId } from 'lodash';
-import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+// RTK: QUERY
 import { RxCaretRight } from 'react-icons/rx';
+import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
-import { UriHelper } from 'utils/constants/UriHelper';
-import { LazyLoader } from '../..';
-import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
+import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
+
+// ZUSTAND
+import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
+
+// INTERFACES
 import { GenericDocument } from 'global/interfaces';
+// REDUX
 import { useSelector } from 'react-redux';
 import { StyledTreeItem } from 'components/documents/views/UI/TreeView';
-import { BsDatabaseFill, BsFillCheckCircleFill } from 'react-icons/bs';
+
+// COMPONENTS
+import { RenderTree } from 'components/documents/Interface/FileBrowser';
+import { Error } from 'ui-component/LoadHandlers';
+import { LazyLoader } from '../..';
+
+// HELPERS
+import { UriHelper } from 'utils/constants/UriHelper';
+import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
+
 export function LeftSidebar({
     root,
     customHandleClick,
@@ -27,7 +40,7 @@ export function LeftSidebar({
     standAlone
 }: {
     root?: string | null;
-    customHandleClick?: (node: RenderTree) => void;
+    customHandleClick?: (node: string) => void;
     selectedList?: string[] | null;
     standAlone?: boolean;
 }) {
@@ -35,12 +48,12 @@ export function LeftSidebar({
     const theme = useTheme();
     // =========================== | States | ================================//
 
-    const [data, setData] = React.useState<RenderTree | null>(null);
+    const [data, setData] = useState<RenderTree | null>(null);
     const { actions, expanded } = useBrowserStore();
-    const [rootUrl, setRootUrl] = React.useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
-    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
-    const [treeMap, setTreeMap] = React.useState<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>(new Map());
-    const [mouseOverCaret, setMouseOverCaret] = React.useState<boolean>(false);
+    const [rootUrl, setRootUrl] = useState<string | null>(UriHelper.REPOSITORY_GET_ROOT_FOLDER);
+    const memorizedFileIcon = useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+    const [treeMap, setTreeMap] = useState<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>(new Map());
+    const [mouseOverCaret, setMouseOverCaret] = useState<boolean>(false);
 
     // ============================== | STORE | =========================== //
     // @ts-expect-error expected
@@ -57,7 +70,7 @@ export function LeftSidebar({
         rootPath
     } = useHandleChangeRoute();
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isArray(paramArray)) {
             if (route_is_dir !== true) {
                 const paramArrayCopy = [...paramArray];
@@ -69,7 +82,7 @@ export function LeftSidebar({
         }
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (standAlone === true && typeof root === 'string') return setRootUrl(root);
         if (isString(pathname) && !isEmpty(pathname)) {
             const pathArray = pathname.split('/');
@@ -109,116 +122,129 @@ export function LeftSidebar({
     /**
      * A Function which recursively renders the tree elemenst with all the nesting
      * @param nodes: RenderTree | null
-     * @returns React.ReactNode;
+     * @returns ReactNode;
      */
 
-    const renderTree = (nodes: RenderTree | null) => {
-        const uniqueLoaderId = uniqueId('loader');
-        return nodes !== null ? (
-            <StyledTreeItem
-                key={nodes.id}
-                nodeId={nodes.id}
-                label={nodes.doc_name}
-                onClickCapture={() => {
-                    typeof customHandleClick === 'function'
-                        ? customHandleClick(nodes)
-                        : nodes.is_dir && !mouseOverCaret && handleDocumentClick(String(nodes.id), nodes.is_dir);
-                }}
-                icon={
-                    nodes.hasChildren ? (
-                        <Stack direction="row" alignItems="center">
-                            <ButtonBase
-                                sx={{
-                                    borderRadius: '50%',
-                                    color: 'secondary.main',
-                                    '& :hover': {
-                                        color: 'primary.dark'
-                                    }
-                                }}
-                            >
-                                <RxCaretRight
-                                    size={14}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleExpandClick(nodes.id);
+    const renderTree = useCallback(
+        (nodes: RenderTree | null) => {
+            const uniqueLoaderId = uniqueId('loader');
+            console.log(selectedList, 'SELECTED');
+            return nodes !== null ? (
+                <StyledTreeItem
+                    key={nodes.id}
+                    nodeId={nodes.id}
+                    label={nodes.doc_name}
+                    // onClickCapture={() => {
+
+                    // }}
+                    icon={
+                        nodes.hasChildren ? (
+                            <Stack direction="row" alignItems="center">
+                                <ButtonBase
+                                    sx={{
+                                        borderRadius: '50%',
+                                        color: 'secondary.main',
+                                        '& :hover': {
+                                            color: 'primary.dark'
+                                        }
                                     }}
-                                    style={{
-                                        transform: expanded.includes(nodes.id) ? 'rotate(90deg)' : 'initial',
-                                        transition: '.3s all',
-                                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                                    onMouseOver={() => {
+                                        console.log('IS OVER');
+                                        return setMouseOverCaret(true);
                                     }}
-                                    onMouseOver={() => setMouseOverCaret(true)}
-                                    onMouseLeave={() => setMouseOverCaret(false)}
-                                />
-                            </ButtonBase>
-                            {rootPath === 'categories' ? (
-                                <BsDatabaseFill size={14} color={theme.palette.warning.main} />
-                            ) : expanded.includes(nodes.id) ? (
-                                <MemorizedFcFolderOpen size={14} />
-                            ) : (
-                                <MemorizedFcFolder size={14} />
-                            )}
-                        </Stack>
-                    ) : nodes.is_dir ? (
-                        <Stack direction="row" alignItems="center" spacing={0.5}>
-                            {rootPath === 'categories' ? (
-                                <BsDatabaseFill size={14} color={theme.palette.warning.main} />
-                            ) : (
-                                <MemorizedFcFolder size={14} />
-                            )}
-                            {standAlone === true &&
-                            Array.isArray(selectedList) &&
-                            selectedList.some((selected) => selected === nodes.id) ? (
-                                <BsFillCheckCircleFill size={11} color={theme.palette.success.main} />
-                            ) : (
-                                <></>
-                            )}
-                        </Stack>
-                    ) : (
-                        memorizedFileIcon({ mimeType: nodes.mimeType, size: 16, file_icon_margin: 0 })
-                    )
-                }
-                bgColor={undefined}
-                color={undefined}
-                labelText={''}
-            >
-                {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
-            </StyledTreeItem>
-        ) : (
-            <StyledTreeItem
-                key={uniqueLoaderId}
-                nodeId={uniqueLoaderId}
-                label={uniqueLoaderId}
-                disabled
-                onClick={() => {
-                    return;
-                }}
-                sx={{
-                    '& .Mui-disabled': {
-                        opacity: 1
-                    },
-                    '& .MuiTreeItem-label': {
-                        p: 0
+                                    onMouseLeave={() => {
+                                        console.log('IS LEFT');
+                                        return setMouseOverCaret(false);
+                                    }}
+                                >
+                                    <RxCaretRight
+                                        size={14}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            mouseOverCaret === true && handleExpandClick(nodes.id);
+                                        }}
+                                        style={{
+                                            transform: expanded.includes(nodes.id) ? 'rotate(90deg)' : 'initial',
+                                            transition: '.3s all',
+                                            transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
+                                        }}
+                                    />
+                                </ButtonBase>
+                                {rootPath === 'categories' && <BsDatabaseFill size={14} color={theme.palette.warning.main} />}{' '}
+                                {rootPath !== 'categories' &&
+                                    (expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={14} /> : <MemorizedFcFolder size={14} />)}
+                                {Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) && (
+                                    <BsFillCheckCircleFill size={11} style={{ paddingLeft: 2 }} color={theme.palette.success.main} />
+                                )}
+                            </Stack>
+                        ) : nodes.is_dir ? (
+                            <Stack direction="row" alignItems="center" spacing={0.5}>
+                                {rootPath === 'categories' ? (
+                                    <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                                ) : (
+                                    <MemorizedFcFolder size={14} />
+                                )}
+                                {Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) && (
+                                    <BsFillCheckCircleFill size={11} color={theme.palette.success.main} />
+                                )}
+                            </Stack>
+                        ) : (
+                            memorizedFileIcon({ mimeType: nodes.mimeType, size: 16, file_icon_margin: 0 })
+                        )
                     }
-                }}
-                bgColor={undefined}
-                color={undefined}
-                labelText={''}
-            />
-        );
-    };
+                    bgColor={undefined}
+                    color={undefined}
+                    labelText={''}
+                >
+                    {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+                </StyledTreeItem>
+            ) : (
+                <StyledTreeItem
+                    key={uniqueLoaderId}
+                    nodeId={uniqueLoaderId}
+                    label={uniqueLoaderId}
+                    disabled
+                    onClick={() => {
+                        return;
+                    }}
+                    sx={{
+                        '& .Mui-disabled': {
+                            opacity: 1
+                        },
+                        '& .MuiTreeItem-label': {
+                            p: 0
+                        }
+                    }}
+                    bgColor={undefined}
+                    color={undefined}
+                    labelText={''}
+                />
+            );
+        },
+        [selectedList, mouseOverCaret, expanded, data]
+    );
     // ====================== | EVENTS  | ========================== //
     /**
      * A Function expands or retracts the nodes
      * @param path: string
      * @returns void
      */
-    const handleExpandClick = React.useCallback(
+    const handleExpandClick = useCallback(
         (path: string) => {
             expanded.includes(path) ? actions.removeExpand(path) : actions.addExpanded(path);
         },
         [expanded]
     );
+
+    const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+        console.log(nodeIds, 'TOOGLE');
+    };
+
+    const handleSelect = (event: React.SyntheticEvent, nodeIds: string[] | string) => {
+        console.log(nodeIds, 'SELECT');
+        standAlone !== true && handleDocumentClick(String(nodeIds), true);
+        standAlone === true && typeof customHandleClick === 'function' && customHandleClick(String(nodeIds));
+    };
 
     /**
      * A Function which populates and updated the tree data
@@ -267,13 +293,13 @@ export function LeftSidebar({
         }
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (rootFolderIsSuccess && !rootFolderIsFetching && !rootFolderIsLoading) {
             actions.addExpanded(rootFolder.path);
         }
     }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, openItem]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isUndefined(rootFolder) && !isNull(rootFolder.path) && !isEmpty(rootFolder.path)) {
             isEmpty(paramArray) && handleDocumentClick(rootFolder.path, true);
         }
@@ -283,7 +309,7 @@ export function LeftSidebar({
     /**
      * add children folders to tree
      */
-    React.useEffect(() => {
+    useEffect(() => {
         if (
             !isNull(rootFolder) &&
             !isUndefined(rootFolder) &&
@@ -324,8 +350,10 @@ export function LeftSidebar({
             ) : data !== null && data !== undefined ? (
                 <TreeView
                     aria-label="Folder Sidebar"
-                    selected={currentFolder}
+                    selected={[currentFolder ?? '']}
                     expanded={expanded}
+                    onNodeToggle={handleToggle}
+                    onNodeSelect={handleSelect}
                     sx={{
                         flexGrow: 1,
                         maxWidth: '100%',
