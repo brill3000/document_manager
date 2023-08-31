@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import Divider from '@mui/material/Divider';
 import { BsFolderPlus, BsFileArrowUp, BsGrid, BsViewStacked, BsPencilSquare, BsTrashFill } from 'react-icons/bs';
 import { alpha, Box, ButtonBase, darken, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -62,14 +62,16 @@ const uploadFile = async ({
 
 export default function TopNavActions() {
     // =========================== | STATES | ================================//
-    const [isDeleteHovered, setIsDeleteHovered] = React.useState<boolean>(false);
-    const [isMoveToTrashHovered, setIsMoveToTrashHovered] = React.useState<boolean>(false);
-
-    const timoutRef = React.useRef<any>(null);
+    const [isDeleteHovered, setIsDeleteHovered] = useState<boolean>(false);
+    const [isMoveToTrashHovered, setIsMoveToTrashHovered] = useState<boolean>(false);
+    // =========================== | REFS | ================================//
+    const timoutRef = useRef<any>(null);
+    // =========================== | CUSTOM HOOKS | ================================//
+    const { currentFolder, navigate, rootPath } = useHandleChangeRoute();
     // =========================== | CONSTANTS | ================================//
     const minWidth = 'max-content';
     const tooltipDelay = 200;
-    const AcceptedTypes = React.useMemo(() => {
+    const AcceptedTypes = useMemo(() => {
         const newObj = {} as AcceptedFilesType<MimeTypeConfigInterface>;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_, value] of Object.entries(MimeTypeConfig)) {
@@ -91,8 +93,6 @@ export default function TopNavActions() {
     // =========================== | ALERTS | ================================//
     const { enqueueSnackbar } = useSnackbar();
 
-    // =========================== | CUSTOM HOOKS | ================================//
-    const { currentFolder, navigate } = useHandleChangeRoute();
     // ============================= | EVENT HANDLERS | =============================== //
     const changeHandler = (files: UploadedFileInterface[]) => {
         try {
@@ -226,7 +226,7 @@ export default function TopNavActions() {
     };
 
     // ============================= | EFFECTS | ======================= //
-    React.useEffect(() => {
+    useEffect(() => {
         return () => {
             clearTimeout(timoutRef.current);
         };
@@ -274,16 +274,16 @@ export default function TopNavActions() {
                         enterNextDelay={tooltipDelay}
                         placement="top-end"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Create New Folder
                                 </Typography>
                                 <Typography fontSize={10.5}>This button allows you to create a new empty folder</Typography>
                                 {/* <Typography fontSize={8.5}>{"NB* You cannot create duplicate folders"}</Typography> */}
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Box>
+                        <Box component="span">
                             <Stack
                                 sx={{
                                     pr: 0.7,
@@ -293,6 +293,10 @@ export default function TopNavActions() {
                                     '&:hover': {
                                         color: (theme) => theme.palette.primary.contrastText,
                                         bgcolor: (theme) => theme.palette.primary.main
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
                                     },
                                     width: 'max-content',
                                     height: '100%'
@@ -307,7 +311,7 @@ export default function TopNavActions() {
                             >
                                 <BsFolderPlus size={19} />
                                 <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                    Create Folder
+                                    {rootPath === 'categories' ? 'Create category' : 'Create Folder'}
                                 </Typography>
                             </Stack>
                         </Box>
@@ -320,45 +324,52 @@ export default function TopNavActions() {
                                 enterNextDelay={tooltipDelay}
                                 placement="top"
                                 title={
-                                    <React.Fragment>
-                                        <React.Fragment>
+                                    <Fragment>
+                                        <Fragment>
                                             <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                                 Upload New files
                                             </Typography>
                                             <Typography fontSize={10.5}>This button allows you to upload multiple files</Typography>
                                             {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* Zip files upload not yet enabled"}</Typography> */}
-                                        </React.Fragment>
-                                    </React.Fragment>
+                                        </Fragment>
+                                    </Fragment>
                                 }
                             >
-                                <Stack
-                                    sx={{
-                                        pr: 0.7,
-                                        py: 0.5,
-                                        pl: 0.5,
-                                        borderRadius: 1,
-                                        '&:hover': {
-                                            color: (theme) => theme.palette.primary.contrastText,
-                                            bgcolor: (theme) => theme.palette.primary.main
-                                        },
-                                        width: minWidth,
-                                        transition: `${UriHelper.TRANSITION} all`,
-                                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                        height: '100%'
-                                    }}
-                                    justifyContent="space-between"
-                                    alignItems="center"
-                                    component={ButtonBase}
-                                    {...getRootProps({ className: 'dropzone' })}
-                                    direction="row"
-                                    columnGap={0.7}
-                                >
-                                    <BsFileArrowUp size={19} />
-                                    <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                        Upload files
-                                    </Typography>
-                                    <input {...getInputProps()} />
-                                </Stack>
+                                <Box component="span">
+                                    <Stack
+                                        sx={{
+                                            pr: 0.7,
+                                            py: 0.5,
+                                            pl: 0.5,
+                                            borderRadius: 1,
+                                            '&:hover': {
+                                                color: (theme) => theme.palette.primary.contrastText,
+                                                bgcolor: (theme) => theme.palette.primary.main
+                                            },
+                                            '&:disabled': {
+                                                bgcolor: (theme) => theme.palette.grey[200],
+                                                color: (theme) => theme.palette.grey[400]
+                                            },
+                                            width: minWidth,
+                                            transition: `${UriHelper.TRANSITION} all`,
+                                            transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                            height: '100%'
+                                        }}
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                        component={ButtonBase}
+                                        {...getRootProps({ className: 'dropzone' })}
+                                        direction="row"
+                                        columnGap={0.7}
+                                        disabled={rootPath === 'categories'}
+                                    >
+                                        <BsFileArrowUp size={19} {...(rootPath === 'categories' && { color: theme.palette.grey[400] })} />
+                                        <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                            Upload files
+                                        </Typography>
+                                        <input {...getInputProps()} />
+                                    </Stack>
+                                </Box>
                             </HtmlTooltip>
                         )}
                     </Dropzone>
@@ -387,88 +398,100 @@ export default function TopNavActions() {
                         enterNextDelay={tooltipDelay}
                         placement="top"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Swith to list or table view
                                 </Typography>
                                 <Typography fontSize={10.5}>This button allows you to view folders as list or table</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* List view is best if you need an overal view"}</Typography> */}
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pr: 0.7,
-                                py: 0.5,
-                                pl: 0.5,
-                                borderRadius: 1,
-                                color: view === 'list' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
-                                bgcolor: view === 'list' ? (theme) => theme.palette.secondary.dark : 'transparent',
-                                '&:hover': {
-                                    color: (theme) => theme.palette.secondary.contrastText,
-                                    bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
-                                },
-                                width: minWidth,
-                                transition: `${UriHelper.TRANSITION} all`,
-                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            component={ButtonBase}
-                            direction="row"
-                            columnGap={0.7}
-                            onClick={() => toogleView('list')}
-                        >
-                            <BsViewStacked size={19} />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                List View
-                            </Typography>
-                        </Stack>
+                        <Box component="span">
+                            <Stack
+                                sx={{
+                                    pr: 0.7,
+                                    py: 0.5,
+                                    pl: 0.5,
+                                    borderRadius: 1,
+                                    color: view === 'list' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
+                                    bgcolor: view === 'list' ? (theme) => theme.palette.secondary.dark : 'transparent',
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.secondary.contrastText,
+                                        bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
+                                    },
+                                    width: minWidth,
+                                    transition: `${UriHelper.TRANSITION} all`,
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                component={ButtonBase}
+                                direction="row"
+                                columnGap={0.7}
+                                onClick={() => toogleView('list')}
+                            >
+                                <BsViewStacked size={19} />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    List View
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
                     <HtmlTooltip
                         arrow
                         enterNextDelay={tooltipDelay}
                         placement="top"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Swith to Grid view
                                 </Typography>
                                 <Typography fontSize={10.5}>This button allows you to view the documents in a grid</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* List view is best if you need to see file types are important"}</Typography> */}
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pl: 0.5,
-                                py: 0.5,
-                                pr: 0.7,
-                                borderRadius: 1,
-                                color: view === 'grid' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
-                                bgcolor: view === 'grid' ? (theme) => theme.palette.secondary.dark : 'inherit',
-                                '&:hover': {
-                                    color: (theme) => theme.palette.secondary.contrastText,
-                                    bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
-                                },
-                                width: minWidth,
-                                transition: `${UriHelper.TRANSITION} all`,
-                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            component={ButtonBase}
-                            direction="row"
-                            columnGap={0.7}
-                            onClick={() => toogleView('grid')}
-                        >
-                            <BsGrid size={18.5} />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                Icon View
-                            </Typography>
-                        </Stack>
+                        <Box component="span">
+                            <Stack
+                                sx={{
+                                    pl: 0.5,
+                                    py: 0.5,
+                                    pr: 0.7,
+                                    borderRadius: 1,
+                                    color: view === 'grid' ? (theme) => theme.palette.secondary.contrastText : 'inherit',
+                                    bgcolor: view === 'grid' ? (theme) => theme.palette.secondary.dark : 'inherit',
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.secondary.contrastText,
+                                        bgcolor: (theme) => darken(theme.palette.secondary.main, 0.2)
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
+                                    },
+                                    width: minWidth,
+                                    transition: `${UriHelper.TRANSITION} all`,
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                component={ButtonBase}
+                                direction="row"
+                                columnGap={0.7}
+                                onClick={() => toogleView('grid')}
+                            >
+                                <BsGrid size={18.5} />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    Icon View
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
                 </Stack>
                 <Divider orientation="vertical" variant="fullWidth" flexItem />
@@ -495,7 +518,7 @@ export default function TopNavActions() {
                         enterNextDelay={tooltipDelay}
                         placement="top"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Edit file/folder
                                 </Typography>
@@ -503,89 +526,109 @@ export default function TopNavActions() {
                                     This button allows you to edit the selected file/folder&apos;s details
                                 </Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* Some details such as size are read only, hence cannot be edited"}</Typography> */}
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pl: 0.5,
-                                py: 0.5,
-                                pr: 0.7,
-                                borderRadius: 1,
-                                '&:hover': {
-                                    color: (theme) => theme.palette.warning.contrastText,
-                                    bgcolor: (theme) => darken(theme.palette.warning.main, 0.1)
-                                },
-                                width: minWidth,
-                                transition: `${UriHelper.TRANSITION} all`,
-                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            component={ButtonBase}
-                            direction="row"
-                            columnGap={0.7}
-                        >
-                            <BsPencilSquare size={20} />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                Edit Files
-                            </Typography>
-                        </Stack>
+                        <Box component="span">
+                            <Stack
+                                sx={{
+                                    pl: 0.5,
+                                    py: 0.5,
+                                    pr: 0.7,
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.warning.contrastText,
+                                        bgcolor: (theme) => darken(theme.palette.warning.main, 0.1)
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
+                                    },
+                                    width: minWidth,
+                                    transition: `${UriHelper.TRANSITION} all`,
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                component={ButtonBase}
+                                direction="row"
+                                columnGap={0.7}
+                                disabled={rootPath === 'categories'}
+                            >
+                                <BsPencilSquare size={20} {...(rootPath === 'categories' && { color: theme.palette.grey[400] })} />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    Edit Files
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
                     <HtmlTooltip
                         arrow
                         enterNextDelay={tooltipDelay}
                         placement="top-start"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Move Opened folder to trash
                                 </Typography>
                                 <Typography fontSize={10.5}>This button allows you to move the current opened folder to trash</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* File deletion is a permanent operation and cannot be reverted"}</Typography> */}
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pl: 0.5,
-                                py: 0.5,
-                                pr: 0.7,
-                                borderRadius: 1,
-                                '&:hover': {
-                                    color: (theme) => theme.palette.error.contrastText,
-                                    bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
-                                },
-                                width: minWidth,
-                                transition: `${UriHelper.TRANSITION} all`,
-                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            component={ButtonBase}
-                            onClick={handleMoveToTrashFolder}
-                            onMouseOver={() => setIsMoveToTrashHovered(true)}
-                            onMouseLeave={() => setIsMoveToTrashHovered(false)}
-                            direction="row"
-                            columnGap={0.7}
-                        >
-                            <BsTrashFill
-                                size={19}
-                                color={isMoveToTrashHovered ? theme.palette.error.contrastText : theme.palette.error.main}
-                            />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                Move to Trash
-                            </Typography>
-                        </Stack>
+                        <Box component="span">
+                            <Stack
+                                sx={{
+                                    pl: 0.5,
+                                    py: 0.5,
+                                    pr: 0.7,
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.error.contrastText,
+                                        bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
+                                    },
+                                    width: minWidth,
+                                    transition: `${UriHelper.TRANSITION} all`,
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                component={ButtonBase}
+                                onClick={handleMoveToTrashFolder}
+                                onMouseOver={() => setIsMoveToTrashHovered(true)}
+                                onMouseLeave={() => setIsMoveToTrashHovered(false)}
+                                direction="row"
+                                columnGap={0.7}
+                                disabled={rootPath === 'categories'}
+                            >
+                                <BsTrashFill
+                                    size={19}
+                                    color={
+                                        rootPath === 'categories'
+                                            ? theme.palette.grey[400]
+                                            : isMoveToTrashHovered
+                                            ? theme.palette.error.contrastText
+                                            : theme.palette.error.main
+                                    }
+                                />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    Move to Trash
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
                     <HtmlTooltip
                         arrow
                         enterNextDelay={tooltipDelay}
                         placement="top-start"
                         title={
-                            <React.Fragment>
+                            <Fragment>
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Delete the opened folder
                                 </Typography>
@@ -593,41 +636,54 @@ export default function TopNavActions() {
                                 <Typography fontSize={8.5} fontWeight={500}>
                                     {'NB* File deletion is a permanent operation and cannot be reverted'}
                                 </Typography>
-                            </React.Fragment>
+                            </Fragment>
                         }
                     >
-                        <Stack
-                            sx={{
-                                pl: 0.5,
-                                py: 0.5,
-                                pr: 0.7,
-                                borderRadius: 1,
-                                '&:hover': {
-                                    color: (theme) => theme.palette.error.contrastText,
-                                    bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
-                                },
-                                width: minWidth,
-                                transition: `${UriHelper.TRANSITION} all`,
-                                transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
-                                height: '100%'
-                            }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            component={ButtonBase}
-                            onClick={handlePurgeFolder}
-                            onMouseOver={() => setIsDeleteHovered(true)}
-                            onMouseLeave={() => setIsDeleteHovered(false)}
-                            direction="row"
-                            columnGap={0.7}
-                        >
-                            <RiFolderWarningFill
-                                size={19}
-                                color={isDeleteHovered ? theme.palette.error.contrastText : theme.palette.error.main}
-                            />
-                            <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
-                                Delete Folder
-                            </Typography>
-                        </Stack>
+                        <Box component="span">
+                            <Stack
+                                sx={{
+                                    pl: 0.5,
+                                    py: 0.5,
+                                    pr: 0.7,
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        color: (theme) => theme.palette.error.contrastText,
+                                        bgcolor: (theme) => darken(theme.palette.error.main, 0.1)
+                                    },
+                                    '&:disabled': {
+                                        bgcolor: (theme) => theme.palette.grey[200],
+                                        color: (theme) => theme.palette.grey[400]
+                                    },
+                                    width: minWidth,
+                                    transition: `${UriHelper.TRANSITION} all`,
+                                    transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                                    height: '100%'
+                                }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                component={ButtonBase}
+                                onClick={handlePurgeFolder}
+                                onMouseOver={() => setIsDeleteHovered(true)}
+                                onMouseLeave={() => setIsDeleteHovered(false)}
+                                direction="row"
+                                columnGap={0.7}
+                                disabled={rootPath === 'categories'}
+                            >
+                                <RiFolderWarningFill
+                                    size={19}
+                                    color={
+                                        rootPath === 'categories'
+                                            ? theme.palette.grey[400]
+                                            : isDeleteHovered
+                                            ? theme.palette.error.contrastText
+                                            : theme.palette.error.main
+                                    }
+                                />
+                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                    Delete Folder
+                                </Typography>
+                            </Stack>
+                        </Box>
                     </HtmlTooltip>
                 </Stack>
             </Stack>

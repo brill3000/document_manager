@@ -1,3 +1,4 @@
+import { Dispatch, ForwardedRef, SetStateAction, useCallback, useEffect, useMemo, useRef } from 'react';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { ItemTypes } from 'components/documents/Interface/Constants';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
@@ -12,8 +13,7 @@ import {
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice } from 'lodash';
-import React, { SetStateAction } from 'react';
+import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice, startsWith } from 'lodash';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
@@ -39,11 +39,11 @@ import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
-export const useForwardRef = <T>(ref: React.ForwardedRef<T>) => {
+export const useForwardRef = <T>(ref: ForwardedRef<T>) => {
     // @ts-expect-error expect the error
-    const innerRef = React.useRef<T | null>(ref);
+    const innerRef = useRef<T | null>(ref);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!ref) return;
         if (typeof ref === 'function') ref(innerRef.current);
         else ref.current = innerRef.current;
@@ -112,7 +112,7 @@ export const useHandleChangeRoute = () => {
 
         navigate(documentPath + `?is_dir=${is_dir ? 'true' : 'false'}`);
     };
-    const isTrashFolder = React.useMemo(() => {
+    const isTrashFolder = useMemo(() => {
         const pathArray = pathname.split('/');
         if (isArray(pathArray) && !isEmpty(pathArray)) {
             pathArray.includes('documents');
@@ -124,7 +124,7 @@ export const useHandleChangeRoute = () => {
             return false;
         }
     }, [pathname]);
-    const paramArray: string[] | null = React.useMemo(() => {
+    const paramArray: string[] | null = useMemo(() => {
         let arr = !isNull(pathParam) && !isUndefined(pathParam) ? decodeURIComponent(pathParam).split('/') : null;
         if (isArray(arr)) {
             arr.shift();
@@ -141,7 +141,7 @@ export const useHandleChangeRoute = () => {
 
         return arr;
     }, [pathParam]);
-    const currentFolder: string | undefined = React.useMemo(() => {
+    const currentFolder: string | undefined = useMemo(() => {
         if (isArray(paramArray) && !isEmpty(paramArray)) {
             if (!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true) {
                 return paramArray[paramArray.length - 1];
@@ -152,7 +152,7 @@ export const useHandleChangeRoute = () => {
             }
         } else return undefined;
     }, [pathParam, pathname]);
-    const parentFolder: string | undefined = React.useMemo(() => {
+    const parentFolder: string | undefined = useMemo(() => {
         if (isArray(paramArray) && !isEmpty(paramArray)) {
             if (!isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true !== true) {
                 return paramArray.length > 1 ? paramArray[paramArray.length - 2] : undefined;
@@ -163,7 +163,7 @@ export const useHandleChangeRoute = () => {
             }
         } else return undefined;
     }, [pathParam, pathname]);
-    const currentFile: string | null = React.useMemo(() => {
+    const currentFile: string | null = useMemo(() => {
         if (
             isArray(paramArray) &&
             !isEmpty(paramArray) &&
@@ -174,6 +174,7 @@ export const useHandleChangeRoute = () => {
             return paramArrayCopy[paramArrayCopy.length - 1] ?? null;
         } else return null;
     }, [pathParam, pathname]);
+    const rootPath = nth(pathname.split('/'), 2);
     return {
         handleChangeRoute,
         navigate,
@@ -185,14 +186,15 @@ export const useHandleChangeRoute = () => {
         is_dir: !isNull(searchParams.get('is_dir')) ? (searchParams.get('is_dir') === 'true' ? true : false) : true,
         currentFolder,
         currentFile,
-        parentFolder
+        parentFolder,
+        rootPath
     };
 };
 
 export const useTreeMap = ({ expanded, setTreeMap }: TreeMap) => {
     const { data } = useGetFoldersExpandedChildrenQuery({ expanded });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isUndefined(data) && isArray(data.folders)) {
             setTreeMap((oldMap) => {
                 const map = new Map(oldMap);
@@ -309,7 +311,7 @@ export const useHandleActionMenu = ({
     is_new,
     setContextMenu
 }: {
-    setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
+    setContextMenu: Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     path: string;
     is_dir: boolean;
     doc_name: string;
@@ -550,9 +552,7 @@ export const useHandleActionMenu = ({
             actions.setRenameTarget(null);
         }
     };
-    const isRenaming = React.useMemo(() => renameTarget && path !== undefined && renameTarget.id === path && renameTarget.rename, [
-        renameTarget
-    ]);
+    const isRenaming = useMemo(() => renameTarget && path !== undefined && renameTarget.id === path && renameTarget.rename, [renameTarget]);
     return {
         handleMenuClick,
         handleMenuClose,
@@ -570,9 +570,9 @@ export const useHandleClickEvents = ({
     setContextMenu,
     setRowSelected
 }: {
-    setContextMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
+    setContextMenu: Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
-    setRowSelected?: React.Dispatch<SetStateAction<ListViewRowSelectedProps>>;
+    setRowSelected?: Dispatch<SetStateAction<ListViewRowSelectedProps>>;
     path: string;
     is_dir: boolean;
     doc_name: string;
@@ -698,7 +698,7 @@ export const useDragAndDropHandlers = ({ is_dir, path, doc_name }: { is_dir: boo
 };
 
 export const useMemorizedDocumemtIcon = () => {
-    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+    const memorizedFileIcon = useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
     return { memorizedFileIcon };
 };
 

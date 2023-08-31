@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
 import { RenderTree } from 'components/documents/Interface/FileBrowser';
 import TreeView from '@mui/lab/TreeView/TreeView';
-import { ButtonBase, Stack } from '@mui/material';
+import { ButtonBase, Stack, useTheme } from '@mui/material';
 import { useGetRootFolderQuery } from 'store/async/dms/repository/repositoryApi';
 import { Error } from 'ui-component/LoadHandlers';
 import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, uniqueId } from 'lodash';
@@ -19,7 +19,20 @@ import { useHandleChangeRoute, useTreeMap } from 'utils/hooks';
 import { GenericDocument } from 'global/interfaces';
 import { useSelector } from 'react-redux';
 import { StyledTreeItem } from 'components/documents/views/UI/TreeView';
-export function LeftSidebar({ root, customHandleClick }: { root?: string | null; customHandleClick?: (node: RenderTree) => void }) {
+import { BsDatabaseFill, BsFillCheckCircleFill } from 'react-icons/bs';
+export function LeftSidebar({
+    root,
+    customHandleClick,
+    selectedList,
+    standAlone
+}: {
+    root?: string | null;
+    customHandleClick?: (node: RenderTree) => void;
+    selectedList?: string[] | null;
+    standAlone?: boolean;
+}) {
+    // =========================== | Theme | ================================//
+    const theme = useTheme();
     // =========================== | States | ================================//
 
     const [data, setData] = React.useState<RenderTree | null>(null);
@@ -40,7 +53,8 @@ export function LeftSidebar({ root, customHandleClick }: { root?: string | null;
         pathname,
         handleChangeRoute: handleDocumentClick,
         is_dir: route_is_dir,
-        currentFolder
+        currentFolder,
+        rootPath
     } = useHandleChangeRoute();
 
     React.useEffect(() => {
@@ -56,7 +70,7 @@ export function LeftSidebar({ root, customHandleClick }: { root?: string | null;
     }, []);
 
     React.useEffect(() => {
-        if (typeof root === 'string') return setRootUrl(root);
+        if (standAlone === true && typeof root === 'string') return setRootUrl(root);
         if (isString(pathname) && !isEmpty(pathname)) {
             const pathArray = pathname.split('/');
             if (nth(pathArray, 1) === 'documents') {
@@ -137,10 +151,29 @@ export function LeftSidebar({ root, customHandleClick }: { root?: string | null;
                                     onMouseLeave={() => setMouseOverCaret(false)}
                                 />
                             </ButtonBase>
-                            {expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={14} /> : <MemorizedFcFolder size={14} />}
+                            {rootPath === 'categories' ? (
+                                <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                            ) : expanded.includes(nodes.id) ? (
+                                <MemorizedFcFolderOpen size={14} />
+                            ) : (
+                                <MemorizedFcFolder size={14} />
+                            )}
                         </Stack>
                     ) : nodes.is_dir ? (
-                        <MemorizedFcFolder size={14} />
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                            {rootPath === 'categories' ? (
+                                <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                            ) : (
+                                <MemorizedFcFolder size={14} />
+                            )}
+                            {standAlone === true &&
+                            Array.isArray(selectedList) &&
+                            selectedList.some((selected) => selected === nodes.id) ? (
+                                <BsFillCheckCircleFill size={11} color={theme.palette.success.main} />
+                            ) : (
+                                <></>
+                            )}
+                        </Stack>
                     ) : (
                         memorizedFileIcon({ mimeType: nodes.mimeType, size: 16, file_icon_margin: 0 })
                     )

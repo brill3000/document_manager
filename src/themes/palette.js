@@ -1,5 +1,5 @@
 // material-ui
-import { createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from '@mui/material/styles';
 
 // third-party
 import { presetPalettes } from '@ant-design/colors';
@@ -48,7 +48,7 @@ const Palette = (mode) => {
             action: {
                 disabled: paletteColor.grey[300]
             },
-            divider: paletteColor.grey[200],
+            divider: alpha(paletteColor.grey[300], 0.8),
             background: {
                 paper: paletteColor.grey[0],
                 default: paletteColor.grey.A50

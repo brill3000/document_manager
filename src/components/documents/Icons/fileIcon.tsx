@@ -1,8 +1,14 @@
 import * as React from 'react';
-import { BsFileEarmarkPdfFill, BsFillFileEarmarkImageFill, BsFillFileEarmarkTextFill, BsFillFileEarmarkZipFill } from 'react-icons/bs';
+import {
+    BsDatabaseFill,
+    BsFileEarmarkPdfFill,
+    BsFillFileEarmarkImageFill,
+    BsFillFileEarmarkTextFill,
+    BsFillFileEarmarkZipFill
+} from 'react-icons/bs';
 import { RiFileExcel2Fill, RiFilePpt2Fill, RiFileWord2Fill } from 'react-icons/ri';
 import { green } from '@mui/material/colors';
-import { darken } from '@mui/material';
+import { darken, useTheme } from '@mui/material';
 import { isNull, isUndefined } from 'lodash';
 import UnzipIcon from 'assets/images/icons/UnzipIcon';
 import EmptyTrash from 'assets/images/icons/EmptyTrash';
@@ -16,13 +22,15 @@ const MemorizedRiFileExcel2Fill = React.memo(RiFileExcel2Fill);
 const MemorizedRiFilePpt2Fill = React.memo(RiFilePpt2Fill);
 const MemorizedRiFileWord2Fill = React.memo(RiFileWord2Fill);
 const MemorizedBsFillFileEarmarkZipFill = React.memo(BsFillFileEarmarkZipFill);
+const MemorizedBsDatabaseFill = React.memo(BsDatabaseFill);
+
 export const MemorizedBsFillFileEarmarkUnZipFill = React.memo(UnzipIcon);
 export const MemorizedBsEmptyTrashFill = React.memo(EmptyTrash);
 export const MemorizedBsEmptyFolder = React.memo(EmptyFolder);
 export const MemorizedSearchIcon = React.memo(SearchIcon);
 
 export interface FileIconProps {
-    mimeType: MimeTypeConfigInterface[keyof MimeTypeConfigInterface] | undefined;
+    mimeType: (MimeTypeConfigInterface[keyof MimeTypeConfigInterface] | 'database') | undefined;
     size?: number;
     file_icon_margin?: number;
     contrast?: string | null;
@@ -33,6 +41,7 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast, dark }: F
     const dFactor = 0.3;
     const resize = 4;
     const transition = '0.15s';
+    const theme = useTheme();
     switch (mimeType) {
         case 'application/pdf':
             return (
@@ -141,7 +150,22 @@ export const fileIcon = ({ mimeType, size, file_icon_margin, contrast, dark }: F
                     }}
                 />
             );
-
+        case 'database':
+            return (
+                <MemorizedBsDatabaseFill
+                    size={size !== undefined ? (dark ? size - 2 + resize : size - 2) : 50}
+                    style={{
+                        transition: `${transition} all`,
+                        transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)',
+                        color:
+                            !isUndefined(contrast) && !isNull(contrast)
+                                ? darken(contrast, dark ? dFactor : 0)
+                                : darken(theme.palette.warning.main, dark ? dFactor : 0),
+                        marginTop: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '9px',
+                        marginBottom: file_icon_margin !== undefined && file_icon_margin !== null ? file_icon_margin : '5px'
+                    }}
+                />
+            );
         default:
             return (
                 <MemorizedBsFillFileEarmarkTextFill

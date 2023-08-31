@@ -8,7 +8,7 @@ import { useViewStore } from 'components/documents/data/global_state/slices/view
 import { useStore } from 'components/documents/data/global_state';
 import { useBrowserStore } from 'components/documents/data/global_state/slices/BrowserMock';
 import { GenericDocument } from 'global/interfaces';
-import { isEmpty, isFunction, isString, isUndefined } from 'lodash';
+import { isEmpty, isFunction, isString, isUndefined, startsWith } from 'lodash';
 import { FacebookCircularProgress } from 'ui-component/CustomProgressBars';
 import { useDragAndDropHandlers, useHandleActionMenu, useHandleClickEvents, useMemorizedDocumemtIcon } from 'utils/hooks';
 import FolderIcon from 'assets/images/icons/FolderIcon';
@@ -32,7 +32,7 @@ function GridViewItem({
     virtuoso: React.MutableRefObject<VirtuosoGridHandle | null>;
     index: number;
 }): JSX.Element {
-    const { doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc, isExtracting } = document;
+    const { uuid, doc_name, path, is_dir, mimeType, locked, isLoading, progress, newDoc, isExtracting } = document;
     const [isHovered, setIsHovered] = React.useState<boolean>(false);
     const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
     const [disableDoubleClick, setDisableDoubleClick] = React.useState<boolean>(false);
@@ -156,13 +156,26 @@ function GridViewItem({
                             }}
                             component={Box}
                             p={0}
-                            pb={1}
+                            pb={startsWith(path, '/okm:categories') ? 0 : 1}
                             m={0}
                         >
-                            <MemorizedFcFolder
-                                size={browserHeight * (isRenaming ? 0.07 : 0.095)}
-                                selected={isFocused || isOver || isHovered}
-                            />
+                            {startsWith(path, '/okm:categories') ? (
+                                memorizedFileIcon({
+                                    mimeType: 'database',
+                                    size: browserHeight * (isRenaming ? 0.06 : 0.072),
+                                    file_icon_margin: browserHeight * 0.006,
+                                    dark: isFocused || isOver || isHovered,
+                                    contrast:
+                                        !isUndefined(isLoading) && !isUndefined(progress) && !isNaN(progress)
+                                            ? theme.palette.divider
+                                            : undefined
+                                })
+                            ) : (
+                                <MemorizedFcFolder
+                                    size={browserHeight * (isRenaming ? 0.07 : 0.095)}
+                                    selected={isFocused || isOver || isHovered}
+                                />
+                            )}
                         </Box>
                         <Box
                             borderRadius={1}
@@ -425,6 +438,7 @@ function GridViewItem({
             )}
             <ActionMenu
                 is_dir={is_dir}
+                nodeId={uuid}
                 locked={locked ?? false}
                 contextMenu={contextMenu}
                 handleMenuClose={handleMenuClose}

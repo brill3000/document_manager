@@ -6,8 +6,8 @@ import { JavaCalendar } from 'global/interfaces';
  * @author brilliant
  */
 export const UriHelper = {
-    // HOST: 'http://localhost:8080/OpenKM/services/rest/',
-    HOST: 'http://ec100.stl-horizon.com:8080/OpenKM/services/rest/',
+    HOST: 'http://localhost:8080/OpenKM/services/rest/',
+    // HOST: 'http://ec100.stl-horizon.com:8080/OpenKM/services/rest/',
 
     /**
      * Auth
@@ -70,6 +70,7 @@ export const UriHelper = {
     DOCUMENT_GET_CONTENT_BY_VERSION: 'document/getContentByVersion',
     DOCUMENT_GET_CHILDREN: 'document/getChildren',
     DOCUMENT_RENAME: 'document/rename',
+    DOCUMENT_ADD_TO_CATEGORY: 'document/addToCategory',
     DOCUMENT_SET_PROPERTIES: 'document/setProperties',
     DOCUMENT_EXTRACT: 'document/unzip',
     DOCUMENT_CHECKOUT: 'document/checkout',
@@ -179,9 +180,9 @@ export const UriHelper = {
     SEARCH_FIND_PAGINATED: 'search/findPaginated',
     SEARCH_FIND_SIMPLE_QUERY_PAGINATED: 'search/findSimpleQueryPaginated',
     SEARCH_FIND_MORE_LIKE_THIS: 'search/findMoreLikeThis',
-    SEARCH_GET_CATEGORIES_FOLDERS: 'search/getCategoriesFolder',
+    SEARCH_GET_CATEGORIZED_FOLDERS: 'search/getCategorizedFolders',
     SEARCH_GET_KEYWORD_MAP: 'search/getKeywordMap',
-    SEARCH_GET_CATEGORIZED_DOCUMENTS: 'search/getCategorizedDocuments',
+    SEARCH_GET_CATEGORIZED_DOCUMENTS: 'search/getCategorizedDocument',
     SEARCH_SAVE_SEARCH: 'search/saveSearch',
     SEARCH_UPDATE_SEARCH: 'search/updateSearch',
     SEARCH_GET_SEARCH: 'search/getSearch',

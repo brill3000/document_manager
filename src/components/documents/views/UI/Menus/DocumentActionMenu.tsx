@@ -1,6 +1,5 @@
 import {
     Box,
-    Button,
     Divider,
     Fade,
     List,
@@ -30,17 +29,22 @@ import { TbCategory2 } from 'react-icons/tb';
 import { LeftSidebar } from '../../main/sidebars';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { RenderTree } from 'components/documents/Interface/FileBrowser';
+import { useAddToCategoryMutation, useLazyGetFilePropertiesQuery, useRemoveFromCategoryMutation } from 'store/async/dms/files/filesApi';
+import { enqueueSnackbar } from 'notistack';
+import { useLazyGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
+import { uniq } from 'lodash';
 
 interface ActionMenuProps {
     contextMenu: { mouseX: number; mouseY: number } | null;
     locked: boolean;
     is_dir: boolean;
     is_zip?: boolean;
+    nodeId: string | null;
     handleMenuClose: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     handleMenuClick: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: DocumentActionMenuType['type']) => void;
 }
 
-export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir, is_zip }: ActionMenuProps) => {
+export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, locked, is_dir, is_zip, nodeId }: ActionMenuProps) => {
     const [selected, setSelected] = React.useState<DocumentActionMenuType['type'] | null>(null);
     const [anchorEl, setAnchorEl] = useState<HTMLLIElement | null>(null);
     const [open, setOpen] = useState(false);
@@ -59,7 +63,7 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
     }, []);
     return (
         <>
-            <AddMenuOption open={open} anchorEl={anchorEl} />
+            <AddMenuOption open={open} anchorEl={anchorEl} uuid={nodeId} is_dir={is_dir} />
             <StyledMenu
                 id="demo-customized-menu"
                 MenuListProps={{
@@ -255,26 +259,95 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
     );
 };
 
-const AddMenuOption = ({ open, anchorEl }: { open: boolean; anchorEl: any }) => {
+const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchorEl: any; uuid: string | null; is_dir: boolean }) => {
     // ======================== | STATE | ========================= //
 
-    const [selected, setSelected] = useState<string | null>(null);
-    const [selectedFolder, setSelectedFolder] = useState<RenderTree | null>(null);
+    const [selected, setSelected] = useState<'metadata' | 'categories' | 'keyword' | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [selectedFolders, setSelectedFolders] = useState<string[] | null>(null);
+    const [addToCategory] = useAddToCategoryMutation();
+    const [removeFromCategory] = useRemoveFromCategoryMutation();
+    const [getFileInfo, fileInfo] = useLazyGetFilePropertiesQuery();
+    const [getFolderInfo, folderInfo] = useLazyGetFoldersPropertiesQuery();
+
     // ======================== | EVENTS | ========================= //
-    const handleSelectCategory = useCallback((node: RenderTree) => {
-        setSelectedFolder(node);
+    const handleSelectCategory = useCallback(async (node: RenderTree) => {
+        if (node.id === '/okm:categories') return;
+        if (uuid === null) return;
+        let isSelected;
+        const catId = node.id;
+        const nodeId = uuid;
+        setSelectedFolders((selectedFolders) => {
+            if (!Array.isArray(selectedFolders)) return [node.id];
+            isSelected = selectedFolders.some((selectedFolder) => selectedFolder === node.id);
+            if (isSelected) {
+                return [...selectedFolders?.filter((selectedFolder) => selectedFolder !== node.id)];
+            } else {
+                return [...selectedFolders, node.id];
+            }
+        });
+        try {
+            if (isSelected) {
+                await removeFromCategory({
+                    nodeId,
+                    catId
+                }).unwrap();
+                enqueueSnackbar(`Category Removed`, { variant: 'success' });
+            } else {
+                await addToCategory({
+                    nodeId,
+                    catId
+                }).unwrap();
+                enqueueSnackbar(`Category Added`, { variant: 'success' });
+            }
+        } catch (error) {
+            enqueueSnackbar(`Failed to ${isSelected === true ? 'Remove' : 'Add'} Category`, { variant: 'error' });
+        }
     }, []);
     // ======================== | EFFECTS | ========================= //
 
     useEffect(() => {
         return () => {
-            setSelectedFolder(null);
+            setSelectedFolders(null);
+            setSelected(null);
         };
     }, []);
-
     useEffect(() => {
-        console.log(selectedFolder, 'SELECTED');
-    }, [selectedFolder]);
+        if (open === false) return;
+        setSelected(null);
+        setSelectedFolders(null);
+    }, [open]);
+    useEffect(() => {
+        if (open === false) return;
+        if (is_dir === true) {
+            if (folderInfo.data === null || folderInfo.data === undefined) return;
+            const { categories: data } = folderInfo.data;
+            const categories = Array.isArray(data) ? data.map((category) => category.path) : [];
+            setSelectedFolders((selectedFolders) =>
+                Array.isArray(selectedFolders) && selectedFolders.length > 0 ? uniq([...selectedFolders, ...categories]) : [...categories]
+            );
+        } else {
+            if (fileInfo.data === null || fileInfo.data === undefined) return;
+            const { categories: data } = fileInfo.data;
+            const categories = Array.isArray(data) ? data.map((category) => category.path) : [];
+            setSelectedFolders((selectedFolders) =>
+                Array.isArray(selectedFolders) && selectedFolders.length > 0 ? uniq([...selectedFolders, ...categories]) : [...categories]
+            );
+        }
+    }, [folderInfo, fileInfo]);
+    useEffect(() => {
+        if (uuid === null) return;
+        setIsLoading(true);
+        if (is_dir) {
+            getFolderInfo({ fldId: uuid })
+                .then(() => setIsLoading(false))
+                .catch(() => setIsLoading(false));
+        } else {
+            getFileInfo({ docId: uuid })
+                .then(() => setIsLoading(false))
+                .catch(() => setIsLoading(false));
+        }
+    }, [selected, is_dir]);
 
     return (
         <Popper open={open} anchorEl={anchorEl} placement="right-start" transition sx={{ zIndex: zIndex.modal }}>
@@ -308,7 +381,7 @@ const AddMenuOption = ({ open, anchorEl }: { open: boolean; anchorEl: any }) => 
                                     </ListItemIcon>
                                     <ListItemText disableTypography primary={<Typography variant="caption">Category</Typography>} />
                                 </ListItemButton>
-                                <ListItemButton onClick={() => setSelected('categories')}>
+                                <ListItemButton onClick={() => setSelected('metadata')}>
                                     <ListItemIcon>
                                         <BsDatabaseAdd size={18} color={theme.palette.warning.dark} />
                                     </ListItemIcon>
@@ -316,15 +389,17 @@ const AddMenuOption = ({ open, anchorEl }: { open: boolean; anchorEl: any }) => 
                                 </ListItemButton>
                             </List>
                         )}
-                        {selected === 'categories' && (
+                        {selected === 'categories' && isLoading === false && (
                             <Stack p={1} width="100%" height="100%">
-                                <Typography>Select category</Typography>
-                                <Box height={200} overflow="auto">
-                                    <LeftSidebar root={UriHelper.REPOSITORY_GET_ROOT_CATEGORIES} customHandleClick={handleSelectCategory} />
+                                <Typography variant="caption">Select category</Typography>
+                                <Box height={150} overflow="auto">
+                                    <LeftSidebar
+                                        standAlone
+                                        root={UriHelper.REPOSITORY_GET_ROOT_CATEGORIES}
+                                        customHandleClick={handleSelectCategory}
+                                        selectedList={selectedFolders}
+                                    />
                                 </Box>
-                                <Button variant="contained" size="small">
-                                    Add Category
-                                </Button>
                             </Stack>
                         )}
                     </Paper>

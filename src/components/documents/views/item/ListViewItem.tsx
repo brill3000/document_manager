@@ -2,7 +2,7 @@ import React from 'react';
 import { StyledTableCell } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from './GridViewItem';
 import { Checkbox, Stack, Typography, useTheme } from '@mui/material';
-import { isEmpty, isObject, isString, isUndefined } from 'lodash';
+import { isEmpty, isObject, isString, isUndefined, startsWith } from 'lodash';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { FileIconProps, fileIcon } from '../../Icons/fileIcon';
 import { PermissionIconProps, permissionsIcon } from '../../Icons/permissionsIcon';
@@ -13,23 +13,11 @@ import { useHandleActionMenu } from 'utils/hooks';
 import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import { BsDatabaseFill } from 'react-icons/bs';
 
 export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps) {
     const theme = useTheme();
-    const {
-        doc_name,
-        path,
-        is_dir,
-        mimeType,
-        locked,
-        isLoading,
-        progress,
-        newDoc,
-        created,
-        permissions,
-        subscribed,
-        isExtracting
-    } = document;
+    const { doc_name, path, is_dir, mimeType, progress, newDoc, created, permissions, subscribed, isExtracting } = document;
 
     // ========================= | ICONS | =========================== //
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
@@ -89,7 +77,13 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
                         }}
                         sx={{ p: 0 }}
                     />
-                    {is_dir ? <MemorizedFcFolder size={16} /> : memorizedFileIcon({ mimeType: mimeType, size: 18, file_icon_margin: 0 })}
+                    {startsWith(path, '/okm:categories') ? (
+                        <BsDatabaseFill size={16} color={theme.palette.warning.main} />
+                    ) : is_dir ? (
+                        <MemorizedFcFolder size={16} />
+                    ) : (
+                        memorizedFileIcon({ mimeType: mimeType, size: 18, file_icon_margin: 0 })
+                    )}
                     {isRenaming ? (
                         <RenameDocument
                             rows={1}

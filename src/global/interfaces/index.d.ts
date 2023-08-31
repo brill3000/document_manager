@@ -1,5 +1,5 @@
 import { PermissionTypes, RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
-import { SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 export type MimeTypeConfigInterface = {
     // MIME types:> NOTE Keep on sync with default.sql
@@ -139,6 +139,9 @@ export interface FolderRequestType {
     fldId: string;
 }
 
+export interface CategoryRequestType {
+    categoryId: string;
+}
 export interface CreateDocumentProps {
     doc: Blob;
     content: string;
@@ -164,6 +167,10 @@ export interface MoveDocumentProps extends GetDocumentContentProps {
     currentId?: string;
     newPath?: string;
     oldPath?: string;
+}
+export interface AddToCategoryProps {
+    nodeId: string;
+    catId: string;
 }
 
 export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
@@ -206,6 +213,7 @@ export interface GenericDocument {
     progress?: number;
     error?: boolean;
     newDoc?: boolean;
+    categories: FileInterface[];
 }
 
 export type UploadedFileInterface = Omit<File, 'type'> & {
@@ -323,7 +331,7 @@ export interface FolderReponseInterface extends GenericDocumentResponse {
 export interface TreeMap {
     expanded: string[];
     treeMap: Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>;
-    setTreeMap: React.Dispatch<SetStateAction<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>>;
+    setTreeMap: Dispatch<SetStateAction<Map<string, GenericDocument & { children: string[]; hasChildren: boolean }>>>;
 }
 
 // =============================== | HOOKS: RETURN TYPE | ============================== //

@@ -1,6 +1,7 @@
 import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
 import {
+    CategoryRequestType,
     CreateFoldersProps,
     CreateFoldersSimpleProps,
     CreateMissingFoldersProps,
@@ -103,6 +104,42 @@ export const foldersApi = createApi({
         }),
         getFoldersChildren: build.query<{ folders: FolderInterface[] }, GetFoldersContentProps>({
             query: ({ fldId }) => ({ url: `${UriHelper.FOLDER_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
+            transformResponse: (response: { folders: FolderReponseInterface[] | FolderReponseInterface }) => {
+                const dataCopy = { ...response };
+                if (Array.isArray(dataCopy.folders)) {
+                    return {
+                        folders: (dataCopy.folders.map((fld) => {
+                            const folderCopy = { ...fld };
+                            const pathArray = fld.path.split('/');
+                            const doc_name = pathArray[pathArray.length - 1];
+                            const is_dir = true;
+                            const folderPermission: PermissionTypes = createPermissionObj({ permissionId: fld.permissions });
+
+                            return { doc_name, is_dir, ...folderCopy, permissions: folderPermission };
+                        }) as unknown) as FolderInterface[]
+                    };
+                } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
+                    const pathArray = dataCopy.folders.path.split('/');
+                    const doc_name = pathArray[pathArray.length - 1];
+                    const is_dir = true;
+                    const folderPermission: PermissionTypes = createPermissionObj({ permissionId: dataCopy.folders.permissions });
+
+                    return {
+                        folders: [({ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown) as FolderInterface]
+                    };
+                } else {
+                    return { folders: [] as FolderInterface[] };
+                }
+            },
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FOLDERS' }];
+                if (result) return [...tags, { type: 'DMS_FOLDERS_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_FOLDERS_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getCategorizedChildrenFolders: build.query<{ folders: FolderInterface[] }, CategoryRequestType>({
+            query: ({ categoryId }) => ({ url: `${UriHelper.SEARCH_GET_CATEGORIZED_FOLDERS}`, method: 'GET', params: { categoryId } }),
             transformResponse: (response: { folders: FolderReponseInterface[] | FolderReponseInterface }) => {
                 const dataCopy = { ...response };
                 if (Array.isArray(dataCopy.folders)) {
@@ -432,6 +469,17 @@ export const {
     useGetFoldersExpandedChildrenQuery,
     useIsFolderValidQuery,
     useGetFolderPathQuery,
+    useGetCategorizedChildrenFoldersQuery,
+    /**
+     * LAZY: Getters
+     */
+    useLazyGetFoldersPropertiesQuery,
+    useLazyGetFoldersContentPropsInfoQuery,
+    useLazyGetFoldersChildrenQuery,
+    useLazyGetFoldersExpandedChildrenQuery,
+    useLazyIsFolderValidQuery,
+    useLazyGetFolderPathQuery,
+    useLazyGetCategorizedChildrenFoldersQuery,
     /**
      * Mutations: POST
      */

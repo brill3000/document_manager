@@ -12,7 +12,9 @@ import {
     MoveDocumentProps,
     RenameDocumentsProps,
     FileInterface,
-    DeleteFileRequest
+    DeleteFileRequest,
+    AddToCategoryProps,
+    CategoryRequestType
 } from 'global/interfaces';
 import { isEmpty, isNull, isObject, isString, isUndefined } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
@@ -85,6 +87,47 @@ export const filesApi = createApi({
         }),
         getFolderChildrenFiles: build.query<{ documents: FileInterface[] }, FolderRequestType>({
             query: ({ fldId }) => ({ url: `${UriHelper.DOCUMENT_GET_CHILDREN}`, method: 'GET', params: { fldId } }),
+            transformResponse: (response: { documents: FileResponseInterface[] | FileResponseInterface }) => {
+                const dataCopy = { ...response };
+                if (Array.isArray(dataCopy.documents)) {
+                    return {
+                        documents: dataCopy.documents.map((doc) => {
+                            const fileCopy = { ...doc };
+                            let doc_name = '';
+                            let is_dir = false;
+                            const pathArray = doc.path.split('/');
+                            doc_name = pathArray[pathArray.length - 1];
+                            is_dir = false;
+                            const filePermission: PermissionTypes = createPermissionObj({ permissionId: doc.permissions });
+
+                            return { doc_name, is_dir, ...fileCopy, permissions: filePermission } as FileInterface;
+                        })
+                    };
+                } else if (isObject(dataCopy.documents) && !isEmpty(dataCopy.documents)) {
+                    const pathArray = dataCopy.documents.path.split('/');
+                    const doc_name = pathArray[pathArray.length - 1];
+                    const is_dir = false;
+                    const { permissions: permissionId } = dataCopy.documents;
+                    const filePermission: PermissionTypes = createPermissionObj({ permissionId });
+
+                    return { documents: [{ doc_name, is_dir, ...dataCopy.documents, permissions: filePermission } as FileInterface] };
+                } else {
+                    return { documents: [] as FileInterface[] };
+                }
+            },
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_FILES' }];
+                if (result) return [...tags, { type: 'DMS_FILES_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_FILES_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getCategorizedChildrenFiles: build.query<{ documents: FileInterface[] }, CategoryRequestType>({
+            query: ({ categoryId }) => ({
+                url: `${UriHelper.SEARCH_GET_CATEGORIZED_DOCUMENTS}`,
+                method: 'GET',
+                params: { categoryId }
+            }),
             transformResponse: (response: { documents: FileResponseInterface[] | FileResponseInterface }) => {
                 const dataCopy = { ...response };
                 if (Array.isArray(dataCopy.documents)) {
@@ -278,6 +321,96 @@ export const filesApi = createApi({
                      */
                 }
             }
+        }),
+        addToCategory: build.mutation<any, AddToCategoryProps>({
+            query: ({ nodeId, catId }) => ({
+                url: UriHelper.PROPERTY_ADD_CATEGORY,
+                method: 'POST',
+                params: { nodeId, catId }
+            }),
+            invalidatesTags: ['DMS_FILES']
+            // async onQueryStarted({ docId }, { dispatch, queryFulfilled }) {
+            //     const patchChildrenResult = dispatch(
+            //         filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+            //             const draftCopy = draft.documents.map((cachedRole) => {
+            //                 if (cachedRole.path === oldPath) {
+            //                     cachedRole['doc_name'] = newName;
+            //                     cachedRole['path'] = newPath;
+            //                 }
+            //                 return cachedRole;
+            //             });
+
+            //             Object.assign(draft.documents, draftCopy);
+            //         })
+            //     );
+            //     const patchInfoResult = dispatch(
+            //         filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
+            //             if (!isNull(draft) && draft.path === oldPath) {
+            //                 const draftCopy = { ...draft };
+            //                 draftCopy['doc_name'] = newName;
+            //                 draftCopy['path'] = newPath;
+
+            //                 Object.assign(draft, draftCopy);
+            //             }
+            //         })
+            //     );
+            //     try {
+            //         await queryFulfilled;
+            //     } catch {
+            //         patchChildrenResult.undo();
+            //         patchInfoResult.undo();
+            //         /**
+            //          * Alternatively, on failure you can invalidate the corresponding cache tags
+            //          * to trigger a re-fetch:
+            //          * dispatch(api.util.invalidateTags(['Post']))
+            //          */
+            //     }
+            // }
+        }),
+        removeFromCategory: build.mutation<any, AddToCategoryProps>({
+            query: ({ nodeId, catId }) => ({
+                url: UriHelper.PROPERTY_REMOVE_CATEGORY,
+                method: 'DELETE',
+                params: { nodeId, catId }
+            }),
+            invalidatesTags: ['DMS_FILES']
+            // async onQueryStarted({ docId }, { dispatch, queryFulfilled }) {
+            //     const patchChildrenResult = dispatch(
+            //         filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
+            //             const draftCopy = draft.documents.map((cachedRole) => {
+            //                 if (cachedRole.path === oldPath) {
+            //                     cachedRole['doc_name'] = newName;
+            //                     cachedRole['path'] = newPath;
+            //                 }
+            //                 return cachedRole;
+            //             });
+
+            //             Object.assign(draft.documents, draftCopy);
+            //         })
+            //     );
+            //     const patchInfoResult = dispatch(
+            //         filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
+            //             if (!isNull(draft) && draft.path === oldPath) {
+            //                 const draftCopy = { ...draft };
+            //                 draftCopy['doc_name'] = newName;
+            //                 draftCopy['path'] = newPath;
+
+            //                 Object.assign(draft, draftCopy);
+            //             }
+            //         })
+            //     );
+            //     try {
+            //         await queryFulfilled;
+            //     } catch {
+            //         patchChildrenResult.undo();
+            //         patchInfoResult.undo();
+            //         /**
+            //          * Alternatively, on failure you can invalidate the corresponding cache tags
+            //          * to trigger a re-fetch:
+            //          * dispatch(api.util.invalidateTags(['Post']))
+            //          */
+            //     }
+            // }
         }),
         extractFile: build.mutation<any, { docId: string; parent: string | null }>({
             query: ({ docId }) => ({
@@ -530,6 +663,21 @@ export const {
     useGetLockInfoQuery,
     useGetFilePathQuery,
     useGetFileVersionHistorySizeQuery,
+    useGetCategorizedChildrenFilesQuery,
+    /**
+     * Lazy Getters
+     */
+    useLazyGetFilePropertiesQuery,
+    useLazyGetFileContentQuery,
+    useLazyGetFileContentByVersionQuery,
+    useLazyGetFolderChildrenFilesQuery,
+    useLazyCheckoutQuery,
+    useLazyIsCheckedOutQuery,
+    useLazyGetFileVersionHistoryQuery,
+    useLazyGetLockInfoQuery,
+    useLazyGetFilePathQuery,
+    useLazyGetFileVersionHistorySizeQuery,
+    useLazyGetCategorizedChildrenFilesQuery,
     /**
      * Mutations: POST
      */
@@ -554,8 +702,10 @@ export const {
     useExtendedFileCopyMutation,
     useCreateFromTemplateMutation,
     useCopyFileMutation,
+    useAddToCategoryMutation,
     /**
      * Mutations: DELETE
      */
-    useMoveFileToTrashMutation
+    useMoveFileToTrashMutation,
+    useRemoveFromCategoryMutation
 } = filesApi;
