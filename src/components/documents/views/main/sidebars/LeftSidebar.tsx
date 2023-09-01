@@ -128,7 +128,6 @@ export function LeftSidebar({
     const renderTree = useCallback(
         (nodes: RenderTree | null) => {
             const uniqueLoaderId = uniqueId('loader');
-            console.log(selectedList, 'SELECTED');
             return nodes !== null ? (
                 <StyledTreeItem
                     key={nodes.id}
@@ -149,11 +148,9 @@ export function LeftSidebar({
                                         }
                                     }}
                                     onMouseOver={() => {
-                                        console.log('IS OVER');
                                         return setMouseOverCaret(true);
                                     }}
                                     onMouseLeave={() => {
-                                        console.log('IS LEFT');
                                         return setMouseOverCaret(false);
                                     }}
                                 >
@@ -241,7 +238,6 @@ export function LeftSidebar({
     };
 
     const handleSelect = (event: React.SyntheticEvent, nodeIds: string[] | string) => {
-        console.log(nodeIds, 'SELECT');
         standAlone !== true && handleDocumentClick(String(nodeIds), true);
         standAlone === true && typeof customHandleClick === 'function' && customHandleClick(String(nodeIds));
     };

@@ -37,6 +37,7 @@ export function OuterSidebar() {
             flexDirection="column"
             position="relative"
             bgcolor={(theme) => alpha(theme.palette.secondary.dark, 0.03)}
+            borderRight={(theme) => `1px solid ${theme.palette.divider}`}
             justifyContent="start"
             alignItems="start"
             py={2}

@@ -9,7 +9,7 @@ interface EmailContainerProps {
     browserWidth: string | number;
 }
 
-const index = ({ width, height, browserHeight, browserWidth }: EmailContainerProps) => {
+const index = ({ width, height }: EmailContainerProps) => {
     return (
         // @ts-expect-error unexpected
         <MainCard
