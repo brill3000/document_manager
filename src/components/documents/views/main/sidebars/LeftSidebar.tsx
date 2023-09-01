@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import { IconButton, Stack, useTheme } from '@mui/material';
 //icons
-import { BsDatabaseFill, BsDatabaseFillCheck, BsFillCheckCircleFill } from 'react-icons/bs';
+import { BsDatabaseFill, BsDatabaseFillCheck } from 'react-icons/bs';
 
 // LODASH
 import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, startsWith, uniqueId } from 'lodash';
@@ -151,15 +151,15 @@ export function LeftSidebar({
                                     onMouseLeave={() => {
                                         return setMouseOverCaret(false);
                                     }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        mouseOverCaret === true && handleExpandClick(nodes.id);
+                                    }}
                                     size="small"
                                     color="secondary"
                                 >
                                     <RxCaretRight
                                         size={14}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            mouseOverCaret === true && handleExpandClick(nodes.id);
-                                        }}
                                         style={{
                                             transform: expanded.includes(nodes.id) ? 'rotate(90deg)' : 'initial',
                                             transition: '.3s all',

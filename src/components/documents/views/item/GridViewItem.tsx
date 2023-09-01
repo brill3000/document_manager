@@ -442,6 +442,7 @@ function GridViewItem({
                 nodeId={uuid}
                 locked={locked ?? false}
                 contextMenu={contextMenu}
+                node_name={doc_name}
                 handleMenuClose={handleMenuClose}
                 handleMenuClick={handleMenuClick}
                 is_zip={mimeType === 'application/zip'}

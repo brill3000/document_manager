@@ -64,107 +64,98 @@ export function PermissionsDialog() {
     );
 
     return (
-        <div>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                scroll={scrollType}
-                aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
-                fullWidth
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            scroll={scrollType}
+            aria-labelledby="permission-dialog-title"
+            aria-describedby="permission-dialog-description"
+            fullWidth
+            sx={{
+                '& .MuiDialogContent-root': {
+                    minHeight: '70vh',
+                    p: 0
+                },
+                '& .MuiDialog-paper': {
+                    minHeight: '70vh'
+                }
+            }}
+        >
+            <DialogTitle
+                id="permission-dialog-title"
                 sx={{
-                    '& .MuiDialogContent-root': {
-                        minHeight: '70vh',
-                        p: 0
-                    },
-                    '& .MuiBackdrop-root': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.15)',
-                        opacity: 1,
-                        transition: 'opacity backgroundColor 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
-                    },
-                    '& .MuiDialog-paper': {
-                        minHeight: '70vh',
-                        boxShadow:
-                            '0px 11px 15px -7px rgba(0, 0, 0, 0.02),0px 24px 38px 3px rgba(0, 0, 0, 0.03),0px 9px 46px 8px rgba(0, 0, 0, 0.05)'
-                    }
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    position: 'relative'
                 }}
             >
-                <DialogTitle
-                    id="scroll-dialog-title"
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        position: 'relative'
-                    }}
+                <Typography>
+                    Permissions for{' '}
+                    {!isUndefined(fileInfo) && !isNull(fileInfo) && !fileInfoIsFetching && focused.id === fileInfo.path
+                        ? fileInfo.doc_name + ' file'
+                        : !isUndefined(folderInfo) && !isNull(folderInfo) && !folderInfoIsFetching && focused.id === folderInfo.path
+                        ? folderInfo.doc_name + ' folder'
+                        : 'Loading...'}
+                </Typography>
+                <Stack position="absolute" bottom={-0.8} right={5} width="10%" direction="row" justifyContent="flex-end" spacing={1}>
+                    {['users', 'roles'].map((t) => (
+                        <ButtonBase
+                            key={t}
+                            sx={{
+                                py: 1,
+                                px: 2,
+                                color: tab === t ? theme.palette.primary.main : theme.palette.text.primary,
+                                bgcolor: tab === t ? 'background.paper' : lighten(theme.palette.secondary.light, 0.8),
+                                fontSize: theme.typography.body2.fontSize,
+                                borderTopLeftRadius: 4,
+                                borderTopRightRadius: 4,
+                                borderTop: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
+                                borderLeft: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
+                                borderRight: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`
+                            }}
+                            onClick={() => setTab(t as 'users' | 'roles')}
+                        >
+                            {t}
+                        </ButtonBase>
+                    ))}
+                </Stack>
+            </DialogTitle>
+            {usersIsFetching || usersIsLoading || rolesIsFetching || rolesIsLoading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
+                    <LazyLoader />
+                </Box>
+            ) : usersIsError || rolesIsError ? (
+                <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
+                    <Error height={50} width={50} />
+                </Box>
+            ) : !isNull(focused.id) ? (
+                <DialogContent
+                    dividers={scrollType === 'paper'}
+                    sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                    ref={contentRef}
                 >
-                    <Typography>
-                        Permissions for{' '}
-                        {!isUndefined(fileInfo) && !isNull(fileInfo) && !fileInfoIsFetching && focused.id === fileInfo.path
-                            ? fileInfo.doc_name + ' file'
-                            : !isUndefined(folderInfo) && !isNull(folderInfo) && !folderInfoIsFetching && focused.id === folderInfo.path
-                            ? folderInfo.doc_name + ' folder'
-                            : 'Loading...'}
-                    </Typography>
-                    <Stack position="absolute" bottom={-0.8} right={5} width="10%" direction="row" justifyContent="flex-end" spacing={1}>
-                        {['users', 'roles'].map((t) => (
-                            <ButtonBase
-                                key={t}
-                                sx={{
-                                    py: 1,
-                                    px: 2,
-                                    color: tab === t ? theme.palette.primary.main : theme.palette.text.primary,
-                                    bgcolor: tab === t ? 'background.paper' : lighten(theme.palette.secondary.light, 0.8),
-                                    fontSize: theme.typography.body2.fontSize,
-                                    borderTopLeftRadius: 4,
-                                    borderTopRightRadius: 4,
-                                    borderTop: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
-                                    borderLeft: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`,
-                                    borderRight: (theme) => `1px solid ${tab === t ? theme.palette.primary.light : theme.palette.divider}`
-                                }}
-                                onClick={() => setTab(t as 'users' | 'roles')}
-                            >
-                                {t}
-                            </ButtonBase>
-                        ))}
-                    </Stack>
-                </DialogTitle>
-                {usersIsFetching || usersIsLoading || rolesIsFetching || rolesIsLoading ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
-                        <LazyLoader />
-                    </Box>
-                ) : usersIsError || rolesIsError ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" minHeight="70vh" minWidth="100%">
-                        <Error height={50} width={50} />
-                    </Box>
-                ) : !isNull(focused.id) ? (
-                    <DialogContent
-                        dividers={scrollType === 'paper'}
-                        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                        ref={contentRef}
-                    >
-                        {isArray(users) && (
-                            <Slide direction="right" in={tab === 'users'} container={contentRef.current}>
-                                <PermissionsUsersTable users={users} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'users'} />
-                            </Slide>
-                        )}
-                        {isArray(roles) && (
-                            <Slide direction="left" in={tab === 'roles'} container={contentRef.current}>
-                                <PermissionsRolesTable roles={roles} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'roles'} />
-                            </Slide>
-                        )}
-                    </DialogContent>
-                ) : (
-                    <></>
-                )}
+                    {isArray(users) && (
+                        <Slide direction="right" in={tab === 'users'} container={contentRef.current}>
+                            <PermissionsUsersTable users={users} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'users'} />
+                        </Slide>
+                    )}
+                    {isArray(roles) && (
+                        <Slide direction="left" in={tab === 'roles'} container={contentRef.current}>
+                            <PermissionsRolesTable roles={roles} nodeId={focused.id} contentRef={contentRef} isOpen={tab === 'roles'} />
+                        </Slide>
+                    )}
+                </DialogContent>
+            ) : (
+                <></>
+            )}
 
-                <DialogActions>
-                    <Button onClick={handleClose} color="error" variant="outlined" startIcon={<Close />}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+            <DialogActions>
+                <Button onClick={handleClose} color="error" variant="outlined" startIcon={<Close />}>
+                    Close
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }

@@ -7,11 +7,12 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { PermissionTypes, UserPermission } from 'components/documents/Interface/FileBrowser';
-import Dot from 'components/@extended/Dot';
-import { ButtonBase, Stack, useTheme } from '@mui/material';
+import { IconButton, Stack, useTheme } from '@mui/material';
 import { isNull, isUndefined } from 'lodash';
 import { useGrantUserMutation, useRevokeUserMutation } from 'store/async/dms/auth/authApi';
 import { Permissions } from 'utils/constants/Permissions';
+import { FaCircleCheck } from 'react-icons/fa6';
+import { IoCloseCircle } from 'react-icons/io5';
 
 interface Column {
     id: 'id' | 'name' | keyof PermissionTypes;
@@ -180,25 +181,13 @@ const PermissionsUsersTable = React.forwardRef<
                                         return (
                                             <TableCell key={column.id} align={column.align}>
                                                 {column.format && typeof value === 'boolean' ? (
-                                                    <ButtonBase
+                                                    <IconButton
                                                         // @ts-expect-error column.id is always of type PermissionTypes
                                                         onClick={() => handleChange(!value, row.id, column.id)}
-                                                        TouchRippleProps={{
-                                                            style: {
-                                                                color:
-                                                                    value === true ? theme.palette.success.main : theme.palette.error.main
-                                                            }
-                                                        }}
-                                                        sx={{
-                                                            p: 1,
-                                                            borderRadius: '50%'
-                                                        }}
+                                                        color={value === true ? 'success' : 'error'}
                                                     >
-                                                        <Dot
-                                                            size={10}
-                                                            color={value === true ? theme.palette.success.main : theme.palette.error.main}
-                                                        />
-                                                    </ButtonBase>
+                                                        {value === true ? <FaCircleCheck size={15} /> : <IoCloseCircle size={18} />}
+                                                    </IconButton>
                                                 ) : (
                                                     value
                                                 )}

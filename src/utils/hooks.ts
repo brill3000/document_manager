@@ -13,7 +13,7 @@ import {
     TreeMap,
     UseHandleActionMenuReturnType
 } from 'global/interfaces';
-import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice, startsWith } from 'lodash';
+import { first, isArray, isEmpty, isNull, isString, isUndefined, nth, slice } from 'lodash';
 import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
@@ -599,7 +599,7 @@ export const useHandleClickEvents = ({
                 contextMenu === null
                     ? {
                           mouseX: e.clientX + 2,
-                          mouseY: e.clientY - 6
+                          mouseY: e.clientY
                       }
                     : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
                       // Other native context menus might behave different.
