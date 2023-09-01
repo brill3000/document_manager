@@ -12,8 +12,9 @@ import { TbHierarchy3 } from 'react-icons/tb';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { FolderInterface } from 'global/interfaces';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
-import { isObject, isUndefined } from 'lodash';
+import { isObject, isUndefined, startsWith } from 'lodash';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
+import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 
 export function FolderDetailsList({
     splitScreen,
@@ -26,6 +27,8 @@ export function FolderDetailsList({
 }) {
     const theme = useTheme();
     const memorizedPermissionsIcon = React.useCallback((args: PermissionIconProps) => permissionsIcon({ ...args }), []);
+    const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
+
     return (
         <Stack
             spacing={2}
@@ -38,7 +41,11 @@ export function FolderDetailsList({
             }}
         >
             <Box display="flex" justifyContent="center" py={1}>
-                <MemorizedFcFolder size={browserHeight * 0.12} />
+                {startsWith(folderInfo.path, '/okm:categories') ? (
+                    memorizedFileIcon({ mimeType: 'database', size: browserHeight * 0.1, file_icon_margin: 0 })
+                ) : (
+                    <MemorizedFcFolder size={browserHeight * 0.12} />
+                )}
             </Box>
 
             <List
