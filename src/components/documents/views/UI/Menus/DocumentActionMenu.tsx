@@ -397,6 +397,7 @@ const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchor
                         {selected === 'categories' && (
                             <Stack p={1} width="100%" height="100%">
                                 <Typography variant="caption">Select category</Typography>
+                                <Divider />
                                 <Box height={150} overflow="auto">
                                     {isLoading === true && <LazyLoader align="center" width="80%" justify="center" height={20} />}
                                     {isLoading === false && (

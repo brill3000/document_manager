@@ -121,7 +121,11 @@ const Profile = () => {
                 onClick={handleToggle}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}>
+                    <Avatar
+                        variant="rounded"
+                        alt="profile user"
+                        sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
+                    >
                         {getInitials(!isError && !isNull(user) ? user : 'User')}
                     </Avatar>
                     <Typography variant="subtitle1">{!isError && !isNull(user) ? user : 'User'}</Typography>

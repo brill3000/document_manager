@@ -3,12 +3,12 @@ import { useCallback, useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { TreeView } from '@mui/x-tree-view/TreeView';
-import { ButtonBase, Stack, useTheme } from '@mui/material';
+import { IconButton, Stack, useTheme } from '@mui/material';
 //icons
-import { BsDatabaseFill, BsFillCheckCircleFill } from 'react-icons/bs';
+import { BsDatabaseFill, BsDatabaseFillCheck, BsFillCheckCircleFill } from 'react-icons/bs';
 
 // LODASH
-import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, uniqueId } from 'lodash';
+import { isArray, isEmpty, isNull, isString, isUndefined, last, nth, startsWith, uniqueId } from 'lodash';
 // RTK: QUERY
 import { RxCaretRight } from 'react-icons/rx';
 import { MemorizedFcFolder, MemorizedFcFolderOpen } from '../../item/GridViewItem';
@@ -139,13 +139,11 @@ export function LeftSidebar({
                     icon={
                         nodes.hasChildren ? (
                             <Stack direction="row" alignItems="center">
-                                <ButtonBase
+                                <IconButton
                                     sx={{
-                                        borderRadius: '50%',
-                                        color: 'secondary.main',
-                                        '& :hover': {
-                                            color: 'primary.dark'
-                                        }
+                                        p: 0,
+                                        width: 15,
+                                        height: 15
                                     }}
                                     onMouseOver={() => {
                                         return setMouseOverCaret(true);
@@ -153,6 +151,8 @@ export function LeftSidebar({
                                     onMouseLeave={() => {
                                         return setMouseOverCaret(false);
                                     }}
+                                    size="small"
+                                    color="secondary"
                                 >
                                     <RxCaretRight
                                         size={14}
@@ -166,23 +166,27 @@ export function LeftSidebar({
                                             transitionTimingFunction: 'cubic-bezier(0.25,0.1,0.25,1)'
                                         }}
                                     />
-                                </ButtonBase>
-                                {rootPath === 'categories' && <BsDatabaseFill size={14} color={theme.palette.warning.main} />}{' '}
+                                </IconButton>
+                                {(rootPath === 'categories' || startsWith(nodes.id, '/okm:categories')) &&
+                                    (Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) ? (
+                                        <BsDatabaseFillCheck size={14} color={theme.palette.success.main} />
+                                    ) : (
+                                        <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                                    ))}
                                 {rootPath !== 'categories' &&
+                                    !startsWith(nodes.id, '/okm:categories') &&
                                     (expanded.includes(nodes.id) ? <MemorizedFcFolderOpen size={14} /> : <MemorizedFcFolder size={14} />)}
-                                {Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) && (
-                                    <BsFillCheckCircleFill size={11} style={{ paddingLeft: 2 }} color={theme.palette.success.main} />
-                                )}
                             </Stack>
                         ) : nodes.is_dir ? (
                             <Stack direction="row" alignItems="center" spacing={0.5}>
-                                {rootPath === 'categories' ? (
-                                    <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                                {rootPath === 'categories' || startsWith(nodes.id, '/okm:categories') ? (
+                                    Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) ? (
+                                        <BsDatabaseFillCheck size={14} color={theme.palette.success.main} />
+                                    ) : (
+                                        <BsDatabaseFill size={14} color={theme.palette.warning.main} />
+                                    )
                                 ) : (
                                     <MemorizedFcFolder size={14} />
-                                )}
-                                {Array.isArray(selectedList) && selectedList.some((selected) => selected === nodes.id) && (
-                                    <BsFillCheckCircleFill size={11} color={theme.palette.success.main} />
                                 )}
                             </Stack>
                         ) : (
