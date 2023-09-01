@@ -561,6 +561,7 @@ export const useHandleActionMenu = ({
     };
 };
 export const useHandleClickEvents = ({
+    uuid,
     path,
     is_dir,
     doc_name,
@@ -570,6 +571,7 @@ export const useHandleClickEvents = ({
     setContextMenu,
     setRowSelected
 }: {
+    uuid: string;
     setContextMenu: Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
     setRowSelected?: Dispatch<SetStateAction<ListViewRowSelectedProps>>;
@@ -586,7 +588,7 @@ export const useHandleClickEvents = ({
     const { handleChangeRoute } = useHandleChangeRoute();
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (isCreating === true) return;
-        !isUndefined(setRowSelected) && setRowSelected({ path, is_dir, doc_name, locked, mimeType });
+        !isUndefined(setRowSelected) && setRowSelected({ uuid, path, is_dir, doc_name, locked, mimeType });
         e.stopPropagation();
         e.preventDefault();
         if (e.nativeEvent.button === 0 && path !== undefined && path !== null) {

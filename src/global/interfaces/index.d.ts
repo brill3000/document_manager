@@ -352,6 +352,7 @@ export interface FolderActionMenuType {
 }
 
 export interface ListViewRowSelectedProps {
+    uuid: string;
     path: string;
     locked?: boolean;
     doc_name: string;
