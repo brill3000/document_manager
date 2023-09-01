@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
-import { VirtuosoGrid, VirtuosoGridHandle } from 'react-virtuoso';
+import { ListRange, VirtuosoGrid, VirtuosoGridHandle } from 'react-virtuoso';
 import { GridVirtuosoContainer, GridVirtuosoItem, GridVirtuosoItemWrapper } from 'components/documents/views/UI/Grid';
 import { GenericDocument } from 'global/interfaces';
 import { useBrowserStore } from '../../../data/global_state/slices/BrowserMock';
@@ -19,6 +19,8 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
     // ================================= | STATE | ================================ //
     const [newFiles, setNewFiles] = useState<GenericDocument[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [listRange, setListRange] = useState<ListRange>({ startIndex: 0, endIndex: 0 });
+    // ================================= | REFS | ================================ //
     const virtuoso = useRef<VirtuosoGridHandle | null>(null);
 
     // ================================= | ZUSTAND | ================================ //
@@ -157,18 +159,22 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
         const timer = setTimeout(() => {
             const index = isArray(documents) ? documents.findIndex((x) => x.path === focused.id) : null;
             if (!isNull(index) && index > -1) {
+                if (index > listRange.startIndex && index < listRange.endIndex) return;
                 virtuoso?.current?.scrollToIndex({
                     index: index,
-                    align: 'center',
+                    align: 'start',
                     behavior: 'smooth'
                 });
             }
-        }, 100);
+        }, 50);
 
         return () => {
             clearTimeout(timer);
         };
     }, [focused, isLoading]);
+    const handleStateChange = ({ startIndex, endIndex }: ListRange) => {
+        setListRange({ startIndex, endIndex });
+    };
 
     return (
         <>
@@ -205,6 +211,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
                     }}
                     ref={virtuoso}
                     // isScrolling={setIsScrolling}
+                    rangeChanged={handleStateChange}
                     itemContent={(index, document) => (
                         <>
                             <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.23}>

@@ -1,4 +1,4 @@
-import { Components, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
+import { Components, ListRange, TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso';
 import { ComponentPropsWithoutRef, Ref, Suspense, forwardRef, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import Table, { TableProps } from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -27,6 +27,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const [newFiles, setNewFiles] = useState<GenericDocument[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const virtuoso = useRef<TableVirtuosoHandle | null>(null);
+    const [listRange, setListRange] = useState<ListRange>({ startIndex: 0, endIndex: 0 });
 
     const [rowSelected, setRowSelected] = useState<ListViewRowSelectedProps>({
         uuid: '',
@@ -219,9 +220,10 @@ export function VirtualizedList({ height }: { height: number }) {
         const timer = setTimeout(() => {
             const index = isArray(documents) ? documents.findIndex((x) => x.path === focused.id) : null;
             if (!isNull(index) && index > -1) {
+                if (index > listRange.startIndex && index < listRange.endIndex) return;
                 virtuoso?.current?.scrollToIndex({
                     index: index,
-                    align: 'center',
+                    align: 'start',
                     behavior: 'smooth'
                 });
             }
@@ -231,6 +233,10 @@ export function VirtualizedList({ height }: { height: number }) {
             clearTimeout(timer);
         };
     }, [focused, isLoading]);
+    // ================================ | EVENTS | ========================= //
+    const handleStateChange = ({ startIndex, endIndex }: ListRange) => {
+        setListRange({ startIndex, endIndex });
+    };
 
     return (
         <>
@@ -256,6 +262,7 @@ export function VirtualizedList({ height }: { height: number }) {
                     data={documents}
                     components={TableComponents}
                     ref={virtuoso}
+                    rangeChanged={handleStateChange}
                     fixedHeaderContent={() => (
                         <StyledTableRow sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
                             <StyledTableCell
@@ -299,6 +306,7 @@ export function VirtualizedList({ height }: { height: number }) {
             <ActionMenu
                 is_dir={rowSelected.is_dir}
                 nodeId={rowSelected.uuid}
+                node_name={rowSelected.doc_name}
                 locked={rowSelected.locked ?? false}
                 contextMenu={contextMenu}
                 handleMenuClose={handleMenuClose}
