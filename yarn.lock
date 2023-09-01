@@ -3375,6 +3375,14 @@
     "@types/d3-transition" "*"
     "@types/d3-zoom" "*"
 
+"@types/draft-js@^0.11.12":
+  version "0.11.12"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.11.12.tgz#04cc9b8c16dddca6163d91b0310c68980ab8f433"
+  integrity sha512-J/e4QYz8wCXvPpiCaiKcJrtLo65px4nnfFVZ/0EKHoKnQ4nWdzXwGHOQLIePAJM+Ho4V9/mb4Nhw4v/08y98jQ==
+  dependencies:
+    "@types/react" "*"
+    immutable "~3.7.4"
+
 "@types/eslint@^7.29.0":
   version "7.29.0"
   resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-7.29.0.tgz#e56ddc8e542815272720bb0b4ccc2aff9c3e1c78"
