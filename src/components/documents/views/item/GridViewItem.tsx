@@ -79,6 +79,7 @@ function GridViewItem({
     const { preview, isDragging, drag, drop, isOver } = useDragAndDropHandlers({ is_dir, doc_name, path });
     // ================================= | Click Events Hook | ========================== //
     const { handleClick, handleDoubleClick } = useHandleClickEvents({
+        uuid,
         path,
         is_dir,
         locked,

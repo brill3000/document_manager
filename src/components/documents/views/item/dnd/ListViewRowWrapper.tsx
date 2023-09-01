@@ -12,7 +12,7 @@ export type ListViewRowWrapperProps = TableRowProps & {
     item: GenericDocument;
     setContextParentMenu: React.Dispatch<SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     parentContextMenu: { mouseX: number; mouseY: number } | null;
-    setRowSelected: React.Dispatch<SetStateAction<{ path: string; locked?: boolean; doc_name: string; is_dir: boolean }>>;
+    setRowSelected: React.Dispatch<SetStateAction<{ uuid: string; path: string; locked?: boolean; doc_name: string; is_dir: boolean }>>;
     setDisableDoubleClick: React.Dispatch<SetStateAction<boolean>>;
     disableDoubleClick: boolean;
     // onDrop: () => void;
@@ -32,6 +32,7 @@ export const ListViewRowWrapper = React.forwardRef<HTMLTableRowElement, ListView
     });
     // ================================= | Click Events Hook | ========================== //
     const { handleClick, handleDoubleClick } = useHandleClickEvents({
+        uuid: item.uuid,
         path: item.path,
         is_dir: item.is_dir,
         doc_name: item.doc_name,

@@ -29,6 +29,7 @@ export function VirtualizedList({ height }: { height: number }) {
     const virtuoso = useRef<TableVirtuosoHandle | null>(null);
 
     const [rowSelected, setRowSelected] = useState<ListViewRowSelectedProps>({
+        uuid: '',
         path: '',
         doc_name: '',
         locked: false,
@@ -297,7 +298,7 @@ export function VirtualizedList({ height }: { height: number }) {
 
             <ActionMenu
                 is_dir={rowSelected.is_dir}
-                nodeId={rowSelected.path}
+                nodeId={rowSelected.uuid}
                 locked={rowSelected.locked ?? false}
                 contextMenu={contextMenu}
                 handleMenuClose={handleMenuClose}
