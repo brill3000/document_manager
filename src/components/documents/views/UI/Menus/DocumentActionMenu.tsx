@@ -263,7 +263,6 @@ export const ActionMenu = ({ contextMenu, handleMenuClose, handleMenuClick, lock
 
 const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchorEl: any; uuid: string | null; is_dir: boolean }) => {
     // ======================== | STATE | ========================= //
-
     const [selected, setSelected] = useState<'metadata' | 'categories' | 'keyword' | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedFolders, setSelectedFolders] = useState<string[] | null>(null);
@@ -273,40 +272,43 @@ const AddMenuOption = ({ open, anchorEl, uuid, is_dir }: { open: boolean; anchor
     const [getFolderInfo, folderInfo] = useLazyGetFoldersPropertiesQuery();
 
     // ======================== | EVENTS | ========================= //
-    const handleSelectCategory = useCallback(async (node: string) => {
-        if (node === '/okm:categories') return;
-        if (uuid === null) return;
-        let isSelected;
-        const catId = node;
-        const nodeId = uuid;
-        setSelectedFolders((selectedFolders) => {
-            if (!Array.isArray(selectedFolders)) return [node];
-            isSelected = selectedFolders.some((selectedFolder) => selectedFolder === node);
-            if (isSelected) {
-                return [...selectedFolders?.filter((selectedFolder) => selectedFolder !== node)];
-            } else {
-                return [...selectedFolders, node];
+    const handleSelectCategory = useCallback(
+        async (node: string) => {
+            if (node === '/okm:categories') return;
+            if (uuid === null) return;
+            let isSelected;
+            const catId = node;
+            const nodeId = uuid;
+            setSelectedFolders((selectedFolders) => {
+                if (!Array.isArray(selectedFolders)) return [node];
+                isSelected = selectedFolders.some((selectedFolder) => selectedFolder === node);
+                if (isSelected) {
+                    return [...selectedFolders?.filter((selectedFolder) => selectedFolder !== node)];
+                } else {
+                    return [...selectedFolders, node];
+                }
+            });
+            try {
+                if (isSelected) {
+                    await removeFromCategory({
+                        nodeId,
+                        catId
+                    }).unwrap();
+                    enqueueSnackbar(`Category Removed`, { variant: 'success' });
+                } else {
+                    console.log(nodeId, 'ID');
+                    await addToCategory({
+                        nodeId: nodeId,
+                        catId
+                    }).unwrap();
+                    enqueueSnackbar(`Category Added`, { variant: 'success' });
+                }
+            } catch (error) {
+                enqueueSnackbar(`Failed to ${isSelected === true ? 'Remove' : 'Add'} Category`, { variant: 'error' });
             }
-        });
-        console.log(catId, 'ID');
-        try {
-            if (isSelected) {
-                await removeFromCategory({
-                    nodeId,
-                    catId
-                }).unwrap();
-                enqueueSnackbar(`Category Removed`, { variant: 'success' });
-            } else {
-                await addToCategory({
-                    nodeId,
-                    catId
-                }).unwrap();
-                enqueueSnackbar(`Category Added`, { variant: 'success' });
-            }
-        } catch (error) {
-            enqueueSnackbar(`Failed to ${isSelected === true ? 'Remove' : 'Add'} Category`, { variant: 'error' });
-        }
-    }, []);
+        },
+        [uuid]
+    );
     // ======================== | EFFECTS | ========================= //
 
     useEffect(() => {
