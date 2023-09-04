@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { StyledTableCell, StyledTableRow } from 'components/documents/views/UI/Tables';
-import { Box, Checkbox, Stack, Typography, lighten, useTheme } from '@mui/material';
+import { Box, Checkbox, Stack, Typography } from '@mui/material';
 import { useLazyGetCategorizedChildrenFoldersQuery, useLazyGetFoldersChildrenQuery } from 'store/async/dms/folders/foldersApi';
 import { useBrowserStore } from '../../../data/global_state/slices/BrowserMock';
 import { isArray, isEmpty, isNull, isString, isUndefined } from 'lodash';
@@ -39,12 +39,13 @@ export function VirtualizedList({ height }: { height: number }) {
     });
     const [disableDoubleClick, setDisableDoubleClick] = useState<boolean>(false);
 
+    // ========================= | EVENTS | =========================== //
+
     const disableDoubleClickFn = (disabled: boolean) => {
         setDisableDoubleClick(disabled);
     };
 
     // ========================= | THEME | =========================== //
-    const theme = useTheme();
     // ========================= | ZUSTAND HOOKS | =========================== //
     const { quickSearchString, newFolder, uploadFiles, focused } = useBrowserStore();
 
@@ -264,13 +265,14 @@ export function VirtualizedList({ height }: { height: number }) {
                     ref={virtuoso}
                     rangeChanged={handleStateChange}
                     fixedHeaderContent={() => (
-                        <StyledTableRow sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
+                        <StyledTableRow>
                             <StyledTableCell
                                 sx={{
                                     width: 350,
                                     position: 'sticky',
                                     left: 0,
-                                    borderRight: `1px solid ${lighten(theme.palette.secondary.light, 0.2)}`
+                                    borderRight: `1px solid`,
+                                    borderColor: (theme) => theme.palette.divider
                                 }}
                             >
                                 <Stack direction="row">

@@ -214,7 +214,7 @@ export function VirtualizedGrid({ height, closeContext }: ViewsProps & { height:
                     rangeChanged={handleStateChange}
                     itemContent={(index, document) => (
                         <>
-                            <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.23}>
+                            <GridVirtuosoItemWrapper data-index={index} height={browserHeight * 0.22}>
                                 <Suspense fallback={<LazyLoader />}>
                                     <GridViewItem
                                         closeContext={closeContext}

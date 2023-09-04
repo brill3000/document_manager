@@ -79,9 +79,5 @@ export const StyledTableRow = styled(TableRow, {
                     ? lighten(theme.palette.primary.dark, 0.8)
                     : lighten(theme.palette.primary.dark, 0.9)
                 : lighten(theme.palette.secondary.light, 0.8)
-    },
-    // hide last border
-    '&:last-of-type td, &:last-of-type th': {
-        border: 0
     }
 }));
