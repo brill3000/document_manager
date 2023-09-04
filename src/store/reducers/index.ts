@@ -17,6 +17,7 @@ import { files_api } from 'store/async/dms/files/filesApi';
 import { folders_api } from 'store/async/dms/folders/foldersApi';
 import { repository_api } from 'store/async/dms/repository/repositoryApi';
 import { search_api } from 'store/async/dms/search/searchApi';
+import { notes_api } from 'store/async/dms/notes/notesApi';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -35,7 +36,8 @@ const reducers = combineReducers({
     files_api,
     folders_api,
     repository_api,
-    search_api
+    search_api,
+    notes_api
 });
 
 export default reducers;

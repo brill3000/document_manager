@@ -21,13 +21,12 @@ import { MemorizedBsFillFileEarmarkUnZipFill } from 'components/documents/Icons/
 import { RiFileWarningLine, RiFolderWarningLine } from 'react-icons/ri';
 import zIndex from '@mui/material/styles/zIndex';
 // ICONS
-import { MdSecurity } from 'react-icons/md';
+import { MdOutlinePostAdd, MdSecurity } from 'react-icons/md';
 import { CiEdit, CiEraser } from 'react-icons/ci';
-import { BsCaretLeft, BsCaretRight, BsDatabaseAdd, BsFolderPlus, BsGear, BsKey, BsTrash } from 'react-icons/bs';
+import { BsCaretLeftFill, BsCaretRightFill, BsDatabaseAdd, BsFolderPlus, BsGear, BsKey, BsTrash } from 'react-icons/bs';
 import { IoMdCopy } from 'react-icons/io';
 import { IoCutOutline } from 'react-icons/io5';
 import { TbCategory2 } from 'react-icons/tb';
-import { CiStickyNote } from 'react-icons/ci';
 
 // INTERFACES
 import { DocumentActionMenuType } from 'global/interfaces';
@@ -105,7 +104,13 @@ export const ActionMenu = ({
              * SUBMENU ITEMS
              * */}
             <AddMenuOption open={open} anchorEl={anchorEl} handleSelectedSubMenu={handleSelectedSubMenu} />
-            <SubmenuDialog selected={openDialog} handleClose={handleCloseSubmenuDialog} uuid={nodeId} is_dir={is_dir} />
+            <SubmenuDialog
+                selected={openDialog}
+                handleClose={handleCloseSubmenuDialog}
+                uuid={nodeId}
+                is_dir={is_dir}
+                node_name={node_name}
+            />
             {/**
              * MAIN MENU
              * */}
@@ -256,15 +261,15 @@ export const ActionMenu = ({
                         borderRadius={1}
                     >
                         <Stack spacing={1} width="max-content" direction="row">
-                            <BsGear size={18} color={theme.palette.warning.dark} />
+                            <BsGear size={17} color={theme.palette.warning.main} />
                             <Typography variant="caption" fontSize={12} color={(theme) => theme.palette.text.primary} noWrap>
                                 Add
                             </Typography>
                         </Stack>
                         {open === true ? (
-                            <BsCaretLeft color={theme.palette.primary.main} />
+                            <BsCaretLeftFill color={theme.palette.warning.main} />
                         ) : (
-                            <BsCaretRight color={theme.palette.primary.main} />
+                            <BsCaretRightFill color={theme.palette.warning.main} />
                         )}
                     </Stack>
                 </MenuItem>
@@ -367,7 +372,7 @@ const AddMenuOption = memo(
                                 <List disablePadding>
                                     <ListItemButton onClick={() => setSelected('note')}>
                                         <ListItemIcon>
-                                            <CiStickyNote size={18} color={theme.palette.warning.dark} />
+                                            <MdOutlinePostAdd size={18} color={theme.palette.warning.dark} />
                                         </ListItemIcon>
                                         <ListItemText disableTypography primary={<Typography variant="caption">Note</Typography>} />
                                     </ListItemButton>
@@ -403,12 +408,14 @@ const SubmenuDialog = memo(
         selected,
         handleClose,
         uuid,
-        is_dir
+        is_dir,
+        node_name
     }: {
         selected: string | null;
         handleClose: () => void;
         uuid: string | null;
         is_dir: boolean;
+        node_name?: string;
     }) => {
         // ======================== | STATE | ========================= //
         const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -535,8 +542,8 @@ const SubmenuDialog = memo(
                     <Stack p={1} width="100%" height="100%">
                         <Typography variant="caption">Create note</Typography>
                         <Divider />
-                        <Box minHeight={300} maxHeight={600} minWidth={300} maxWidth={400} overflow="auto" py={1}>
-                            <NoteTaker />
+                        <Box minHeight={300} maxHeight={600} minWidth={350} maxWidth={400} overflow="auto" py={1}>
+                            <NoteTaker nodeId={uuid} node_name={node_name} onClose={() => handleClose()} />
                         </Box>
                     </Stack>
                 )}

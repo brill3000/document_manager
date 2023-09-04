@@ -52,12 +52,12 @@ export function FileViewerDialog({ filePath }: { filePath: string }) {
                     top: 100,
                     left: '33%',
                     overflow: 'hidden',
-                    borderColor: theme.palette.common.white,
-                    borderWidth: 1.5,
+                    borderColor: theme.palette.divider,
+                    borderWidth: 1,
                     borderStyle: 'solid',
-                    boxShadow: `inset 0 0 4px ${alpha(theme.palette.common.black, 0.05)}, 0 0 20px ${alpha(
+                    boxShadow: `inset 0 0 4px ${alpha(theme.palette.common.black, 0.09)}, 0 0 20px ${alpha(
                         theme.palette.common.black,
-                        0.11
+                        0.15
                     )} `,
                     zIndex: zIndex.modal + (isHovered ? 2 : 1),
                     resize: 'both'
@@ -67,9 +67,9 @@ export function FileViewerDialog({ filePath }: { filePath: string }) {
                 ref={ref}
             >
                 <Box width="100%" height="100%" position="relative">
-                    <Box className="handle" sx={{ top: 0, left: 0, width: 'max-content', position: 'absolute' }}>
-                        <IconButton color="warning" sx={{ borderRadius: 1 }}>
-                            <PiHandGrabbingFill size={23} />
+                    <Box className="handle" sx={{ top: 0, left: 0, width: 'max-content', position: 'absolute' }} p={0.5}>
+                        <IconButton color="info" sx={{ borderRadius: 1, border: 1, p: 0, width: 20, height: 20 }} size="small">
+                            <PiHandGrabbingFill size={20} />
                         </IconButton>
                     </Box>
                     <Stack width="100%" height="100%">

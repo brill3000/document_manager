@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Divider, ListItemButton, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
 import { MemorizedFcFolder } from '../../../item/GridViewItem';
 import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
@@ -15,6 +15,7 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { isObject, isUndefined, startsWith } from 'lodash';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
+import { GrowingTypography } from 'components/documents/views/UI';
 
 export function FolderDetailsList({
     splitScreen,
@@ -140,6 +141,24 @@ export function FolderDetailsList({
                                     </ListItem>
                                 );
                             })}
+                    </ul>
+                </li>
+                <li>
+                    <ul
+                        style={{
+                            minHeight: 'max-content',
+                            padding: 0
+                        }}
+                    >
+                        <ListSubheader color="primary">Notes</ListSubheader>
+                        <Divider variant="middle">
+                            <Typography fontSize={10}>notes</Typography>
+                        </Divider>
+                        {folderInfo.notes.map((note) => (
+                            <ListItemButton>
+                                <ListItemText secondary={<GrowingTypography variant="caption">{note.text}</GrowingTypography>} />
+                            </ListItemButton>
+                        ))}
                     </ul>
                 </li>
                 <li>

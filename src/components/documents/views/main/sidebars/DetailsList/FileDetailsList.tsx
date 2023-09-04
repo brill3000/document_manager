@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Badge, Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
+import { Badge, Box, Divider, ListItemButton, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
 import { BsCalendar2Check, BsFilePerson, BsLockFill } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
@@ -15,6 +15,7 @@ import { getDateFromObject } from 'utils/constants/UriHelper';
 import { isObject, isUndefined } from 'lodash';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
+import { GrowingTypography } from 'components/documents/views/UI';
 
 export function FileDetailsList({
     splitScreen,
@@ -160,6 +161,24 @@ export function FileDetailsList({
                             </ListItemIcon>
                             <ListItemText secondary={<span>{fileInfo.signed ? 'Yes' : 'No'}</span>} sx={{ width: '90%' }} />
                         </ListItem>
+                    </ul>
+                </li>
+                <li>
+                    <ul
+                        style={{
+                            minHeight: 'max-content',
+                            padding: 0
+                        }}
+                    >
+                        <ListSubheader color="primary">Notes</ListSubheader>
+                        <Divider variant="middle">
+                            <Typography fontSize={10}>notes</Typography>
+                        </Divider>
+                        {fileInfo.notes.map((note) => (
+                            <ListItemButton>
+                                <ListItemText secondary={<GrowingTypography variant="caption">{note.text}</GrowingTypography>} />
+                            </ListItemButton>
+                        ))}
                     </ul>
                 </li>
                 <li>

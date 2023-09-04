@@ -31,6 +31,7 @@ import { filesApi } from 'store/async/dms/files/filesApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { repositoryApi } from 'store/async/dms/repository/repositoryApi';
 import { searchApi } from 'store/async/dms/search/searchApi';
+import { notesApi } from './async/dms/notes/notesApi';
 
 export const store = configureStore({
     reducer: reducers,
@@ -48,6 +49,7 @@ export const store = configureStore({
             .concat(foldersApi.middleware)
             .concat(repositoryApi.middleware)
             .concat(searchApi.middleware)
+            .concat(notesApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

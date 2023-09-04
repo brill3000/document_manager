@@ -172,6 +172,17 @@ export interface AddToCategoryProps {
     nodeId: string;
     catId: string;
 }
+export interface AddToNoteProps {
+    nodeId: string;
+    text: string;
+}
+
+export interface INote {
+    date: JavaCalendar;
+    author: string;
+    text: string;
+    path: string;
+}
 
 export interface ExtendeCopyDocumentsProps extends MoveDocumentProps {
     name: string;
@@ -214,6 +225,7 @@ export interface GenericDocument {
     error?: boolean;
     newDoc?: boolean;
     categories: FileInterface[];
+    notes: INote[];
 }
 
 export type UploadedFileInterface = Omit<File, 'type'> & {
