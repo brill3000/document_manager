@@ -15,7 +15,7 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { isObject, isUndefined, startsWith } from 'lodash';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
-import { GrowingTypography } from 'components/documents/views/UI';
+import { NoteDisplay } from 'components/documents/views/UI/notes';
 
 export function FolderDetailsList({
     splitScreen,
@@ -154,11 +154,12 @@ export function FolderDetailsList({
                         <Divider variant="middle">
                             <Typography fontSize={10}>notes</Typography>
                         </Divider>
-                        {folderInfo.notes.map((note) => (
-                            <ListItemButton>
-                                <ListItemText secondary={<GrowingTypography variant="caption">{note.text}</GrowingTypography>} />
-                            </ListItemButton>
-                        ))}
+                        {Array.isArray(folderInfo.notes) &&
+                            folderInfo.notes.map((note) => (
+                                <ListItemButton key={note.path}>
+                                    <NoteDisplay note={note} />
+                                </ListItemButton>
+                            ))}
                     </ul>
                 </li>
                 <li>

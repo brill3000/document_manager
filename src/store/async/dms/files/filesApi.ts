@@ -21,6 +21,7 @@ import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { axiosBaseQuery, createPermissionObj } from 'utils/hooks';
 import { foldersApi } from '../folders/foldersApi';
+import { decodeHtmlEntity } from 'utils';
 type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR' | 'DMS_FILE_INFO' | 'DMS_FILE_INFO_SUCCESS' | 'DMS_FILE_INFO_ERROR';
 
 export const filesApi = createApi({
@@ -39,10 +40,11 @@ export const filesApi = createApi({
                 let is_dir = false;
                 if (isObject(fileCopy) && !isEmpty(fileCopy)) {
                     const pathArray = fileCopy.path.split('/');
+                    const notes = fileCopy.notes.map((note) => ({ ...note, text: decodeHtmlEntity(note.text) }));
                     doc_name = pathArray[pathArray.length - 1];
                     is_dir = true;
                     const filePermission: PermissionTypes = createPermissionObj({ permissionId: fileCopy.permissions });
-                    return { ...fileCopy, permissions: filePermission, doc_name, is_dir } as FileInterface;
+                    return { ...fileCopy, permissions: filePermission, doc_name, is_dir, notes } as FileInterface;
                 } else {
                     return null;
                 }

@@ -316,6 +316,10 @@ export interface GenericDocumentResponse {
     title: string;
     uuid: string;
     created: JavaCalendar;
+    subscriptors: any[];
+    keywords: any[];
+    categories: FileInterface[];
+    notes: INote[];
 }
 export interface FileResponseInterface extends GenericDocumentResponse {
     actualVersion: ActualVersionType;
@@ -332,10 +336,6 @@ export interface FileResponseInterface extends GenericDocumentResponse {
 }
 export interface FolderReponseInterface extends GenericDocumentResponse {
     hasChildren: boolean;
-    subscriptors: Array<any>;
-    keywords: Array<any>;
-    categories: Array<any>;
-    notes: Array<any>;
 }
 
 // =============================== | Treeview | ============================== //

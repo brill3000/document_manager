@@ -22,12 +22,17 @@ import { LiaTextWidthSolid } from 'react-icons/lia';
 import { IoClose } from 'react-icons/io5';
 import { MdOutlineAdd } from 'react-icons/md';
 // MUI
-import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Box, ButtonBase, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 // RTK QUERY
 import { useAddNoteMutation } from 'store/async/dms/notes/notesApi';
 import { enqueueSnackbar } from 'notistack';
+import { Interweave } from 'interweave';
+import { isString } from 'lodash';
+import { INote } from 'global/interfaces';
+import { getDateFromObject } from 'utils/constants/UriHelper';
+import { stripHtmlTags } from 'utils';
 
 interface IToolbarItem {
     label: string;
@@ -350,4 +355,31 @@ export const Toolbar = ({ editorState, setEditorState }: { editorState: any; set
     );
 };
 
-export default Toolbar;
+export const NoteDisplay = ({ note }: { note: INote }) => {
+    return (
+        <Box
+            component={ButtonBase}
+            p={1}
+            width="100%"
+            height="max-content"
+            fontSize={(theme) => theme.typography.caption.fontSize}
+            display="flex"
+            alignItems="start"
+            color={(theme) => theme.palette.info.contrastText}
+            bgcolor="warning.main"
+            borderRadius={1}
+            flexDirection="column"
+        >
+            <Typography component={Box} variant="caption" noWrap sx={{ width: '100%', textAlign: 'start' }}>
+                <u>{stripHtmlTags(note.text)}</u>
+            </Typography>
+            <Box width="max-content">
+                <Interweave content={isString(note.text) ? note.text : ''} />
+            </Box>
+            <Stack width="100%" direction="row" justifyContent="space-between">
+                <Typography variant="caption">{note.author}</Typography>
+                <Typography variant="caption">{getDateFromObject(note.date).toLocaleString()}</Typography>
+            </Stack>
+        </Box>
+    );
+};

@@ -2,6 +2,8 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { AddToNoteProps } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { axiosBaseQuery } from 'utils/hooks';
+import { filesApi } from '../files/filesApi';
+import { encodeHtmlEntity } from 'utils';
 
 export const notesApi = createApi({
     reducerPath: 'notes_api',
@@ -17,46 +19,23 @@ export const notesApi = createApi({
                 url: UriHelper.NOTE_ADD,
                 method: 'POST',
                 params: { nodeId },
-                data: { text }
+                data: { text: encodeHtmlEntity(text) }
             }),
-            invalidatesTags: ['DMS_NOTES']
-            // async onQueryStarted({ docId }, { dispatch, queryFulfilled }) {
-            //     const patchChildrenResult = dispatch(
-            //         filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
-            //             const draftCopy = draft.documents.map((cachedRole) => {
-            //                 if (cachedRole.path === oldPath) {
-            //                     cachedRole['doc_name'] = newName;
-            //                     cachedRole['path'] = newPath;
-            //                 }
-            //                 return cachedRole;
-            //             });
-
-            //             Object.assign(draft.documents, draftCopy);
-            //         })
-            //     );
-            //     const patchInfoResult = dispatch(
-            //         filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
-            //             if (!isNull(draft) && draft.path === oldPath) {
-            //                 const draftCopy = { ...draft };
-            //                 draftCopy['doc_name'] = newName;
-            //                 draftCopy['path'] = newPath;
-
-            //                 Object.assign(draft, draftCopy);
-            //             }
-            //         })
-            //     );
-            //     try {
-            //         await queryFulfilled;
-            //     } catch {
-            //         patchChildrenResult.undo();
-            //         patchInfoResult.undo();
-            //         /**
-            //          * Alternatively, on failure you can invalidate the corresponding cache tags
-            //          * to trigger a re-fetch:
-            //          * dispatch(api.util.invalidateTags(['Post']))
-            //          */
-            //     }
-            // }
+            invalidatesTags: ['DMS_NOTES'],
+            async onQueryStarted({ nodeId }, { dispatch, queryFulfilled }) {
+                dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
+                try {
+                    await queryFulfilled;
+                } catch {
+                    // patchChildrenResult.undo();
+                    // patchInfoResult.undo();
+                    /**
+                     * Alternatively, on failure you can invalidate the corresponding cache tags
+                     * to trigger a re-fetch:
+                     * dispatch(api.util.invalidateTags(['Post']))
+                     */
+                }
+            }
         }),
         deleteNote: build.mutation<any, { nodeId: string }>({
             query: ({ nodeId }) => ({
