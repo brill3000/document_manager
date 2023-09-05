@@ -16,7 +16,7 @@ import {
     AddToCategoryProps,
     CategoryRequestType
 } from 'global/interfaces';
-import { isEmpty, isNull, isObject, isString, isUndefined } from 'lodash';
+import { isEmpty, isNull, isObject, isString, isUndefined, last } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { axiosBaseQuery, createPermissionObj } from 'utils/hooks';
@@ -39,12 +39,13 @@ export const filesApi = createApi({
                 let doc_name = '';
                 let is_dir = false;
                 if (isObject(fileCopy) && !isEmpty(fileCopy)) {
-                    const pathArray = fileCopy.path.split('/');
+                    doc_name = last(fileCopy.path.split('/')) ?? '';
                     const notes = fileCopy.notes.map((note) => ({ ...note, text: decodeHtmlEntity(note.text) }));
-                    doc_name = pathArray[pathArray.length - 1];
-                    is_dir = true;
+                    const categories = fileCopy.categories.map((category) => ({ ...category, doc_name: last(category.path.split('/')) }));
+
+                    is_dir = false;
                     const filePermission: PermissionTypes = createPermissionObj({ permissionId: fileCopy.permissions });
-                    return { ...fileCopy, permissions: filePermission, doc_name, is_dir, notes } as FileInterface;
+                    return { ...fileCopy, permissions: filePermission, doc_name, is_dir, notes, categories } as FileInterface;
                 } else {
                     return null;
                 }

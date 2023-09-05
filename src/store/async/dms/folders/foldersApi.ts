@@ -14,11 +14,12 @@ import {
     RenameFoldersProps,
     SetFoldersPropertiesProps
 } from 'global/interfaces';
-import { isObject, isEmpty, isNull, isUndefined } from 'lodash';
+import { isObject, isEmpty, isNull, isUndefined, last } from 'lodash';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { createPermissionObj } from 'utils/hooks';
+import { decodeHtmlEntity } from 'utils';
 type UserTags =
     | 'DMS_FOLDERS'
     | 'DMS_FOLDERS_SUCCESS'
@@ -76,12 +77,14 @@ export const foldersApi = createApi({
                 if (isObject(folderCopy) && !isEmpty(folderCopy)) {
                     let doc_name = '';
                     let is_dir = false;
-                    const pathArray = folderCopy.path.split('/');
-                    doc_name = pathArray[pathArray.length - 1];
+                    doc_name = last(folderCopy.path.split('/')) ?? '';
+                    const notes = folderCopy.notes.map((note) => ({ ...note, text: decodeHtmlEntity(note.text) }));
+                    const categories = folderCopy.categories.map((category) => ({ ...category, doc_name: last(category.path.split('/')) }));
                     is_dir = true;
+
                     const folderPermission: PermissionTypes = createPermissionObj({ permissionId: folderCopy.permissions });
 
-                    return { doc_name, is_dir, ...folderCopy, permissions: folderPermission } as FolderInterface;
+                    return { doc_name, is_dir, ...folderCopy, permissions: folderPermission, notes, categories } as FolderInterface;
                 } else {
                     return null;
                 }

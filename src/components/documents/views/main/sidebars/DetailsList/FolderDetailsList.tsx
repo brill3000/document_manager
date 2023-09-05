@@ -3,16 +3,16 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
-import { Box, Divider, ListItemButton, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
 import { MemorizedFcFolder } from '../../../item/GridViewItem';
-import { BsCalendar2Check, BsFilePerson } from 'react-icons/bs';
+import { BsCalendar2Check, BsDatabase, BsFilePerson } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { FolderInterface } from 'global/interfaces';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
-import { isObject, isUndefined, startsWith } from 'lodash';
+import { isEmpty, isObject, isUndefined, startsWith } from 'lodash';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { NoteDisplay } from 'components/documents/views/UI/notes';
@@ -156,10 +156,42 @@ export function FolderDetailsList({
                         </Divider>
                         {Array.isArray(folderInfo.notes) &&
                             folderInfo.notes.map((note) => (
-                                <ListItemButton key={note.path}>
+                                <ListItem key={note.path}>
                                     <NoteDisplay note={note} />
-                                </ListItemButton>
+                                </ListItem>
                             ))}
+                        {isEmpty(folderInfo.notes) && (
+                            <ListItem>
+                                <ListItemText secondary="no notes found" />
+                            </ListItem>
+                        )}
+                    </ul>
+                </li>
+                <li>
+                    <ul
+                        style={{
+                            minHeight: 'max-content',
+                            padding: 0
+                        }}
+                    >
+                        <ListSubheader color="primary">Categories</ListSubheader>
+                        <Divider variant="middle">
+                            <Typography fontSize={10}>categories</Typography>
+                        </Divider>
+                        {Array.isArray(folderInfo.categories) &&
+                            folderInfo.categories.map((category) => (
+                                <ListItem key={category.uuid}>
+                                    <ListItemIcon>
+                                        <BsDatabase />
+                                    </ListItemIcon>
+                                    <ListItemText secondary={category.doc_name} />
+                                </ListItem>
+                            ))}
+                        {isEmpty(folderInfo.categories) && (
+                            <ListItem>
+                                <ListItemText secondary="no categories found" />
+                            </ListItem>
+                        )}
                     </ul>
                 </li>
                 <li>

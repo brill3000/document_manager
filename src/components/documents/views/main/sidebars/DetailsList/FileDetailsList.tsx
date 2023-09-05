@@ -5,14 +5,14 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import { Badge, Box, Divider, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import { FiEdit } from 'react-icons/fi';
-import { BsCalendar2Check, BsFilePerson, BsLockFill } from 'react-icons/bs';
+import { BsCalendar2Check, BsDatabase, BsFilePerson, BsLockFill } from 'react-icons/bs';
 import { SiAuth0 } from 'react-icons/si';
 import { TbHierarchy3 } from 'react-icons/tb';
 import { FileIconProps, fileIcon } from 'components/documents/Icons/fileIcon';
 import { FileInterface } from 'global/interfaces';
 import { orange } from '@mui/material/colors';
 import { getDateFromObject } from 'utils/constants/UriHelper';
-import { isObject, isUndefined } from 'lodash';
+import { isEmpty, isObject, isUndefined } from 'lodash';
 import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { PermissionIconProps, permissionsIcon } from 'components/documents/Icons/permissionsIcon';
 import { NoteDisplay } from 'components/documents/views/UI/notes';
@@ -180,6 +180,38 @@ export function FileDetailsList({
                                     <NoteDisplay note={note} />
                                 </ListItem>
                             ))}
+                        {isEmpty(fileInfo.notes) && (
+                            <ListItem>
+                                <ListItemText secondary="no notes found" />
+                            </ListItem>
+                        )}
+                    </ul>
+                </li>
+                <li>
+                    <ul
+                        style={{
+                            minHeight: 'max-content',
+                            padding: 0
+                        }}
+                    >
+                        <ListSubheader color="primary">Categories</ListSubheader>
+                        <Divider variant="middle">
+                            <Typography fontSize={10}>categories</Typography>
+                        </Divider>
+                        {Array.isArray(fileInfo.categories) &&
+                            fileInfo.categories.map((category) => (
+                                <ListItem key={category.uuid}>
+                                    <ListItemText secondary={category.doc_name} />
+                                </ListItem>
+                            ))}
+                        {isEmpty(fileInfo.categories) && (
+                            <ListItem>
+                                <ListItemIcon>
+                                    <BsDatabase />
+                                </ListItemIcon>
+                                <ListItemText secondary="no categories found" />
+                            </ListItem>
+                        )}
                     </ul>
                 </li>
                 <li>
