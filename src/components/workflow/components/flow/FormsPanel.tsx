@@ -11,32 +11,22 @@ import { Formik } from 'formik';
 import { FormikText } from 'global/UI/FormMUI/Components';
 import { uuidv4 } from '@firebase/util';
 import { FormsCard } from './CreateFlow';
+import { INewFormTitle } from 'global/interfaces';
 
-export function FormsPanel(
-    newFormTitle: string,
-    handleNewFormTitleChange: React.ChangeEventHandler<HTMLInputElement>,
-    openEditIndex: { input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean },
-    setOpenEditIndex: React.Dispatch<
-        React.SetStateAction<{ input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean }>
-    >,
-    setEditDetails: React.Dispatch<React.SetStateAction<Array<any>>>,
-    addFormComponent: (
-        type: string,
-        label: string,
-        uid: string,
-        placeholder?: string,
-        minRows?: number,
-        isRequired?: boolean | string,
-        initialValue?: string,
-        defaultChecked?: boolean
-    ) => void,
-    formComponents: any[],
-    savedForms: any[],
-    setSavedForms: React.Dispatch<React.SetStateAction<any[]>>,
-    setFormComponents: React.Dispatch<React.SetStateAction<any[]>>,
-    setNewFormTitle: React.Dispatch<React.SetStateAction<string>>,
-    editDetails: any
-) {
+export function FormsPanel({
+    newFormTitle,
+    handleNewFormTitleChange,
+    openEditIndex,
+    setOpenEditIndex,
+    setEditDetails,
+    addFormComponent,
+    formComponents,
+    savedForms,
+    setSavedForms,
+    setFormComponents,
+    setNewFormTitle,
+    editDetails
+}: INewFormTitle) {
     return (
         <TabPanel value={0}>
             <Grid container direction="row" sx={{ height: '600px' }}>

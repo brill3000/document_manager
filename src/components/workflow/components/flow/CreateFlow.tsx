@@ -30,6 +30,7 @@ import { Error, GoogleLoader } from 'ui-component/LoadHandlers';
 import { FlowTabList } from './FlowTabList';
 import { FormsPanel } from './FormsPanel';
 import TestFlow from './flowTest/testFlow';
+import { IWorkflowPanelProps } from 'global/interfaces';
 
 export function FormsCard({
     title,
@@ -105,7 +106,6 @@ export default function CreateFlow() {
     const [edges, setEdges] = useEdgesState([]);
     const { enqueueSnackbar } = useSnackbar();
     const [isSending, setIsSending] = React.useState<boolean>(false);
-    const workflowQuery = useGetSavedWorkflowsQuery(null);
 
     const onAdd = React.useCallback(
         (title: string, actions?: { type: string; action: string }) => {
@@ -367,35 +367,36 @@ export default function CreateFlow() {
                             py: 2
                         })}
                     >
-                        {FormsPanel(
-                            newFormTitle,
-                            handleNewFormTitleChange,
-                            openEditIndex,
-                            setOpenEditIndex,
-                            setEditDetails,
-                            addFormComponent,
-                            formComponents,
-                            savedForms,
-                            setSavedForms,
-                            setFormComponents,
-                            setNewFormTitle,
-                            editDetails
-                        )}
-                        {WorkflowPanel(
-                            isSending,
-                            setIsSending,
-                            createFlow,
-                            user,
-                            nodes,
-                            edges,
-                            enqueueSnackbar,
-                            openForm,
-                            setOpenForm,
-                            onAdd,
-                            setNodes,
-                            setEdges,
+                        <FormsPanel
+                            newFormTitle={newFormTitle}
+                            handleNewFormTitleChange={handleNewFormTitleChange}
+                            openEditIndex={openEditIndex}
+                            setOpenEditIndex={setOpenEditIndex}
+                            setEditDetails={setEditDetails}
+                            addFormComponent={addFormComponent}
+                            formComponents={formComponents}
+                            savedForms={savedForms}
+                            setSavedForms={setSavedForms}
+                            setFormComponents={setFormComponents}
+                            setNewFormTitle={setNewFormTitle}
+                            editDetails={editDetails}
+                        />
+
+                        <WorkflowPanel
+                            isSending={isSending}
+                            setIsSending={setIsSending}
+                            createFlow={createFlow}
+                            user={user}
+                            nodes={nodes}
+                            edges={edges}
+                            enqueueSnackbar={enqueueSnackbar}
+                            openForm={openForm}
+                            setOpenForm={setOpenForm}
+                            onAdd={onAdd}
+                            setNodes={setNodes}
+                            setEdges={setEdges}
                             workflowQuery
-                        )}
+                        />
                         <TabPanel value={2} sx={{ height: '600px' }}>
                             <Box sx={{ height: '600px' }}>
                                 <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
@@ -410,21 +411,21 @@ export default function CreateFlow() {
     );
 }
 
-function WorkflowPanel(
-    isSending: boolean,
-    setIsSending: React.Dispatch<React.SetStateAction<boolean>>,
-    createFlow: any,
-    user: any,
-    nodes: Array<any>,
-    edges: Array<any>,
-    enqueueSnackbar: any,
-    openForm: boolean,
-    setOpenForm: React.Dispatch<React.SetStateAction<boolean>>,
-    onAdd: (title: string, actions?: { type: string; action: string }) => void,
-    setNodes: any,
-    setEdges: any,
-    workflowQuery: any
-) {
+const WorkflowPanel = ({
+    isSending,
+    setIsSending,
+    createFlow,
+    user,
+    nodes,
+    edges,
+    enqueueSnackbar,
+    openForm,
+    setOpenForm,
+    onAdd,
+    setNodes,
+    setEdges,
+    workflowQuery
+}: IWorkflowPanelProps) => {
     return (
         <TabPanel value={1} sx={{ height: '600px' }}>
             <Grid container direction="row" sx={{ height: '600px' }}>
@@ -563,4 +564,4 @@ function WorkflowPanel(
             </Grid>
         </TabPanel>
     );
-}
+};

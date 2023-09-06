@@ -91,6 +91,47 @@ export interface IRunWorkflowRequest {
     uuid: string;
     values: IFormElementsComplex[];
 }
+
+export interface IWorkflowPanelProps {
+    isSending: boolean;
+    setIsSending: React.Dispatch<React.SetStateAction<boolean>>;
+    createFlow: any;
+    user: any;
+    nodes: Array<any>;
+    edges: Array<any>;
+    enqueueSnackbar: any;
+    openForm: boolean;
+    setOpenForm: React.Dispatch<React.SetStateAction<boolean>>;
+    onAdd: (title: string, actions?: { type: string; action: string }) => void;
+    setNodes: any;
+    setEdges: any;
+    workflowQuery: any;
+}
+export interface INewFormTitle {
+    newFormTitle: string;
+    handleNewFormTitleChange: React.ChangeEventHandler<HTMLInputElement>;
+    openEditIndex: { input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean };
+    setOpenEditIndex: React.Dispatch<
+        React.SetStateAction<{ input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean }>
+    >;
+    setEditDetails: React.Dispatch<React.SetStateAction<Array<any>>>;
+    addFormComponent: (
+        type: string,
+        label: string,
+        uid: string,
+        placeholder?: string,
+        minRows?: number,
+        isRequired?: boolean | string,
+        initialValue?: string,
+        defaultChecked?: boolean
+    ) => void;
+    formComponents: any[];
+    savedForms: any[];
+    setSavedForms: React.Dispatch<React.SetStateAction<any[]>>;
+    setFormComponents: React.Dispatch<React.SetStateAction<any[]>>;
+    setNewFormTitle: React.Dispatch<React.SetStateAction<string>>;
+    editDetails: any;
+}
 export interface IFormElementsComplex {
     height: string;
     label: string;

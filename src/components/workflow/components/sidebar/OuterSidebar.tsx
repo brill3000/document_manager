@@ -25,7 +25,7 @@ export function OuterSidebar() {
         setSelected(nav);
     };
     const matchDownMD = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
-    const [openView, setOpenView] = React.useState<boolean>(false);
+    const [openView, setOpenView] = React.useState<boolean>(true);
 
     return (
         <Grid

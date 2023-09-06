@@ -42,7 +42,6 @@ const NavGroup = ({ item }: any) => {
                         <Typography variant="subtitle2" color="textSecondary">
                             {item.title}
                         </Typography>
-                        {/* only available in paid version */}
                     </Box>
                 )
             }
