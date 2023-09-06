@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { FileUploaded } from 'ui-component/alerts/documents';
 import { UserAuthContextProvider } from 'context/authContext';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import '@fontsource/quicksand';
+import '@fontsource/montserrat';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 

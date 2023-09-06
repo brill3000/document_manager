@@ -80,7 +80,7 @@ export function OuterSidebar() {
                 </Divider>
                 {[
                     { nav: 'Inprogress', icon: <BsPlayFill size={17} color={theme.palette.warning.main} />, count: 0 },
-                    { nav: 'Completed', icon: <BsCheck size={17} color={theme.palette.success.main} />, count: 0 },
+                    { nav: 'Completed', icon: <BsCheck size={17} color={theme.palette.success.main} />, count: 1 },
                     { nav: 'Rejected', icon: <BsStopFill size={17} color={theme.palette.error.main} />, count: 0 }
                 ].map((navItem) => (
                     <CustomButton

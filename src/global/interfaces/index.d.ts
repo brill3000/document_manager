@@ -83,6 +83,37 @@ export interface LoginRequest {
     username: string;
     password: string;
 }
+export interface IWorkflowRequest {
+    pdId: string;
+}
+export interface IRunWorkflowRequest {
+    pdId: string;
+    uuid: string;
+    values: IFormElementsComplex[];
+}
+export interface IFormElementsComplex {
+    height: string;
+    label: string;
+    name: string;
+    objClass: string;
+    options: any[];
+    readonly: boolean;
+    type: string;
+    validators: any[];
+    value: string;
+    width: string;
+}
+type ProcessDefinitionFormKeys = 'tasks' | 'run_config';
+
+export interface IProcessDefinitionForm {
+    processDefinitionForm: { key: ProcessDefinitionFormKeys; formElementsComplex: IFormElementsComplex[] }[];
+}
+export interface IProcessDefinition {
+    id: number;
+    name: string;
+    nodes: GenericDocument[];
+}
+
 export interface CreateUserRequest {
     username: string;
     password: string;
@@ -154,7 +185,7 @@ export interface CreateDocumentSimpleProps {
 }
 
 export interface CheckInProps extends GetDocumentContentProps {
-    content: Blob;
+    content: File;
     comment: string;
     increment: string;
     fileName: string;
@@ -356,7 +387,19 @@ export interface UseHandleActionMenuReturnType {
 }
 
 export interface DocumentActionMenuType {
-    type: 'open' | 'copy' | 'cut' | 'rename' | 'edit' | 'extract' | 'moveToTrash' | 'delete' | 'permissions' | 'add';
+    type:
+        | 'open'
+        | 'copy'
+        | 'cut'
+        | 'rename'
+        | 'edit'
+        | 'extract'
+        | 'moveToTrash'
+        | 'delete'
+        | 'permissions'
+        | 'add'
+        | 'workflow'
+        | 'new_version';
 }
 
 export interface FolderActionMenuType {

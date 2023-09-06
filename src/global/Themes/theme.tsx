@@ -27,7 +27,7 @@ export default extendTheme({
         }
     },
     fontFamily: {
-        display: "'quicksand', sans-serif', var(--joy-fontFamily-fallback)",
-        body: "'quicksand', sans-serif', var(--joy-fontFamily-fallback)"
+        display: "'montserrat', sans-serif', var(--joy-fontFamily-fallback)",
+        body: "'montserrat', sans-serif', var(--joy-fontFamily-fallback)"
     }
 });

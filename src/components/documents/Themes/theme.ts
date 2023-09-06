@@ -3,7 +3,7 @@ import { brown } from '@mui/material/colors';
 
 export const theme = createTheme({
     typography: {
-        fontFamily: 'quicksand,  sans-serif'
+        fontFamily: 'montserrat,  sans-serif'
     },
     palette: {
         secondary: brown

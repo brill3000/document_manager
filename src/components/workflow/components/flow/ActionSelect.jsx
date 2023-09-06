@@ -22,7 +22,7 @@ export default function ActionSelect({ name, selectedAction }) {
                   Fill_Forms: ['Loan Applications Form', 'Tender Application Form']
               }
             : {
-                  Approval: ['Loan Application', 'Tender Application']
+                  Approval: ['Motion tabling', 'Create order paper']
               };
     const colors = {
         Land: 'neutral',

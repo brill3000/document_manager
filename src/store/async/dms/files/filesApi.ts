@@ -125,6 +125,7 @@ export const filesApi = createApi({
                 return tags;
             }
         }),
+
         getCategorizedChildrenFiles: build.query<{ documents: FileInterface[] }, CategoryRequestType>({
             query: ({ categoryId }) => ({
                 url: `${UriHelper.SEARCH_GET_CATEGORIZED_DOCUMENTS}`,
@@ -274,7 +275,8 @@ export const filesApi = createApi({
                 return {
                     url: UriHelper.DOCUMENT_CHECKIN,
                     method: 'POST',
-                    data: { docId, content, comment, increment }
+                    data: { docId, content, comment, increment },
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 };
             },
             invalidatesTags: ['DMS_FILES']
@@ -474,7 +476,7 @@ export const filesApi = createApi({
         }),
         cancelCheckout: build.mutation<any, GetDocumentContentProps>({
             query: ({ docId }) => ({
-                url: UriHelper.DOCUMENT_SET_PROPERTIES,
+                url: UriHelper.DOCUMENT_CANCEL_CHECKOUT,
                 method: 'PUT',
                 params: { docId }
             }),

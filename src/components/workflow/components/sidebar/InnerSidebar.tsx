@@ -43,7 +43,7 @@ export function InnerSidebar() {
                         <b>My Workflow</b>
                     </Typography>
                     <Typography fontSize={11} fontWeight={500} color="text.secondary">
-                        0 complete: 1 New
+                        1 complete: 0 New
                     </Typography>
                 </Stack>
                 <Stack direction="row" spacing={1}>

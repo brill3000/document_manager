@@ -14,7 +14,7 @@ export function TopNav() {
                 <IconButton size="small">
                     <BiChevronLeft size={16} />
                 </IconButton>
-                <Typography variant="caption">1/25</Typography>
+                <Typography variant="caption">1/1</Typography>
                 <IconButton size="small">
                     <BiChevronRight size={16} />
                 </IconButton>

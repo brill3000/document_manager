@@ -1,108 +1,104 @@
+import { FullTagDescription } from '@reduxjs/toolkit/dist/query/endpointDefinitions';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { AddToNoteProps } from 'global/interfaces';
+import { IWorkflowRequest, IProcessDefinitionForm, IProcessDefinition, IRunWorkflowRequest } from 'global/interfaces';
 import { UriHelper } from 'utils/constants/UriHelper';
 import { axiosBaseQuery } from 'utils/hooks';
-import { filesApi } from '../files/filesApi';
-import { encodeHtmlEntity } from 'utils';
+type UserTags = 'DMS_WORKFLOW' | 'DMS_WORKFLOW_SUCCESS' | 'DMS_WORKFLOW_ERROR';
 
-export const notesApi = createApi({
-    reducerPath: 'notes_api',
+export const workflowApi = createApi({
+    reducerPath: 'workflow_api',
     baseQuery: axiosBaseQuery({
         baseUrl: UriHelper.HOST
     }),
-    tagTypes: ['DMS_NOTES', 'DMS_NOTES_SUCCESS', 'DMS_NOTES_ERROR', 'DMS_NOTES_INFO', 'DMS_NOTES_INFO_SUCCESS', 'DMS_NOTES_INFO_ERROR'],
+    tagTypes: [
+        'DMS_WORKFLOW',
+        'DMS_WORKFLOW_SUCCESS',
+        'DMS_WORKFLOW_ERROR',
+        'DMS_WORKFLOW_INFO',
+        'DMS_WORKFLOW_INFO_SUCCESS',
+        'DMS_WORKFLOW_INFO_ERROR'
+    ],
     endpoints: (build) => ({
         // ===========================| GETTERS |===================== //
-        // -------------------------------| MUTATIONS: PUT|-------------------------------- //
-        addNote: build.mutation<any, AddToNoteProps>({
-            query: ({ nodeId, text }) => ({
-                url: UriHelper.NOTE_ADD,
-                method: 'POST',
-                params: { nodeId },
-                data: { text: encodeHtmlEntity(text) }
-            }),
-            invalidatesTags: ['DMS_NOTES'],
-            async onQueryStarted({ nodeId }, { dispatch, queryFulfilled }) {
-                dispatch(filesApi.util.invalidateTags(['DMS_FILES']));
-                try {
-                    await queryFulfilled;
-                } catch {
-                    // patchChildrenResult.undo();
-                    // patchInfoResult.undo();
-                    /**
-                     * Alternatively, on failure you can invalidate the corresponding cache tags
-                     * to trigger a re-fetch:
-                     * dispatch(api.util.invalidateTags(['Post']))
-                     */
-                }
+        getProcessDefinition: build.query<IProcessDefinition, IWorkflowRequest>({
+            query: ({ pdId }) => ({ url: `${UriHelper.WORKFLOW_GET_PROCESS_DEFINITION}`, method: 'GET', params: { pdId } }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_WORKFLOW' }];
+                if (result) return [...tags, { type: 'DMS_WORKFLOW_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_WORKFLOW_ERROR', id: 'error' }];
+                return tags;
             }
         }),
-        deleteNote: build.mutation<any, { nodeId: string }>({
-            query: ({ nodeId }) => ({
-                url: UriHelper.NOTE_DELETE,
-                method: 'DELETE',
-                params: { nodeId }
+        findAllProcessDefinitions: build.query<{ processDefinitions: IProcessDefinition[] }, void>({
+            query: () => ({ url: `${UriHelper.WORKFLOW_FIND_ALL_PROCESS_DEFINITIONS}`, method: 'GET' }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_WORKFLOW' }];
+                if (result) return [...tags, { type: 'DMS_WORKFLOW_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_WORKFLOW_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        findTaskInstances: build.query<any, { piId: string }>({
+            query: ({ piId }) => ({ url: `${UriHelper.WORKFLOW_FIND_TASK_INSTANCES}`, method: 'GET', params: { piId } }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_WORKFLOW' }];
+                if (result) return [...tags, { type: 'DMS_WORKFLOW_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_WORKFLOW_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        getProcessDefinitionForms: build.query<IProcessDefinitionForm, IWorkflowRequest>({
+            query: ({ pdId }) => ({ url: `${UriHelper.WORKFLOW_GET_PROCESS_DEFINITION_FORMS}`, method: 'GET', params: { pdId } }),
+            providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
+                const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_WORKFLOW' }];
+                if (result) return [...tags, { type: 'DMS_WORKFLOW_SUCCESS', id: 'success' }];
+                if (error) return [...tags, { type: 'DMS_WORKFLOW_ERROR', id: 'error' }];
+                return tags;
+            }
+        }),
+        // -------------------------------| MUTATIONS: PUT|-------------------------------- //
+        runProcessDefinition: build.mutation<any, IRunWorkflowRequest>({
+            query: ({ pdId, uuid, values }) => ({
+                url: UriHelper.WORKFLOW_RUN_PROCESS_DEFINITION,
+                method: 'PUT',
+                params: { pdId, uuid },
+                data: { values }
             }),
-            invalidatesTags: ['DMS_NOTES']
-            // async onQueryStarted({ docId }, { dispatch, queryFulfilled }) {
-            //     const patchChildrenResult = dispatch(
-            //         filesApi.util.updateQueryData('getFolderChildrenFiles', { fldId: parent }, (draft) => {
-            //             const draftCopy = draft.documents.map((cachedRole) => {
-            //                 if (cachedRole.path === oldPath) {
-            //                     cachedRole['doc_name'] = newName;
-            //                     cachedRole['path'] = newPath;
-            //                 }
-            //                 return cachedRole;
-            //             });
-
-            //             Object.assign(draft.documents, draftCopy);
-            //         })
-            //     );
-            //     const patchInfoResult = dispatch(
-            //         filesApi.util.updateQueryData('getFileProperties', { docId }, (draft) => {
-            //             if (!isNull(draft) && draft.path === oldPath) {
-            //                 const draftCopy = { ...draft };
-            //                 draftCopy['doc_name'] = newName;
-            //                 draftCopy['path'] = newPath;
-
-            //                 Object.assign(draft, draftCopy);
-            //             }
-            //         })
-            //     );
-            //     try {
-            //         await queryFulfilled;
-            //     } catch {
-            //         patchChildrenResult.undo();
-            //         patchInfoResult.undo();
-            //         /**
-            //          * Alternatively, on failure you can invalidate the corresponding cache tags
-            //          * to trigger a re-fetch:
-            //          * dispatch(api.util.invalidateTags(['Post']))
-            //          */
-            //     }
-            // }
+            invalidatesTags: ['DMS_WORKFLOW']
+        }),
+        startTaskInstance: build.mutation<any, { tiId: string }>({
+            query: ({ tiId }) => ({
+                url: UriHelper.WORKFLOW_START_TASKINSTANCE,
+                method: 'PUT',
+                params: { tiId }
+            }),
+            invalidatesTags: ['DMS_WORKFLOW']
         })
         // -------------------------------| MUTATIONS: DELETE|-------------------------------- //
     })
 });
 
-export const notes_api = notesApi.reducer;
+export const workflow_api = workflowApi.reducer;
 export const {
     /**
      * Getters
      */
+    useLazyGetProcessDefinitionQuery,
+    useLazyGetProcessDefinitionFormsQuery,
+    useLazyFindAllProcessDefinitionsQuery,
+    useLazyFindTaskInstancesQuery,
     /**
      * Lazy Getters
      */
     /**
      * Mutations: POST
      */
-    useAddNoteMutation,
     /**
      * Mutations: PUT
      */
-    useDeleteNoteMutation
+    useRunProcessDefinitionMutation,
+    useStartTaskInstanceMutation
     /**
      * Mutations: DELETE
      */
-} = notesApi;
+} = workflowApi;

@@ -50,6 +50,7 @@ export const store = configureStore({
             .concat(repositoryApi.middleware)
             .concat(searchApi.middleware)
             .concat(notesApi.middleware)
+            .concat(workflowQuery.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

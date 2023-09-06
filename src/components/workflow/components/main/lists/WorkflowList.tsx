@@ -30,7 +30,7 @@ function renderRow(props: any) {
             <ListItemContent>
                 <Stack direction="column" spacing={0.5}>
                     <Typography variant="body1" color="text.primary">
-                        Loan Application workflow
+                        Create order paper
                     </Typography>
                     <Stack direction="row" spacing={0.5} justifyContent="space-between">
                         <Typography variant="body2" color="text.secondary">

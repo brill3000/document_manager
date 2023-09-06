@@ -1,6 +1,6 @@
 import React from 'react';
 import FileBrowser from 'components/documents/FileBrowser';
-import '@fontsource/quicksand';
+import '@fontsource/montserrat';
 import { FileViewerDialog, SearchDialog } from 'components/documents/views/UI/Dialogs';
 import { useBrowserStore } from './data/global_state/slices/BrowserMock';
 import { useViewStore } from './data/global_state/slices/view';

@@ -2,7 +2,7 @@
 
 const config = {
     defaultPath: '/',
-    fontFamily: `'quicksand', sans-serif`,
+    fontFamily: `'montserrat', sans-serif`,
     fontWeight: 500,
     fontSize: '0.85rem',
     lineHeight: 1,

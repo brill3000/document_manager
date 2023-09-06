@@ -1909,6 +1909,11 @@
   resolved "https://registry.yarnpkg.com/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.6.2.tgz#6d05fa126104c9907573364dc04147b89b530e15"
   integrity sha512-zThUKcqIU6utWzM93uEvhlh8qj8A5LMPFJPvk/ODb+8GSSif19xM2Lw1M2ijyBy8+6skSkQBbavPzOU5Oh/8tQ==
 
+"@fontsource/montserrat@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.8.tgz#04d162d8929d2911c126e6dafbd218e67c8bb63d"
+  integrity sha512-bNj6wfiWXXbsxb2ffatjpX+GBv30cWZ1lwNXW9qTeX2FnzPomsGRV4HdPrf3TqyTiVqX6fLo80zrQcMi7r8+fA==
+
 "@fontsource/quicksand@^4.5.12":
   version "4.5.12"
   resolved "https://registry.yarnpkg.com/@fontsource/quicksand/-/quicksand-4.5.12.tgz#9d849f9c5fe5a237d1524d30653349ccfd77a0a8"

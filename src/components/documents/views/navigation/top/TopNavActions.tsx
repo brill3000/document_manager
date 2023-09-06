@@ -26,11 +26,11 @@ import { useHandleChangeRoute } from 'utils/hooks';
 import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RiFolderWarningFill } from 'react-icons/ri';
 import { MimeTypeConfig } from 'utils/constants/MimeTypes';
-const instance = axios.create({
+export const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
 });
-const uploadFile = async ({
+export const uploadFile = async ({
     docPath,
     fileName,
     file,
@@ -40,6 +40,40 @@ const uploadFile = async ({
     fileName: string;
     file: File;
     actions: UseModelActions;
+}) => {
+    const formData = new FormData();
+    formData.set('content', file, fileName);
+    formData.set('docPath', docPath);
+    const config: AxiosRequestConfig = {
+        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+            const progress =
+                !isNull(progressEvent.total) && !isUndefined(progressEvent.total)
+                    ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+                    : null;
+            if (!isNaN(progress) && !isNull(progress)) {
+                actions.updateFileUploadingProgress(docPath, progress);
+            }
+        },
+        headers: { 'Content-Type': 'multipart/form-data', Cookie: 'token=d0ce7166-59bc-455f-8fc8-dcf56e6c036d' }
+    };
+
+    return instance.post(`/${UriHelper.DOCUMENT_CREATE_SIMPLE}`, formData, config);
+};
+
+export const uploadNewFile = async ({
+    docPath,
+    fileName,
+    file,
+    actions,
+    comment,
+    increment
+}: {
+    docPath: string;
+    fileName: string;
+    file: File;
+    actions: UseModelActions;
+    comment: string;
+    increment: number;
 }) => {
     const formData = new FormData();
     formData.set('content', file, fileName);
