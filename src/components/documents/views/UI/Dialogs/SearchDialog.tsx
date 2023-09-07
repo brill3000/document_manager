@@ -29,11 +29,15 @@ export function SearchDialog() {
     // ========================= | ZUSTAND | =========================== //
     const { searchDialogIsOpen, actions } = useBrowserStore();
     // ========================= | RTK QUERY | =========================== //
-    const [findByContent, { isFetching: findByContentIsFetching, data: findByContentData, error: findByContentError }] =
-        useLazyFindByContentQuery();
+    const [
+        findByContent,
+        { isFetching: findByContentIsFetching, data: findByContentData, error: findByContentError }
+    ] = useLazyFindByContentQuery();
     const [findByName, { isFetching: findByNameIsFetching, data: findByNameData, error: findByNameError }] = useLazyFindByNameQuery();
-    const [findByKeywords, { isFetching: findByKeywordsIsFetching, data: findByKeywordsData, error: findByKeywordsError }] =
-        useLazyFindByKeywordQuery();
+    const [
+        findByKeywords,
+        { isFetching: findByKeywordsIsFetching, data: findByKeywordsData, error: findByKeywordsError }
+    ] = useLazyFindByKeywordQuery();
 
     // ========================= | EVENTS | =========================== //
     const handleClickAway = () => {

@@ -136,11 +136,7 @@ const Footer = React.forwardRef<HTMLInputElement, { ref: React.MutableRefObject<
 
     const { currentFolder, is_dir: route_is_dir } = useHandleChangeRoute();
 
-    const {
-        data: folderInfo,
-        isFetching: folderInfoIsFetching,
-        isLoading: folderInfoIsLoading
-    } = useGetFoldersPropertiesQuery(
+    const { data: folderInfo, isFetching: folderInfoIsFetching, isLoading: folderInfoIsLoading } = useGetFoldersPropertiesQuery(
         { fldId: !isUndefined(currentFolder) && !isNull(currentFolder) ? currentFolder : '' },
 
         {

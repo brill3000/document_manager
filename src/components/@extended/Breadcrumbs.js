@@ -11,7 +11,7 @@ import MainCard from '../MainCard';
 
 // ==============================|| BREADCRUMBS ||============================== //
 
-const Breadcrumbs = ({ navigation, title, ...others }) => {
+const Breadcrumbs = ({ navigation, ...others }) => {
     const location = useLocation();
     const [main, setMain] = useState();
     const [item, setItem] = useState();

@@ -28,34 +28,32 @@ type UserTags =
     | 'DMS_FOLDER_INFO_SUCCESS'
     | 'DMS_FOLDER_INFO_ERROR';
 
-export const axiosBaseQuery =
-    (
-        { baseUrl }: { baseUrl: string } = { baseUrl: '' }
-    ): BaseQueryFn<
-        {
-            url: string;
-            method: AxiosRequestConfig['method'];
-            data?: AxiosRequestConfig['data'];
-            params?: AxiosRequestConfig['params'];
-            onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
-        },
-        unknown,
-        unknown
-    > =>
-    async ({ url, method, data, params, onUploadProgress }) => {
-        try {
-            const result = await axios({ url: baseUrl + url, method, data, params, onUploadProgress, withCredentials: true });
-            return { data: result.data };
-        } catch (axiosError) {
-            const err = axiosError as AxiosError;
-            return {
-                error: {
-                    status: err.response?.status,
-                    data: err.response?.data || err.message
-                }
-            };
-        }
-    };
+export const axiosBaseQuery = (
+    { baseUrl }: { baseUrl: string } = { baseUrl: '' }
+): BaseQueryFn<
+    {
+        url: string;
+        method: AxiosRequestConfig['method'];
+        data?: AxiosRequestConfig['data'];
+        params?: AxiosRequestConfig['params'];
+        onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
+    },
+    unknown,
+    unknown
+> => async ({ url, method, data, params, onUploadProgress }) => {
+    try {
+        const result = await axios({ url: baseUrl + url, method, data, params, onUploadProgress, withCredentials: true });
+        return { data: result.data };
+    } catch (axiosError) {
+        const err = axiosError as AxiosError;
+        return {
+            error: {
+                status: err.response?.status,
+                data: err.response?.data || err.message
+            }
+        };
+    }
+};
 
 export const foldersApi = createApi({
     reducerPath: 'folders_api',
@@ -113,7 +111,7 @@ export const foldersApi = createApi({
                 const dataCopy = { ...response };
                 if (Array.isArray(dataCopy.folders)) {
                     return {
-                        folders: dataCopy.folders.map((fld) => {
+                        folders: (dataCopy.folders.map((fld) => {
                             const folderCopy = { ...fld };
                             const pathArray = fld.path.split('/');
                             const doc_name = pathArray[pathArray.length - 1];
@@ -121,7 +119,7 @@ export const foldersApi = createApi({
                             const folderPermission: PermissionTypes = createPermissionObj({ permissionId: fld.permissions });
 
                             return { doc_name, is_dir, ...folderCopy, permissions: folderPermission };
-                        }) as unknown as FolderInterface[]
+                        }) as unknown) as FolderInterface[]
                     };
                 } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
                     const pathArray = dataCopy.folders.path.split('/');
@@ -130,7 +128,7 @@ export const foldersApi = createApi({
                     const folderPermission: PermissionTypes = createPermissionObj({ permissionId: dataCopy.folders.permissions });
 
                     return {
-                        folders: [{ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown as FolderInterface]
+                        folders: [({ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown) as FolderInterface]
                     };
                 } else {
                     return { folders: [] as FolderInterface[] };
@@ -149,7 +147,7 @@ export const foldersApi = createApi({
                 const dataCopy = { ...response };
                 if (Array.isArray(dataCopy.folders)) {
                     return {
-                        folders: dataCopy.folders.map((fld) => {
+                        folders: (dataCopy.folders.map((fld) => {
                             const folderCopy = { ...fld };
                             const pathArray = fld.path.split('/');
                             const doc_name = pathArray[pathArray.length - 1];
@@ -157,7 +155,7 @@ export const foldersApi = createApi({
                             const folderPermission: PermissionTypes = createPermissionObj({ permissionId: fld.permissions });
 
                             return { doc_name, is_dir, ...folderCopy, permissions: folderPermission };
-                        }) as unknown as FolderInterface[]
+                        }) as unknown) as FolderInterface[]
                     };
                 } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
                     const pathArray = dataCopy.folders.path.split('/');
@@ -166,7 +164,7 @@ export const foldersApi = createApi({
                     const folderPermission: PermissionTypes = createPermissionObj({ permissionId: dataCopy.folders.permissions });
 
                     return {
-                        folders: [{ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown as FolderInterface]
+                        folders: [({ doc_name, is_dir, ...dataCopy.folders, permission: folderPermission } as unknown) as FolderInterface]
                     };
                 } else {
                     return { folders: [] as FolderInterface[] };

@@ -90,10 +90,9 @@ const PermissionsRolesTable = React.forwardRef<
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-    const rows = React.useMemo(
-        () => roles.map((role) => createData(role.name, role.read, role.write, role.delete, role.security)),
-        [roles]
-    );
+    const rows = React.useMemo(() => roles.map((role) => createData(role.name, role.read, role.write, role.delete, role.security)), [
+        roles
+    ]);
     const handleChange = (value: boolean | string, role: string, type: keyof PermissionTypes) => {
         if (typeof value === 'boolean') {
             switch (type) {
