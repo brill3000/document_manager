@@ -51,9 +51,17 @@ export function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
 
     return (
-        <div role="tabpanel" hidden={value !== index} id={`search-tabpanel-${index}`} aria-labelledby={`search-tab-${index}`} {...other}>
-            {value === index && <Box sx={{ pt: 1, px: 2 }}>{children}</Box>}
-        </div>
+        <Box
+            role="tabpanel"
+            width="100%"
+            height="100%"
+            hidden={value !== index}
+            id={`search-tabpanel-${index}`}
+            aria-labelledby={`search-tab-${index}`}
+            {...other}
+        >
+            {value === index && <>{children}</>}
+        </Box>
     );
 }
 

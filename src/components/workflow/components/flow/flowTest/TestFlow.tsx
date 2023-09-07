@@ -1,34 +1,37 @@
-import * as React from 'react';
-import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, Background } from 'react-flow-renderer';
-
-import './testFlow.css';
-import TextUpdaterNode from './TextUpdaterNode';
+import { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent, useCallback, useMemo, useRef } from 'react';
+import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, Background } from 'reactflow';
+// ZUSTAND
 import useStore from './store';
+// CSS
+import './testFlow.css';
+
+// COMPONENTS
+import TextUpdaterNode from './TextUpdaterNode';
+import { FlowWrapper } from '../../UI';
 
 let id = 1;
 const getId = () => `${id++}`;
 
-const fitViewOptions = {
-    padding: 3
-};
-
 const AddNodeOnEdgeDrop = () => {
-    const reactFlowWrapper = React.useRef(null);
-    const connectingNodeId = React.useRef(null);
+    const reactFlowWrapper = useRef<HTMLDivElement>(null);
+    const connectingNodeId = useRef<string | null>(null);
 
     const { nodes, edges, addEdge, addNode, onNodesChange, onEdgesChange, onConnect } = useStore();
 
     const { project } = useReactFlow();
 
-    const onConnectStart = React.useCallback((_, { nodeId }) => {
+    const onConnectStart = useCallback((_: ReactMouseEvent | ReactTouchEvent, { nodeId }: { nodeId: string | null }) => {
+        if (connectingNodeId.current === null) return;
         connectingNodeId.current = nodeId;
     }, []);
 
-    const onConnectStop = React.useCallback(
-        (event) => {
+    const onConnectStop = useCallback(
+        (event: any) => {
             const targetIsPane = event.target.classList.contains('react-flow__pane');
 
             if (targetIsPane) {
+                if (reactFlowWrapper.current === null) return;
+                if (connectingNodeId.current === null) return;
                 // we need to remove the wrapper bounds, in order to get the correct position
                 const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
                 const id = getId();
@@ -51,13 +54,10 @@ const AddNodeOnEdgeDrop = () => {
         },
         [project]
     );
-    const nodeTypes = React.useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
-
-    console.log(nodes, 'NODE');
-    console.log(edges, 'EDGES');
+    const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
 
     return (
-        <div className="wrapper" ref={reactFlowWrapper}>
+        <FlowWrapper ref={reactFlowWrapper}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -66,14 +66,14 @@ const AddNodeOnEdgeDrop = () => {
                 onConnect={onConnect}
                 nodeTypes={nodeTypes}
                 onConnectStart={onConnectStart}
-                onConnectStop={onConnectStop}
-                // fitView
-                // fitViewOptions={fitViewOptions}
+                onConnectEnd={onConnectStop}
+                snapToGrid={true}
+                attributionPosition="top-right"
             />
             <Controls />
 
             <Background color="#aaa" gap={16} />
-        </div>
+        </FlowWrapper>
     );
 };
 

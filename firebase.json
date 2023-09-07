@@ -1,16 +1,12 @@
 {
-  "hosting": {
-    "public": "build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  },
-  "emulators": {
     "hosting": {
-      "host": "localhost",
-      "port": "8080"
+        "public": "build",
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    "emulators": {
+        "hosting": {
+            "host": "localhost",
+            "port": "8080"
+        }
     }
-  }
 }

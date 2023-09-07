@@ -53,7 +53,7 @@
         "notistack": "^3.0.1",
         "prop-types": "^15.8.1",
         "randomcolor": "^0.6.2",
-        "react": "^17.0.2",
+        "react": "18",
         "react-apexcharts": "^1.4.0",
         "react-beautiful-dnd": "^13.1.1",
         "react-copy-to-clipboard": "^5.0.4",
@@ -61,12 +61,11 @@
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dnd-touch-backend": "^16.0.1",
-        "react-dom": "^17.0.2",
+        "react-dom": "18",
         "react-draggable": "^4.4.5",
         "react-dropzone": "^14.2.2",
         "react-element-to-jsx-string": "^14.3.4",
         "react-files": "^3.0.0-alpha.3",
-        "react-flow-renderer": "^10.3.17",
         "react-icons": "^4.8.0",
         "react-lottie": "^1.2.3",
         "react-number-format": "^4.9.1",
@@ -74,7 +73,7 @@
         "react-redux": "^7.2.4",
         "react-router": "^6.2.1",
         "react-router-dom": "^6.2.1",
-        "react-scripts": "^4.0.3",
+        "react-scripts": "5.0.0",
         "react-signature-canvas": "^1.0.6",
         "react-spring": "^9.5.2",
         "react-swipeable-views": "^0.14.0",
@@ -82,6 +81,7 @@
         "react-uuid": "^1.0.3",
         "react-virtuoso": "^4.3.8",
         "react-window": "^1.8.6",
+        "reactflow": "^11.8.3",
         "redux": "^4.1.2",
         "redux-logger": "^3.0.6",
         "simplebar": "^5.3.5",
@@ -106,11 +106,11 @@
         "zustand": "^4.3.8"
     },
     "scripts": {
-        "start": "PORT=3006 react-app-rewired --openssl-legacy-provider start",
-        "build": "react-app-rewired --openssl-legacy-provider build",
+        "start": "PORT=3006 react-scripts --openssl-legacy-provider start",
+        "build": "react-scripts --openssl-legacy-provider build",
         "test": "jest",
         "test:watch": "jest --watch --verbose false",
-        "eject": "react-app-rewired eject"
+        "eject": "react-scripts --openssl-legacy-provider eject"
     },
     "eslintConfig": {
         "extends": [
@@ -138,6 +138,7 @@
     "devDependencies": {
         "@babel/core": "^7.14.3",
         "@babel/eslint-parser": "^7.15.8",
+        "@babel/plugin-proposal-optional-chaining": "^7.21.0",
         "@faker-js/faker": "^7.6.0",
         "customize-cra": "^1.0.0",
         "eslint": "^7.27.0",

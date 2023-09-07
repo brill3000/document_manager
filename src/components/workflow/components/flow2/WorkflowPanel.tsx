@@ -2,17 +2,26 @@ import { Save } from '@mui/icons-material';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Form, Formik } from 'formik';
-import { FormikTextMultiline } from 'global/UI/FormMUI/Components';
 import { IWorkflowPanelProps } from 'global/interfaces';
-import { ReactFlowProvider } from 'react-flow-renderer';
+import { ReactFlowProvider } from 'reactflow';
 import { GoogleLoader } from 'ui-component/LoadHandlers';
 import { ActionButtons } from '../UI/ActionButtons';
-// import TestFlow from '../flow/flowTest/testFlow';
+import { FormikText } from 'global/UI/FormMUI/Components';
+import TestFlow from '../flow/flowTest/TestFlow';
 
 export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpenForm, onAdd }: IWorkflowPanelProps) => {
     return (
-        <Grid2 container direction="row" sx={{ height: '600px' }}>
-            <Grid2 xs={3} sx={{ bgcolor: (theme) => theme.palette.grey[100], borderRadius: 5, p: 3 }}>
+        <Grid2 container direction="row" width="100%" height="100%">
+            <Grid2
+                xs={3}
+                height="100%"
+                sx={{
+                    borderRight: 1,
+                    borderColor: (theme) => theme.palette.divider,
+                    bgColor: (theme) => theme.palette.grey[100],
+                    p: 2
+                }}
+            >
                 <Stack direction="column" spacing={2}>
                     {isSending ? (
                         <GoogleLoader height={80} width={80} loop={true} />
@@ -57,16 +66,22 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                                 <Form onSubmit={handleSubmit}>
                                     <Grid2 container direction="row" spacing={1}>
                                         <Grid2 xs={10}>
-                                            <FormikTextMultiline
-                                                name="title"
+                                            <FormikText
+                                                multiline
+                                                maxRows={5}
+                                                size="small"
+                                                minRows={1}
+                                                id="title"
+                                                variant="outlined"
                                                 placeholder="Enter Workflow title"
+                                                name="title"
+                                                label="Title"
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
-                                                value={values.title}
-                                                disabled={nodes.length < 1}
-                                                onKeyPress={(e: any) => {
+                                                onKeyDown={(e: any) => {
                                                     e.key === 'Enter' && e.preventDefault();
                                                 }}
+                                                value={values.title}
                                             />
                                         </Grid2>
                                         <Grid2 xs={2}>
@@ -102,10 +117,10 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                     </ReactFlowProvider>
                 </Stack>
             </Grid2>
-            {/* <Grid2 xs={6} sx={{ borderRadius: 5, pr: 5, maxWidth: 200 }}>
+            <Grid2 xs={6} sx={{ px: 4, py: 2, position: 'relative', overflow: 'hidden' }}>
                 <TestFlow />
-            </Grid2> */}
-            <Grid2 xs={3} sx={{ bgcolor: 'neutral.100', borderRadius: 5, p: 3 }}>
+            </Grid2>
+            <Grid2 xs={3} height="100%" sx={{ px: 4, py: 2 }}>
                 {/* {workflowQuery.isLoading || workflowQuery.isFetching ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                             <GoogleLoader height={150} width={150} loop={true} />

@@ -6,7 +6,7 @@ import ReactFlow, {
     Background,
     useNodesState,
     useEdgesState
-} from 'react-flow-renderer';
+} from 'reactflow';
 
 import { nodes as initialNodes, edges as initialEdges } from './data/generate_intiial-elements';
 import { useLazyGetProcessDefinitionFormsQuery, useLazyGetProcessDefinitionQuery } from 'store/async/dms/workflow/workflowApi';

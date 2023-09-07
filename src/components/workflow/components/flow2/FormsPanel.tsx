@@ -1,11 +1,12 @@
 import { Add, Save } from '@mui/icons-material';
-import { Box, Button, Collapse, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Collapse, Stack, TextField, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import { Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { FormikText } from 'global/UI/FormMUI/Components';
-import { INewFormTitle } from 'global/interfaces';
+import { INewFormTitle, TFormCreation } from 'global/interfaces';
 import uuid from 'react-uuid';
 import { FormsCard } from '../UI';
+import { FormCreationTypes } from 'utils/constants/UriHelper';
 
 export function FormsPanel({
     newFormTitle,
@@ -22,18 +23,19 @@ export function FormsPanel({
     editDetails
 }: INewFormTitle) {
     return (
-        <Grid2 container direction="row" sx={{ height: '600px' }}>
+        <Grid2 container height="100%" direction="row">
             <Grid2
                 xs={3}
+                height="100%"
                 sx={{
-                    bgcolor: (theme) => theme.palette.grey[100],
-                    borderRadius: 5,
-                    p: 2,
-                    maxHeight: '600px',
-                    overflowY: 'auto'
+                    borderRight: 1,
+                    borderColor: (theme) => theme.palette.divider,
+                    bgColor: (theme) => theme.palette.grey[100],
+                    p: 2
                 }}
             >
                 <Box
+                    height="max-content"
                     sx={{
                         py: 2,
                         display: 'grid',
@@ -44,30 +46,18 @@ export function FormsPanel({
                 >
                     <TextField placeholder="Form title" variant="outlined" value={newFormTitle} onChange={handleNewFormTitleChange} />
                     <Typography variant="body1">Add Form components</Typography>
-                    {['input', 'large_input', 'checkbox', 'radio', 'select', 'submit'].map((type) => (
-                        <Box maxWidth={300} key={type}>
+                    {FormCreationTypes.map((type) => (
+                        <Box display="flex" flexDirection="column" rowGap={1} key={type}>
                             <Button
                                 variant="contained"
                                 color={type === 'submit' ? 'success' : 'primary'}
                                 onClick={() => {
-                                    const openEditIndexCopy: {
-                                        input: boolean;
-                                        checkbox: boolean;
-                                        radio: boolean;
-                                        large_input: boolean;
-                                        select: boolean;
-                                        submit: boolean;
-                                    } = { ...openEditIndex };
+                                    const openEditIndexCopy: Record<TFormCreation, boolean> = { ...openEditIndex };
                                     for (const key in openEditIndexCopy) {
                                         if (key === type) {
-                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                            // @ts-ignore
                                             openEditIndexCopy[key] = true;
                                         } else {
-                                            // 👇️ ts-ignore ignores any ts errors on the next line
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                            // @ts-ignore
+                                            // @ts-expect-error expected
                                             openEditIndexCopy[key] = false;
                                         }
                                     }
@@ -83,9 +73,6 @@ export function FormsPanel({
                                 Field
                             </Button>
                             {
-                                // 👇️ ts-ignore ignores any ts errors on the next line
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-ignore
                                 <Collapse in={openEditIndex[type]} timeout="auto" unmountOnExit>
                                     <Formik
                                         initialValues={{
@@ -145,45 +132,51 @@ export function FormsPanel({
                                             isSubmitting
                                             /* and other goodies */
                                         }) => (
-                                            <form onSubmit={handleSubmit}>
-                                                <FormikText
-                                                    // 👇️ ts-ignore ignores any ts errors on the next line
-                                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                    // @ts-ignore
-                                                    label="Label"
-                                                    name="label"
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    value={values.label}
-                                                    sx={{ py: 1 }}
-                                                />
-                                                {(type === 'input' || type === 'large_input') && (
+                                            <Form onSubmit={handleSubmit}>
+                                                <Stack rowGap={1}>
                                                     <FormikText
-                                                        // 👇️ ts-ignore ignores any ts errors on the next line
-                                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                        // @ts-ignore
-                                                        label="Placeholder"
-                                                        name="placeholder"
+                                                        id="label"
+                                                        variant="outlined"
+                                                        name="label"
+                                                        label="label"
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        value={values.placeholder}
-                                                        sx={{ py: 1 }}
+                                                        value={values.label}
                                                     />
-                                                )}
-                                                {type === 'large_input' && (
-                                                    <FormikText
-                                                        // 👇️ ts-ignore ignores any ts errors on the next line
-                                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                        // @ts-ignore
-                                                        label="Minimum Rows"
-                                                        name="minRows"
-                                                        type="number"
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        value={values.minRows}
-                                                    />
-                                                )}
-                                                {/* <FormikCheckbox
+                                                    {(type === 'input' || type === 'large_input') && (
+                                                        <FormikText
+                                                            id="Placeholder"
+                                                            variant="outlined"
+                                                            name="placeholder"
+                                                            label="placeholder"
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            value={values.placeholder}
+                                                        />
+                                                    )}
+                                                    {type === 'large_input' && (
+                                                        <FormikText
+                                                            id="label"
+                                                            variant="outlined"
+                                                            name="minRows"
+                                                            label="Minimum Rows"
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            value={values.minRows}
+                                                            type="number"
+                                                            InputProps={{ inputProps: { min: 0, max: 5, step: 1 } }}
+                                                        />
+
+                                                        // <FormikText
+                                                        //     label="Minimum Rows"
+                                                        //     name="minRows"
+                                                        //     type="number"
+                                                        //     onChange={handleChange}
+                                                        //     onBlur={handleBlur}
+                                                        //     value={values.minRows}
+                                                        // />
+                                                    )}
+                                                    {/* <FormikCheckbox
                                                         label="Is input required"
                                                         name="isRequired"
                                                         onChange={handleChange}
@@ -201,38 +194,37 @@ export function FormsPanel({
                                                             sx={{ py: 1.5 }}
                                                         />
                                                     )} */}
-                                                {(type === 'input' || type === 'large_input') && (
-                                                    <FormikText
-                                                        // 👇️ ts-ignore ignores any ts errors on the next line
-                                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                                        // @ts-ignore
-                                                        label="Initial Value"
-                                                        name="initialValue"
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        value={values.initialValue}
-                                                        sx={{ py: 1 }}
-                                                    />
-                                                )}
-                                                <Button
-                                                    variant="contained"
-                                                    type="submit"
-                                                    color="error"
-                                                    sx={{ mt: 2 }}
-                                                    disabled={isSubmitting}
-                                                    onKeyDown={(e) => {
-                                                        e.key === 'Enter' && e.preventDefault();
-                                                    }}
-                                                >
-                                                    Add{' '}
-                                                    {type === 'large_input'
-                                                        ? 'Large Input'
-                                                        : type === 'submit'
-                                                        ? 'Submit Button'
-                                                        : type[0].toUpperCase() + type.substring(1, type.length)}{' '}
-                                                    Field
-                                                </Button>
-                                            </form>
+                                                    {(type === 'input' || type === 'large_input') && (
+                                                        <FormikText
+                                                            id="initialValue"
+                                                            variant="outlined"
+                                                            label="Initial Value"
+                                                            name="initialValue"
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            value={values.initialValue}
+                                                        />
+                                                    )}
+                                                    <Button
+                                                        variant="contained"
+                                                        type="submit"
+                                                        color="success"
+                                                        sx={{ mt: 2 }}
+                                                        disabled={isSubmitting}
+                                                        onKeyDown={(e) => {
+                                                            e.key === 'Enter' && e.preventDefault();
+                                                        }}
+                                                    >
+                                                        Add{' '}
+                                                        {type === 'large_input'
+                                                            ? 'Large Input'
+                                                            : type === 'submit'
+                                                            ? 'Submit Button'
+                                                            : type[0].toUpperCase() + type.substring(1, type.length)}{' '}
+                                                        Field
+                                                    </Button>
+                                                </Stack>
+                                            </Form>
                                         )}
                                     </Formik>
                                 </Collapse>
@@ -242,12 +234,12 @@ export function FormsPanel({
                     ))}
                 </Box>
             </Grid2>
-            <Grid item xs={6} sx={{ px: 4, py: 2 }}>
-                <Stack direction="column" spacing={3} sx={{ minWidth: 400 }}>
+            <Grid2 xs={6} height="100%" sx={{ px: 4, py: 2 }}>
+                <Stack direction="column" spacing={3} height="100%">
                     <Stack direction="row" justifyContent="space-between" spacing={2}>
                         <Box sx={{ maxWidth: 350 }}>
-                            <Typography variant="h3" component={Box} mb={2} color="text.secondary">
-                                {newFormTitle.length > 0 ? newFormTitle : 'New Forms'}
+                            <Typography variant="h4" component={Box} mb={2} color="text.secondary">
+                                {newFormTitle.length > 0 ? newFormTitle : 'New Form'}
                             </Typography>
                         </Box>
                         <Box sx={{ maxHeight: 10 }}>
@@ -278,37 +270,34 @@ export function FormsPanel({
 
                     {formComponents.length > 0 &&
                         formComponents.map((formComponent) => (
-                            <Grid container direction="row" key={formComponent.id}>
+                            <Grid2 container direction="row" key={formComponent.id}>
                                 {!formComponent.button && (
-                                    <Grid item xs={2.5}>
+                                    <Grid2 xs={2.5}>
                                         <Typography variant="body2">{formComponent.label}</Typography>
-                                    </Grid>
+                                    </Grid2>
                                 )}
 
-                                <Grid item xs={8.5} key={formComponent.id}>
+                                <Grid2 xs={8.5} key={formComponent.id}>
                                     {formComponent.element}
-                                </Grid>
-                                <Grid item xs={1}>
-                                    {formComponent.delete}
-                                </Grid>
-                            </Grid>
+                                </Grid2>
+                                <Grid2 xs={1}>{formComponent.delete}</Grid2>
+                            </Grid2>
                         ))}
                     {/* <DraggableList /> */}
                 </Stack>
-            </Grid>
-            <Grid
-                item
+            </Grid2>
+            <Grid2
                 xs={3}
+                height="100%"
                 sx={{
-                    bgcolor: 'neutral.100',
-                    borderRadius: 5,
                     p: 2,
-                    maxHeight: '600px',
+                    borderLeft: 1,
+                    borderColor: (theme) => theme.palette.divider,
                     overflowY: 'auto'
                 }}
             >
-                <Stack direction="column">
-                    <Typography variant="h3" component={Box} mb={2} color="text.secondary">
+                <Stack direction="column" height="100%">
+                    <Typography variant="h4" component={Box} mb={2} color="text.secondary">
                         Saved Forms
                     </Typography>
                     {savedForms.length > 0 &&
@@ -316,7 +305,7 @@ export function FormsPanel({
                             <FormsCard title={form.title} description={'Form for loan application'} type="loan" />
                         ))}
                 </Stack>
-            </Grid>
+            </Grid2>
         </Grid2>
     );
 }

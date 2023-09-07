@@ -25,18 +25,6 @@ const FileBrowser = ({ height, width, bgColor, borderRadius }: FileBrowserProps)
     const ref = React.useRef<HTMLInputElement | null>(null);
 
     React.useEffect(() => {
-        const handleWindowResize = () => {
-            setBrowserHeight(window.innerHeight);
-            setBrowserWidth(window.innerWidth);
-        };
-
-        window.addEventListener('resize', handleWindowResize);
-        return () => {
-            window.removeEventListener('resize', handleWindowResize);
-        };
-    });
-
-    React.useEffect(() => {
         setBrowserHeight(window.innerHeight * 0.96);
         setBrowserWidth(window.innerWidth * 0.96);
     }, [setBrowserHeight, setBrowserWidth]);

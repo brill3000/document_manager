@@ -1,4 +1,4 @@
-import { JavaCalendar } from 'global/interfaces';
+import { JavaCalendar, TFormCreation } from 'global/interfaces';
 
 /**
  * UriHelper
@@ -226,6 +226,7 @@ export const UriHelper = {
      */
     TRANSITION: '0.1s'
 };
+export const FormCreationTypes: TFormCreation[] = ['input', 'large_input', 'checkbox', 'radio', 'select', 'submit'];
 /**
  *
  * @param authHeader

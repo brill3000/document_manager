@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Typography, alpha } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 export function FormsCard({
     title,
@@ -13,34 +14,39 @@ export function FormsCard({
     width?: number | string;
 }) {
     return (
-        <Card
+        <Grid2
             sx={{
-                minWidth: width ? width : '260px',
+                minWidth: width ? width : '200px',
                 maxWidth: width ? width : 'max-content',
                 gap: 2,
-                bgcolor: 'background.paper'
+                border: 0.5,
+                borderColor: (theme) => theme.palette.divider,
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                boxShadow: (theme) =>
+                    `inset 0 0 4px ${alpha(theme.palette.common.black, 0.09)}, 0 0 20px ${alpha(theme.palette.common.black, 0.03)} `
             }}
         >
-            <CardContent>
+            <Grid2 xs={10} component={Box}>
                 <Typography color="success" mb={0.5}>
                     {title ?? ''}
                 </Typography>
                 <Typography variant="body2">{description ?? ''}</Typography>
-            </CardContent>
-            <Box
+            </Grid2>
+            <Grid2
+                xs={2}
+                component={Box}
                 color="primary"
                 sx={{
                     px: 0.2,
                     writingMode: 'vertical-rl',
                     textAlign: 'center',
-                    fontSize: 'xs2',
-                    fontWeight: 'xl2',
                     letterSpacing: '1px',
                     textTransform: 'uppercase'
                 }}
             >
                 {type ?? ''}
-            </Box>
-        </Card>
+            </Grid2>
+        </Grid2>
     );
 }

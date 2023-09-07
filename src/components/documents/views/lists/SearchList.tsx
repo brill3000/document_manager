@@ -37,7 +37,7 @@ export default function SearchList({ height, searchList }: { height?: number | s
                 else if (val.score <= 80) return 4;
                 else if (val.score > 80) return 5;
             });
-        } else return ([] as unknown) as Dictionary<QueryResults[]>;
+        } else return [] as unknown as Dictionary<QueryResults[]>;
     }, [searchList]);
     const groupCounts =
         isObject(groupedDocuments) && !isNull(groupedDocuments) ? Object.values(groupedDocuments).map((users) => users.length) : null;

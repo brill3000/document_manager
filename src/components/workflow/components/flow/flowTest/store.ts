@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import {
     Connection,
     Edge,
@@ -11,14 +11,14 @@ import {
     OnConnect,
     applyNodeChanges,
     applyEdgeChanges
-} from 'react-flow-renderer';
+} from 'reactflow';
 
 const initialNodes = [
     {
         id: '0',
         type: 'input',
-        data: { label: 'Node' },
-        position: { x: 0, y: 50 }
+        data: { label: 'Start' },
+        position: { x: 100, y: 300 }
     }
 ];
 
@@ -30,6 +30,8 @@ export type NodeData = {
 export type RFState = {
     nodes: Node<NodeData>[];
     edges: Edge[];
+    addNode: (newNode: Node) => void;
+    addEdge: (newEdge: Edge) => void;
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;

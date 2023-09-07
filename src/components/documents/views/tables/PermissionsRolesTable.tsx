@@ -79,15 +79,6 @@ const PermissionsRolesTable = React.forwardRef<
     React.useEffect(() => {
         !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight);
     }, []);
-    React.useEffect(() => {
-        window.addEventListener(
-            'resize',
-            () => !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight)
-        );
-        return () => {
-            window.removeEventListener('resize', () => console.log(''));
-        };
-    });
     // ==================================== | Mutations | =================================== //
     const [revokeRole] = useRevokeRoleMutation();
     const [grantRole] = useGrantRoleMutation();
@@ -99,9 +90,10 @@ const PermissionsRolesTable = React.forwardRef<
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-    const rows = React.useMemo(() => roles.map((role) => createData(role.name, role.read, role.write, role.delete, role.security)), [
-        roles
-    ]);
+    const rows = React.useMemo(
+        () => roles.map((role) => createData(role.name, role.read, role.write, role.delete, role.security)),
+        [roles]
+    );
     console.log(rows, 'ROWS');
     const handleChange = (value: boolean | string, role: string, type: keyof PermissionTypes) => {
         if (typeof value === 'boolean') {

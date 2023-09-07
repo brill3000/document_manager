@@ -104,13 +104,12 @@ export interface IWorkflowPanelProps {
     setNodes: any;
     setEdges: any;
 }
+export type TFormCreation = 'input' | 'large_input' | 'checkbox' | 'radio' | 'select' | 'submit';
 export interface INewFormTitle {
     newFormTitle: string;
     handleNewFormTitleChange: React.ChangeEventHandler<HTMLInputElement>;
-    openEditIndex: { input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean };
-    setOpenEditIndex: React.Dispatch<
-        React.SetStateAction<{ input: boolean; large_input: boolean; checkbox: boolean; radio: boolean; select: boolean; submit: boolean }>
-    >;
+    openEditIndex: { [K in TFormCreation]: boolean };
+    setOpenEditIndex: React.Dispatch<React.SetStateAction<INewFormTitle['openEditIndex']>>;
     setEditDetails: React.Dispatch<React.SetStateAction<Array<any>>>;
     addFormComponent: (
         type: string,

@@ -50,13 +50,23 @@ export function PermissionsDialog() {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || !focused.is_dir
         }
     );
-    const { data: users, isError: usersIsError, isFetching: usersIsFetching, isLoading: usersIsLoading } = useGetGrantedUsersQuery(
+    const {
+        data: users,
+        isError: usersIsError,
+        isFetching: usersIsFetching,
+        isLoading: usersIsLoading
+    } = useGetGrantedUsersQuery(
         { nodeId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || tab === 'roles'
         }
     );
-    const { data: roles, isError: rolesIsError, isFetching: rolesIsFetching, isLoading: rolesIsLoading } = useGetGrantedRolesQuery(
+    const {
+        data: roles,
+        isError: rolesIsError,
+        isFetching: rolesIsFetching,
+        isLoading: rolesIsLoading
+    } = useGetGrantedRolesQuery(
         { nodeId: !isNull(focused) && !isEmpty(focused) && !isNull(focused.id) ? focused.id : '' },
         {
             skip: isNull(focused) || isEmpty(focused) || isNull(focused.id) || tab === 'users'

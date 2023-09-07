@@ -84,15 +84,6 @@ const PermissionsUsersTable = React.forwardRef<
     React.useEffect(() => {
         !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight);
     }, []);
-    React.useEffect(() => {
-        window.addEventListener(
-            'resize',
-            () => !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight)
-        );
-        return () => {
-            window.removeEventListener('resize', () => console.log(''));
-        };
-    });
     // ==================================== | Mutations | =================================== //
     const [revokeUser] = useRevokeUserMutation();
     const [grantUser] = useGrantUserMutation();

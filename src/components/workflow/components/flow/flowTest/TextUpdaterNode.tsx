@@ -1,31 +1,28 @@
-import { Handle, Position } from 'react-flow-renderer';
+import { Handle, Position } from 'reactflow';
 import { Edit, Save } from '@mui/icons-material';
-import { Box, Divider, Experimental_CssVarsProvider, Grid } from '@mui/material';
+import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import { Formik } from 'formik';
-import { FormikTextMultiline } from 'global/UI/FormMUI/Components';
-import React from 'react';
-import ActionSelect from './ActionSelect';
-import ActionDial from './Actiondial';
-import ThemeCustomization from 'themes';
-import Typography from '@mui/joy/Typography';
-import IconButton from '@mui/joy/IconButton';
+import { useState } from 'react';
 import useStore from './store';
+import ActionDial from './Actiondial';
+import { ActionSelect } from '../../UI';
+import { FormikText } from 'global/UI/FormMUI/Components';
 
-export default function TextUpdaterNode({ id, data }) {
-    const [selectedAction, setSelectedAction] = React.useState(null);
+export default function TextUpdaterNode({ id, data }: { id: string; data: any }) {
+    const [selectedAction, setSelectedAction] = useState<string | null>(null);
     const updateNodeLabel = useStore((state) => state.updateNodeLabel);
-    const [update, setUpdate] = React.useState(true);
+    const [update, setUpdate] = useState(true);
     console.log(data);
     return (
         <>
             <Handle type="target" position={Position.Top} />
-            <Box spacing={1} sx={{ bgcolor: 'white', borderRadius: 0.8, p: 1, border: '2px solid black', minWidth: 200, maxWidth: 350 }}>
+            <Stack sx={{ bgcolor: 'white', borderRadius: 0.8, p: 1, border: '2px solid black', minWidth: 200, maxWidth: 350 }}>
                 {update ? (
                     <Formik
-                        initialValues={{ title: data ? data.label : '' }}
+                        initialValues={{ title: data ? data.label : '', action: '' }}
                         validate={(values) => {
-                            const errors = {};
+                            const errors: any = {};
                             if (!values.title) {
                                 errors['title'] = 'Required';
                             }
@@ -42,7 +39,7 @@ export default function TextUpdaterNode({ id, data }) {
                                 };
                             }
                             if (action) {
-                                updateNodeLabel(id, values.title, action);
+                                updateNodeLabel(id, values.title);
                             } else {
                                 updateNodeLabel(id, values.title);
                             }
@@ -61,13 +58,15 @@ export default function TextUpdaterNode({ id, data }) {
                             <form onSubmit={handleSubmit}>
                                 <Stack direction={'column'} spacing={2}>
                                     <Stack direction="row" spacing={1} minWidth="100%">
-                                        <FormikTextMultiline
+                                        <FormikText
+                                            id="title"
+                                            variant="outlined"
                                             label="Title"
                                             name="title"
                                             placeholder="Enter Process title"
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            onKeyPress={(e) => {
+                                            onKeyDown={(e) => {
                                                 e.key === 'Enter' && e.preventDefault();
                                             }}
                                         />
@@ -77,11 +76,10 @@ export default function TextUpdaterNode({ id, data }) {
                                             }}
                                         >
                                             <IconButton
-                                                variant="solid"
                                                 type="submit"
                                                 color="success"
                                                 disabled={isSubmitting}
-                                                onKeyPress={(e) => {
+                                                onKeyDown={(e) => {
                                                     e.key === 'Enter' && e.preventDefault();
                                                 }}
                                             >
@@ -91,16 +89,12 @@ export default function TextUpdaterNode({ id, data }) {
                                     </Stack>
 
                                     <Divider />
-                                    <Typography level="body4">Add Action Taken</Typography>
-                                    <Experimental_CssVarsProvider>
-                                        <ThemeCustomization>
-                                            <Grid container justifyContent={'flex-start'}>
-                                                <Grid item>
-                                                    <ActionDial setSelectedAction={(val) => setSelectedAction(val)} />
-                                                </Grid>
-                                            </Grid>
-                                        </ThemeCustomization>
-                                    </Experimental_CssVarsProvider>
+                                    <Typography variant="body1">Add Action Taken</Typography>
+                                    <Grid container justifyContent={'flex-start'}>
+                                        <Grid item>
+                                            <ActionDial setSelectedAction={(val: string) => setSelectedAction(val)} />
+                                        </Grid>
+                                    </Grid>
                                     {selectedAction && <ActionSelect name="action" selectedAction={selectedAction} />}
                                 </Stack>
                             </form>
@@ -109,14 +103,13 @@ export default function TextUpdaterNode({ id, data }) {
                 ) : (
                     <Grid container direction="row">
                         <Grid item xs={10}>
-                            <Typography level="body2">{data.label}</Typography>
+                            <Typography variant="body1">{data.label}</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <IconButton
-                                variant="solid"
-                                color="danger"
-                                size="sm"
-                                onKeyPress={(e) => {
+                                color="error"
+                                size="small"
+                                onKeyDown={(e) => {
                                     e.key === 'Enter' && e.preventDefault();
                                 }}
                                 onClick={() => setUpdate(true)}
@@ -126,7 +119,7 @@ export default function TextUpdaterNode({ id, data }) {
                         </Grid>
                     </Grid>
                 )}
-            </Box>
+            </Stack>
             <Handle type="source" position={Position.Bottom} id="a" />
         </>
     );

@@ -4,7 +4,7 @@ import { TabPanel } from 'components/documents/views/UI/Tabs';
 import { Box, Button, Checkbox, Dialog, IconButton, TextField, Typography, alpha } from '@mui/material';
 import { FormsPanel } from './FormsPanel';
 import { useUserAuth } from 'context/authContext';
-import { useEdgesState, useNodesState } from 'react-flow-renderer';
+import { useEdgesState, useNodesState } from 'reactflow';
 import { Delete, Save } from '@mui/icons-material';
 import { WorkflowPanel } from './WorkflowPanel';
 
@@ -254,21 +254,22 @@ const CreateFlowStepper = ({ open, handleClose }: { open: boolean; handleClose: 
     };
     return (
         <Dialog
-            maxWidth="sm"
+            maxWidth="md"
             fullWidth
             sx={{
                 '& .MuiPaper-root': {
                     boxShadow: (theme) =>
                         `inset 0 0 4px ${alpha(theme.palette.common.black, 0.09)}, 0 0 20px ${alpha(theme.palette.common.black, 0.15)} `,
                     borderRadius: 2,
-                    py: 2,
-                    minHeight: '70vh'
+                    height: '90vh'
                 }
             }}
             open={open}
             onClose={() => handleClose()}
         >
-            <Typography>WORKFLOW WIZARD</Typography>
+            <Typography component={Box} variant="h5" p={1}>
+                WORKFLOW WIZARD
+            </Typography>
             <FlowTabList tab={tab} handleChangeTab={handleChangeTab} />
             <TabPanel value={tab} index={0}>
                 <FormsPanel

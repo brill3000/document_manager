@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "lib": ["dom", "dom.iterable", "esnext"],
+        "lib": ["dom", "dom.iterable", "esnext", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include"],
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "esnext",
