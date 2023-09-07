@@ -237,7 +237,9 @@ export function LeftSidebar({
         [expanded]
     );
 
-    const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {};
+    const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+        console.log('');
+    };
 
     const handleSelect = (event: React.SyntheticEvent, nodeIds: string[] | string) => {
         standAlone !== true && handleDocumentClick(String(nodeIds), true);

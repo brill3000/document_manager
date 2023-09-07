@@ -185,9 +185,9 @@ export function NoteTaker({ nodeId, onClose }: { nodeId: string | null; node_nam
         const newState = RichUtils.handleKeyCommand(editorState, command);
         if (newState) {
             setEditorState(newState);
-            return true as unknown as DraftHandleValue;
+            return (true as unknown) as DraftHandleValue;
         }
-        return false as unknown as DraftHandleValue;
+        return (false as unknown) as DraftHandleValue;
     };
     const handleCreateNote = async () => {
         try {

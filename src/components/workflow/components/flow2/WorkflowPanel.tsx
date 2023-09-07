@@ -119,7 +119,7 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
             <Grid2 xs={6} sx={{ px: 4, py: 2, position: 'relative', overflow: 'hidden' }}>
                 <TestFlow />
             </Grid2>
-            <Grid2 xs={3} height="100%" sx={{ px: 4, py: 2 }}>
+            <Grid2 xs={3} height="100%" sx={{ px: 4, py: 2, borderLeft: 1, borderColor: (theme) => theme.palette.divider }}>
                 {/* {workflowQuery.isLoading || workflowQuery.isFetching ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                             <GoogleLoader height={150} width={150} loop={true} />
@@ -131,7 +131,7 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                         </Box>
                     ) : ( */}
                 <Stack direction="column" spacing={1}>
-                    <Typography variant="h3" component={Box} mb={2} color="text.secondary">
+                    <Typography variant="h4" component={Box} mb={2} color="text.secondary">
                         Templates Workflows
                     </Typography>
 

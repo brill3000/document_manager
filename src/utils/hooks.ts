@@ -704,40 +704,38 @@ export const useMemorizedDocumemtIcon = () => {
 
 // ================================= | Axios Base Query | ============================= //
 
-export const axiosBaseQuery =
-    (
-        { baseUrl }: { baseUrl: string } = { baseUrl: '' }
-    ): BaseQueryFn<
-        {
-            url: string;
-            method: AxiosRequestConfig['method'];
-            data?: AxiosRequestConfig['data'];
-            params?: AxiosRequestConfig['params'];
-            responseType?: AxiosRequestConfig['responseType'];
-            onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
-        },
-        unknown,
-        unknown
-    > =>
-    async ({ url, method, data, params, responseType, onUploadProgress }) => {
-        try {
-            const result = await axios({ url: baseUrl + url, method, data, responseType, params, onUploadProgress, withCredentials: true });
-            return { data: result.data };
-        } catch (axiosError) {
-            const err = axiosError as AxiosError;
-            if (typeof err.response?.data === 'string') {
-                if (err.response.data.includes('AccessDeniedException: Invalid token')) {
-                    window.location.replace('http://localhost:3006/login');
-                }
+export const axiosBaseQuery = (
+    { baseUrl }: { baseUrl: string } = { baseUrl: '' }
+): BaseQueryFn<
+    {
+        url: string;
+        method: AxiosRequestConfig['method'];
+        data?: AxiosRequestConfig['data'];
+        params?: AxiosRequestConfig['params'];
+        responseType?: AxiosRequestConfig['responseType'];
+        onUploadProgress?: AxiosRequestConfig['onUploadProgress']; // Add onUploadProgress option
+    },
+    unknown,
+    unknown
+> => async ({ url, method, data, params, responseType, onUploadProgress }) => {
+    try {
+        const result = await axios({ url: baseUrl + url, method, data, responseType, params, onUploadProgress, withCredentials: true });
+        return { data: result.data };
+    } catch (axiosError) {
+        const err = axiosError as AxiosError;
+        if (typeof err.response?.data === 'string') {
+            if (err.response.data.includes('AccessDeniedException: Invalid token')) {
+                window.location.replace('http://localhost:3006/login');
             }
-            return {
-                error: {
-                    status: err.response?.status,
-                    data: err.response?.data || err.message
-                }
-            };
         }
-    };
+        return {
+            error: {
+                status: err.response?.status,
+                data: err.response?.data || err.message
+            }
+        };
+    }
+};
 
 // export function debounce<T extends (...args: any[]) => void>(func: T, timeout = 300): (...args: Parameters<T>) => void {
 //     let timer: NodeJS.Timeout;

@@ -332,5 +332,10 @@ export const filesQuery = createApi({
     })
 });
 export const files_query = filesQuery.reducer;
-export const { useGetFilesByParentIdQuery, useUploadFileMutation, useRenameFilesMutation, useTrashFileMutation, useRestorFileMutation } =
-    filesQuery;
+export const {
+    useGetFilesByParentIdQuery,
+    useUploadFileMutation,
+    useRenameFilesMutation,
+    useTrashFileMutation,
+    useRestorFileMutation
+} = filesQuery;

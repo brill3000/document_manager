@@ -8,6 +8,7 @@ import './testFlow.css';
 // COMPONENTS
 import TextUpdaterNode from './TextUpdaterNode';
 import { FlowWrapper } from '../../UI';
+import 'reactflow/dist/style.css';
 
 let id = 1;
 const getId = () => `${id++}`;

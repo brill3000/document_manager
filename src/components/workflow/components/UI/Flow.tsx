@@ -1,7 +1,7 @@
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 
 // loader style
-export const FlowWrapper = styled('div')(({ theme }) => ({
+export const FlowWrapper = styled(Box)(({ theme }) => ({
     '& .zoompanflow': {
         flexDirection: 'column',
         display: 'flex',
@@ -16,7 +16,7 @@ export const FlowWrapper = styled('div')(({ theme }) => ({
         background: theme.palette.background.paper
     },
     '& .react-flow': {
-        minHeight: '100vh',
+        minHeight: '100%',
         '& .react-flow__node': {
             minHeight: '40px',
             maxHeight: 'min-content',
