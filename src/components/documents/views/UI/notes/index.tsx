@@ -357,29 +357,31 @@ export const Toolbar = ({ editorState, setEditorState }: { editorState: any; set
 
 export const NoteDisplay = ({ note }: { note: INote }) => {
     return (
-        <Box
-            component={ButtonBase}
-            p={1}
-            width="100%"
-            height="max-content"
-            fontSize={(theme) => theme.typography.caption.fontSize}
-            display="flex"
-            alignItems="start"
-            color={(theme) => theme.palette.info.contrastText}
-            bgcolor="warning.main"
-            borderRadius={1}
-            flexDirection="column"
-        >
-            <Typography component={Box} variant="caption" noWrap sx={{ width: '100%', textAlign: 'start' }}>
-                <u>{stripHtmlTags(note.text)}</u>
-            </Typography>
-            <Box width="max-content">
-                <Interweave content={isString(note.text) ? note.text : ''} />
+        <Stack width="100%">
+            <Box
+                component={ButtonBase}
+                p={1}
+                width="100%"
+                height="max-content"
+                fontSize={(theme) => theme.typography.caption.fontSize}
+                display="flex"
+                alignItems="start"
+                color={(theme) => theme.palette.info.contrastText}
+                bgcolor="primary.main"
+                borderRadius={1}
+                flexDirection="column"
+            >
+                <Typography component={Box} variant="caption" noWrap sx={{ width: '100%', textAlign: 'start' }}>
+                    <u>{stripHtmlTags(note.text)}</u>
+                </Typography>
+                <Box width="max-content">
+                    <Interweave content={isString(note.text) ? note.text : ''} />
+                </Box>
             </Box>
             <Stack width="100%" direction="row" justifyContent="space-between">
                 <Typography variant="caption">{note.author}</Typography>
                 <Typography variant="caption">{getDateFromObject(note.date).toLocaleString()}</Typography>
             </Stack>
-        </Box>
+        </Stack>
     );
 };

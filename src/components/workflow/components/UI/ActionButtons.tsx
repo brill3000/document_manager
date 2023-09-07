@@ -1,27 +1,45 @@
 import { Add, Save } from '@mui/icons-material';
-import Button from '@mui/joy/Button';
-import { Collapse } from '@mui/material';
+import { Button, Collapse } from '@mui/material';
 import { Stack } from '@mui/system';
-import { Formik } from 'formik';
-import { FormikTextMultiline } from 'global/UI/FormMUI/Components';
+// import { Formik } from 'formik';
+// import { FormikTextMultiline } from 'global/UI/FormMUI/Components';
 import React from 'react';
-import ActionSelect from './flowTest/ActionSelect';
+// import ActionSelect from '../flow/flowTest/ActionSelect';
 
-export function ActionButtons({ openForm, setOpenForm, onAdd }) {
+type TInitialValues = {
+    title: string;
+    placeholder: string;
+    minRows: number;
+    isRequired: string;
+    initialValue: unknown;
+    defaultChecked: boolean;
+    action: 'string';
+};
+
+export function ActionButtons({
+    openForm,
+    setOpenForm,
+    onAdd
+}: {
+    openForm: boolean;
+    setOpenForm: (val: boolean) => void;
+    onAdd: (title: string, actions?: { type: string; action: string }) => void;
+}) {
     const [addAction, setAddAction] = React.useState(false);
+    const INITIAL_VALUES = { title: '', placeholder: '', minRows: 1, isRequired: '', initialValue: '', defaultChecked: false };
     return (
         <>
             {!openForm && (
-                <Button variant="solid" startIcon={<Add />} onClick={() => setOpenForm(true)}>
+                <Button variant="contained" startIcon={<Add />} onClick={() => setOpenForm(true)}>
                     Add Process
                 </Button>
             )}
             <Collapse in={openForm} timeout="auto" unmountOnExit>
                 <Stack>
-                    <Formik
-                        initialValues={{ title: '', placeholder: '', minRows: 1, isRequired: '', initialValue: '', defaultChecked: false }}
+                    {/* <Formik
+                        initialValues={INITIAL_VALUES}
                         validate={(values) => {
-                            const errors = {};
+                            const errors: Record<keyof TInitialValues | string, string> = {};
                             if (!values.title) {
                                 errors['title'] = 'Required';
                             }
@@ -44,18 +62,11 @@ export function ActionButtons({ openForm, setOpenForm, onAdd }) {
                             }
                         }}
                     >
-                        {({
-                            values,
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            isSubmitting
-                            /* and other goodies */
-                        }) => (
+                        {({ values, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
                             <form onSubmit={handleSubmit}>
                                 <Stack direction={'column'} spacing={2}>
                                     <Button
-                                        variant="solid"
+                                        variant="contained"
                                         type="submit"
                                         sx={{ mt: 2 }}
                                         color="success"
@@ -85,7 +96,7 @@ export function ActionButtons({ openForm, setOpenForm, onAdd }) {
                                             sx={{ mt: 2 }}
                                             startIcon={<Add />}
                                             onClick={() => setAddAction(true)}
-                                            onKeyPress={(e) => {
+                                            onKeyDown={(e) => {
                                                 e.key === 'Enter' && e.preventDefault();
                                             }}
                                         >
@@ -109,7 +120,7 @@ export function ActionButtons({ openForm, setOpenForm, onAdd }) {
                                 </Stack>
                             </form>
                         )}
-                    </Formik>
+                    </Formik> */}
                 </Stack>
             </Collapse>
         </>

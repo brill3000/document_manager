@@ -1,42 +1,50 @@
-import * as React from 'react';
-import TabList from '@mui/joy/TabList';
-import Tab, { tabClasses } from '@mui/joy/Tab';
+import { Box, Tab, Tabs } from '@mui/material';
+import { a11yProps } from 'components/documents/views/UI/Tabs';
+import { SyntheticEvent } from 'react';
 
-export function FlowTabList() {
+export function FlowTabList({ tab, handleChangeTab }: { tab: number; handleChangeTab: (e: SyntheticEvent, tab: number) => void }) {
     return (
-        <TabList
-            variant="plain"
-            sx={{
-                alignSelf: 'flex-start',
-                [`& .${tabClasses.root}`]: {
-                    bgcolor: 'transparent',
-                    boxShadow: 'none',
-                    '&:hover': {
-                        bgcolor: 'transparent'
-                    },
-                    [`&.${tabClasses.selected}`]: {
-                        color: 'primary.plainColor',
-                        fontWeight: 'lg',
-                        '&:before': {
-                            content: '""',
-                            display: 'block',
-                            position: 'absolute',
-                            zIndex: 1,
-                            bottom: '-1px',
-                            left: 'var(--List-item-paddingLeft)',
-                            right: 'var(--List-item-paddingRight)',
-                            height: '3px',
-                            borderTopLeftRadius: '3px',
-                            borderTopRightRadius: '3px',
-                            bgcolor: 'primary.500'
-                        }
-                    }
-                }
-            }}
-        >
-            <Tab>Design Forms</Tab>
-            <Tab>Design Workflow</Tab>
-            <Tab>Initiate Workflow</Tab>
-        </TabList>
+        <>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={tab} onChange={handleChangeTab} aria-label="workflow tabs">
+                    <Tab
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textTransform: 'capitalize'
+                        }}
+                        // icon={<UserOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
+                        label="Design Forms"
+                        {...a11yProps(0)}
+                    />
+                    <Tab
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textTransform: 'capitalize'
+                        }}
+                        // icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
+                        label="Design Forms"
+                        {...a11yProps(1)}
+                    />
+                    <Tab
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textTransform: 'capitalize'
+                        }}
+                        // icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
+                        label="Initiate Workflow"
+                        {...a11yProps(2)}
+                    />
+                </Tabs>
+            </Box>
+        </>
     );
 }

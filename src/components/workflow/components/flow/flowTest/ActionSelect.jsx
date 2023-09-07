@@ -5,8 +5,6 @@ import Chip from '@mui/joy/Chip';
 import List from '@mui/joy/List';
 import ListItemDecorator, { listItemDecoratorClasses } from '@mui/joy/ListItemDecorator';
 import ListDivider from '@mui/joy/ListDivider';
-import ListItem from '@mui/joy/ListItem';
-import Typography from '@mui/joy/Typography';
 import Check from '@mui/icons-material/Check';
 import { useField } from 'formik';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';

@@ -725,6 +725,11 @@ export const axiosBaseQuery = (
         return { data: result.data };
     } catch (axiosError) {
         const err = axiosError as AxiosError;
+        if (typeof err.response?.data === 'string') {
+            if (err.response.data.includes('AccessDeniedException: Invalid token')) {
+                window.location.replace('http://localhost:3006/login');
+            }
+        }
         return {
             error: {
                 status: err.response?.status,

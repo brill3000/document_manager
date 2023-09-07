@@ -6,8 +6,8 @@ import { JavaCalendar } from 'global/interfaces';
  * @author brilliant
  */
 export const UriHelper = {
-    HOST: 'http://localhost:8080/OpenKM/services/rest/',
-    // HOST: 'http://ec100.stl-horizon.com:8080/OpenKM/services/rest/',
+    // HOST: 'http://localhost:8080/OpenKM/services/rest/',
+    HOST: 'http://ec100.stl-horizon.com:8080/OpenKM/services/rest/',
 
     /**
      * Auth

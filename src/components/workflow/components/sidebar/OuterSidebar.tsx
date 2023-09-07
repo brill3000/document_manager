@@ -1,22 +1,8 @@
 import React from 'react';
-import {
-    Box,
-    Divider,
-    Experimental_CssVarsProvider,
-    Grid,
-    Stack,
-    Theme,
-    Typography,
-    alpha,
-    hexToRgb,
-    useMediaQuery,
-    useTheme
-} from '@mui/material';
+import { Box, Divider, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
 import { BsCheck, BsPlayFill, BsStopFill } from 'react-icons/bs';
-import ThemeCustomization from 'themes';
-import ViewFile from 'components/workflow/components/flow/ViewFile';
-import CreateFlow from 'components/workflow/components/flow/CreateFlow';
+import CreateFlowStepper from '../flow2';
 import { TbSettingsAutomation } from 'react-icons/tb';
 export function OuterSidebar() {
     const theme = useTheme();
@@ -26,6 +12,9 @@ export function OuterSidebar() {
     };
     const matchDownMD = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     const [openView, setOpenView] = React.useState<boolean>(true);
+    const handleCloseWorkflowWizard = () => {
+        setOpenView(false);
+    };
 
     return (
         <Grid
@@ -128,13 +117,8 @@ export function OuterSidebar() {
                     {new Date().toDateString()}
                 </Box>
             </Typography>
-            <Experimental_CssVarsProvider>
-                <ThemeCustomization>
-                    <ViewFile modalType="WORKFLOW" viewUrl={null} isFullScreen={true} openView={openView} setOpenView={setOpenView}>
-                        <CreateFlow />
-                    </ViewFile>
-                </ThemeCustomization>
-            </Experimental_CssVarsProvider>
+
+            <CreateFlowStepper open={openView} handleClose={handleCloseWorkflowWizard} />
         </Grid>
     );
 }

@@ -215,6 +215,17 @@ export const filesQuery = createApi({
                     return { error: e.message };
                 }
             },
+            transformResponse: (res) => {
+                console.log(res.error, 'ERROR');
+                if (res.error && res.error.message) {
+                    // Check the error message for the string
+                    const errorMessage = res.error.message;
+                    if (errorMessage.includes('AccessDeniedException: Invalid token')) {
+                        alert('Access Denied');
+                    }
+                }
+                return res;
+            },
             invalidatesTags: ['logs']
         }),
         trashFolder: builder.mutation({

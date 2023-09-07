@@ -18,7 +18,8 @@ import {
     SelectChangeEvent,
     Stack,
     TextField,
-    Typography
+    Typography,
+    alpha
 } from '@mui/material';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyledMenu } from './StyledMenu';
@@ -49,14 +50,10 @@ import { AcceptedFilesType, DocumentActionMenuType, IFormElementsComplex, MimeTy
 // RTK: QUERY
 import {
     useAddToCategoryMutation,
-    useCancelCheckoutMutation,
-    useCheckinMutation,
-    useCheckoutQuery,
     useForceCancelCheckoutMutation,
     useLazyCheckoutQuery,
     useLazyGetFilePropertiesQuery,
-    useRemoveFromCategoryMutation,
-    useUnlockMutation
+    useRemoveFromCategoryMutation
 } from 'store/async/dms/files/filesApi';
 import { useLazyGetFoldersPropertiesQuery } from 'store/async/dms/folders/foldersApi';
 import { LazyLoader } from '../..';
@@ -71,12 +68,11 @@ import {
     useLazyFindAllProcessDefinitionsQuery,
     useLazyFindTaskInstancesQuery,
     useLazyGetProcessDefinitionFormsQuery,
-    useRunProcessDefinitionMutation,
     useStartTaskInstanceMutation
 } from 'store/async/dms/workflow/workflowApi';
 import Dropzone from 'react-dropzone';
 import { MimeTypeConfig } from 'utils/constants/MimeTypes';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { instance } from '../../navigation/top/TopNavActions';
 
 type SubmenuItems = 'metadata' | 'categories' | 'keyword' | 'note' | 'workflow' | null;
@@ -286,7 +282,7 @@ export const ActionMenu = ({
                                 Edit
                             </Typography>
                         </Stack>
-                        {open === true ? (
+                        {openEdit === true ? (
                             <BsCaretLeftFill color={theme.palette.common.black} />
                         ) : (
                             <BsCaretRightFill color={theme.palette.common.black} />
@@ -728,7 +724,17 @@ const SubmenuDialog = memo(
         }, [processDefinitionForms]);
 
         return (
-            <Dialog open={selected !== null} onClose={() => handleClose()}>
+            <Dialog
+                sx={{
+                    boxShadow: `inset 0 0 4px ${alpha(theme.palette.common.black, 0.09)}, 0 0 20px ${alpha(
+                        theme.palette.common.black,
+                        0.15
+                    )} `,
+                    borderRadius: 2
+                }}
+                open={selected !== null}
+                onClose={() => handleClose()}
+            >
                 {selected === 'categories' && (
                     <Stack p={1} width="100%" height="100%">
                         <Typography variant="caption">Select category</Typography>
