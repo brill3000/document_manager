@@ -3,8 +3,6 @@ import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, Background } from
 // ZUSTAND
 import useStore from './store';
 // CSS
-import './testFlow.css';
-
 // COMPONENTS
 import TextUpdaterNode from './TextUpdaterNode';
 import { FlowWrapper } from '../../UI';

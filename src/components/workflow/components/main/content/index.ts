@@ -1,1 +1,2 @@
-export { Content } from 'components/workflow/components/main/content/Content';
+import OverviewFlow from '../../flow/Flow';
+export { OverviewFlow as Content };

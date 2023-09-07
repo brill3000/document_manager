@@ -1,17 +1,15 @@
-import * as React from 'react';
-import { FixedSizeList } from 'react-window';
-import { Chip, ListItemAvatar, ListItemButton, Stack, Typography, useTheme } from '@mui/material';
+import { Chip, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
+import { MutableRefObject, useEffect, useState } from 'react';
 import { BsCheck } from 'react-icons/bs';
-import ListItemContent from '@mui/joy/ListItemContent/ListItemContent';
+import { Virtuoso } from 'react-virtuoso';
 // ListChildComponentProps
 
-function renderRow(props: any) {
-    const { index, style } = props;
+const InnerList = <T,>({ data, index }: { data: T & { title: string; creator: string }; index: number }) => {
     const theme = useTheme();
+    const { title, creator } = data;
     return (
         <ListItemButton
-            style={style}
             key={index}
             component="div"
             sx={{
@@ -27,14 +25,14 @@ function renderRow(props: any) {
             <ListItemAvatar>
                 <Dot size={4} color={theme.palette.secondary.main} />
             </ListItemAvatar>
-            <ListItemContent>
+            <ListItemText>
                 <Stack direction="column" spacing={0.5}>
                     <Typography variant="body1" color="text.primary">
-                        Create order paper
+                        {title}
                     </Typography>
                     <Stack direction="row" spacing={0.5} justifyContent="space-between">
                         <Typography variant="body2" color="text.secondary">
-                            Brilliant Kaboi
+                            {creator}
                         </Typography>
                         <Chip
                             icon={<BsCheck />}
@@ -45,22 +43,22 @@ function renderRow(props: any) {
                         />
                     </Stack>
                 </Stack>
-            </ListItemContent>
+            </ListItemText>
         </ListItemButton>
     );
-}
+};
 
 export function WorkflowList({
     innerRef,
     outerRef
 }: {
-    innerRef: React.MutableRefObject<HTMLDivElement | null>;
-    outerRef: React.MutableRefObject<HTMLDivElement | null>;
+    innerRef: MutableRefObject<HTMLDivElement | null>;
+    outerRef: MutableRefObject<HTMLDivElement | null>;
 }) {
-    const [height, setHeight] = React.useState<number | null>(null);
-    const [width, setWidth] = React.useState<number | null>(null);
+    const [height, setHeight] = useState<number | null>(null);
+    const [width, setWidth] = useState<number | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (innerRef.current !== null && innerRef !== undefined && outerRef.current !== null && outerRef.current !== undefined) {
             setHeight(outerRef.current.clientHeight - innerRef.current.clientHeight);
             setWidth(outerRef.current.clientWidth);
@@ -68,13 +66,17 @@ export function WorkflowList({
     }, []);
     return (
         <>
-            {height !== null && width !== null ? (
-                <FixedSizeList itemSize={80} itemCount={1} overscanCount={5} height={height} width={width}>
-                    {renderRow}
-                </FixedSizeList>
-            ) : (
-                <></>
-            )}
+            <Virtuoso
+                style={{ height: height ?? '60vh', width: '100%' }}
+                components={{
+                    Item: List
+                }}
+                data={[
+                    { id: 1, title: 'Motion tabling', creator: 'Administrator' },
+                    { id: 2, title: 'Create order paper', creator: 'Brilliant' }
+                ]}
+                itemContent={(index, instance) => <InnerList data={instance} index={index} />}
+            />
         </>
     );
 }

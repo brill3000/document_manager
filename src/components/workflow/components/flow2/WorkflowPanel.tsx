@@ -8,6 +8,7 @@ import { GoogleLoader } from 'ui-component/LoadHandlers';
 import { ActionButtons } from '../UI/ActionButtons';
 import { FormikText } from 'global/UI/FormMUI/Components';
 import TestFlow from '../flow/flowTest/TestFlow';
+import { Content } from '../main/content';
 
 export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpenForm, onAdd }: IWorkflowPanelProps) => {
     return (
@@ -116,8 +117,9 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                     </ReactFlowProvider>
                 </Stack>
             </Grid2>
-            <Grid2 xs={6} sx={{ px: 4, py: 2, position: 'relative', overflow: 'hidden' }}>
-                <TestFlow />
+            <Grid2 xs={6} sx={{ px: 4, py: 2, position: 'relative', overflow: 'hidden' }} height="100%">
+                {/* <TestFlow /> */}
+                <Content />
             </Grid2>
             <Grid2 xs={3} height="100%" sx={{ px: 4, py: 2, borderLeft: 1, borderColor: (theme) => theme.palette.divider }}>
                 {/* {workflowQuery.isLoading || workflowQuery.isFetching ? (
