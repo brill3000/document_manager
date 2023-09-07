@@ -64,7 +64,6 @@ export const formsQuery = createApi({
 
                     const querySnapshot = await getDocs(q);
                     querySnapshot?.forEach((data) => {
-                        console.log(data.data(), 'DATA');
                         let userData = userConverter.fromFirestore(data);
 
                         users.push(userData.getWorkflow());

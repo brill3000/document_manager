@@ -551,7 +551,6 @@ export const authApi = createApi({
                 const patchResult = dispatch(
                     authApi.util.updateQueryData('getGrantedRoles', { nodeId }, (draft) => {
                         const draftCopy = draft.map((cachedRole) => {
-                            console.log(cachedRole, 'CACHE ROLE');
                             if (cachedRole.name === role) {
                                 (cachedRole[type] as RolePermission[typeof type]) = false;
                             }

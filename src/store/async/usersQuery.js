@@ -154,7 +154,6 @@ export const usersQuery = createApi({
                         const countDoc = await transaction.get(countRef);
 
                         const setVal = transaction.set(q, userConverter.toFirestore(user));
-                        console.log(setVal, 'VALUE');
                         const data = {
                             document_count: 0,
                             last_update: Timestamp.fromDate(new Date()),

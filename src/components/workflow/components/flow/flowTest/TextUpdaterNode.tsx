@@ -13,7 +13,6 @@ export default function TextUpdaterNode({ id, data }: { id: string; data: any })
     const [selectedAction, setSelectedAction] = useState<string | null>(null);
     const updateNodeLabel = useStore((state) => state.updateNodeLabel);
     const [update, setUpdate] = useState(true);
-    console.log(data);
     return (
         <>
             <Handle type="target" position={Position.Top} />

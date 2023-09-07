@@ -104,7 +104,6 @@ const AuthRegister = () => {
                                 blocked: false
                             };
                             const verification = await sendVerification();
-                            console.log(verification, 'VERIFICATION');
                             await updateUserName(values.firstname + ' ' + values.lastname);
                             await createUser(userDetails)
                                 .then(() => {

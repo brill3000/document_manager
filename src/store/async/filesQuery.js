@@ -216,7 +216,6 @@ export const filesQuery = createApi({
                 }
             },
             transformResponse: (res) => {
-                console.log(res.error, 'ERROR');
                 if (res.error && res.error.message) {
                     // Check the error message for the string
                     const errorMessage = res.error.message;

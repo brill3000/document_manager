@@ -37,7 +37,6 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                             }}
                             onSubmit={(values) => {
                                 setIsSending(true);
-                                console.log(values, values);
                                 // createFlow({
                                 //     title: values.title,
                                 //     created_by: user.uid,

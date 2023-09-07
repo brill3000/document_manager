@@ -185,16 +185,15 @@ export function NoteTaker({ nodeId, onClose }: { nodeId: string | null; node_nam
         const newState = RichUtils.handleKeyCommand(editorState, command);
         if (newState) {
             setEditorState(newState);
-            return true as unknown as DraftHandleValue;
+            return (true as unknown) as DraftHandleValue;
         }
-        return false as unknown as DraftHandleValue;
+        return (false as unknown) as DraftHandleValue;
     };
     const handleCreateNote = async () => {
         try {
             if (nodeId === null || nodeId === undefined) throw new Error('Failed to add note');
             const contentState = editorState.getCurrentContent();
             const content = convertToHTML(contentState);
-            console.log(content, 'CONTENT');
             await addNote({ nodeId, text: content }).unwrap();
             enqueueSnackbar('Note added', { variant: 'success' });
             onClose();
@@ -259,8 +258,6 @@ export const Toolbar = ({ editorState, setEditorState }: { editorState: any; set
 
     const applyStyle = (e: React.MouseEvent<HTMLElement>, style: any, method: string) => {
         e.preventDefault();
-        console.log(method, 'METHOD');
-        console.log(style, 'STYLE');
         method === 'block'
             ? setEditorState(RichUtils.toggleBlockType(editorState, style))
             : setEditorState(RichUtils.toggleInlineStyle(editorState, style));

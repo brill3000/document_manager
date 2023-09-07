@@ -406,8 +406,6 @@ export const foldersQuery = createApi({
                     await updateDoc(docRef, data);
                     const docSnap = await getDoc(docRef);
                     let folderData = { ...docSnap.data() };
-                    console.log(folderData, 'DATA');
-
                     const q2 = collection(db, 'logs');
                     const log = {
                         created_by: {

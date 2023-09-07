@@ -639,7 +639,6 @@ const SubmenuDialog = memo(
                         }).unwrap();
                         enqueueSnackbar(`Category Removed`, { variant: 'success' });
                     } else {
-                        console.log(nodeId, 'ID');
                         await addToCategory({
                             nodeId: nodeId,
                             catId
@@ -707,7 +706,6 @@ const SubmenuDialog = memo(
             getAllProcessDefinition();
         }, []);
         useEffect(() => {
-            console.log(selectedWorkflow, 'SELECTED');
             if (selectedWorkflow === '') return;
             getProcessDefinitionForms({ pdId: selectedWorkflow });
             findTaskInstances({ piId: selectedWorkflow });
@@ -887,7 +885,6 @@ const SubmenuDialog = memo(
                                     instance
                                         .post(`/${UriHelper.DOCUMENT_CHECKIN}`, formData, config)
                                         .then((res) => {
-                                            console.log(res.status, 'STATUS');
                                             if (res.status !== 200) return;
                                             cancelCheckout({ docId: uuid });
                                             enqueueSnackbar('Version Added', { variant: 'success' });

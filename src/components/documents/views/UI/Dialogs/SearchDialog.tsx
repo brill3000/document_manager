@@ -67,7 +67,6 @@ export function SearchDialog() {
     React.useEffect(() => {
         switch (tabValue) {
             case 0:
-                console.log(findByContentIsFetching, 'DATA 2');
                 findByContentIsFetching === true && isString(value) && !isEmpty(value) && setIsLoading(true);
                 findByContentIsFetching === false && setIsLoading(false);
 

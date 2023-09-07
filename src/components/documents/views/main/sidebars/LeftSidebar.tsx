@@ -238,7 +238,6 @@ export function LeftSidebar({
     );
 
     const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
-        console.log(nodeIds, 'TOOGLE');
     };
 
     const handleSelect = (event: React.SyntheticEvent, nodeIds: string[] | string) => {

@@ -258,7 +258,6 @@ export const filesApi = createApi({
                             ? Math.round((progressEvent.loaded / progressEvent.total) * 100)
                             : 0;
                         // Dispatch the progress update or update the state as needed
-                        console.log(`Upload Progress: ${progress}%`);
                     },
                     data: formData
                 };

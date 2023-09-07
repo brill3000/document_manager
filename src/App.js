@@ -11,26 +11,28 @@ import '@fontsource/montserrat';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 
-const App = () => (
-    <SnackbarProvider
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-        }}
-        Components={{
-            fileUploaded: FileUploaded
-        }}
-    >
-        <UserAuthContextProvider>
-            <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-                <ThemeCustomization>
-                    <ScrollTop>
-                        <Routes />
-                    </ScrollTop>
-                </ThemeCustomization>
-            </DndProvider>
-        </UserAuthContextProvider>
-    </SnackbarProvider>
-);
+const App = () => {
+    return (
+        <SnackbarProvider
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+            }}
+            Components={{
+                fileUploaded: FileUploaded
+            }}
+        >
+            <UserAuthContextProvider>
+                <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+                    <ThemeCustomization>
+                        <ScrollTop>
+                            <Routes />
+                        </ScrollTop>
+                    </ThemeCustomization>
+                </DndProvider>
+            </UserAuthContextProvider>
+        </SnackbarProvider>
+    );
+};
 
 export default App;
