@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,6 +12,7 @@ import { useGrantUserMutation, useRevokeUserMutation } from 'store/async/dms/aut
 import { Permissions } from 'utils/constants/Permissions';
 import { FaCircleCheck } from 'react-icons/fa6';
 import { IoCloseCircle } from 'react-icons/io5';
+import { ChangeEvent, RefObject, forwardRef, memo, useEffect, useMemo, useState } from 'react';
 
 interface Column {
     id: 'id' | 'name' | keyof PermissionTypes;
@@ -68,21 +68,30 @@ function createData(id: string, name: string, read: boolean, write: boolean, del
     return { id, name, read, write, delete: del, security };
 }
 
-const PermissionsUsersTable = React.forwardRef<
+const PermissionsUsersTable = forwardRef<
     HTMLDivElement,
     {
         users: UserPermission[];
         nodeId: string;
-        contentRef: React.RefObject<HTMLDivElement>;
+        contentRef: RefObject<HTMLDivElement>;
         isOpen: boolean;
     }
 >(({ users, nodeId, contentRef, isOpen }, ref) => {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const theme = useTheme();
-    const [height, setHeight] = React.useState<number>();
-    React.useEffect(() => {
+    const [height, setHeight] = useState<number>();
+    useEffect(() => {
         !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight);
+    }, []);
+    useEffect(() => {
+        window.addEventListener(
+            'resize',
+            () => !isUndefined(contentRef.current) && !isNull(contentRef.current) && setHeight(contentRef.current.clientHeight)
+        );
+        return () => {
+            window.removeEventListener('resize', () => console.log(''));
+        };
     }, []);
     // ==================================== | Mutations | =================================== //
     const [revokeUser] = useRevokeUserMutation();
@@ -91,14 +100,13 @@ const PermissionsUsersTable = React.forwardRef<
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-    const rows = React.useMemo(
-        () => users.map((user) => createData(user.id, user.name, user.read, user.write, user.delete, user.security)),
-        [users]
-    );
+    const rows = useMemo(() => users.map((user) => createData(user.id, user.name, user.read, user.write, user.delete, user.security)), [
+        users
+    ]);
     const handleChange = (value: boolean | string, user: string, type: keyof PermissionTypes) => {
         if (typeof value === 'boolean') {
             switch (type) {
@@ -203,4 +211,4 @@ const PermissionsUsersTable = React.forwardRef<
         </Stack>
     );
 });
-export default React.memo(PermissionsUsersTable);
+export default memo(PermissionsUsersTable);
