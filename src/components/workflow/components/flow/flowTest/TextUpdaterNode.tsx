@@ -12,11 +12,11 @@ import { FormikText } from 'global/UI/FormMUI/Components';
 export default function TextUpdaterNode({ id, data }: { id: string; data: any }) {
     const [selectedAction, setSelectedAction] = useState<string | null>(null);
     const updateNodeLabel = useStore((state) => state.updateNodeLabel);
-    const [update, setUpdate] = useState(true);
+    const [update, setUpdate] = useState(false);
     return (
         <>
             <Handle type="target" position={Position.Top} />
-            <Stack sx={{ bgcolor: 'white', borderRadius: 0.8, p: 1, border: '2px solid black', minWidth: 200, maxWidth: 350 }}>
+            <Stack sx={{ bgcolor: 'white', borderRadius: 0.8, p: 1, border: '1px solid black', minWidth: 200, maxWidth: 350 }}>
                 {update ? (
                     <Formik
                         initialValues={{ title: data ? data.label : '', action: '' }}

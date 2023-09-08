@@ -15,6 +15,7 @@ import { usePurgeTrashFolderMutation } from 'store/async/dms/repository/reposito
 import { FolderActionMenuType } from 'global/interfaces';
 import { isNull, isUndefined, last } from 'lodash';
 import { foldersApi, useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
+import he from 'he';
 
 const MainGrid = ({ gridRef }: MainGridProps) => {
     // ========================= | STATES | =========================== //
@@ -128,7 +129,7 @@ const MainGrid = ({ gridRef }: MainGridProps) => {
                         const doc_name = last(currentFolder.split('/'));
                         const person = prompt(
                             `You are about to DELETE ${
-                                doc_name ?? ''
+                                he.decode(doc_name ?? '') ?? ''
                             }. The Document Will be LOST FOREVER, to delete enter in YES, to cancel enter NO or close the prompt`,
                             'NO'
                         );

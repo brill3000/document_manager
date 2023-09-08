@@ -28,7 +28,7 @@ export function FlowTabList({ tab, handleChangeTab }: { tab: number; handleChang
                             textTransform: 'capitalize'
                         }}
                         // icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Design Forms"
+                        label="Design Workflow"
                         {...a11yProps(1)}
                     />
                     <Tab

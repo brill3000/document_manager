@@ -18,7 +18,7 @@ const initialNodes = [
         id: '0',
         type: 'input',
         data: { label: 'Start' },
-        position: { x: 100, y: 300 }
+        position: { x: 300, y: 200 }
     }
 ];
 

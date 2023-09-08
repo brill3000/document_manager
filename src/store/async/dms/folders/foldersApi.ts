@@ -20,6 +20,8 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { createPermissionObj } from 'utils/hooks';
 import { decodeHtmlEntity } from 'utils';
+import he from 'he';
+
 type UserTags =
     | 'DMS_FOLDERS'
     | 'DMS_FOLDERS_SUCCESS'
@@ -78,6 +80,7 @@ export const foldersApi = createApi({
                     let doc_name = '';
                     let is_dir = false;
                     doc_name = last(folderCopy.path.split('/')) ?? '';
+                    doc_name = he.decode(doc_name);
                     const notes = folderCopy.notes.map((note) => ({ ...note, text: decodeHtmlEntity(note.text) }));
                     const categories = folderCopy.categories.map((category) => ({ ...category, doc_name: last(category.path.split('/')) }));
                     is_dir = true;
@@ -114,7 +117,8 @@ export const foldersApi = createApi({
                         folders: (dataCopy.folders.map((fld) => {
                             const folderCopy = { ...fld };
                             const pathArray = fld.path.split('/');
-                            const doc_name = pathArray[pathArray.length - 1];
+                            let doc_name = pathArray[pathArray.length - 1];
+                            doc_name = he.decode(doc_name);
                             const is_dir = true;
                             const folderPermission: PermissionTypes = createPermissionObj({ permissionId: fld.permissions });
 
@@ -123,7 +127,8 @@ export const foldersApi = createApi({
                     };
                 } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
                     const pathArray = dataCopy.folders.path.split('/');
-                    const doc_name = pathArray[pathArray.length - 1];
+                    let doc_name = pathArray[pathArray.length - 1];
+                    doc_name = he.decode(doc_name);
                     const is_dir = true;
                     const folderPermission: PermissionTypes = createPermissionObj({ permissionId: dataCopy.folders.permissions });
 
@@ -150,7 +155,8 @@ export const foldersApi = createApi({
                         folders: (dataCopy.folders.map((fld) => {
                             const folderCopy = { ...fld };
                             const pathArray = fld.path.split('/');
-                            const doc_name = pathArray[pathArray.length - 1];
+                            let doc_name = pathArray[pathArray.length - 1];
+                            doc_name = he.decode(doc_name);
                             const is_dir = true;
                             const folderPermission: PermissionTypes = createPermissionObj({ permissionId: fld.permissions });
 
@@ -159,7 +165,8 @@ export const foldersApi = createApi({
                     };
                 } else if (isObject(dataCopy.folders) && !isEmpty(dataCopy.folders)) {
                     const pathArray = dataCopy.folders.path.split('/');
-                    const doc_name = pathArray[pathArray.length - 1];
+                    let doc_name = pathArray[pathArray.length - 1];
+                    doc_name = he.decode(doc_name);
                     const is_dir = true;
                     const folderPermission: PermissionTypes = createPermissionObj({ permissionId: dataCopy.folders.permissions });
 
@@ -197,7 +204,8 @@ export const foldersApi = createApi({
                             if (!isUndefined(parentData)) {
                                 const parentCopy = { ...parentData };
                                 const parentPathArray = parentData.path.split('/');
-                                const doc_name = parentPathArray[parentPathArray.length - 1];
+                                let doc_name = parentPathArray[parentPathArray.length - 1];
+                                doc_name = he.decode(doc_name);
                                 const is_dir = true;
                                 const permissions: PermissionTypes = createPermissionObj({ permissionId: parentCopy.permissions });
                                 let children: string[] = [];

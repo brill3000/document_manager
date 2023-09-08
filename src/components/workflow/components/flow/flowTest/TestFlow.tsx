@@ -1,5 +1,5 @@
 import { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent, useCallback, useMemo, useRef } from 'react';
-import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, Background } from 'reactflow';
+import ReactFlow, { useReactFlow, ReactFlowProvider, Controls, SelectionMode } from 'reactflow';
 // ZUSTAND
 import useStore from './store';
 // CSS
@@ -10,6 +10,7 @@ import 'reactflow/dist/style.css';
 
 let id = 1;
 const getId = () => `${id++}`;
+const panOnDrag = [1, 2];
 
 const AddNodeOnEdgeDrop = () => {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -17,20 +18,20 @@ const AddNodeOnEdgeDrop = () => {
 
     const { nodes, edges, addEdge, addNode, onNodesChange, onEdgesChange, onConnect } = useStore();
 
-    const { project } = useReactFlow();
+    const { project, zoomOut, setCenter } = useReactFlow();
 
     const onConnectStart = useCallback((_: ReactMouseEvent | ReactTouchEvent, { nodeId }: { nodeId: string | null }) => {
-        if (connectingNodeId.current === null) return;
         connectingNodeId.current = nodeId;
     }, []);
 
     const onConnectStop = useCallback(
         (event: any) => {
             const targetIsPane = event.target.classList.contains('react-flow__pane');
-
             if (targetIsPane) {
                 if (reactFlowWrapper.current === null) return;
                 if (connectingNodeId.current === null) return;
+                console.log(targetIsPane, 'PANE');
+
                 // we need to remove the wrapper bounds, in order to get the correct position
                 const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
                 const id = getId();
@@ -49,6 +50,7 @@ const AddNodeOnEdgeDrop = () => {
                     target: id,
                     type: 'smoothstep'
                 });
+                zoomOut({ duration: 1000 });
             }
         },
         [project]
@@ -56,8 +58,9 @@ const AddNodeOnEdgeDrop = () => {
     const nodeTypes = useMemo(() => ({ textUpdater: TextUpdaterNode }), []);
 
     return (
-        <FlowWrapper ref={reactFlowWrapper}>
+        <FlowWrapper>
             <ReactFlow
+                ref={reactFlowWrapper}
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
@@ -66,12 +69,12 @@ const AddNodeOnEdgeDrop = () => {
                 nodeTypes={nodeTypes}
                 onConnectStart={onConnectStart}
                 onConnectEnd={onConnectStop}
+                panOnScroll
+                selectionOnDrag
                 snapToGrid={true}
-                attributionPosition="top-right"
+                selectionMode={SelectionMode.Partial}
             />
             <Controls />
-
-            <Background color="#aaa" gap={16} />
         </FlowWrapper>
     );
 };

@@ -1,14 +1,38 @@
 import { Save } from '@mui/icons-material';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    ButtonBase,
+    Divider,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Stack,
+    Typography,
+    alpha
+} from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Form, Formik } from 'formik';
-import { IWorkflowPanelProps } from 'global/interfaces';
+import { ITask, IWorkflowPanelProps } from 'global/interfaces';
 import { ReactFlowProvider } from 'reactflow';
 import { GoogleLoader } from 'ui-component/LoadHandlers';
 import { ActionButtons } from '../UI/ActionButtons';
 import { FormikText } from 'global/UI/FormMUI/Components';
 import TestFlow from '../flow/flowTest/TestFlow';
 import { Content } from '../main/content';
+import { BsGear } from 'react-icons/bs';
+import { useDrag } from 'react-dnd';
+import { ItemTypes } from 'components/documents/Interface/Constants';
+import { CSSProperties, useEffect } from 'react';
+import { getEmptyImage } from 'react-dnd-html5-backend';
+const tasks: ITask[] = [
+    { id: 1, title: 'Upload file' },
+    { id: 2, title: 'Fill form' },
+    { id: 3, title: 'Vote' }
+];
 
 export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpenForm, onAdd }: IWorkflowPanelProps) => {
     return (
@@ -19,11 +43,37 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                 sx={{
                     borderRight: 1,
                     borderColor: (theme) => theme.palette.divider,
-                    bgColor: (theme) => theme.palette.grey[100],
-                    p: 2
+                    bgColor: (theme) => theme.palette.background.default,
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    rowGap: 2
                 }}
             >
-                <Stack direction="column" spacing={2}>
+                <Typography variant="h5">TASKS</Typography>
+                <Divider textAlign="center">
+                    <Typography variant="caption" color="text.secondary">
+                        Drag task
+                    </Typography>
+                </Divider>
+                <List sx={{ height: '100%' }}>
+                    {tasks.map((task) => (
+                        <TaskItem key={task.id} task={task} />
+                    ))}
+                </List>
+            </Grid2>
+            <Grid2
+                xs={9}
+                sx={{
+                    pb: 2,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    backgroundColor: (theme) => theme.palette.grey[50]
+                }}
+                height="100%"
+            >
+                {/* <Stack direction="column" spacing={2} bgcolor="background.paper"> */}
+                {/* <Box bgcolor="background.paper" p={1} borderBottom={1} borderColor={(theme) => theme.palette.divider}>
                     {isSending ? (
                         <GoogleLoader height={80} width={80} loop={true} />
                     ) : (
@@ -65,9 +115,10 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                             {({ values, handleChange, handleBlur, handleSubmit }) => (
                                 <Form onSubmit={handleSubmit}>
                                     <Grid2 container direction="row" spacing={1}>
-                                        <Grid2 xs={10}>
+                                        <Grid2 xs={9}>
                                             <FormikText
                                                 multiline
+                                                fullWidth
                                                 maxRows={5}
                                                 size="small"
                                                 minRows={1}
@@ -75,16 +126,15 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                                                 variant="outlined"
                                                 placeholder="Enter Workflow title"
                                                 name="title"
-                                                label="Title"
+                                                label="Workflow title"
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 onKeyDown={(e: any) => {
                                                     e.key === 'Enter' && e.preventDefault();
                                                 }}
-                                                value={values.title}
                                             />
                                         </Grid2>
-                                        <Grid2 xs={2}>
+                                        <Grid2 xs={3} display="flex" justifyContent="end">
                                             {isSending ? (
                                                 <Box
                                                     display="flex"
@@ -96,15 +146,18 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                                                     <GoogleLoader height={50} width={50} loop={true} />
                                                 </Box>
                                             ) : (
-                                                <IconButton
+                                                <Button
                                                     type="submit"
+                                                    variant="contained"
+                                                    sx={{ height: 'max-content' }}
                                                     disabled={nodes.length < 1}
                                                     onKeyDown={(e) => {
                                                         e.key === 'Enter' && e.preventDefault();
                                                     }}
+                                                    startIcon={<Save />}
                                                 >
-                                                    <Save />
-                                                </IconButton>
+                                                    Save Workflow
+                                                </Button>
                                             )}
                                         </Grid2>
                                     </Grid2>
@@ -112,49 +165,70 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                             )}
                         </Formik>
                     )}
-                    <ReactFlowProvider>
+                </Box> */}
+                {/* <ReactFlowProvider>
                         <ActionButtons openForm={openForm} setOpenForm={setOpenForm} onAdd={onAdd} />
-                    </ReactFlowProvider>
-                </Stack>
-            </Grid2>
-            <Grid2 xs={6} sx={{ px: 4, py: 2, position: 'relative', overflow: 'hidden' }} height="100%">
-                {/* <TestFlow /> */}
-                <Content />
-            </Grid2>
-            <Grid2 xs={3} height="100%" sx={{ px: 4, py: 2, borderLeft: 1, borderColor: (theme) => theme.palette.divider }}>
-                {/* {workflowQuery.isLoading || workflowQuery.isFetching ? (
-                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                            <GoogleLoader height={150} width={150} loop={true} />
-                        </Box>
-                    ) : workflowQuery.isError ? (
-                        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
-                            <Error height={100} width={100} />
-                            <Typography variant="body2">Error Occured..</Typography>
-                        </Box>
-                    ) : ( */}
-                <Stack direction="column" spacing={1}>
-                    <Typography variant="h4" component={Box} mb={2} color="text.secondary">
-                        Templates Workflows
-                    </Typography>
-
-                    {/* {workflowQuery.data &&
-                        Array.isArray(workflowQuery.data) &&
-                        workflowQuery.data.map((workflow: any, index: number) => {
-                            return (
-                                <div
-                                    onClick={() => {
-                                        setNodes(workflow.nodes);
-                                        setEdges(workflow.edge);
-                                    }}
-                                    key={index}
-                                >
-                                    <FormsCard key={workflow.id} title={workflow.title} description={workflow.title} type="workflow" />
-                                </div>
-                            );
-                        })} */}
-                </Stack>
-                {/* )} */}
+                    </ReactFlowProvider> */}
+                {/* </Stack> */}
+                <TestFlow />
+                {/* <Content /> */}
             </Grid2>
         </Grid2>
+    );
+};
+
+function getStyles(left: number, top: number, isDragging: boolean): CSSProperties {
+    const transform = `translate3d(${left}px, ${top}px, 0)`;
+    return {
+        position: 'absolute',
+        transform,
+        WebkitTransform: transform,
+        // IE fallback: hide the real node using CSS when dragging
+        // because IE will ignore our custom "empty image" drag preview.
+        opacity: isDragging ? 0 : 1,
+        height: isDragging ? 0 : ''
+    };
+}
+
+export interface DraggableBoxProps {
+    id: string;
+    title: string;
+    left: number;
+    top: number;
+}
+
+const TaskItem = ({ task }: { task: ITask }) => {
+    const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+        // "type" is required. It is used by the "accept" specification of drop targets.
+        type: ItemTypes.Task,
+        item: { title: task.title },
+        // The collect function utilizes a "monitor" instance (see the Overview for what this is)
+        // to pull important pieces of state from the DnD system.
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging()
+        })
+    }));
+    useEffect(() => {
+        dragPreview(getEmptyImage(), { captureDraggingState: true });
+    }, [dragPreview]);
+    return (
+        <ListItemButton
+            ref={drag}
+            sx={{
+                borderRadius: 1.5,
+                border: 0.5,
+                px: 1,
+                py: 0.2,
+                mb: 3,
+                borderColor: (theme) => theme.palette.common.black,
+                bgcolor: (theme) => (isDragging ? alpha(theme.palette.primary.main, 0.7) : alpha(theme.palette.primary.main, 0.1)),
+                opacity: isDragging ? 0 : 1
+            }}
+        >
+            <ListItemIcon>
+                <BsGear size={20} />
+            </ListItemIcon>
+            <ListItemText primary={task.title} />
+        </ListItemButton>
     );
 };

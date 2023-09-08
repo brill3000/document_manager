@@ -30,7 +30,7 @@ export function ActionButtons({
     return (
         <>
             {!openForm && (
-                <Button variant="contained" startIcon={<Add />} onClick={() => setOpenForm(true)}>
+                <Button variant="contained" sx={{ width: 'max-content' }} startIcon={<Add />} onClick={() => setOpenForm(true)}>
                     Add Process
                 </Button>
             )}

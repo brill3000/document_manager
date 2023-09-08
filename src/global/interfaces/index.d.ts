@@ -104,6 +104,10 @@ export interface IWorkflowPanelProps {
     setNodes: any;
     setEdges: any;
 }
+export interface ITask {
+    id: number;
+    title: string;
+}
 export type TFormCreation = 'input' | 'large_input' | 'checkbox' | 'radio' | 'select' | 'submit';
 export interface INewFormTitle {
     newFormTitle: string;

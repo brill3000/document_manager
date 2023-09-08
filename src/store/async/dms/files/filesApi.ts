@@ -22,6 +22,8 @@ import { PermissionTypes } from 'components/documents/Interface/FileBrowser';
 import { axiosBaseQuery, createPermissionObj } from 'utils/hooks';
 import { foldersApi } from '../folders/foldersApi';
 import { decodeHtmlEntity } from 'utils';
+import he from 'he';
+
 type UserTags = 'DMS_FILES' | 'DMS_FILES_SUCCESS' | 'DMS_FILES_ERROR' | 'DMS_FILE_INFO' | 'DMS_FILE_INFO_SUCCESS' | 'DMS_FILE_INFO_ERROR';
 
 export const filesApi = createApi({
@@ -40,6 +42,7 @@ export const filesApi = createApi({
                 let is_dir = false;
                 if (isObject(fileCopy) && !isEmpty(fileCopy)) {
                     doc_name = last(fileCopy.path.split('/')) ?? '';
+                    doc_name = he.decode(doc_name);
                     const notes = fileCopy.notes.map((note) => ({ ...note, text: decodeHtmlEntity(note.text) }));
                     const categories = fileCopy.categories.map((category) => ({ ...category, doc_name: last(category.path.split('/')) }));
 
@@ -100,6 +103,7 @@ export const filesApi = createApi({
                             let is_dir = false;
                             const pathArray = doc.path.split('/');
                             doc_name = pathArray[pathArray.length - 1];
+                            doc_name = he.decode(doc_name ?? '');
                             is_dir = false;
                             const filePermission: PermissionTypes = createPermissionObj({ permissionId: doc.permissions });
 
@@ -142,6 +146,7 @@ export const filesApi = createApi({
                             let is_dir = false;
                             const pathArray = doc.path.split('/');
                             doc_name = pathArray[pathArray.length - 1];
+                            doc_name = he.decode(doc_name);
                             is_dir = false;
                             const filePermission: PermissionTypes = createPermissionObj({ permissionId: doc.permissions });
 
@@ -150,7 +155,8 @@ export const filesApi = createApi({
                     };
                 } else if (isObject(dataCopy.documents) && !isEmpty(dataCopy.documents)) {
                     const pathArray = dataCopy.documents.path.split('/');
-                    const doc_name = pathArray[pathArray.length - 1];
+                    let doc_name = pathArray[pathArray.length - 1];
+                    doc_name = he.decode(doc_name);
                     const is_dir = false;
                     const { permissions: permissionId } = dataCopy.documents;
                     const filePermission: PermissionTypes = createPermissionObj({ permissionId });

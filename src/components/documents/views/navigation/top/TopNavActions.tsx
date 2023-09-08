@@ -26,6 +26,8 @@ import { useHandleChangeRoute } from 'utils/hooks';
 import { useMoveFolderToTrashMutation, usePurgeFolderMutation } from 'store/async/dms/folders/foldersApi';
 import { RiFolderWarningFill } from 'react-icons/ri';
 import { MimeTypeConfig } from 'utils/constants/MimeTypes';
+import he from 'he';
+
 export const instance = axios.create({
     baseURL: UriHelper.HOST,
     withCredentials: true // Enable CORS with credentials
@@ -230,7 +232,7 @@ export default function TopNavActions() {
         if (!isUndefined(currentFolder)) {
             try {
                 if (!isNull(currentFolder) && !isUndefined(currentFolder)) {
-                    const doc_name = last(currentFolder.split('/'));
+                    const doc_name = he.decode(last(currentFolder.split('/')) ?? '');
                     const person = prompt(
                         `You are about to DELETE ${doc_name}. The Document Will be LOST FOREVER, to delete enter in YES, to cancel enter NO or close the prompt`,
                         'NO'
@@ -249,7 +251,7 @@ export default function TopNavActions() {
     const handleMoveToTrashFolder = async () => {
         if (!isUndefined(currentFolder)) {
             try {
-                const doc_name = last(currentFolder.split('/'));
+                const doc_name = he.decode(last(currentFolder.split('/')) ?? '');
 
                 const emptyFolder = confirm(`Move the opened folder ${doc_name} to TRASH?`);
                 if (emptyFolder === true) {

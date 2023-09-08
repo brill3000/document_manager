@@ -50,6 +50,7 @@ export function FormsPanel({
                         <Box display="flex" flexDirection="column" rowGap={1} key={type}>
                             <Button
                                 variant="contained"
+                                sx={{ width: 'max-content' }}
                                 color={type === 'submit' ? 'success' : 'primary'}
                                 onClick={() => {
                                     const openEditIndexCopy: Record<TFormCreation, boolean> = { ...openEditIndex };
@@ -139,9 +140,9 @@ export function FormsPanel({
                                                         variant="outlined"
                                                         name="label"
                                                         label="label"
+                                                        placeholder="Enter label"
                                                         onChange={handleChange}
                                                         onBlur={handleBlur}
-                                                        value={values.label}
                                                     />
                                                     {(type === 'input' || type === 'large_input') && (
                                                         <FormikText
@@ -149,9 +150,9 @@ export function FormsPanel({
                                                             variant="outlined"
                                                             name="placeholder"
                                                             label="placeholder"
+                                                            placeholder="Enter placeholder"
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            value={values.placeholder}
                                                         />
                                                     )}
                                                     {type === 'large_input' && (
@@ -160,9 +161,9 @@ export function FormsPanel({
                                                             variant="outlined"
                                                             name="minRows"
                                                             label="Minimum Rows"
+                                                            placeholder="Enter label"
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            value={values.minRows}
                                                             type="number"
                                                             InputProps={{ inputProps: { min: 0, max: 5, step: 1 } }}
                                                         />
@@ -200,9 +201,9 @@ export function FormsPanel({
                                                             variant="outlined"
                                                             label="Initial Value"
                                                             name="initialValue"
+                                                            placeholder="Enter intial value"
                                                             onChange={handleChange}
                                                             onBlur={handleBlur}
-                                                            value={values.initialValue}
                                                         />
                                                     )}
                                                     <Button
@@ -301,8 +302,8 @@ export function FormsPanel({
                         Saved Forms
                     </Typography>
                     {savedForms.length > 0 &&
-                        savedForms?.map((form: { title: string; description?: string; type?: string }) => (
-                            <FormsCard title={form.title} description={'Form for loan application'} type="loan" />
+                        savedForms?.map((form: { title: string; description?: string; type?: string }, i) => (
+                            <FormsCard key={form.title + i} title={form.title} description={'Form for loan application'} type="loan" />
                         ))}
                 </Stack>
             </Grid2>
