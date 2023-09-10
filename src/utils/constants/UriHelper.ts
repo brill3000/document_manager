@@ -6,7 +6,7 @@ import { JavaCalendar, TFormCreation } from 'global/interfaces';
  * @author brilliant
  */
 export const UriHelper = {
-    HOST: 'http://localhost:8080/OpenKM/services/rest/',
+    HOST: 'http://api.openkm.local:8080/OpenKM/services/rest/',
     // HOST: 'https://openkm.stl-horizon.com/services/rest/',
 
     /**

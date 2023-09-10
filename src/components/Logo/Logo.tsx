@@ -7,6 +7,8 @@
  */
 
 // ==============================|| LOGO SVG ||============================== //
+import { Box } from '@mui/material';
+import logo from 'assets/images/icons/coat_of_arms.png';
 
 const Logo = () => {
     return (
@@ -49,7 +51,15 @@ const Logo = () => {
                     </linearGradient>
                 </defs>
             </svg> */}
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 58 15" width="88" height="35">
+            <Box
+                component="img"
+                src={logo}
+                sx={{
+                    height: (theme) => (typeof theme.mixins.toolbar.minHeight === 'number' ? theme.mixins.toolbar.minHeight - 10 : 40),
+                    objectFit: 'contain'
+                }}
+            />
+            {/* <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 58 15" width="88" height="35">
                 <g id="Layer_2_1_">
                     <g id="Layer_2-2">
                         <path
@@ -62,7 +72,7 @@ const Logo = () => {
                         />
                     </g>
                 </g>
-            </svg>
+            </svg> */}
         </>
     );
 };

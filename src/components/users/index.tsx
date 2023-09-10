@@ -8,11 +8,11 @@ import IconButton from '@mui/joy/IconButton';
 // custom
 import { useSelector } from 'react-redux';
 import { RootState } from 'store/reducers';
-import { useGetSystemUsersQuery } from 'store/async/usersQuery';
 import { Box, Button, Stack, useTheme, Card } from '@mui/material';
 import UserTable from './components/UserTable.jsx';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { BsHandIndex } from 'react-icons/bs';
+import { useGetUsersQuery } from 'store/async/dms/auth/authApi';
 
 const Create: React.FC<any> = () => {
     return (
@@ -32,8 +32,7 @@ export default function Users({ title }: { title: string }) {
     const [search, setSearch] = React.useState('');
     const [users, setUsers] = React.useState<Array<any>>([]);
     const theme = useTheme();
-
-    const usersQuery = useGetSystemUsersQuery(null);
+    const usersQuery = useGetUsersQuery();
 
     React.useEffect(() => {
         if (usersQuery.isSuccess) {
@@ -42,13 +41,13 @@ export default function Users({ title }: { title: string }) {
             const users = usersQuery.data?.map((user: any) => ({
                 address: { country: 'USA OF A', state: 'West Virginia', city: 'Parkersburg', street: '2849 Fulton Street' },
                 avatarUrl: '/static/images/avatars/avatar_3.png',
-                createdAt: user.registration_date,
-                email: user.email,
-                id: user.user_id,
-                name: user.name.first_name + ' ' + user.name.last_name,
-                position: user.position,
+                createdAt: new Date().toDateString(),
+                email: `${user.name}@.gmail.com`,
+                id: user.id,
+                name: user.name,
+                position: 'ADMIN',
                 phone: '304-428-3097',
-                is_admin: user.is_admin
+                is_admin: 'YES'
             }));
             setUsers(users);
         }
