@@ -4,7 +4,7 @@ import { Box, FormControl, InputAdornment, OutlinedInput, Stack } from '@mui/mat
 // assets
 import { SearchOutlined } from '@ant-design/icons';
 
-import logo from 'assets/images/icons/eparl_logo.png';
+import logo from 'assets/images/icons/coat_of_arms.png';
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
@@ -31,7 +31,8 @@ const Search = () => (
             src={logo}
             sx={{
                 height: (theme) => (typeof theme.mixins.toolbar.minHeight === 'number' ? theme.mixins.toolbar.minHeight - 15 : 40),
-                objectFit: 'contain'
+                objectFit: 'contain',
+                flexGrow: 2
             }}
         />
     </Stack>

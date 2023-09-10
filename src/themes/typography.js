@@ -29,7 +29,7 @@ const Typography = (fontFamily) => ({
     },
     h5: {
         fontWeight: 600,
-        fontSize: '1rem',
+        fontSize: '1.1rem',
         lineHeight: 1.5
     },
     h6: {
@@ -39,15 +39,15 @@ const Typography = (fontFamily) => ({
     },
     caption: {
         fontWeight: 400,
-        fontSize: '0.75rem',
+        fontSize: '0.8rem',
         lineHeight: 1.66
     },
     body1: {
-        fontSize: '0.875rem',
+        fontSize: '0.955rem',
         lineHeight: 1.57
     },
     body2: {
-        fontSize: '0.75rem',
+        fontSize: '0.875rem',
         lineHeight: 1.66
     },
     subtitle1: {
@@ -56,7 +56,7 @@ const Typography = (fontFamily) => ({
         lineHeight: 1.57
     },
     subtitle2: {
-        fontSize: '0.75rem',
+        fontSize: '0.875rem',
         fontWeight: 500,
         lineHeight: 1.66
     },

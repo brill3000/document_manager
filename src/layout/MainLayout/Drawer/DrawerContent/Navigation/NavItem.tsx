@@ -198,7 +198,7 @@ const NavItem = ({ item, level, children }: NavItemProps) => {
                 {(drawerOpen || (!drawerOpen && level !== 1)) && (
                     <ListItemText
                         primary={
-                            <Typography variant="h6" sx={{ color: isSelected ? iconSelectedColor : textColor }}>
+                            <Typography variant="body1" sx={{ color: isSelected ? iconSelectedColor : textColor }}>
                                 {item.title}
                             </Typography>
                         }
@@ -267,8 +267,14 @@ const NavItem = ({ item, level, children }: NavItemProps) => {
                                     })
                                 }}
                             >
-                                {child.icon && <ListItemIcon>{<child.icon style={{ fontSize: '1rem' }} />}</ListItemIcon>}
-                                <ListItemText primary={child.title} sx={{ pl: 1 }} primaryTypographyProps={{ fontSize: '.8rem' }} />
+                                {child.icon && (
+                                    <ListItemIcon>{<child.icon style={{ fontSize: theme.typography.body1.fontSize }} />}</ListItemIcon>
+                                )}
+                                <ListItemText
+                                    primary={child.title}
+                                    sx={{ pl: 1 }}
+                                    primaryTypographyProps={{ fontSize: theme.typography.body2.fontSize }}
+                                />
                             </ListItemButton>
                         ))}
                     </List>

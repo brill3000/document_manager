@@ -318,7 +318,7 @@ export default function TopNavActions() {
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Create New Folder
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to create a new empty folder</Typography>
+                                <Typography variant="caption">This button allows you to create a new empty folder</Typography>
                                 {/* <Typography fontSize={8.5}>{"NB* You cannot create duplicate folders"}</Typography> */}
                             </Fragment>
                         }
@@ -350,7 +350,7 @@ export default function TopNavActions() {
                                 columnGap={0.7}
                             >
                                 <BsFolderPlus size={19} />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     {rootPath === 'categories' ? 'Create category' : 'Create Folder'}
                                 </Typography>
                             </Stack>
@@ -366,10 +366,10 @@ export default function TopNavActions() {
                                 title={
                                     <Fragment>
                                         <Fragment>
-                                            <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                            <Typography color="inherit" variant="caption" sx={{ textDecoration: 'underline' }}>
                                                 Upload New files
                                             </Typography>
-                                            <Typography fontSize={10.5}>This button allows you to upload multiple files</Typography>
+                                            <Typography variant="caption">This button allows you to upload multiple files</Typography>
                                             {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* Zip files upload not yet enabled"}</Typography> */}
                                         </Fragment>
                                     </Fragment>
@@ -404,7 +404,7 @@ export default function TopNavActions() {
                                         disabled={rootPath === 'categories'}
                                     >
                                         <BsFileArrowUp size={19} {...(rootPath === 'categories' && { color: theme.palette.grey[400] })} />
-                                        <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                        <Typography variant="caption" display={md ? 'none' : 'block'}>
                                             Upload files
                                         </Typography>
                                         <input {...getInputProps()} />
@@ -439,10 +439,10 @@ export default function TopNavActions() {
                         placement="top"
                         title={
                             <Fragment>
-                                <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                <Typography color="inherit" variant="caption" sx={{ textDecoration: 'underline' }}>
                                     Swith to list or table view
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to view folders as list or table</Typography>
+                                <Typography variant="caption">This button allows you to view folders as list or table</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* List view is best if you need an overal view"}</Typography> */}
                             </Fragment>
                         }
@@ -477,7 +477,7 @@ export default function TopNavActions() {
                                 onClick={() => toogleView('list')}
                             >
                                 <BsViewStacked size={19} />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     List View
                                 </Typography>
                             </Stack>
@@ -489,10 +489,10 @@ export default function TopNavActions() {
                         placement="top"
                         title={
                             <Fragment>
-                                <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                <Typography color="inherit" variant="caption" sx={{ textDecoration: 'underline' }}>
                                     Swith to Grid view
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to view the documents in a grid</Typography>
+                                <Typography variant="caption">This button allows you to view the documents in a grid</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* List view is best if you need to see file types are important"}</Typography> */}
                             </Fragment>
                         }
@@ -527,7 +527,7 @@ export default function TopNavActions() {
                                 onClick={() => toogleView('grid')}
                             >
                                 <BsGrid size={18.5} />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     Icon View
                                 </Typography>
                             </Stack>
@@ -559,10 +559,10 @@ export default function TopNavActions() {
                         placement="top"
                         title={
                             <Fragment>
-                                <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                <Typography color="inherit" variant="caption" sx={{ textDecoration: 'underline' }}>
                                     Edit file/folder
                                 </Typography>
-                                <Typography fontSize={10.5}>
+                                <Typography variant="caption">
                                     This button allows you to edit the selected file/folder&apos;s details
                                 </Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* Some details such as size are read only, hence cannot be edited"}</Typography> */}
@@ -597,7 +597,7 @@ export default function TopNavActions() {
                                 disabled={rootPath === 'categories'}
                             >
                                 <BsPencilSquare size={20} {...(rootPath === 'categories' && { color: theme.palette.grey[400] })} />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     Edit Files
                                 </Typography>
                             </Stack>
@@ -609,10 +609,10 @@ export default function TopNavActions() {
                         placement="top-start"
                         title={
                             <Fragment>
-                                <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
+                                <Typography color="inherit" variant="caption" sx={{ textDecoration: 'underline' }}>
                                     Move Opened folder to trash
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to move the current opened folder to trash</Typography>
+                                <Typography variant="caption">This button allows you to move the current opened folder to trash</Typography>
                                 {/* <Typography fontSize={8.5} fontWeight={500}>{"NB* File deletion is a permanent operation and cannot be reverted"}</Typography> */}
                             </Fragment>
                         }
@@ -657,7 +657,7 @@ export default function TopNavActions() {
                                             : theme.palette.error.main
                                     }
                                 />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     Move to Trash
                                 </Typography>
                             </Stack>
@@ -672,7 +672,7 @@ export default function TopNavActions() {
                                 <Typography color="inherit" variant="body2" sx={{ textDecoration: 'underline' }}>
                                     Delete the opened folder
                                 </Typography>
-                                <Typography fontSize={10.5}>This button allows you to delete the current opened folder</Typography>
+                                <Typography variant="caption">This button allows you to delete the current opened folder</Typography>
                                 <Typography fontSize={8.5} fontWeight={500}>
                                     {'NB* File deletion is a permanent operation and cannot be reverted'}
                                 </Typography>
@@ -719,7 +719,7 @@ export default function TopNavActions() {
                                             : theme.palette.error.main
                                     }
                                 />
-                                <Typography fontSize={10.5} display={md ? 'none' : 'block'}>
+                                <Typography variant="caption" display={md ? 'none' : 'block'}>
                                     Delete Folder
                                 </Typography>
                             </Stack>

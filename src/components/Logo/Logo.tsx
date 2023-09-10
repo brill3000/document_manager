@@ -8,7 +8,7 @@
 
 // ==============================|| LOGO SVG ||============================== //
 import { Box } from '@mui/material';
-import logo from 'assets/images/icons/coat_of_arms.png';
+import logo from 'assets/images/icons/eparliament_logo.png';
 
 const Logo = () => {
     return (
