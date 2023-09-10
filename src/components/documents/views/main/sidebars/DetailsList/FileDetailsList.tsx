@@ -96,7 +96,7 @@ export function FileDetailsList({
                                 <BsCalendar2Check />
                             </ListItemIcon>
                             <ListItemText
-                                secondary={<span>{getDateFromObject(fileInfo.created).toLocaleString()}</span>}
+                                secondary={<span>{getDateFromObject(fileInfo.created).toDateString()}</span>}
                                 sx={{ width: '90%' }}
                             />
                         </ListItem>

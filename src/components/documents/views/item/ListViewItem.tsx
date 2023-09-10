@@ -108,7 +108,7 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
                 ) : !isUndefined(isExtracting) ? (
                     <StyledLinearProgress variant="indeterminate" />
                 ) : (
-                    getDateFromObject(created).toString()
+                    getDateFromObject(created).toDateString()
                 )}
             </StyledTableCell>
 
@@ -128,7 +128,7 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
                         </StyledTableCell>
                     );
                 })}
-            <StyledTableCell>{String(subscribed)}</StyledTableCell>
+            <StyledTableCell>{subscribed === true ? 'YES' : 'NO'}</StyledTableCell>
         </>
     );
 }
