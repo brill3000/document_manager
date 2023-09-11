@@ -30,28 +30,28 @@ const columns: Column[] = [
         label: 'Read',
         minWidth: 50,
         align: 'right',
-        format: (value: boolean) => value.toLocaleString()
+        format: (value: boolean) => value.toString()
     },
     {
         id: 'write',
         label: 'write',
         minWidth: 50,
         align: 'right',
-        format: (value: boolean) => value.toLocaleString()
+        format: (value: boolean) => value.toString()
     },
     {
         id: 'delete',
         label: 'Delete',
         minWidth: 50,
         align: 'right',
-        format: (value: boolean) => value.toLocaleString()
+        format: (value: boolean) => value.toString()
     },
     {
         id: 'security',
         label: 'Security',
         minWidth: 50,
         align: 'right',
-        format: (value: boolean) => value.toLocaleString()
+        format: (value: boolean) => value.toString()
     }
 ];
 
