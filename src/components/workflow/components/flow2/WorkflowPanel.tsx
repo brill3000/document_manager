@@ -130,9 +130,6 @@ export const WorkflowPanel = ({ isSending, setIsSending }: IWorkflowPanelProps) 
                                 };
                                 const workflow: Record<string, { title: string; nodes: any; edges: any; createdBy: string }> = {};
                                 workflow[id] = val;
-                                console.log(workflow, 'WORKFLOW');
-                                console.log(window.localStorage.getItem('workflow'));
-
                                 addWorkflow(workflow);
                                 timeout.current = setTimeout(() => setIsSending(false), 500);
 
