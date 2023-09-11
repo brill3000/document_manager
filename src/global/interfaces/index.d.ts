@@ -106,6 +106,7 @@ export interface IWorkflowPanelProps {
 }
 export interface ITask {
     id: number;
+    type: IWorkflowActionTypes;
     title: string;
 }
 export type TFormCreation = 'input' | 'large_input' | 'checkbox' | 'radio' | 'select' | 'submit';
@@ -303,7 +304,7 @@ export interface GenericDocument {
 export type UploadedFileInterface = Omit<File, 'type'> & {
     type: MimeTypeConfigInterface[keyof MimeTypeConfigInterface];
 };
-
+export type IWorkflowActionTypes = 'upload' | 'form' | 'vote';
 export interface FolderInterface extends Omit<GenericDocument, 'permissions'> {
     hasChildren: boolean;
     permissions: PermissionTypes;

@@ -41,9 +41,7 @@ export interface FormikAutoCompleteProps extends FormikTextProps {
     multiple?: boolean;
 }
 
-export interface FormikTextProps extends FormikDefaults {
-    setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void;
-}
+export interface FormikTextProps extends FormikDefaults {}
 export interface FormikDatePickerProps extends FormikDefaults {
     isStart: boolean;
     setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void;
@@ -198,7 +196,6 @@ export const FormikAutoCompleteNew = memo(
         disabled,
         label,
         id,
-        setFieldValue,
         variant,
         loading,
         open,
@@ -277,12 +274,11 @@ export const FormikAutoCompleteNew = memo(
                     })}
                 onChange={(_, newValue) => {
                     if (newValue === null || newValue === undefined) {
-                        setFieldValue(name, multiple ? [] : null);
+                        helpers.setValue(multiple ? [] : null);
                         return;
                     }
                     if (isArray(newValue)) {
-                        setFieldValue(
-                            name,
+                        helpers.setValue(
                             // @ts-expect-error expected
                             newValue.map((val) => val.id)
                         );
@@ -295,9 +291,9 @@ export const FormikAutoCompleteNew = memo(
                             const updatedName = updatedArray.join('').replace(' "', '').replace('"', '');
                             const obj = { id: uniqueId(), name: updatedName ?? '' };
                             !isUndefined(addNewOptionHandler) && addNewOptionHandler(obj);
-                            setFieldValue(name, obj.id);
+                            helpers.setValue(obj.id);
                         } else {
-                            setFieldValue(name, newValue.id);
+                            helpers.setValue(newValue.id);
                         }
                     }
                 }}

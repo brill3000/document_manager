@@ -1,5 +1,6 @@
 import { Chip, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
+import { useAppContext } from 'context/appContext';
 import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { BsCheck } from 'react-icons/bs';
 import { Virtuoso } from 'react-virtuoso';
@@ -73,7 +74,7 @@ export function WorkflowList({
 }) {
     const [height, setHeight] = useState<number | null>(null);
     const [width, setWidth] = useState<number | null>(null);
-
+    const { workflows } = useAppContext();
     const handleSelect = useCallback((id: number) => setSelected(id), []);
 
     useEffect(() => {

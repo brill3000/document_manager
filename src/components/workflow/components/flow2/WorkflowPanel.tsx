@@ -1,26 +1,73 @@
 import { Save } from '@mui/icons-material';
-import { Divider, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, alpha } from '@mui/material';
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Divider,
+    List,
+    ListItemBaseProps,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Stack,
+    Typography,
+    alpha
+} from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Form, Formik } from 'formik';
-import { ITask, IWorkflowPanelProps } from 'global/interfaces';
-import { ReactFlowProvider } from 'reactflow';
-import { GoogleLoader } from 'ui-component/LoadHandlers';
-import { ActionButtons } from '../UI/ActionButtons';
+import { ITask, IWorkflowActionTypes, IWorkflowPanelProps } from 'global/interfaces';
 import { FormikText } from 'global/UI/FormMUI/Components';
 import TestFlow from '../flow/flowTest/TestFlow';
 import { Content } from '../main/content';
 import { BsGear } from 'react-icons/bs';
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from 'components/documents/Interface/Constants';
-import { CSSProperties, useEffect } from 'react';
+import { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-const tasks: ITask[] = [
-    { id: 1, title: 'Upload file' },
-    { id: 2, title: 'Fill form' },
-    { id: 3, title: 'Vote' }
+import useStore from '../flow/flowTest/store';
+import { uniqueId } from 'lodash';
+import { useAppContext } from 'context/appContext';
+import uuid from 'react-uuid';
+import { enqueueSnackbar } from 'notistack';
+const actions: ITask[] = [
+    { id: 1, type: 'upload', title: 'Upload file' },
+    { id: 2, type: 'form', title: 'Fill form' },
+    { id: 3, type: 'vote', title: 'Vote' }
 ];
 
-export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpenForm, onAdd }: IWorkflowPanelProps) => {
+export const WorkflowPanel = ({ isSending, setIsSending }: IWorkflowPanelProps) => {
+    const { nodes, edges } = useStore();
+    const timeout = useRef<NodeJS.Timeout | null>(null);
+    const { user, addWorkflow } = useAppContext();
+    // ZUSTAND
+    const { selected: selectedNode, addAction } = useStore();
+    // ======================== | EVENTS | ============================//
+
+    const handleAddAction = useCallback(
+        (actionType: IWorkflowActionTypes) => {
+            if (selectedNode === null) return enqueueSnackbar('Select a process first', { variant: 'info' });
+            switch (actionType) {
+                case 'upload':
+                    addAction(selectedNode.id, { id: uuid(), type: 'upload', label: 'Upload file', values: null });
+                    break;
+                case 'form':
+                    addAction(selectedNode.id, { id: uuid(), type: 'form', label: 'Fill form', values: null });
+                    break;
+                case 'vote':
+                    addAction(selectedNode.id, { id: uuid(), type: 'vote', label: 'Vote', values: null });
+                    break;
+                default:
+                    enqueueSnackbar('Invalid action', { variant: 'info' });
+                    break;
+            }
+        },
+        [selectedNode]
+    );
+    useEffect(() => {
+        return () => {
+            timeout.current !== null && clearTimeout(timeout.current);
+        };
+    }, []);
     return (
         <Grid2 container direction="row" width="100%" height="100%">
             <Grid2
@@ -36,15 +83,15 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                     rowGap: 2
                 }}
             >
-                <Typography variant="h5">TASKS</Typography>
+                <Typography variant="h5">ACTIONS</Typography>
                 <Divider textAlign="center">
                     <Typography variant="caption" color="text.secondary">
-                        Drag task
+                        Select task while editing
                     </Typography>
                 </Divider>
                 <List sx={{ height: '100%' }}>
-                    {tasks.map((task) => (
-                        <TaskItem key={task.id} task={task} />
+                    {actions.map((task) => (
+                        <TaskItem key={task.id} task={task} handleClickTaskItem={handleAddAction} />
                     ))}
                 </List>
             </Grid2>
@@ -58,11 +105,11 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                 }}
                 height="100%"
             >
-                {/* <Stack direction="column" spacing={2} bgcolor="background.paper"> */}
-                {/* <Box bgcolor="background.paper" p={1} borderBottom={1} borderColor={(theme) => theme.palette.divider}>
-                    {isSending ? (
-                        <GoogleLoader height={80} width={80} loop={true} />
-                    ) : (
+                <Stack direction="column" spacing={2} bgcolor="background.paper">
+                    <Box bgcolor="background.paper" p={1} borderBottom={1} borderColor={(theme) => theme.palette.divider}>
+                        {/* {isSending ? (
+                            <GoogleLoader height={80} width={80} loop={true} />
+                        ) : ( */}
                         <Formik
                             initialValues={{ title: '' }}
                             validate={(values: { title: string }) => {
@@ -74,6 +121,21 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                             }}
                             onSubmit={(values) => {
                                 setIsSending(true);
+                                const id = uuid();
+                                const val = {
+                                    title: values.title,
+                                    nodes,
+                                    edges,
+                                    createdBy: user ?? ''
+                                };
+                                const workflow: Record<string, { title: string; nodes: any; edges: any; createdBy: string }> = {};
+                                workflow[id] = val;
+                                console.log(workflow, 'WORKFLOW');
+                                console.log(window.localStorage.getItem('workflow'));
+
+                                addWorkflow(workflow);
+                                timeout.current = setTimeout(() => setIsSending(false), 500);
+
                                 // createFlow({
                                 //     title: values.title,
                                 //     created_by: user.uid,
@@ -121,41 +183,26 @@ export const WorkflowPanel = ({ isSending, setIsSending, nodes, openForm, setOpe
                                             />
                                         </Grid2>
                                         <Grid2 xs={3} display="flex" justifyContent="end">
-                                            {isSending ? (
-                                                <Box
-                                                    display="flex"
-                                                    justifyContent="center"
-                                                    alignItems="center"
-                                                    minHeight="100%"
-                                                    minWidth="100%"
-                                                >
-                                                    <GoogleLoader height={50} width={50} loop={true} />
-                                                </Box>
-                                            ) : (
-                                                <Button
-                                                    type="submit"
-                                                    variant="contained"
-                                                    sx={{ height: 'max-content' }}
-                                                    disabled={nodes.length < 1}
-                                                    onKeyDown={(e) => {
-                                                        e.key === 'Enter' && e.preventDefault();
-                                                    }}
-                                                    startIcon={<Save />}
-                                                >
-                                                    Save Workflow
-                                                </Button>
-                                            )}
+                                            <Button
+                                                type="submit"
+                                                variant="contained"
+                                                sx={{ height: 'max-content' }}
+                                                disabled={nodes.length < 1 || isSending}
+                                                onKeyDown={(e) => {
+                                                    e.key === 'Enter' && e.preventDefault();
+                                                }}
+                                                startIcon={isSending ? <CircularProgress size={15} /> : <Save />}
+                                            >
+                                                Save Workflow
+                                            </Button>
                                         </Grid2>
                                     </Grid2>
                                 </Form>
                             )}
                         </Formik>
-                    )}
-                </Box> */}
-                {/* <ReactFlowProvider>
-                        <ActionButtons openForm={openForm} setOpenForm={setOpenForm} onAdd={onAdd} />
-                    </ReactFlowProvider> */}
-                {/* </Stack> */}
+                        {/* )} */}
+                    </Box>
+                </Stack>
                 <TestFlow />
                 {/* <Content /> */}
             </Grid2>
@@ -183,7 +230,7 @@ export interface DraggableBoxProps {
     top: number;
 }
 
-const TaskItem = ({ task }: { task: ITask }) => {
+const TaskItem = ({ task, handleClickTaskItem }: { task: ITask; handleClickTaskItem: (node: IWorkflowActionTypes) => void }) => {
     const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
         // "type" is required. It is used by the "accept" specification of drop targets.
         type: ItemTypes.Task,
@@ -209,6 +256,9 @@ const TaskItem = ({ task }: { task: ITask }) => {
                 borderColor: (theme) => theme.palette.common.black,
                 bgcolor: (theme) => (isDragging ? alpha(theme.palette.primary.main, 0.7) : alpha(theme.palette.primary.main, 0.1)),
                 opacity: isDragging ? 0 : 1
+            }}
+            onClick={() => {
+                handleClickTaskItem(task.type);
             }}
         >
             <ListItemIcon>

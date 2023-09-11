@@ -16,7 +16,7 @@ const AddNodeOnEdgeDrop = () => {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const connectingNodeId = useRef<string | null>(null);
 
-    const { nodes, edges, addEdge, addNode, onNodesChange, onEdgesChange, onConnect } = useStore();
+    const { nodes, edges, addEdge, addNode, onNodesChange, onEdgesChange, onConnect, handleNodeClicked } = useStore();
 
     const { project, zoomOut, setCenter } = useReactFlow();
 
@@ -30,8 +30,6 @@ const AddNodeOnEdgeDrop = () => {
             if (targetIsPane) {
                 if (reactFlowWrapper.current === null) return;
                 if (connectingNodeId.current === null) return;
-                console.log(targetIsPane, 'PANE');
-
                 // we need to remove the wrapper bounds, in order to get the correct position
                 const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
                 const id = getId();
@@ -39,7 +37,7 @@ const AddNodeOnEdgeDrop = () => {
                     id,
                     // we are removing the half of the node width (75) to center the new node
                     position: project({ x: event.clientX - left - 75, y: event.clientY - top }),
-                    data: { label: `Node ${id}` },
+                    data: { label: `Node ${id}`, action: [] },
                     type: 'textUpdater'
                 };
 
@@ -63,6 +61,9 @@ const AddNodeOnEdgeDrop = () => {
                 ref={reactFlowWrapper}
                 nodes={nodes}
                 edges={edges}
+                onNodeClick={(e, node) => {
+                    handleNodeClicked(node);
+                }}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}

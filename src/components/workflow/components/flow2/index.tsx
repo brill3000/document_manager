@@ -7,6 +7,7 @@ import { useAppContext } from 'context/appContext';
 import { useEdgesState, useNodesState } from 'reactflow';
 import { Delete, Save } from '@mui/icons-material';
 import { WorkflowPanel } from './WorkflowPanel';
+import InitiateWorkflowPanel from './InitiateWorkflowPanel';
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
@@ -302,7 +303,7 @@ const CreateFlowStepper = ({ open, handleClose }: { open: boolean; handleClose: 
                 />
             </TabPanel>
             <TabPanel value={tab} index={2}>
-                <Typography>tab {tab}</Typography>
+                <InitiateWorkflowPanel />
             </TabPanel>
         </Dialog>
     );

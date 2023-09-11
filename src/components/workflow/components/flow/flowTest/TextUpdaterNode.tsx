@@ -1,22 +1,38 @@
 import { Handle, Position } from 'reactflow';
 import { Edit, Save } from '@mui/icons-material';
-import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
+import { Badge, Box, Divider, Grid, IconButton, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import { Formik } from 'formik';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import useStore from './store';
-import ActionDial from './Actiondial';
-import { ActionSelect } from '../../UI';
-import { FormikText } from 'global/UI/FormMUI/Components';
+import { FormikAutoCompleteNew, FormikText } from 'global/UI/FormMUI/Components';
+import { IWorkflowActionTypes } from 'global/interfaces';
+import { BsGear, BsUpload } from 'react-icons/bs';
+import { FaWpforms } from 'react-icons/fa6';
+import { MdHowToVote } from 'react-icons/md';
 
-export default function TextUpdaterNode({ id, data }: { id: string; data: any }) {
-    const [selectedAction, setSelectedAction] = useState<string | null>(null);
-    const updateNodeLabel = useStore((state) => state.updateNodeLabel);
+export default function TextUpdaterNode({
+    id,
+    data
+}: {
+    id: string;
+    data: { label: string; action: Array<{ id: string; type: IWorkflowActionTypes; label: string; values: any }> };
+}) {
+    const { updateNodeLabel } = useStore();
     const [update, setUpdate] = useState(false);
     return (
         <>
             <Handle type="target" position={Position.Top} />
-            <Stack sx={{ bgcolor: 'white', borderRadius: 0.8, p: 1, border: '1px solid black', minWidth: 200, maxWidth: 350 }}>
+            <Stack
+                sx={{
+                    bgcolor: 'white',
+                    borderRadius: 0.8,
+                    p: 1,
+                    border: '1px solid black',
+                    minWidth: update ? 300 : 200,
+                    maxWidth: update ? 400 : 350
+                }}
+            >
                 {update ? (
                     <Formik
                         initialValues={{ title: data ? data.label : '', action: '' }}
@@ -88,13 +104,32 @@ export default function TextUpdaterNode({ id, data }: { id: string; data: any })
                                     </Stack>
 
                                     <Divider />
-                                    <Typography variant="body1">Add Action Taken</Typography>
-                                    <Grid container justifyContent={'flex-start'}>
+                                    <Typography variant="body1">Actions</Typography>
+                                    <List dense>
+                                        {Array.isArray(data.action) &&
+                                            data.action.map((act) => {
+                                                return (
+                                                    <Fragment key={act.id}>
+                                                        <Divider />
+                                                        <ListItem key={act.id}>
+                                                            <ListItemIcon>
+                                                                <BsGear />
+                                                            </ListItemIcon>
+                                                            <ListItemText disableTypography>
+                                                                <Typography>{act.label}</Typography>
+                                                            </ListItemText>
+                                                        </ListItem>
+                                                    </Fragment>
+                                                );
+                                            })}
+                                    </List>
+
+                                    {/* <Grid container justifyContent={'flex-start'}>
                                         <Grid item>
                                             <ActionDial setSelectedAction={(val: string) => setSelectedAction(val)} />
                                         </Grid>
                                     </Grid>
-                                    {selectedAction && <ActionSelect name="action" selectedAction={selectedAction} />}
+                                    {selectedAction && <ActionSelect name="action" selectedAction={selectedAction} />} */}
                                 </Stack>
                             </form>
                         )}
@@ -118,6 +153,20 @@ export default function TextUpdaterNode({ id, data }: { id: string; data: any })
                         </Grid>
                     </Grid>
                 )}
+                <Stack direction="row" spacing={1}>
+                    {Array.isArray(data.action) &&
+                        data.action.map((act) => {
+                            if (act.type === 'upload') {
+                                return <BsUpload key={act.type} />;
+                            } else if (act.type === 'form') {
+                                return <FaWpforms key={act.type} />;
+                            } else if (act.type === 'vote') {
+                                return <MdHowToVote key={act.type} />;
+                            } else {
+                                return <BsGear />;
+                            }
+                        })}
+                </Stack>
             </Stack>
             <Handle type="source" position={Position.Bottom} id="a" />
         </>
