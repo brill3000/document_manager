@@ -1,11 +1,11 @@
-import { Button, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, alpha } from '@mui/material';
+import { Box, Button, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, alpha } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { useAppContext } from 'context/appContext';
 import { useState } from 'react';
 import { BsGear, BsPlay } from 'react-icons/bs';
 import { IWorkflow } from '../flow/flowTest/store';
 import { Formik } from 'formik';
-import { FormikAutoCompleteNew } from 'global/UI/FormMUI/Components';
+import { FormikAutoCompleteNew, FormikText } from 'global/UI/FormMUI/Components';
 import { useGetUsersQuery } from 'store/async/dms/auth/authApi';
 
 function InitiateWorkflowPanel() {
@@ -52,7 +52,7 @@ function InitiateWorkflowPanel() {
                 sx={{
                     p: 1,
                     position: 'relative',
-                    overflow: 'hidden',
+                    overflow: 'auto',
                     backgroundColor: (theme) => theme.palette.grey[50]
                 }}
                 height="100%"
@@ -82,14 +82,21 @@ function InitiateWorkflowPanel() {
                                     <ListItem key={node.id}>
                                         <ListItemText disableTypography>
                                             <Typography>
-                                                {i + 1}: Process {node.data.label}
+                                                <Box component="span" sx={{ fontWeight: (theme) => theme.typography.fontWeightBold }}>
+                                                    Process {i + 1}:{' '}
+                                                </Box>{' '}
+                                                {node.data.label}
                                             </Typography>
 
                                             <List dense sx={{ border: 1, borderColor: (theme) => theme.palette.divider, borderRadius: 1 }}>
                                                 {Array.isArray(node.data.action) &&
                                                     node.data.action.map((act, i) => (
                                                         <>
-                                                            {i !== 0 && <Divider variant="middle">{act.label}</Divider>}
+                                                            {i !== 0 && (
+                                                                <Divider variant="middle">
+                                                                    <Typography> {act.label}</Typography>
+                                                                </Divider>
+                                                            )}
                                                             <ListItem>
                                                                 <ListItemText disableTypography>
                                                                     <Typography fontWeight={(theme) => theme.typography.fontWeightBold}>
@@ -97,7 +104,7 @@ function InitiateWorkflowPanel() {
                                                                     </Typography>
                                                                     <FormikAutoCompleteNew
                                                                         variant="standard"
-                                                                        name={`${act.type}_assignee`}
+                                                                        name={`${node.id}_${act.type}_assignee`}
                                                                         sx={{ width: '100%' }}
                                                                         multiple={false}
                                                                         options={Array.isArray(users) ? users : []}
@@ -106,6 +113,32 @@ function InitiateWorkflowPanel() {
                                                                     />
                                                                 </ListItemText>
                                                             </ListItem>
+                                                            {act.type === 'upload' && (
+                                                                <>
+                                                                    <ListItem>
+                                                                        <ListItemText disableTypography>
+                                                                            <FormikText
+                                                                                variant="standard"
+                                                                                name={`${node.id}_${act.type}_filename`}
+                                                                                sx={{ width: '100%' }}
+                                                                                label="File name"
+                                                                                id={`${act.type} filename`}
+                                                                            />
+                                                                        </ListItemText>
+                                                                    </ListItem>
+                                                                    <ListItem>
+                                                                        <ListItemText disableTypography>
+                                                                            <FormikText
+                                                                                variant="standard"
+                                                                                name={`${node.id}_${act.type}_filelocation`}
+                                                                                sx={{ width: '100%' }}
+                                                                                label="File location"
+                                                                                id={`${act.type} filelocation`}
+                                                                            />
+                                                                        </ListItemText>
+                                                                    </ListItem>
+                                                                </>
+                                                            )}
                                                         </>
                                                     ))}
                                             </List>
