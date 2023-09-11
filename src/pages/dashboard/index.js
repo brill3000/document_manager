@@ -172,7 +172,7 @@ const DashboardDefault = () => {
                             <Typography variant="h6" color="textSecondary">
                                 This Week Statistics
                             </Typography>
-                            <Typography variant="h3">300 Users</Typography>
+                            <Typography variant="h3">10 Users</Typography>
                         </Stack>
                     </Box>
                     <MonthlyBarChart />
