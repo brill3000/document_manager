@@ -1,17 +1,29 @@
 import { Chip, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
-import { MutableRefObject, useEffect, useState } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { BsCheck } from 'react-icons/bs';
 import { Virtuoso } from 'react-virtuoso';
 // ListChildComponentProps
 
-const InnerList = <T,>({ data, index }: { data: T & { title: string; creator: string }; index: number }) => {
+const InnerList = <T,>({
+    data,
+    index,
+    handleSelect,
+    selected
+}: {
+    data: T & { id: number; title: string; creator: string };
+    index: number;
+    handleSelect: (id: number) => void;
+    selected: number | null;
+}) => {
     const theme = useTheme();
-    const { title, creator } = data;
+    const { id, title, creator } = data;
     return (
         <ListItemButton
             key={index}
             component="div"
+            selected={id === selected}
+            onClick={() => handleSelect(id)}
             sx={{
                 borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
                 '& .MuiListItemAvatar-root': {
@@ -50,13 +62,19 @@ const InnerList = <T,>({ data, index }: { data: T & { title: string; creator: st
 
 export function WorkflowList({
     innerRef,
-    outerRef
+    outerRef,
+    selected,
+    setSelected
 }: {
     innerRef: MutableRefObject<HTMLDivElement | null>;
     outerRef: MutableRefObject<HTMLDivElement | null>;
+    selected: number | null;
+    setSelected: Dispatch<SetStateAction<number | null>>;
 }) {
     const [height, setHeight] = useState<number | null>(null);
     const [width, setWidth] = useState<number | null>(null);
+
+    const handleSelect = useCallback((id: number) => setSelected(id), []);
 
     useEffect(() => {
         if (innerRef.current !== null && innerRef !== undefined && outerRef.current !== null && outerRef.current !== undefined) {
@@ -75,7 +93,9 @@ export function WorkflowList({
                     { id: 1, title: 'Motion tabling', creator: 'Administrator' },
                     { id: 2, title: 'Create order paper', creator: 'Brilliant' }
                 ]}
-                itemContent={(index, instance) => <InnerList data={instance} index={index} />}
+                itemContent={(index, instance) => (
+                    <InnerList data={instance} index={index} handleSelect={handleSelect} selected={selected} />
+                )}
             />
         </>
     );

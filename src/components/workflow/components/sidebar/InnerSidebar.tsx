@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import {
     Chip,
     FormControl,
@@ -17,7 +17,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { RxCaretDown } from 'react-icons/rx';
 import { WorkflowList } from '../main/lists';
 
-export function InnerSidebar() {
+export function InnerSidebar({ selected, setSelected }: { selected: number | null; setSelected: Dispatch<SetStateAction<number | null>> }) {
     const theme = useTheme();
     const outerRef = React.useRef(null);
     const innerRef = React.useRef(null);
@@ -78,7 +78,7 @@ export function InnerSidebar() {
                 </Stack>
                 <Chip label="current" deleteIcon={<RxCaretDown />} onDelete={() => console.log('')} sx={{ maxWidth: 'max-content' }} />
             </Stack>
-            <WorkflowList innerRef={innerRef} outerRef={outerRef} />
+            <WorkflowList innerRef={innerRef} outerRef={outerRef} selected={selected} setSelected={setSelected} />
         </Grid>
     );
 }

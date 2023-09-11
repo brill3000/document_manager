@@ -3,7 +3,7 @@ import { Grid, Stack } from '@mui/material';
 import { TopNav } from './navigation';
 import { Content } from './content';
 
-export function MainContent() {
+export function MainContent({ selected }: { selected: number | null }) {
     const ref = React.useRef<HTMLInputElement | null>(null);
     return (
         <Grid
@@ -38,7 +38,7 @@ export function MainContent() {
                     maxWidth={ref.current?.clientWidth ?? '100%'}
                     bgcolor="background.paper"
                 >
-                    <Content />
+                    <Content selected={selected} />
                 </Stack>
             </Stack>
         </Grid>
