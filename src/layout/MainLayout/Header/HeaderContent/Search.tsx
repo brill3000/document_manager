@@ -4,7 +4,7 @@ import { Box, FormControl, InputAdornment, OutlinedInput, Stack } from '@mui/mat
 // assets
 import { SearchOutlined } from '@ant-design/icons';
 
-import logo from 'assets/images/icons/coat_of_arms.png';
+import logo from 'assets/images/icons/eparliament_logo.png';
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
