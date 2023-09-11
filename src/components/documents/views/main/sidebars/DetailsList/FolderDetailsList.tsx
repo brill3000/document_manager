@@ -95,7 +95,7 @@ export function FolderDetailsList({
                                 <BsCalendar2Check />
                             </ListItemIcon>
                             <ListItemText
-                                secondary={<span>{getDateFromObject(folderInfo.created).toLocaleString()}</span>}
+                                secondary={<span>{getDateFromObject(folderInfo.created).toDateString()}</span>}
                                 sx={{ width: '90%' }}
                             />
                         </ListItem>
