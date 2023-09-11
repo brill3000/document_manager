@@ -33,6 +33,7 @@ import { repositoryApi } from 'store/async/dms/repository/repositoryApi';
 import { searchApi } from 'store/async/dms/search/searchApi';
 import { notesApi } from './async/dms/notes/notesApi';
 import { workflowApi } from './async/dms/workflow/workflowApi';
+import { dashboardApi } from './async/dms/dashboard/dashboardApi';
 
 export const store = configureStore({
     reducer: reducers,
@@ -52,6 +53,7 @@ export const store = configureStore({
             .concat(searchApi.middleware)
             .concat(notesApi.middleware)
             .concat(workflowApi.middleware)
+            .concat(dashboardApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

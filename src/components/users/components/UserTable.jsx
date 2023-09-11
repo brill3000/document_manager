@@ -23,22 +23,9 @@ const columns = [
     { id: 'name', label: 'Name', minWidth: 100 },
     { id: 'email', label: 'Email', minWidth: 100 },
     {
-        id: 'position',
-        label: 'Position',
-        minWidth: 50,
-        format: (value) => value.toLocaleString()
-    },
-    {
-        id: 'is_admin',
-        label: 'Is Admin',
-        minWidth: 50,
-        format: (value) => value.toLocaleString('en-US')
-    },
-    {
         id: 'createdAt',
         label: 'Registration Date',
-        minWidth: 50,
-        format: (value) => value.toLocaleString('en-US')
+        minWidth: 50
     }
     // {
     //     id: 'phone',

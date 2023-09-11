@@ -154,23 +154,23 @@ const pages = {
             //         breadcrumbs: false
             //     }
             // ]
-        },
-        {
-            id: 'metadata',
-            title: 'Metadata',
-            type: 'item',
-            url: '/metadata',
-            icon: icons.HddOutlined,
-            breadcrumbs: false
-        },
-        {
-            id: 'thesaurus',
-            title: 'Thesaurus',
-            type: 'item',
-            url: '/thesaurus',
-            icon: icons.DatabaseOutlined,
-            breadcrumbs: false
         }
+        // {
+        //     id: 'metadata',
+        //     title: 'Metadata',
+        //     type: 'item',
+        //     url: '/metadata',
+        //     icon: icons.HddOutlined,
+        //     breadcrumbs: false
+        // },
+        // {
+        //     id: 'thesaurus',
+        //     title: 'Thesaurus',
+        //     type: 'item',
+        //     url: '/thesaurus',
+        //     icon: icons.DatabaseOutlined,
+        //     breadcrumbs: false
+        // }
     ]
 };
 

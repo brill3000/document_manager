@@ -19,6 +19,7 @@ import { repository_api } from 'store/async/dms/repository/repositoryApi';
 import { search_api } from 'store/async/dms/search/searchApi';
 import { notes_api } from 'store/async/dms/notes/notesApi';
 import { workflow_api } from 'store/async/dms/workflow/workflowApi';
+import { dashboard_api } from 'store/async/dms/dashboard/dashboardApi';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -39,7 +40,8 @@ const reducers = combineReducers({
     repository_api,
     search_api,
     notes_api,
-    workflow_api
+    workflow_api,
+    dashboard_api
 });
 
 export default reducers;

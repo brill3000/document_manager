@@ -112,16 +112,16 @@ const DashboardDefault = () => {
                 <Typography variant="h5">Dashboard</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total Documents" count={documentCount} percentage={20} extra={documentCount} component={'documents'} />
+                <AnalyticCard title="Total Documents" count={57} percentage={5} extra={2} component={'documents'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total Departments" count={'10'} percentage={20} extra={documentCount} component={'departments'} />
+                <AnalyticCard title="Total Roles" count={'8'} percentage={10} extra={1} component={'roles'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total roles" count={'2'} percentage={20} extra={documentCount} component={'roles'} />
+                <AnalyticCard title="Total users" count={'10'} percentage={20} extra={2} component={'roles'} />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticCard title="Total users" count={usersCount} percentage={20} extra={usersCount} component={'users'} />
+                <AnalyticCard title="Total emails" count={2} percentage={50} extra={1} component={'email'} />
             </Grid>
 
             <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />

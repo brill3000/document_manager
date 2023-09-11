@@ -37,6 +37,7 @@ export default function Users({ title }: { title: string }) {
     React.useEffect(() => {
         if (usersQuery.isSuccess) {
             setUsers(usersQuery.data);
+            console.log(usersQuery.data, 'DATA');
 
             const users = usersQuery.data?.map((user: any) => ({
                 address: { country: 'USA OF A', state: 'West Virginia', city: 'Parkersburg', street: '2849 Fulton Street' },
@@ -45,7 +46,6 @@ export default function Users({ title }: { title: string }) {
                 email: `${user.name}@.gmail.com`,
                 id: user.id,
                 name: user.name,
-                position: 'ADMIN',
                 phone: '304-428-3097',
                 is_admin: 'YES'
             }));

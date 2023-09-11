@@ -70,14 +70,14 @@ export function PermissionsDialog() {
             scroll={scrollType}
             aria-labelledby="permission-dialog-title"
             aria-describedby="permission-dialog-description"
-            fullWidth
             sx={{
                 '& .MuiDialogContent-root': {
                     minHeight: '70vh',
                     p: 0
                 },
                 '& .MuiDialog-paper': {
-                    minHeight: '70vh'
+                    minHeight: '70vh',
+                    minWidth: '60vw'
                 }
             }}
         >

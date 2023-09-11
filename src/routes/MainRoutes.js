@@ -257,14 +257,14 @@ const MainRoutes = {
             //     }
             // ]
         },
-        {
-            path: 'metadata',
-            element: (
-                <ProtectedRoutes>
-                    <IndexTable />
-                </ProtectedRoutes>
-            )
-        },
+        // {
+        //     path: 'metadata',
+        //     element: (
+        //         <ProtectedRoutes>
+        //             <IndexTable />
+        //         </ProtectedRoutes>
+        //     )
+        // },
         {
             path: 'workflows',
             element: (
@@ -273,22 +273,22 @@ const MainRoutes = {
                 </ProtectedRoutes>
             )
         },
-        {
-            path: 'thesaurus',
-            element: (
-                <ProtectedRoutes>
-                    <IndexTable />
-                </ProtectedRoutes>
-            )
-        },
-        {
-            path: 'emails',
-            element: (
-                <ProtectedRoutes>
-                    <Email />
-                </ProtectedRoutes>
-            )
-        },
+        // {
+        //     path: 'thesaurus',
+        //     element: (
+        //         <ProtectedRoutes>
+        //             <IndexTable />
+        //         </ProtectedRoutes>
+        //     )
+        // },
+        // {
+        //     path: 'emails',
+        //     element: (
+        //         <ProtectedRoutes>
+        //             <Email />
+        //         </ProtectedRoutes>
+        //     )
+        // },
         {
             path: 'dashboard',
             element: (

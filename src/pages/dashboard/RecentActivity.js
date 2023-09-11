@@ -64,7 +64,7 @@ export function RecentActivity({ recentActivity }) {
                         }
                     }}
                 >
-                    {recentActivity.isLoading || recentActivity.isFetching ? (
+                    {/* {recentActivity.isLoading || recentActivity.isFetching ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100%" minWidth="100%">
                             <GoogleLoader height={100} width={150} loop={true} />
                         </Box>
@@ -189,28 +189,28 @@ export function RecentActivity({ recentActivity }) {
                                     );
                             }
                         })
-                    ) : (
-                        <ListItemButton divider>
-                            <ListItemAvatar>
-                                <Avatar
-                                    sx={{
-                                        color: 'warning.main',
-                                        bgcolor: 'warning.lighter'
-                                    }}
-                                >
-                                    <QuestionCircleOutlined />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={<Typography variant="subtitle1">No Recent Activity</Typography>} />
-                            <ListItemSecondaryAction>
-                                <Stack alignItems="flex-end">
-                                    <Typography variant="h6" color="secondary" noWrap>
-                                        0 Activity
-                                    </Typography>
-                                </Stack>
-                            </ListItemSecondaryAction>
-                        </ListItemButton>
-                    )}
+                    ) : ( */}
+                    <ListItemButton divider>
+                        <ListItemAvatar>
+                            <Avatar
+                                sx={{
+                                    color: 'warning.main',
+                                    bgcolor: 'warning.lighter'
+                                }}
+                            >
+                                <QuestionCircleOutlined />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={<Typography variant="subtitle1">No Recent Activity</Typography>} />
+                        <ListItemSecondaryAction>
+                            <Stack alignItems="flex-end">
+                                <Typography variant="h6" color="secondary" noWrap>
+                                    0 Activity
+                                </Typography>
+                            </Stack>
+                        </ListItemSecondaryAction>
+                    </ListItemButton>
+                    {/* )} */}
                 </List>
             </MainCard>
             <MainCard sx={{ mt: 2 }}>

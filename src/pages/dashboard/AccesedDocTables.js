@@ -179,7 +179,7 @@ export default function AccesedDocTables({ recentlyModified }) {
                     '& td, & th': { whiteSpace: 'nowrap' }
                 }}
             >
-                {recentlyModified.isLoading || recentlyModified.isFetching ? (
+                {/* {recentlyModified.isLoading || recentlyModified.isFetching ? (
                     <Box display="flex" justifyContent="center" alignItems="center" minHeight={300} minWidth="100%">
                         <GoogleLoader height={100} width={150} loop={true} />
                     </Box>
@@ -239,11 +239,11 @@ export default function AccesedDocTables({ recentlyModified }) {
                             })}
                         </TableBody>
                     </Table>
-                ) : (
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={300} minWidth="100%" p={3}>
-                        <Typography variant="h5"> No Recently Modified Document </Typography>
-                    </Box>
-                )}
+                ) : ( */}
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight={500} minWidth="100%" p={3}>
+                    <Typography variant="h5"> No Recently Modified Document </Typography>
+                </Box>
+                {/* )} */}
             </TableContainer>
         </Box>
     );

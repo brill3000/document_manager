@@ -148,15 +148,15 @@ const dashboard = {
             url: '/workflows',
             icon: icons.FiberNewOutlinedIcon,
             breadcrumbs: false
-        },
-        {
-            id: 'emails',
-            title: 'emails',
-            type: 'item',
-            url: '/emails',
-            icon: icons.MdOutlineMailOutline,
-            breadcrumbs: false
         }
+        // {
+        //     id: 'emails',
+        //     title: 'emails',
+        //     type: 'item',
+        //     url: '/emails',
+        //     icon: icons.MdOutlineMailOutline,
+        //     breadcrumbs: false
+        // }
     ]
 };
 
