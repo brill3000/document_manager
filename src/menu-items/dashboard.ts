@@ -27,9 +27,12 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
-import { BsFolder, BsPersonRolodex, BsTrash, BsFilesAlt } from 'react-icons/bs';
+import { BsFolder, BsPersonRolodex, BsTrash, BsFilesAlt, BsGear, BsPatchCheck } from 'react-icons/bs';
 import { MdOutlineAttachEmail, MdOutlineMailOutline } from 'react-icons/md';
-import { TbCategory2 } from 'react-icons/tb';
+import { TbCategory2, TbProgressBolt, TbZoomReplace } from 'react-icons/tb';
+import { HiOutlineBriefcase } from 'react-icons/hi';
+import { GoIssueTrackedBy } from 'react-icons/go';
+import { MdOutlineWavingHand } from 'react-icons/md';
 const icons = {
     DashboardOutlined,
     ApartmentOutlined,
@@ -63,9 +66,16 @@ const icons = {
     BsPersonRolodex,
     MdOutlineAttachEmail,
     BsTrash,
+    BsGear,
+    HiOutlineBriefcase,
     BsFilesAlt,
+    TbProgressBolt,
+    BsPatchCheck,
+    TbZoomReplace,
     MdOutlineMailOutline,
-    TbCategory2
+    GoIssueTrackedBy,
+    TbCategory2,
+    MdOutlineWavingHand
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -146,7 +156,57 @@ const dashboard = {
             title: 'Workflows',
             type: 'item',
             url: '/workflows',
+            icon: icons.BsGear,
+            breadcrumbs: false
+        },
+        ,
+        {
+            id: 'committees',
+            title: 'Committees',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.HiOutlineBriefcase,
+            breadcrumbs: false
+        },
+        {
+            id: 'conferences',
+            title: 'Conferences',
+            type: 'item',
+            url: '/workflows',
             icon: icons.FiberNewOutlinedIcon,
+            breadcrumbs: false
+        },
+        {
+            id: 'bill_tracker',
+            title: 'Bill Tracker',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.TbProgressBolt,
+            breadcrumbs: false
+        },
+        {
+            id: 'motion_tracker',
+            title: 'Motion Tracker',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.GoIssueTrackedBy,
+            breadcrumbs: false
+        },
+        {
+            id: 'approvals',
+            title: 'Approvals',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.BsPatchCheck,
+            breadcrumbs: false
+        },
+        ,
+        {
+            id: 'e_petitions',
+            title: 'E Petitions',
+            type: 'item',
+            url: '/workflows',
+            icon: icons.MdOutlineWavingHand,
             breadcrumbs: false
         }
         // {

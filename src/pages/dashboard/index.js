@@ -32,7 +32,7 @@ import MainCard from 'components/MainCard';
 // import ReduceCapacityOutlinedIcon from '@mui/icons-material/ReduceCapacityOutlined';
 // import SwitchAccountOutlinedIcon from '@mui/icons-material/SwitchAccountOutlined';
 import { useGetAllRecentLogsQuery, useGetAllRecentlyModifiedDocumentsQuery } from 'store/async/logsQuery';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import { RecentActivity } from './RecentActivity';
 import { useGetUsersSummaryQuery } from 'store/async/usersQuery';
 import AnalyticCard from 'components/cards/statistics/AnalyticsCard';
@@ -82,7 +82,7 @@ const DashboardDefault = () => {
         setIsLoading(false);
     }, []);
 
-    const { user } = useUserAuth();
+    const { user } = useAppContext();
 
     const recentActivity = useGetAllRecentLogsQuery(
         { user: !isNull(user) && !isUndefined(user) ? user.uid : null },

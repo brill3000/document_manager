@@ -1,14 +1,14 @@
 import { Dialog, DialogContent, DialogTitle, Divider, List, ListItem, ListItemIcon, ListItemText, Typography, alpha } from '@mui/material';
 import { LazyLoader } from 'components/documents/views';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import { MdAdminPanelSettings } from 'react-icons/md';
 import { useGetNameQuery, useGetRolesByUserQuery } from 'store/async/dms/auth/authApi';
 
 function RolesDialog({ open, handleClose }: { open: boolean; handleClose: () => void }) {
-    const { userName } = useUserAuth();
+    const { user } = useAppContext();
 
-    const { data: roles, isLoading } = useGetRolesByUserQuery({ user: userName });
-    const { data: user, isError } = useGetNameQuery({ user: userName });
+    const { data: roles, isLoading } = useGetRolesByUserQuery({ user: user });
+    const { data: userName, isError } = useGetNameQuery({ user: user });
     return (
         <Dialog
             maxWidth="xs"
@@ -24,7 +24,7 @@ function RolesDialog({ open, handleClose }: { open: boolean; handleClose: () => 
             open={open}
             onClose={() => handleClose()}
         >
-            <DialogTitle>{user + ' Roles'}</DialogTitle>
+            <DialogTitle>{userName + ' Roles'}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 0 }}>
                 {isLoading === true && <LazyLoader />}

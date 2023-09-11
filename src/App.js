@@ -5,7 +5,7 @@ import ScrollTop from 'components/ScrollTop';
 import { DndProvider } from 'react-dnd';
 import { SnackbarProvider } from 'notistack';
 import { FileUploaded } from 'ui-component/alerts/documents';
-import { UserAuthContextProvider } from 'context/authContext';
+import { AppContextProvider } from 'context/appContext';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import '@fontsource/montserrat';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -44,7 +44,7 @@ const App = () => {
                     fileUploaded: FileUploaded
                 }}
             >
-                <UserAuthContextProvider>
+                <AppContextProvider>
                     <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
                         <ThemeCustomization>
                             <ScrollTop>
@@ -52,7 +52,7 @@ const App = () => {
                             </ScrollTop>
                         </ThemeCustomization>
                     </DndProvider>
-                </UserAuthContextProvider>
+                </AppContextProvider>
             </SnackbarProvider>
         </ErrorBoundary>
     );

@@ -26,7 +26,7 @@ import { HiOutlineDocumentText } from 'react-icons/hi';
 import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
 import { Conversation, Error } from 'ui-component/LoadHandlers';
 import { GoogleLoader } from 'ui-component/LoadHandlers';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import zIndex from '@mui/material/styles/zIndex';
 
 function padTo2Digits(num: any) {
@@ -64,7 +64,7 @@ const EmailContent: React.FC<any> = ({
 }) => {
     const [mails, setMails] = React.useState<Array<Mail> | null>(null);
     const { data, isSuccess, isLoading, isFetching, isError, error } = getMessageByUser;
-    const { user } = useUserAuth();
+    const { user } = useAppContext();
     React.useEffect(() => {
         if (data && Array.isArray(data) && isSuccess) {
             setMails(
@@ -131,7 +131,7 @@ const EmailContent: React.FC<any> = ({
                     )}
                     <List>
                         {mails.map((mail, i) =>
-                            mail.sender === user?.displayName ? (
+                            mail.sender ? (
                                 <ListItem
                                     sx={{
                                         mt: 2,

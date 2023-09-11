@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { ReactNode, SyntheticEvent, useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -35,10 +35,10 @@ import { isNull } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { filesApi } from 'store/async/dms/files/filesApi';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 
 // tab panel wrapper
-function TabPanel({ children, value, index, ...other }) {
+function TabPanel({ children, value, index, ...other }: { children: ReactNode; value: number; index: number; dir: string }) {
     return (
         <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
             {value === index && children}
@@ -52,7 +52,7 @@ TabPanel.propTypes = {
     value: PropTypes.any.isRequired
 };
 
-function a11yProps(index) {
+function a11yProps(index: number) {
     return {
         id: `profile-tab-${index}`,
         'aria-controls': `profile-tabpanel-${index}`
@@ -62,48 +62,54 @@ function a11yProps(index) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 const Profile = () => {
+    // ==============================|| THEME ||============================== //
     const theme = useTheme();
+    // ==============================|| STATES ||============================== //
+    const [open, setOpen] = useState<boolean>(false);
+    const [value, setValue] = useState<number>(0);
+
+    // ==============================|| REF ||============================== //
+    const anchorRef = useRef<HTMLButtonElement>(null);
+    // ==============================|| ROUTER ||============================== //
     const navigator = useNavigate();
-    const { enqueueSnackbar } = useSnackbar();
-    const [logoutUser] = useLogoutUserMutation();
+    // const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { userName, updateUserName } = useUserAuth();
+    // ==============================|| CONTEXT ||============================== //
+    const { user, logout } = useAppContext();
+    // ==============================|| EVENTS ||============================== //
     const handleLogout = async () => {
         try {
-            await logoutUser().unwrap();
-            typeof updateUserName === 'function' && updateUserName(null);
+            typeof logout === 'function' && logout();
             dispatch(foldersApi.util.resetApiState());
             dispatch(filesApi.util.resetApiState());
             dispatch(authApi.util.resetApiState());
             navigator('/login');
         } catch (err) {
-            const message = `User Logout Failed`;
-            enqueueSnackbar(message, { variant: 'error' });
+            navigator('/login');
+            // const message = `User Logout Failed`;
+            // enqueueSnackbar(message, { variant: 'error' });
         }
     };
 
-    const anchorRef = useRef(null);
-    const [open, setOpen] = useState(false);
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
 
-    const handleClose = (event) => {
+    const handleClose = (event: MouseEvent | TouchEvent) => {
+        // @ts-expect-error expected
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
         setOpen(false);
     };
 
-    const [value, setValue] = useState(0);
-
-    const handleChange = (event, newValue) => {
+    const handleChange = (event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
     const iconBackColorOpen = 'grey.300';
 
-    const { data: user, isError } = useGetNameQuery({ user: userName });
+    const { data: userName, isError } = useGetNameQuery({ user: user });
 
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -126,9 +132,9 @@ const Profile = () => {
                         alt="profile user"
                         sx={{ width: 32, height: 32, bgcolor: (theme) => theme.palette.primary.main }}
                     >
-                        {getInitials(!isError && !isNull(user) ? user : 'User')}
+                        {getInitials(!isError && !isNull(userName) ? userName : 'User')}
                     </Avatar>
-                    <Typography variant="subtitle1">{!isError && !isNull(user) ? user : 'User'}</Typography>
+                    <Typography variant="subtitle1">{!isError && !isNull(user) ? userName : 'User'}</Typography>
                 </Stack>
             </ButtonBase>
             <Popper
@@ -150,10 +156,12 @@ const Profile = () => {
                 }}
             >
                 {({ TransitionProps }) => (
+                    // @ts-expect-error expected
                     <Transitions type="fade" in={open} {...TransitionProps}>
                         {open && (
                             <Paper
                                 sx={{
+                                    // @ts-expect-error expected
                                     boxShadow: theme.customShadows.z1,
                                     width: 290,
                                     minWidth: 240,
@@ -164,6 +172,7 @@ const Profile = () => {
                                 }}
                             >
                                 <ClickAwayListener onClickAway={handleClose}>
+                                    {/** @ts-expect-error expected */}
                                     <MainCard elevation={0} border={false} content={false}>
                                         <CardContent sx={{ px: 2.5, pt: 3 }}>
                                             <Grid container justifyContent="space-between" alignItems="center">

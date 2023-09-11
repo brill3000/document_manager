@@ -24,7 +24,7 @@ import Sheet from '@mui/joy/Sheet';
 import { TbMessageDots } from 'react-icons/tb';
 import { Experimental_CssVarsProvider, Stack } from '@mui/material';
 import { useGetMessageByUserQuery, useRefetchMessagesMutation, useSendMessageMutation } from 'store/async/messagesQuery';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import { useSnackbar } from 'notistack';
 import randomColor from 'randomcolor';
 import { Sending } from 'ui-component/LoadHandlers';
@@ -94,7 +94,7 @@ export default function Email() {
     const [selectedMail, setSelectedMail] = React.useState<any>(null);
     const [selectedUser, setSelectedUser] = React.useState<SelectedUser | null>(null);
     const [value, setValue] = React.useState<string>('');
-    const { user } = useUserAuth();
+    const { user } = useAppContext();
     const { enqueueSnackbar } = useSnackbar();
     const [isSending, setIsSending] = React.useState<boolean>(false);
     const [selectedIndex, setSelectedIndex] = React.useState<string>('inbox');
@@ -110,11 +110,11 @@ export default function Email() {
     React.useEffect(() => {
         switch (selectedIndex) {
             case 'sent':
-                setFrom(user.uid);
+                setFrom(user);
                 setTo(null);
                 break;
             case 'inbox':
-                setTo(user.uid);
+                setTo(user);
                 setFrom(null);
                 break;
 
@@ -126,14 +126,14 @@ export default function Email() {
                 break;
             default:
                 setFrom(selectedIndex);
-                setTo(user.uid);
+                setTo(user);
                 break;
         }
-    }, [selectedIndex, user.uid]);
+    }, [selectedIndex, user]);
     React.useEffect(() => {
-        if (selectedMail && selectedMail.senderId !== user.uid) {
+        if (selectedMail && selectedMail.senderId !== user) {
             setSelectedIndex(selectedMail.senderId);
-        } else if (selectedMail && selectedMail.senderId === user.uid) {
+        } else if (selectedMail && selectedMail.senderId === user) {
             setSelectedIndex(selectedMail.receiverId);
         }
     }, [selectedMail]);
@@ -147,7 +147,7 @@ export default function Email() {
     React.useEffect(() => {
         if (usersQuery.isSuccess) {
             const users = usersQuery.data
-                ?.filter((data: any) => data.user_id !== user.uid)
+                ?.filter((data: any) => data.user_id !== user)
                 .map((user: any) => ({
                     id: user.user_id,
                     name: user.name.first_name + ' ' + user.name.last_name,
@@ -174,8 +174,8 @@ export default function Email() {
                     name: selectedUser.name
                 },
                 from: {
-                    id: user.uid,
-                    name: user.displayName
+                    id: user,
+                    name: user
                 },
                 message: value
             };

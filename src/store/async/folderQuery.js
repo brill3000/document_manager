@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { db } from '../../firebase-config';
 import { getDocs, collection, query, where, Timestamp, doc, addDoc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 
 const omit = (obj, omitKeys) => {
     let newobj = { ...obj };

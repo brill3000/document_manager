@@ -32,7 +32,7 @@ import { useSnackbar } from 'notistack';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
 // Querys
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import { useCreateUserMutation } from 'store/async/usersQuery';
 
 // ============================|| FIREBASE - REGISTER ||============================ //
@@ -44,7 +44,7 @@ const AuthRegister = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
 
-    const { user, signUp, updateUserName, sendVerification } = useUserAuth();
+    const { user, signUp, updateUserName, sendVerification } = useAppContext();
     const [createUser] = useCreateUserMutation();
 
     const handleClickShowPassword = () => {

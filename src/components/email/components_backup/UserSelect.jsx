@@ -9,7 +9,7 @@ import Typography from '@mui/joy/Typography';
 import { useGetSystemUsersQuery } from 'store/async/usersQuery';
 import { CircularProgress } from '@mui/material';
 import { PersonOutlineRounded } from '@mui/icons-material';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 
 export default function UsersSelect({ setSelectedUser, selectedUser, users, isError, isLoading, isFetching }) {
@@ -18,7 +18,7 @@ export default function UsersSelect({ setSelectedUser, selectedUser, users, isEr
         Admin: 'warning'
     };
 
-    const { user } = useUserAuth();
+    const { user } = useAppContext();
 
     const handleChange = (value) => {
         setSelectedUser({ ...value });

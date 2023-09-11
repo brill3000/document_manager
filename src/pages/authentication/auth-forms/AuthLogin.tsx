@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { SyntheticEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
@@ -28,13 +28,13 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-// import { useUserAuth } from 'context/authContext';
+// import { useAppContext } from 'context/authContext';
 import { useSnackbar } from 'notistack';
 import { authApi, useLoginMutation } from 'store/async/dms/auth/authApi';
 import { foldersApi } from 'store/async/dms/folders/foldersApi';
 import { useDispatch } from 'react-redux';
 import { filesApi } from 'store/async/dms/files/filesApi';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -44,14 +44,14 @@ const AuthLogin = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigator = useNavigate();
     const [loginWithPassword] = useLoginMutation();
-    const { updateUserName } = useUserAuth();
+    const { login } = useAppContext();
     const dispatch = useDispatch();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) => {
+    const handleMouseDownPassword = (event: SyntheticEvent) => {
         event.preventDefault();
     };
 
@@ -69,10 +69,11 @@ const AuthLogin = () => {
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
+                        // @ts-expect-error expected
                         if (navigator.onLine) throw new Error('No Internet connection');
                         try {
                             await loginWithPassword({ username: values.username, password: values.password }).unwrap();
-                            typeof updateUserName === 'function' && updateUserName(values.username);
+                            login(values.username);
                             const message = `Login successfully`;
                             dispatch(foldersApi.util.resetApiState());
                             dispatch(filesApi.util.resetApiState());
@@ -85,6 +86,7 @@ const AuthLogin = () => {
                         }
                     } catch (err) {
                         setStatus({ success: false });
+                        // @ts-expect-error expected
                         setErrors({ submit: err.message });
                         setSubmitting(false);
                     }

@@ -3,7 +3,7 @@ import { FlowTabList } from '../flow/FlowTabList';
 import { TabPanel } from 'components/documents/views/UI/Tabs';
 import { Box, Button, Checkbox, Dialog, IconButton, TextField, Typography, alpha } from '@mui/material';
 import { FormsPanel } from './FormsPanel';
-import { useUserAuth } from 'context/authContext';
+import { useAppContext } from 'context/appContext';
 import { useEdgesState, useNodesState } from 'reactflow';
 import { Delete, Save } from '@mui/icons-material';
 import { WorkflowPanel } from './WorkflowPanel';
@@ -26,7 +26,7 @@ const CreateFlowStepper = ({ open, handleClose }: { open: boolean; handleClose: 
     });
     const [editDetails, setEditDetails] = useState<Array<any>>([]);
     const [savedForms, setSavedForms] = useState<Array<any>>([]);
-    const { user } = useUserAuth();
+    const { user } = useAppContext();
     const [openForm, setOpenForm] = useState(false);
     const yPos = useRef(0);
     const [nodes, setNodes] = useNodesState([]);
