@@ -368,16 +368,13 @@ export const NoteDisplay = ({ note }: { note: INote }) => {
                 borderRadius={1}
                 flexDirection="column"
             >
-                <Typography component={Box} variant="caption" noWrap sx={{ width: '100%', textAlign: 'start' }}>
-                    <u>{stripHtmlTags(note.text)}</u>
-                </Typography>
-                <Box width="max-content">
+                <Box width="max-content" fontFamily="montserrat">
                     <Interweave content={isString(note.text) ? note.text : ''} />
                 </Box>
             </Box>
             <Stack width="100%" direction="row" justifyContent="space-between">
                 <Typography variant="caption">{note.author}</Typography>
-                <Typography variant="caption">{getDateFromObject(note.date).toLocaleString()}</Typography>
+                <Typography variant="caption">{getDateFromObject(note.date).toDateString()}</Typography>
             </Stack>
         </Stack>
     );

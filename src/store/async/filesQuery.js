@@ -31,8 +31,8 @@ class File {
         locked
     ) {
         this.created_by = created_by;
-        this.date_created = new Date(date_created.seconds).toLocaleString();
-        this.date_modified = new Date(date_modified.seconds).toLocaleString();
+        this.date_created = new Date(date_created.seconds).toDateString();
+        this.date_modified = new Date(date_modified.seconds).toDateString();
         this.file_name = file_name;
         this.isFolder = isFolder;
         this.no_of_files = no_of_files;

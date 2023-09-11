@@ -13,7 +13,7 @@ import { getDocs, collection, query, where, orderBy, limit } from 'firebase/fire
 //         log_type
 //     ) {
 //         this.created_by = created_by;
-//         this.date_created = new Date(date_created.seconds).toLocaleString()
+//         this.date_created = new Date(date_created.seconds).toDateString()
 //     }
 //     toString() {
 //         return this.created_by + ', ' + this.date_created + ', '

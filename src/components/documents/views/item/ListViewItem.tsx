@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyledTableCell } from 'components/documents/views/UI/Tables';
 import { MemorizedFcFolder } from './GridViewItem';
-import { Checkbox, Stack, Typography, useTheme } from '@mui/material';
+import { Badge, Checkbox, Stack, Typography, useTheme } from '@mui/material';
 import { isEmpty, isObject, isString, isUndefined, startsWith } from 'lodash';
 import { getDateFromObject } from 'utils/constants/UriHelper';
 import { FileIconProps, fileIcon } from '../../Icons/fileIcon';
@@ -14,10 +14,11 @@ import { useBrowserStore } from '../../data/global_state/slices/BrowserMock';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import { BsDatabaseFill } from 'react-icons/bs';
+import { FaNoteSticky } from 'react-icons/fa6';
 
 export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setContextMenu }: RenderCustomProps) {
     const theme = useTheme();
-    const { doc_name, path, is_dir, mimeType, progress, newDoc, created, permissions, subscribed, isExtracting } = document;
+    const { doc_name, path, is_dir, mimeType, progress, newDoc, created, permissions, subscribed, isExtracting, notes } = document;
 
     // ========================= | ICONS | =========================== //
     const memorizedFileIcon = React.useCallback((args: FileIconProps) => fileIcon({ ...args }), []);
@@ -110,6 +111,11 @@ export function ListViewItem({ rowSelected, document, disableDoubleClickFn, setC
                 ) : (
                     getDateFromObject(created).toDateString()
                 )}
+            </StyledTableCell>
+            <StyledTableCell>
+                <Badge badgeContent={Array.isArray(notes) ? notes.length : 0} color="primary" showZero>
+                    <FaNoteSticky size={13} />
+                </Badge>
             </StyledTableCell>
 
             {isObject(permissions) &&

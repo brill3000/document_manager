@@ -34,8 +34,8 @@ class User {
         this.user_name = user_name;
         this.first_name = first_name;
         this.last_name = last_name;
-        this.registration_date = new Date(registration_date.seconds).toLocaleString();
-        this.deregistration_date = new Date(deregistration_date.seconds).toLocaleString();
+        this.registration_date = new Date(registration_date.seconds).toDateString();
+        this.deregistration_date = new Date(deregistration_date.seconds).toDateString();
         this.departments = departments;
         this.position = position;
         this.company = company;
@@ -127,10 +127,10 @@ export const usersQuery = createApi({
                         let userDataOmited = omit(userData, ['registration_date', 'deregistration_date']);
                         const user = {
                             registration_date: data.data().registration_date
-                                ? new Date(data.data().registration_date.seconds * 1000).toLocaleString()
+                                ? new Date(data.data().registration_date.seconds * 1000).toDateString()
                                 : null,
                             deregistration_date: data.data().deregistration_date
-                                ? new Date(data.data().deregistration_date.seconds * 1000).toLocaleString()
+                                ? new Date(data.data().deregistration_date.seconds * 1000).toDateString()
                                 : null,
                             ...userDataOmited
                         };

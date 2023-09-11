@@ -149,7 +149,7 @@ export function ViewFileSideBar({
             >
                 Date Created:{' '}
                 <Box component="span" className="date">
-                    {!isUndefined(file) && !isNull(file) && getDateFromObject(file.created).toLocaleString()}
+                    {!isUndefined(file) && !isNull(file) && getDateFromObject(file.created).toDateString()}
                 </Box>
             </Typography>
         </>

@@ -335,7 +335,7 @@ export const authApi = createApi({
             }
         }),
         getRolesByUser: build.query({
-            query: ({ user }) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}`, method: 'GET', params: { user: user } }),
+            query: ({ user }) => ({ url: `${UriHelper.AUTH_GET_ROLES_BY_USER}/${user}`, method: 'GET' }),
             providesTags: (result: any, error: any): FullTagDescription<UserTags>[] => {
                 const tags: FullTagDescription<UserTags>[] = [{ type: 'DMS_USER' }];
                 if (result) return [...tags, { type: 'DMS_USER_SUCCESS', id: 'success' }];

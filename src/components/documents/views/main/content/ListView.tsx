@@ -287,6 +287,7 @@ export function VirtualizedList({ height }: { height: number }) {
                                 </Stack>
                             </StyledTableCell>
                             <StyledTableCell>Date Created</StyledTableCell>
+                            <StyledTableCell>Notes</StyledTableCell>
                             <StyledTableCell>Read</StyledTableCell>
                             <StyledTableCell>Write</StyledTableCell>
                             <StyledTableCell>Delete</StyledTableCell>

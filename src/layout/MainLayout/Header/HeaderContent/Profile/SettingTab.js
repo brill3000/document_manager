@@ -25,7 +25,7 @@ const SettingTab = () => {
                 </ListItemIcon>
                 <ListItemText primary="Support" />
             </ListItemButton>
-            <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+            {/* <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
                 <ListItemIcon>
                     <UserOutlined />
                 </ListItemIcon>
@@ -42,7 +42,7 @@ const SettingTab = () => {
                     <CommentOutlined />
                 </ListItemIcon>
                 <ListItemText primary="Feedback" />
-            </ListItemButton>
+            </ListItemButton> */}
             <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
                 <ListItemIcon>
                     <UnorderedListOutlined />

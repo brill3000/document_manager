@@ -7,8 +7,8 @@ class Form {
         this.id = id;
         this.created_by = created_by;
         this.title = title;
-        this.date_created = new Date(date_created.seconds).toLocaleString();
-        this.date_modified = date_modified ? new Date(date_modified.seconds).toLocaleString() : null;
+        this.date_created = new Date(date_created.seconds).toDateString();
+        this.date_modified = date_modified ? new Date(date_modified.seconds).toDateString() : null;
         this.nodes = nodes;
         this.edges = edges;
         this.viewport = viewport;

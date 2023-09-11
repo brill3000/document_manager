@@ -24,20 +24,18 @@ const columns = [
     {
         id: 'position',
         label: 'Position',
-        minWidth: 50,
-        format: (value) => value.toLocaleString()
+        minWidth: 50
     },
     {
         id: 'is_admin',
         label: 'Is Admin',
-        minWidth: 50,
-        format: (value) => value.toLocaleString('en-US')
+        minWidth: 50
     },
     {
         id: 'registration_date',
         label: 'Registration Date',
         minWidth: 50,
-        format: (value) => value.toLocaleString('en-US')
+        format: (value) => value.toDateString()
     }
     // {
     //     id: 'phone',
