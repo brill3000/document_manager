@@ -12,7 +12,7 @@ import {
     applyNodeChanges,
     applyEdgeChanges
 } from 'reactflow';
-import { IWorkflowActionTypes } from 'global/interfaces';
+import { IWorkflowActionTypes, NodeData } from 'global/interfaces';
 
 const initialNodes = [
     {
@@ -22,17 +22,6 @@ const initialNodes = [
         position: { x: 300, y: 200 }
     }
 ];
-
-export type NodeData = {
-    label: string;
-    action?: Array<{ id: string; type: IWorkflowActionTypes; label: string; values: any }>;
-};
-export interface IWorkflow {
-    title: string;
-    edges: Edge[];
-    nodes: Node<NodeData>[];
-    createdBy: string;
-}
 
 export type RFState = {
     nodes: Node<NodeData>[];

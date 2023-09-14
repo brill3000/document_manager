@@ -37,7 +37,7 @@ const AddNodeOnEdgeDrop = () => {
                     id,
                     // we are removing the half of the node width (75) to center the new node
                     position: project({ x: event.clientX - left - 75, y: event.clientY - top }),
-                    data: { label: `Node ${id}`, action: [] },
+                    data: { label: `Node ${id}`, actions: [] },
                     type: 'textUpdater'
                 };
 

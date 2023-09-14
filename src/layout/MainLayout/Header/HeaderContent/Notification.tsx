@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { SyntheticEvent, useMemo, useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -18,7 +18,8 @@ import {
     Popper,
     Typography,
     useMediaQuery,
-    ListItem
+    ListItem,
+    Stack
 } from '@mui/material';
 
 // project import
@@ -27,6 +28,10 @@ import Transitions from 'components/@extended/Transitions';
 
 // assets
 import { BellOutlined, CloseOutlined, GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
+import { useAppContext } from 'context/appContext';
+import { ITask, IWorkflowInstance } from 'global/interfaces';
+import { groupBy, isObject } from 'lodash';
+import { BsUpload } from 'react-icons/bs';
 
 // sx styles
 const avatarSX = {
@@ -53,11 +58,22 @@ const Notification = () => {
 
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
+
+    const { tasks: taskData, user, workflowsInstances } = useAppContext();
+    const tasks: ITask[] = useMemo(
+        () => (isObject(taskData) && taskData !== null && taskData !== undefined ? Object.values(taskData) : []),
+        [taskData]
+    );
+    const workflows: Record<string, IWorkflowInstance> = useMemo(() => workflowsInstances ?? {}, [workflowsInstances]);
+    const my_tasks = tasks.filter((task) => task.assignee === user);
+    const taskStatuses = useMemo(() => groupBy(tasks, (item) => item.status), [tasks]);
+
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
-
-    const handleClose = (event) => {
+    console.log(tasks, 'MY TASKS');
+    const handleClose = (event: SyntheticEvent) => {
+        //@ts-expect-error expected
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
@@ -69,20 +85,22 @@ const Notification = () => {
 
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
-            <IconButton
-                disableRipple
-                color="secondary"
-                sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor }}
-                aria-label="open profile"
-                ref={anchorRef}
-                aria-controls={open ? 'profile-grow' : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-            >
-                <Badge badgeContent={0} color="primary">
-                    <BellOutlined />
-                </Badge>
-            </IconButton>
+            <Badge badgeContent={Array.isArray(my_tasks) ? my_tasks.length : 0} color="primary">
+                <IconButton
+                    disableRipple
+                    color="secondary"
+                    sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor }}
+                    aria-label="open profile"
+                    ref={anchorRef}
+                    aria-controls={open ? 'profile-grow' : undefined}
+                    aria-haspopup="true"
+                    onClick={handleToggle}
+                >
+                    <Badge badgeContent={0} color="primary">
+                        <BellOutlined />
+                    </Badge>
+                </IconButton>
+            </Badge>
             <Popper
                 placement={matchesXs ? 'bottom' : 'bottom-end'}
                 open={open}
@@ -102,9 +120,12 @@ const Notification = () => {
                 }}
             >
                 {({ TransitionProps }) => (
+                    // @ts-expect-error expected
                     <Transitions type="fade" in={open} {...TransitionProps}>
                         <Paper
                             sx={{
+                                // @ts-expect-error expected
+
                                 boxShadow: theme.customShadows.z1,
                                 width: '100%',
                                 minWidth: 285,
@@ -114,7 +135,9 @@ const Notification = () => {
                                 }
                             }}
                         >
+                            {/** @ts-expect-error expected */}
                             <ClickAwayListener onClickAway={handleClose}>
+                                {/** @ts-expect-error expected */}
                                 <MainCard
                                     title="Notification"
                                     elevation={0}
@@ -137,9 +160,55 @@ const Notification = () => {
                                             }
                                         }}
                                     >
-                                        <ListItem>
-                                            <ListItemText>No notifications</ListItemText>
-                                        </ListItem>
+                                        {Array.isArray(my_tasks) &&
+                                            my_tasks.map((task) => {
+                                                return (
+                                                    <ListItemButton>
+                                                        <ListItemAvatar>
+                                                            <Avatar
+                                                                sx={{
+                                                                    color: 'success.main',
+                                                                    bgcolor: 'success.lighter'
+                                                                }}
+                                                            >
+                                                                <BsUpload />
+                                                            </Avatar>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography variant="h6">
+                                                                    Task:{' '}
+                                                                    <span style={{ textTransform: 'capitalize' }}>{task.taskType}</span>{' '}
+                                                                    file
+                                                                </Typography>
+                                                            }
+                                                            secondary={
+                                                                <Stack>
+                                                                    <Typography variant="caption">
+                                                                        Workflow: {workflows && workflows[task.workflowInstanceId]?.title}
+                                                                    </Typography>
+                                                                    <Typography variant="caption">
+                                                                        Process:{' '}
+                                                                        {workflows &&
+                                                                            workflows[task.workflowInstanceId]?.nodes.find(
+                                                                                (x) => x.id === task.processId
+                                                                            )?.data.label}
+                                                                    </Typography>
+                                                                </Stack>
+                                                            }
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <Typography variant="caption" noWrap></Typography>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItemButton>
+                                                );
+                                            })}
+                                        {my_tasks.length === 0 && (
+                                            <ListItem>
+                                                <ListItemText>No notifications</ListItemText>
+                                            </ListItem>
+                                        )}
+
                                         {/* <ListItemButton>
                                             <ListItemAvatar>
                                                 <Avatar

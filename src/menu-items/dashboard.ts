@@ -103,7 +103,7 @@ const dashboard = {
             children: [
                 {
                     id: 'system-documents',
-                    title: 'Organiztional Documents',
+                    title: 'Organizational Documents',
                     type: 'item',
                     url: '/documents/system-documents',
                     icon: icons.BsFolder,

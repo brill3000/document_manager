@@ -1,5 +1,6 @@
 import { PermissionTypes, RolePermission, UserPermission } from 'components/documents/Interface/FileBrowser';
 import { Dispatch, SetStateAction } from 'react';
+import { Edge, Node } from 'reactflow';
 
 export type MimeTypeConfigInterface = {
     // MIME types:> NOTE Keep on sync with default.sql
@@ -104,10 +105,43 @@ export interface IWorkflowPanelProps {
     setNodes: any;
     setEdges: any;
 }
-export interface ITask {
+export interface IAction {
     id: number;
     type: IWorkflowActionTypes;
     title: string;
+}
+
+export interface IWorkflow {
+    title: string;
+    nodes: Node<NodeData>[];
+    edges: Edge[];
+    createdBy: string;
+}
+export interface ITask {
+    status: ITaskStatus;
+    assignee: string;
+    id: string;
+    workflowInstanceId: string;
+    processId: string;
+    taskType: IWorkflowActionTypes;
+    info: unknown;
+}
+export type ITaskStatus = 'pending' | 'completed' | 'inprogress' | 'canceled';
+export interface IWorkflowInstance {
+    title: string;
+    id: string;
+    nodes: Node<ExtendedNodeData>[];
+    edges: Edge[];
+    createdBy: string;
+    status: ITaskStatus;
+}
+export interface NodeData {
+    label: string;
+    action?: Array<{ id: string; type: IWorkflowActionTypes; label: string; values: any }>;
+}
+export interface ExtendedNodeData extends NodeData {
+    tasks: { id: string; status: ITaskStatus }[];
+    status: ITaskStatus;
 }
 export type TFormCreation = 'input' | 'large_input' | 'checkbox' | 'radio' | 'select' | 'submit';
 export interface INewFormTitle {

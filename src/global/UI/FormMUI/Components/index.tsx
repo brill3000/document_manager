@@ -20,7 +20,7 @@ import { FC, Fragment, ReactNode, forwardRef, memo, useMemo } from 'react';
 
 type FormikDefaults = {
     disabled?: boolean;
-    label: string;
+    label?: string;
     id: string;
     name: string;
     variant: 'outlined' | 'standard' | 'filled' | undefined;

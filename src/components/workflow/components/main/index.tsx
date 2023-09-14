@@ -3,7 +3,7 @@ import { Grid, Stack } from '@mui/material';
 import { TopNav } from './navigation';
 import { Content } from './content';
 
-export function MainContent({ selected }: { selected: number | null }) {
+export function MainContent({ selected }: { selected: string | null }) {
     const ref = React.useRef<HTMLInputElement | null>(null);
     return (
         <Grid

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Divider, Grid, Stack, Theme, Typography, alpha, hexToRgb, useMediaQuery, useTheme } from '@mui/material';
 import { CustomButton } from '../UI/CustomButton';
-import { BsCheck, BsPlayFill, BsStopFill } from 'react-icons/bs';
+import { BsGear } from 'react-icons/bs';
 import CreateFlowStepper from '../flow2';
 import { TbSettingsAutomation } from 'react-icons/tb';
+import { useAppContext } from 'context/appContext';
+import { IWorkflowInstance } from 'global/interfaces';
+import { groupBy, isObject } from 'lodash';
 export function OuterSidebar() {
     const theme = useTheme();
     const [selected, setSelected] = React.useState<string | null>('Inbox');
@@ -15,6 +18,15 @@ export function OuterSidebar() {
     const handleCloseWorkflowWizard = () => {
         setOpenView(false);
     };
+    const { workflowsInstances } = useAppContext();
+    const workflows: IWorkflowInstance[] = useMemo(
+        () =>
+            isObject(workflowsInstances) && workflowsInstances !== null && workflowsInstances !== undefined
+                ? Object.values(workflowsInstances)
+                : [],
+        [workflowsInstances]
+    );
+    const workflowStatuses = useMemo(() => groupBy(workflows, (item) => item.status), [workflows]);
 
     return (
         <Grid
@@ -68,39 +80,44 @@ export function OuterSidebar() {
                         States
                     </Typography>{' '}
                 </Divider>
-                {[
+                {/* [
                     { nav: 'Inprogress', icon: <BsPlayFill size={17} color={theme.palette.warning.main} />, count: 0 },
                     { nav: 'Completed', icon: <BsCheck size={17} color={theme.palette.success.main} />, count: 1 },
                     { nav: 'Rejected', icon: <BsStopFill size={17} color={theme.palette.error.main} />, count: 0 }
-                ].map((navItem) => (
-                    <CustomButton
-                        key={navItem.nav}
-                        sx={{
-                            bgcolor: navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2),
-                            '& :hover': {
-                                bgcolor: 'white'
-                            }
-                        }}
-                        onClick={() => handleClick(navItem.nav)}
-                    >
-                        <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
-                            {navItem.icon}
-                            <Typography
-                                variant="body2"
-                                color={theme.palette.text.primary}
-                                maxWidth="70%"
-                                minWidth="70%"
-                                textAlign="start"
-                                noWrap
+                ] */}
+                {workflowStatuses !== null &&
+                    workflowStatuses !== undefined &&
+                    Object.entries(workflowStatuses)
+                        .map(([key, values]) => ({ nav: key, icon: <BsGear />, count: values?.length ?? 0 }))
+                        .map((navItem) => (
+                            <CustomButton
+                                key={navItem.nav}
+                                sx={{
+                                    bgcolor: navItem.nav === selected ? 'white' : alpha(hexToRgb('#ffffff'), 0.2),
+                                    '& :hover': {
+                                        bgcolor: 'white'
+                                    }
+                                }}
+                                onClick={() => handleClick(navItem.nav)}
                             >
-                                {navItem.nav}
-                            </Typography>
-                            <Typography variant="body2" color={theme.palette.text.primary}>
-                                {navItem.count}
-                            </Typography>
-                        </Stack>
-                    </CustomButton>
-                ))}
+                                <Stack direction="row" spacing={1} alignItems="center" py={1} px={2} width="100%">
+                                    {navItem.icon}
+                                    <Typography
+                                        variant="body2"
+                                        color={theme.palette.text.primary}
+                                        maxWidth="70%"
+                                        minWidth="70%"
+                                        textAlign="start"
+                                        noWrap
+                                    >
+                                        {navItem.nav}
+                                    </Typography>
+                                    <Typography variant="body2" color={theme.palette.text.primary}>
+                                        {navItem.count}
+                                    </Typography>
+                                </Stack>
+                            </CustomButton>
+                        ))}
             </Stack>
             <Typography
                 fontSize={10}

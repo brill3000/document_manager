@@ -300,7 +300,7 @@ export function LeftSidebar({
     }, [rootFolderIsSuccess, rootFolderIsFetching, rootFolderIsLoading, openItem]);
 
     useEffect(() => {
-        if (!isUndefined(rootFolder) && !isNull(rootFolder.path) && !isEmpty(rootFolder.path)) {
+        if (!isUndefined(rootFolder) && !isNull(rootFolder.path) && !isEmpty(rootFolder.path) && standAlone !== true) {
             isEmpty(paramArray) && handleDocumentClick(rootFolder.path, true);
         }
     }, [rootFolder]);

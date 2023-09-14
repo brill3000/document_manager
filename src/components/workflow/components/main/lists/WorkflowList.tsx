@@ -1,24 +1,25 @@
 import { Chip, List, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography, useTheme } from '@mui/material';
 import Dot from 'components/@extended/Dot';
 import { useAppContext } from 'context/appContext';
+import { IWorkflowInstance } from 'global/interfaces';
 import { Dispatch, MutableRefObject, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { BsCheck } from 'react-icons/bs';
 import { Virtuoso } from 'react-virtuoso';
 // ListChildComponentProps
 
-const InnerList = <T,>({
+const InnerList = ({
     data,
     index,
     handleSelect,
     selected
 }: {
-    data: T & { id: number; title: string; creator: string };
+    data: IWorkflowInstance;
     index: number;
-    handleSelect: (id: number) => void;
-    selected: number | null;
+    handleSelect: (id: string) => void;
+    selected: string | null;
 }) => {
     const theme = useTheme();
-    const { id, title, creator } = data;
+    const { id, title, createdBy, status } = data;
     return (
         <ListItemButton
             key={index}
@@ -45,13 +46,23 @@ const InnerList = <T,>({
                     </Typography>
                     <Stack direction="row" spacing={0.5} justifyContent="space-between">
                         <Typography variant="body2" color="text.secondary">
-                            {creator}
+                            {createdBy}
                         </Typography>
                         <Chip
                             icon={<BsCheck />}
-                            label="complete"
+                            label={status}
                             variant="outlined"
-                            color="success"
+                            color={
+                                status === 'canceled'
+                                    ? 'error'
+                                    : status === 'completed'
+                                    ? 'success'
+                                    : status === 'inprogress'
+                                    ? 'warning'
+                                    : status === 'pending'
+                                    ? 'primary'
+                                    : 'default'
+                            }
                             sx={{ width: 'max-content', height: 20 }}
                         />
                     </Stack>
@@ -65,17 +76,18 @@ export function WorkflowList({
     innerRef,
     outerRef,
     selected,
-    setSelected
+    setSelected,
+    workflows
 }: {
     innerRef: MutableRefObject<HTMLDivElement | null>;
     outerRef: MutableRefObject<HTMLDivElement | null>;
-    selected: number | null;
-    setSelected: Dispatch<SetStateAction<number | null>>;
+    selected: string | null;
+    setSelected: Dispatch<SetStateAction<string | null>>;
+    workflows: IWorkflowInstance[];
 }) {
     const [height, setHeight] = useState<number | null>(null);
     const [width, setWidth] = useState<number | null>(null);
-    const { workflows } = useAppContext();
-    const handleSelect = useCallback((id: number) => setSelected(id), []);
+    const handleSelect = useCallback((id: string) => setSelected(id), []);
 
     useEffect(() => {
         if (innerRef.current !== null && innerRef !== undefined && outerRef.current !== null && outerRef.current !== undefined) {
@@ -83,6 +95,7 @@ export function WorkflowList({
             setWidth(outerRef.current.clientWidth);
         }
     }, []);
+    console.log(workflows, 'WORKFLOWS');
     return (
         <>
             <Virtuoso
@@ -90,12 +103,9 @@ export function WorkflowList({
                 components={{
                     Item: List
                 }}
-                data={[
-                    { id: 1, title: 'Motion tabling', creator: 'Administrator' },
-                    { id: 2, title: 'Create order paper', creator: 'Brilliant' }
-                ]}
+                data={workflows}
                 itemContent={(index, instance) => (
-                    <InnerList data={instance} index={index} handleSelect={handleSelect} selected={selected} />
+                    <InnerList key={index} data={instance} index={index} handleSelect={handleSelect} selected={selected} />
                 )}
             />
         </>

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Form, Formik } from 'formik';
-import { ITask, IWorkflowActionTypes, IWorkflowPanelProps } from 'global/interfaces';
+import { IAction, IWorkflowActionTypes, IWorkflowPanelProps } from 'global/interfaces';
 import { FormikText } from 'global/UI/FormMUI/Components';
 import TestFlow from '../flow/flowTest/TestFlow';
 import { Content } from '../main/content';
@@ -29,7 +29,7 @@ import { uniqueId } from 'lodash';
 import { useAppContext } from 'context/appContext';
 import uuid from 'react-uuid';
 import { enqueueSnackbar } from 'notistack';
-const actions: ITask[] = [
+const actions: IAction[] = [
     { id: 1, type: 'upload', title: 'Upload file' },
     { id: 2, type: 'form', title: 'Fill form' },
     { id: 3, type: 'vote', title: 'Vote' }
@@ -131,7 +131,10 @@ export const WorkflowPanel = ({ isSending, setIsSending }: IWorkflowPanelProps) 
                                 const workflow: Record<string, { title: string; nodes: any; edges: any; createdBy: string }> = {};
                                 workflow[id] = val;
                                 addWorkflow(workflow);
-                                timeout.current = setTimeout(() => setIsSending(false), 500);
+                                timeout.current = setTimeout(() => {
+                                    enqueueSnackbar('Workflow created', { variant: 'success' });
+                                    setIsSending(false);
+                                }, 500);
 
                                 // createFlow({
                                 //     title: values.title,
@@ -227,7 +230,7 @@ export interface DraggableBoxProps {
     top: number;
 }
 
-const TaskItem = ({ task, handleClickTaskItem }: { task: ITask; handleClickTaskItem: (node: IWorkflowActionTypes) => void }) => {
+const TaskItem = ({ task, handleClickTaskItem }: { task: IAction; handleClickTaskItem: (node: IWorkflowActionTypes) => void }) => {
     const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
         // "type" is required. It is used by the "accept" specification of drop targets.
         type: ItemTypes.Task,
