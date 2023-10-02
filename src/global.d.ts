@@ -10,3 +10,4 @@ declare module 'pdfjs-dist/webpack';
 declare module 'autosuggest-highlight/parse';
 declare module 'autosuggest-highlight/match';
 declare module 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
+declare module 'react-bpmn';
