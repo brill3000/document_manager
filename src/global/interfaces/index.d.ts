@@ -510,3 +510,12 @@ interface PdfPreview {
     docUrl: string;
     uniqueContainerId: string;
 }
+
+// =============================== | FILE VIEWER | ============================== //
+export interface IBpmn {
+    url?: string;
+    diagramXML?: string;
+    onLoading: () => void;
+    onError: (err: unknown) => void;
+    onShown: (shown: unknown) => void;
+}

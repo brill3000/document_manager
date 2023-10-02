@@ -29,6 +29,7 @@ import { uniqueId } from 'lodash';
 import { useAppContext } from 'context/appContext';
 import uuid from 'react-uuid';
 import { enqueueSnackbar } from 'notistack';
+import Bpmn from './Bpmn';
 const actions: IAction[] = [
     { id: 1, type: 'upload', title: 'Upload file' },
     { id: 2, type: 'form', title: 'Fill form' },
@@ -42,7 +43,15 @@ export const WorkflowPanel = ({ isSending, setIsSending }: IWorkflowPanelProps) 
     // ZUSTAND
     const { selected: selectedNode, addAction } = useStore();
     // ======================== | EVENTS | ============================//
-
+    const onLoading = () => {
+        console.log('LOADING ....');
+    };
+    const onError = (err: unknown) => {
+        console.error(err, 'ERROR');
+    };
+    const onShown = (err: unknown) => {
+        console.error(err, 'ERROR');
+    };
     const handleAddAction = useCallback(
         (actionType: IWorkflowActionTypes) => {
             if (selectedNode === null) return enqueueSnackbar('Select a process first', { variant: 'info' });
@@ -203,8 +212,9 @@ export const WorkflowPanel = ({ isSending, setIsSending }: IWorkflowPanelProps) 
                         {/* )} */}
                     </Box>
                 </Stack>
-                <TestFlow />
+                {/* <TestFlow /> */}
                 {/* <Content /> */}
+                <Bpmn onShown={onShown} onError={onError} onLoading={onLoading} url="/diagram.bpmn" />
             </Grid2>
         </Grid2>
     );

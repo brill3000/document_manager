@@ -9,7 +9,7 @@ interface EmailContainerProps {
     browserWidth: string | number;
 }
 
-const index = ({ width, height }: EmailContainerProps) => {
+const Workflow = ({ width, height }: EmailContainerProps) => {
     return (
         // @ts-expect-error unexpected
         <MainCard
@@ -33,4 +33,4 @@ const index = ({ width, height }: EmailContainerProps) => {
     );
 };
 
-export default index;
+export default Workflow;

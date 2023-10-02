@@ -1,10 +1,19 @@
 import React from 'react';
 import { Grid, Stack } from '@mui/material';
 import { TopNav } from './navigation';
-import { Content } from './content';
+import Bpmn from '../flow2/Bpmn';
 
 export function MainContent({ selected }: { selected: string | null }) {
     const ref = React.useRef<HTMLInputElement | null>(null);
+    const onLoading = () => {
+        console.log('LOADING ....');
+    };
+    const onError = (err: unknown) => {
+        console.error(err, 'ERROR');
+    };
+    const onShown = (err: unknown) => {
+        console.error(err, 'ERROR');
+    };
     return (
         <Grid
             item
@@ -38,7 +47,8 @@ export function MainContent({ selected }: { selected: string | null }) {
                     maxWidth={ref.current?.clientWidth ?? '100%'}
                     bgcolor="background.paper"
                 >
-                    <Content selected={selected} />
+                    {/* <Content selected={selected} /> */}
+                    <Bpmn onShown={onShown} onError={onError} onLoading={onLoading} url="/diagram.bpmn" />
                 </Stack>
             </Stack>
         </Grid>
