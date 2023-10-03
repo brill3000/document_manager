@@ -255,14 +255,12 @@ const CreateFlowStepper = ({ open, handleClose }: { open: boolean; handleClose: 
     };
     return (
         <Dialog
-            maxWidth="md"
-            fullWidth
+            fullScreen
             sx={{
                 '& .MuiPaper-root': {
                     boxShadow: (theme) =>
                         `inset 0 0 4px ${alpha(theme.palette.common.black, 0.09)}, 0 0 20px ${alpha(theme.palette.common.black, 0.15)} `,
-                    borderRadius: 2,
-                    height: '90vh'
+                    borderRadius: 2
                 }
             }}
             open={open}

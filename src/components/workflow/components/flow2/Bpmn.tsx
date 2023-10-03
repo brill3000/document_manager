@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js';
+// import BpmnJS from 'bpmn-js/dist/bpmn-modeler.production.min.js';
+import 'bpmn-js/dist/assets/bpmn-js.css';
+import 'bpmn-js/dist/assets/diagram-js.css';
+import BpmnModeler from 'bpmn-js/lib/Modeler';
 // import ReactBpmn from 'react-bpmn';
 import { IBpmn } from 'global/interfaces';
 import { Box } from '@mui/material';
@@ -13,7 +16,7 @@ const Bpmn = ({ url, diagramXML, onLoading, onError, onShown }: IBpmn) => {
     useEffect(() => {
         const container = containerRef.current;
         if (container === null) return;
-        bpmnViewer.current = new BpmnJS({
+        bpmnViewer.current = new BpmnModeler({
             container,
             keyboard: {
                 bindTo: window

@@ -10,6 +10,8 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import '@fontsource/montserrat';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import './App.css';
+
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 function MyFallbackComponent({ error, resetErrorBoundary }) {
     return (
